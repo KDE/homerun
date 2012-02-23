@@ -1,6 +1,6 @@
-project(sal-qml)
+project(sal)
 
 install(DIRECTORY package/
-        DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/sal-qml)
+        DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/sal)
 
-install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-containment-sal-qml.desktop)
+install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-applet-sal.desktop)
