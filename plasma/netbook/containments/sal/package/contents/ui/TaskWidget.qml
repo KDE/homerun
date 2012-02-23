@@ -35,37 +35,10 @@ Item  {
         }
     }
 
-    PlasmaCore.Svg {
-        id: iconSvg
-        imagePath: IconName ? "icons/" + String(IconName).split('-')[0] : ''
-        Component.onCompleted: {
-            var hasSvg = IconName ? iconSvg.hasElement(IconName) : false
-            normalIcon.visible = !hasSvg
-            svgItemIcon.visible = hasSvg
-        }
-    }
-
     QtExtra.QIconItem {
         id: normalIcon
         anchors.fill: parent
-        icon: Icon
-    }
-    PlasmaCore.SvgItem {
-        id: svgItemIcon
-        anchors.fill: parent
-        svg: iconSvg
-        elementId: IconName ? IconName : ''
+        icon: "system-shutdown"
     }
 
-    MouseArea {
-        anchors.fill: taskIcon
-        onClicked: {
-            //print(iconSvg.hasElement(IconName))
-            var service = statusNotifierSource.serviceForSource(DataEngineSource)
-            var operation = service.operationDescription("Activate")
-            operation.x = parent.x
-            operation.y = parent.y
-            service.startOperationCall(operation)
-        }
-    }
 }

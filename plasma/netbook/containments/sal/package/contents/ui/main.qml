@@ -29,7 +29,7 @@ Item {
     state: height>48?"active":"passive"
 
     Component.onCompleted: {
-        plasmoid.drawWallpaper = false
+        plasmoid.drawWallpaper = true
         plasmoid.containmentType = "CustomContainment"
         plasmoid.movableApplets = false
 
@@ -131,79 +131,51 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        Flickable {
-            id: tasksFlickable
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            interactive:true
-            contentWidth: tasksRow.width
-            contentHeight: tasksRow.height
 
-            width: Math.min(parent.width, tasksRow.width)
+        Flow {
+            id: tasksRow
+            spacing: 8
+            height: tasksFlickable.height
+            property string skipItems
 
-            Row {
-                id: tasksRow
-                spacing: 8
-                height: tasksFlickable.height
-                property string skipItems
+            function insertAt(item, index)
+            {
+                LayoutManager.insertAt(item, index)
+            }
 
-                function insertAt(item, index)
-                {
-                    LayoutManager.insertAt(item, index)
-                }
+            function remove(item)
+            {
+                LayoutManager.remove(item)
+            }
 
-                function remove(item)
-                {
-                    LayoutManager.remove(item)
-                }
+            function saveOrder()
+            {
+                LayoutManager.saveOrder()
+            }
 
-                function saveOrder()
-                {
-                    LayoutManager.saveOrder()
-                }
-
-                Repeater {
-                    id: tasksRepeater
-                    model: PlasmaCore.SortFilterModel {
-                        id: filteredStatusNotifiers
-                        filterRole: "Title"
-                        filterRegExp: tasksRow.skipItems
-                        sourceModel: PlasmaCore.DataModel {
-                            dataSource: statusNotifierSource
-                        }
-                    }
-
-                    delegate: TaskWidget {
+            Repeater {
+                id: tasksRepeater
+                model: PlasmaCore.SortFilterModel {
+                    id: filteredStatusNotifiers
+                    filterRole: "Title"
+                    filterRegExp: tasksRow.skipItems
+                    sourceModel: PlasmaCore.DataModel {
+                        dataSource: statusNotifierSource
                     }
                 }
 
-
-                Component.onCompleted: {
-                    items = plasmoid.readConfig("SkipItems")
-                    if (items != "") {
-                        skipItems = "^(?!" + items + ")"
-                    } else {
-                        skipItems = ""
-                    }
+                delegate: TaskWidget {
                 }
             }
-        }
-        Row {
-            id: centerPanel
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-                horizontalCenter: parent.horizontalCenter
-            }
-        }
-        Row {
-            id: rightPanel
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-                right: parent.right
-                rightMargin: 8
+
+
+            Component.onCompleted: {
+                items = plasmoid.readConfig("SkipItems")
+                if (items != "") {
+                    skipItems = "^(?!" + items + ")"
+                } else {
+                    skipItems = ""
+                }
             }
         }
     }
