@@ -1,0 +1,3 @@
+
+KDE_CHECK_HEADER(kcarddb.h, FOUND_KSMCARD="yes", FOUND_KSMCARD="no")
+AM_CONDITIONAL(include_kcontrol_smartcard, test "$FOUND_KSMCARD" = "yes")

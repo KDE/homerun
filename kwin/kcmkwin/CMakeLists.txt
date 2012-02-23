@@ -1,0 +1,17 @@
+kde4_no_enable_final( kwinoptions )
+
+add_subdirectory( kwinoptions )
+add_subdirectory( kwindecoration )
+add_subdirectory( kwinrules )
+add_subdirectory( kwincompositing )
+if(KWIN_BUILD_SCREENEDGES)
+    add_subdirectory( kwinscreenedges )
+endif(KWIN_BUILD_SCREENEDGES)
+if(KWIN_BUILD_SCRIPTING)
+    add_subdirectory( kwinscripts )
+endif(KWIN_BUILD_SCRIPTING)
+add_subdirectory( kwindesktop )
+
+if( KWIN_BUILD_TABBOX )
+add_subdirectory( kwintabbox )
+endif( KWIN_BUILD_TABBOX )

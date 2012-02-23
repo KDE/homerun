@@ -1,0 +1,33 @@
+[Desktop Entry]
+# ctxt: plasma containment
+Name=Default Desktop
+Name[cs]=Výchozí plocha
+Name[hu]=Alapértelmezett asztal
+Name[nl]=Standaard bureaublad
+Name[pt]=Ecrã por Omissão
+Name[pt_BR]=Área de trabalho padrão
+Name[uk]=Типова стільниця
+Name[x-test]=xxDefault Desktopxx
+Comment=A clean and simple layout
+Comment[hu]=Egy tiszta és egyszerű elrendezés
+Comment[nl]=Een schone en simpele opmaak
+Comment[pt]=Uma disposição limpa e simples
+Comment[pt_BR]=Um leiaute limpo e simples
+Comment[uk]=Просте компонування
+Comment[x-test]=xxA clean and simple layoutxx
+Icon=user-desktop
+Type=Service
+X-KDE-ServiceTypes=Plasma/Applet,Plasma/Containment
+X-Plasma-ContainmentCategories=desktop
+NoDisplay=false
+
+X-KDE-Library=plasma_containment_desktop
+X-KDE-PluginInfo-Author=The Plasma Team
+X-KDE-PluginInfo-Email=plasma-devel@kde.org
+X-KDE-PluginInfo-Name=desktop
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-Website=http://plasma.kde.org/
+X-KDE-PluginInfo-Category=Containments
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true

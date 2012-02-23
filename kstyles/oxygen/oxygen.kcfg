@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
+<kcfg>
+  <kcfgfile name="oxygenrc"/>
+
+  <group name="Common">
+
+    <!-- background opacity -->
+    <entry name="BackgroundPixmap" type = "String" >
+       <default></default>
+    </entry>
+
+  </group>
+
+  <!-- widget style -->
+  <group name="Style">
+
+    <!-- cache size -->
+    <entry name="CacheEnabled" type = "Bool">
+       <default>true</default>
+    </entry>
+    <entry name="MaxCacheSize" type = "Int">
+       <default>512</default>
+    </entry>
+    <entry name="AnimationSteps" type = "Int">
+       <default>10</default>
+    </entry>
+
+    <entry name="MnemonicsMode" type="Enum">
+      <choices>
+          <choice name="MN_NEVER" />
+          <choice name="MN_AUTO" />
+          <choice name="MN_ALWAYS" />
+      </choices>
+      <default>MN_ALWAYS</default>
+    </entry>
+
+
+    <!-- tooltips -->
+    <entry name="ToolTipTransparent" type = "Bool">
+       <default>true</default>
+    </entry>
+    <entry name="ToolTipDrawStyledFrames" type = "Bool">
+       <default>true</default>
+    </entry>
+
+    <!-- toolbars -->
+    <entry name="ToolBarDrawItemSeparator" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <!-- views -->
+    <entry name="ViewDrawTriangularExpander" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="ViewTriangularExpanderSize" type="Enum">
+      <choices>
+          <choice name="TE_TINY" />
+          <choice name="TE_SMALL" />
+          <choice name="TE_NORMAL" />
+      </choices>
+      <default>TE_SMALL</default>
+    </entry>
+    <entry name="ViewDrawFocusIndicator" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="ViewDrawTreeBranchLines" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <!-- scrollbars -->
+    <entry name="ScrollBarWidth" type="Int">
+      <default>15</default>
+    </entry>
+    <entry name="ScrollBarAddLineButtons" type="Int">
+      <default>2</default>
+    </entry>
+    <entry name="ScrollBarSubLineButtons" type="Int">
+      <default>1</default>
+    </entry>
+
+    <!-- checkboxes -->
+    <entry name="CheckBoxStyle" type="Enum">
+      <choices>
+          <choice name="CS_CHECK" />
+          <choice name="CS_X" />
+      </choices>
+      <default>CS_CHECK</default>
+    </entry>
+
+    <!-- progress bars -->
+    <entry name="ProgressBarAnimated" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <!-- menus -->
+    <entry name="MenuHighlightMode" type="Enum">
+      <choices>
+          <choice name="MM_DARK" />
+          <choice name="MM_SUBTLE" />
+          <choice name="MM_STRONG" />
+      </choices>
+      <default>MM_DARK</default>
+    </entry>
+
+    <!-- tabs -->
+    <entry name="TabSubtleShadow" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="TabStyle" type="Enum">
+      <choices>
+          <choice name="TS_SINGLE" />
+          <choice name="TS_PLAIN" />
+      </choices>
+      <default>TS_SINGLE</default>
+    </entry>
+
+    <!-- window dragging -->
+    <entry name="WindowDragEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="WindowDragMode" type="Enum">
+      <choices>
+          <choice name="WD_MINIMAL" />
+          <choice name="WD_FULL" />
+      </choices>
+      <default>WD_FULL</default>
+    </entry>
+
+    <!--
+        this enables WidgetExplorer debugging tool.
+        it provides information about widgets,
+        widgets' geometry, and ancestry tree
+    -->
+    <entry name="WidgetExplorerEnabled" type="Bool">
+      <default>false</default>
+    </entry>
+
+    <entry name="DrawWidgetRects" type="Bool">
+      <default>false</default>
+    </entry>
+
+    <!--
+        this is the comma separated list of special per-app widgets on which
+        window dragging can be installed (in addition to the build-in list of
+        standard widgets. They are reference by the widget class name.
+    -->
+    <entry name="WindowDragWhiteList" type="StringList">
+       <default></default>
+    </entry>
+
+    <!--
+        this is the comma separated list of special per-app widgets on which
+        window dragging must be disabled (in addition to the build-in list of
+        standard widgets). They are reference by the widget class name.
+    -->
+    <entry name="WindowDragBlackList" type="StringList">
+       <default></default>
+    </entry>
+
+    <!-- if true, move events are passed to the window manager (e.g. KWin) -->
+    <entry name="UseWMMoveResize" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <!-- animation flags -->
+    <entry name="AnimationsEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="GenericAnimationsEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+
+   <entry name="ToolBarAnimationType" type="Enum">
+      <choices>
+          <choice name="TB_NONE" />
+          <choice name="TB_FADE" />
+          <choice name="TB_FOLLOW_MOUSE" />
+      </choices>
+      <default>TB_FADE</default>
+    </entry>
+
+    <entry name="MenuBarAnimationType" type="Enum">
+      <choices>
+          <choice name="MB_NONE" />
+          <choice name="MB_FADE" />
+          <choice name="MB_FOLLOW_MOUSE" />
+      </choices>
+      <default>MB_FADE</default>
+    </entry>
+
+    <entry name="MenuAnimationType" type="Enum">
+      <choices>
+          <choice name="ME_NONE" />
+          <choice name="ME_FADE" />
+          <choice name="ME_FOLLOW_MOUSE" />
+      </choices>
+      <default>ME_FADE</default>
+    </entry>
+
+    <entry name="ProgressBarAnimationsEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <!-- generic animation durations -->
+    <entry name="GenericAnimationsDuration" type="Int">
+      <default>150</default>
+    </entry>
+
+    <!-- toolbar follow-mouse animation durations -->
+    <!-- The duration for 'fade' animation mode is GenericAnimationsDuration -->
+    <entry name="ToolBarAnimationsDuration" type="Int">
+      <default>50</default>
+    </entry>
+
+    <!-- menubar animation durations -->
+    <entry name="MenuBarAnimationsDuration" type="Int">
+      <default>150</default>
+    </entry>
+
+    <!-- menubar animation durations -->
+    <entry name="MenuBarFollowMouseAnimationsDuration" type="Int">
+      <default>80</default>
+    </entry>
+
+    <!-- menu animation durations -->
+    <entry name="MenuAnimationsDuration" type="Int">
+      <default>150</default>
+    </entry>
+
+   <!-- menu animation durations -->
+    <entry name="MenuFollowMouseAnimationsDuration" type="Int">
+      <default>40</default>
+    </entry>
+
+    <!-- progress bar animation durations -->
+    <entry name="ProgressBarAnimationsDuration" type="Int">
+      <default>250</default>
+    </entry>
+
+    <!-- progress bar animation durations -->
+    <entry name="ProgressBarBusyStepDuration" type="Int">
+      <default>50</default>
+    </entry>
+
+   <!-- transition flags -->
+    <entry name="StackedWidgetTransitionsEnabled" type="Bool">
+      <default>false</default>
+    </entry>
+
+    <entry name="LabelTransitionsEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="ComboBoxTransitionsEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <entry name="LineEditTransitionsEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+
+    <!-- transition durations -->
+    <entry name="StackedWidgetTransitionsDuration" type="Int">
+      <default>150</default>
+    </entry>
+
+    <entry name="LabelTransitionsDuration" type="Int">
+      <default>75</default>
+    </entry>
+
+    <entry name="ComboBoxTransitionsDuration" type="Int">
+      <default>75</default>
+    </entry>
+
+    <entry name="LineEditTransitionsDuration" type="Int">
+      <default>150</default>
+    </entry>
+
+  </group>
+
+</kcfg>
