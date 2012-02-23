@@ -126,56 +126,70 @@ Item {
         id: theme
     }
 
-    Item {
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+    Flow {
+        id: tasksRow
+        anchors.fill: parent
 
-        Flow {
-            id: tasksRow
-            spacing: 8
-            height: tasksFlickable.height
-            property string skipItems
+        property string skipItems
 
-            function insertAt(item, index)
-            {
-                LayoutManager.insertAt(item, index)
-            }
+        function insertAt(item, index)
+        {
+            LayoutManager.insertAt(item, index)
+        }
 
-            function remove(item)
-            {
-                LayoutManager.remove(item)
-            }
+        function remove(item)
+        {
+            LayoutManager.remove(item)
+        }
 
-            function saveOrder()
-            {
-                LayoutManager.saveOrder()
-            }
+        function saveOrder()
+        {
+            LayoutManager.saveOrder()
+        }
 
-            Repeater {
-                id: tasksRepeater
-                model: PlasmaCore.SortFilterModel {
-                    id: filteredStatusNotifiers
-                    filterRole: "Title"
-                    filterRegExp: tasksRow.skipItems
-                    sourceModel: PlasmaCore.DataModel {
-                        dataSource: statusNotifierSource
-                    }
-                }
+        spacing: 2
 
-                delegate: TaskWidget {
-                }
-            }
+        QtExtra.QIconItem {
+            id: normalIcon1
+            width: 30
+            height: 30
+            icon: "system-restart"
+        }
 
+        QtExtra.QIconItem {
+            id: normalIcon2
+            width: 30
+            height: 30
+            icon: "dialog-quit"
+        }
 
-            Component.onCompleted: {
-                items = plasmoid.readConfig("SkipItems")
-                if (items != "") {
-                    skipItems = "^(?!" + items + ")"
-                } else {
-                    skipItems = ""
-                }
+        QtExtra.QIconItem {
+            id: normalIcon3
+            width: 30
+            height: 30
+            icon: "arrow-down"
+        }
+
+        QtExtra.QIconItem {
+            id: normalIcon4
+            width: 30
+            height: 30
+            icon: "arrow-right"
+        }
+
+        QtExtra.QIconItem {
+            id: normalIcon5
+            width: 30
+            height: 30
+            icon: "system-shutdown"
+        }
+
+        Component.onCompleted: {
+            items = plasmoid.readConfig("SkipItems")
+            if (items != "") {
+                skipItems = "^(?!" + items + ")"
+            } else {
+                skipItems = ""
             }
         }
     }
