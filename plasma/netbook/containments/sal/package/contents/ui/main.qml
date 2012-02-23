@@ -19,6 +19,7 @@
 
 import Qt 4.7
 import org.kde.plasma.core 0.1 as PlasmaCore
+import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
 import "plasmapackage:/code/LayoutManager.js" as LayoutManager
@@ -126,9 +127,25 @@ Item {
         id: theme
     }
 
+    PlasmaComponents.TextField {
+        id: searchField
+
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+        }
+
+        clearButtonShown: true
+    }
+
     Flow {
-        id: tasksRow
-        anchors.fill: parent
+        anchors {
+            top: searchField.bottom
+            topMargin: 10
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
 
         property string skipItems
 
