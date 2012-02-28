@@ -24,6 +24,9 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 Item {
     id: main
 
+    //FIXME: figure out sizing properly..
+    property int resultItemHeight: 70
+
     Flickable {
         id: resultsFlickable
 
@@ -31,12 +34,18 @@ Item {
 
         interactive: true
         clip: true
-        //FIXME: figure out sizing properly..
-        contentHeight: 70 * repeater.count
+        contentHeight: resultItemHeight * repeater.count
+
 
         Flow {
             id: flow
-            anchors.fill: parent
+            anchors {
+                fill: parent
+                leftMargin: resultItemHeight
+                rightMargin: resultItemHeight
+            }
+
+            spacing: 20
 
             move: Transition {
                 PropertyAnimation {
@@ -47,7 +56,7 @@ Item {
 
             Repeater {
                 id: repeater
-                model: 1000
+                model: 500
 
                 Result {
                     id: result

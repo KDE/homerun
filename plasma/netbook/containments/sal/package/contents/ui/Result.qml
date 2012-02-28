@@ -44,6 +44,6 @@ Item {
             horizontalCenter: resultIcon.horizontalCenter
         }
 
-        text: "test launcher"
+        text: "Test Launcher"
     }
 }
