@@ -23,24 +23,36 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 
 Item {
     id: main
-    Flow {
+
+    Flickable {
+        id: resultsFlickable
+
         anchors.fill: parent
 
-        move: Transition {
-            PropertyAnimation {
-                properties: "x,y"
-                easing.type: Easing.InOutQuad
+        interactive: true
+        clip: true
+        contentHeight: 1000
+        contentWidth: 1000
+
+        Flow {
+            anchors.fill: parent
+
+            move: Transition {
+                PropertyAnimation {
+                    properties: "x,y"
+                    easing.type: Easing.InOutQuad
+                }
             }
-        }
 
-        Repeater {
-            model: 500
+            Repeater {
+                model: 5000
 
-            QtExtra.QIconItem {
-                id: normalIcon1
-                width: 100
-                height: 100
-                icon: "system-shutdown"
+                QtExtra.QIconItem {
+                    id: normalIcon1
+                    width: 100
+                    height: 100
+                    icon: "system-shutdown"
+                }
             }
         }
     }
