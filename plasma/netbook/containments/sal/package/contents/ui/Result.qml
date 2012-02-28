@@ -24,35 +24,26 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 Item {
     id: main
 
-    Flickable {
-        id: resultsFlickable
+    width: Math.max(resultIcon.width, resultLabel.width)
+    //FIXME also hardcoded. probably use a text metric
+    height: resultIcon.width + 20
 
-        anchors.fill: parent
+    QtExtra.QIconItem {
+        id: resultIcon
 
-        interactive: true
-        clip: true
-        //FIXME: figure out sizing properly..
-        contentHeight: 70 * repeater.count
+        width: 64
+        height: 64
+        icon: "system-shutdown"
+    }
 
-        Flow {
-            id: flow
-            anchors.fill: parent
+    PlasmaComponents.Label {
+        id: resultLabel
 
-            move: Transition {
-                PropertyAnimation {
-                    properties: "x,y"
-                    easing.type: Easing.InOutQuad
-                }
-            }
-
-            Repeater {
-                id: repeater
-                model: 1000
-
-                Result {
-                    id: result
-                }
-            }
+        anchors {
+            top: resultIcon.bottom
+            horizontalCenter: resultIcon.horizontalCenter
         }
+
+        text: "test launcher"
     }
 }
