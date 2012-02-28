@@ -27,6 +27,8 @@ Item {
     //FIXME: figure out sizing properly..
     property int resultItemHeight: 70
 
+    property alias model: repeater.model
+
     Flickable {
         id: resultsFlickable
 
@@ -56,7 +58,6 @@ Item {
 
             Repeater {
                 id: repeater
-                model: 500
 
                 Result {
                     id: result

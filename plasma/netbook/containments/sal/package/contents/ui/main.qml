@@ -18,6 +18,7 @@
  */
 
 import Qt 4.7
+import org.kde.runnermodel 0.1 as RunnerModels
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -135,8 +136,17 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
 
+        onTextChanged: {
+            runnerModel.query = text;
+            print("COUNT:" + runnerModel.count)
+        }
+
+
+        focus: true
         clearButtonShown: true
     }
+
+    RunnerModels.RunnerModel { id: runnerModel }
 
     Flow {
         anchors {
@@ -168,6 +178,7 @@ Item {
 
         ResultsView {
             anchors.fill: parent
+            model: runnerModel
         }
 
         Component.onCompleted: {
