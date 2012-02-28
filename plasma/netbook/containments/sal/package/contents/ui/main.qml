@@ -166,39 +166,8 @@ Item {
 
         spacing: 2
 
-        QtExtra.QIconItem {
-            id: normalIcon1
-            width: 30
-            height: 30
-            icon: "system-restart"
-        }
-
-        QtExtra.QIconItem {
-            id: normalIcon2
-            width: 30
-            height: 30
-            icon: "dialog-quit"
-        }
-
-        QtExtra.QIconItem {
-            id: normalIcon3
-            width: 30
-            height: 30
-            icon: "arrow-down"
-        }
-
-        QtExtra.QIconItem {
-            id: normalIcon4
-            width: 30
-            height: 30
-            icon: "arrow-right"
-        }
-
-        QtExtra.QIconItem {
-            id: normalIcon5
-            width: 30
-            height: 30
-            icon: "system-shutdown"
+        ResultsView {
+            anchors.fill: parent
         }
 
         Component.onCompleted: {
