@@ -148,11 +148,6 @@ Item {
 
     RunnerModels.RunnerModel { id: runnerModel }
 
-    Rectangle {
-        anchors.fill: parent
-        color: "blue"
-    }
-
     Flow {
         anchors {
             top: searchField.bottom

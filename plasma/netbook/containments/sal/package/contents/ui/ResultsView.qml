@@ -57,12 +57,22 @@ Item {
 
             Repeater {
                 id: repeater
-model: 50
+                model: 50
 
                 Result {
                     id: result
                 }
             }
+        }
+    }
+
+    PlasmaComponents.ScrollBar {
+        id: scrollBar
+        flickableItem: resultsFlickable
+        anchors {
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
         }
     }
 }
