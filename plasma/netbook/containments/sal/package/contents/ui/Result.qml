@@ -55,6 +55,8 @@ Item {
 
             width: iconWidth + (iconWidth/2)
             clip: true
+            smooth: true
+            elide: Text.ElideRight
 
             text: "Test Launcher WIth Long text"
         }
