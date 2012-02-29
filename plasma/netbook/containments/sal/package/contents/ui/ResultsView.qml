@@ -60,12 +60,13 @@ Item {
 
                 Result {
                     id: result
-                    currentText: model["id"]
+                    currentText: model["label"]
                     currentIcon: model["icon"]
+                    currentId: model["id"]
 
                     onWasClickedChanged:  {
-                        print(result.currentText)
-                        appIndexToRun = result.currentIndex:
+                        print(result.currentId)
+//                        appIndexToRun = result.currentIndex:
                     }
                 }
 
