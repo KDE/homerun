@@ -58,9 +58,11 @@ Item {
             }
 
             width: iconWidth + (iconWidth / 2)
+
             clip: true
             smooth: true
-            elide: Text.ElideRight
+//            elide: Text.ElideRight
+            wrapMode: Text.WordWrap
         }
     }
 
