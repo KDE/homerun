@@ -30,13 +30,6 @@ Item {
 
     property alias model: gridView.model
 
-    Flickable {
-        id: resultsFlickable
-
-        anchors.fill: parent
-        interactive: true
-        clip: true
-        contentHeight: resultItemHeight * gridView.count
 
         GridView {
             id: gridView
@@ -51,6 +44,7 @@ Item {
             cellHeight: resultItemHeight
 
             highlightFollowsCurrentItem: true
+            clip: true
 
             highlight: highlight
             delegate: Result {
@@ -74,11 +68,10 @@ Item {
                 }
             }
         }
-    }
 
     PlasmaComponents.ScrollBar {
         id: scrollBar
-        flickableItem: resultsFlickable
+        flickableItem: gridView
         anchors {
             right: parent.right
             top: parent.top
