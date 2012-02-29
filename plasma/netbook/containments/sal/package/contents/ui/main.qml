@@ -166,19 +166,19 @@ Item {
         onCurrentTabChanged: {
             print("TEST" + currentTab.text)
             var text = currentTab.text
-//            if (text == "All") {
-//                
-//            } else if (text == "Apps") {
-//                
-//            } else if (text == "Files") {
-//                
-//            } else if (text == "YouTube") {
-//                runnerModel.allowedRunners = "youtube"
-//            } else if (text == "Bing") {
-//                runnerModel.allowedRunners = "bing
-//            } else if (text == "Social") {
-//                
-//            }
+            if (text == "All") {
+
+            } else if (text == "Apps") {
+
+            } else if (text == "Files") {
+
+            } else if (text == "YouTube") {
+                runnerModel.runners = "youtube"
+            } else if (text == "Bing") {
+                runnerModel.runners = "bing"
+            } else if (text == "Social") {
+
+            }
         }
     }
 
