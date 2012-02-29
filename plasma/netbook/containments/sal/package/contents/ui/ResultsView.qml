@@ -25,7 +25,8 @@ Item {
     id: main
 
     //FIXME: figure out sizing properly..
-    property int resultItemHeight: 70
+    property int resultItemHeight: 130
+    property int resultItemWidth: 150
 
     property alias model: gridView.model
 
@@ -35,16 +36,20 @@ Item {
         anchors.fill: parent
         interactive: true
         clip: true
-        contentHeight: resultItemHeight * repeater.count
+        contentHeight: resultItemHeight * gridView.count
 
 
         GridView {
             id: gridView
             anchors {
-                fill: parent
-                leftMargin: resultItemHeight
-                rightMargin: resultItemHeight
+                top: parent.top
+                bottom: parent.bottom
+                left: parent.left
+                right: parent.right
             }
+
+            cellWidth: resultItemWidth
+            cellHeight: resultItemHeight
 
             highlightFollowsCurrentItem: true
 
@@ -87,9 +92,7 @@ Item {
 
         PlasmaComponents.Highlight {
             id: highlighter
-        //    anchors.fill: parent
             hover: true
         }
-
     }
 }

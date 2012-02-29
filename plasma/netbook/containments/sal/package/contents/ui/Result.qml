@@ -24,14 +24,14 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 Item {
     id: main
 
-    property int iconWidth: 64
+    property int iconWidth: 128
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
     property string currentId;
 
     property bool wasClicked: false
 
-    width: iconWidth * 2
+    width: 128 //iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
     height: iconWidth * 2
 
