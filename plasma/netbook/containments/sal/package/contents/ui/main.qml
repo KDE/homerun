@@ -148,6 +148,11 @@ Item {
 
     RunnerModels.RunnerModel { id: runnerModel }
 
+    Rectangle {
+        anchors.fill: parent
+        color: "blue"
+    }
+
     Flow {
         anchors {
             top: searchField.bottom
@@ -178,7 +183,7 @@ Item {
 
         ResultsView {
             anchors.fill: parent
-            model: runnerModel
+//            model: runnerModel
         }
 
         Component.onCompleted: {

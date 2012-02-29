@@ -78,6 +78,10 @@ Item {
 
         hoverEnabled: true
 
+        onPressed: {
+            highlighter.opacity = 0
+        }
+
         onEntered: {
             highlighter.opacity = 1
         }

@@ -33,7 +33,6 @@ Item {
         id: resultsFlickable
 
         anchors.fill: parent
-
         interactive: true
         clip: true
         contentHeight: resultItemHeight * repeater.count
@@ -58,6 +57,7 @@ Item {
 
             Repeater {
                 id: repeater
+model: 50
 
                 Result {
                     id: result
