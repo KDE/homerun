@@ -171,7 +171,7 @@ Item {
             } else if (text == "Apps") {
 
             } else if (text == "Files") {
-
+                runnerModel.runners = [ "sessions", "places" ]
             } else if (text == "YouTube") {
                 runnerModel.runners = "youtube"
             } else if (text == "Bing") {
