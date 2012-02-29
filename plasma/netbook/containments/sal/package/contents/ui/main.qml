@@ -132,8 +132,9 @@ Item {
         id: searchField
 
         anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
+            top: filterTabBar.bottom
+            left: filterTabBar.left
+            right: filterTabBar.right
         }
 
         onTextChanged: {
@@ -141,12 +142,31 @@ Item {
             print("COUNT:" + runnerModel.count)
         }
 
-
         focus: true
         clearButtonShown: true
     }
 
     RunnerModels.RunnerModel { id: runnerModel }
+
+    PlasmaComponents.TabBar {
+        id: filterTabBar
+
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+        }
+
+        PlasmaComponents.TabButton { text: "All"; iconSource: ""}
+        PlasmaComponents.TabButton { text: "Apps"; iconSource: "applications-other"}
+        PlasmaComponents.TabButton { text: "Files"; iconSource: "folder-documents"}
+        PlasmaComponents.TabButton { text: "YouTube"; iconSource: "youtube"}
+        PlasmaComponents.TabButton { text: "Bing"; iconSource: "bing"}
+        PlasmaComponents.TabButton { text: "Social"; iconSource: "applications-internet"}
+
+        onCurrentTabChanged: {
+            print("TEST" + currentTab.text)
+        }
+    }
 
     Flow {
         anchors {
