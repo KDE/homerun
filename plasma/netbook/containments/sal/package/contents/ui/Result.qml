@@ -24,26 +24,67 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 Item {
     id: main
 
-    width: Math.max(resultIcon.width, resultLabel.width)
+    property int iconWidth: 64
+
+    width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
-    height: resultIcon.width + 20
+    height: iconWidth * 2
 
-    QtExtra.QIconItem {
-        id: resultIcon
+    Column {
+        anchors.centerIn: parent
 
-        width: 64
-        height: 64
-        icon: "system-shutdown"
-    }
+        QtExtra.QIconItem {
+            id: resultIcon
 
-    PlasmaComponents.Label {
-        id: resultLabel
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
 
-        anchors {
-            top: resultIcon.bottom
-            horizontalCenter: resultIcon.horizontalCenter
+            width: iconWidth
+            height: iconWidth
+            icon: "system-shutdown"
         }
 
-        text: "Test Launcher"
+        PlasmaComponents.Label {
+            id: resultLabel
+
+            anchors {
+                topMargin: 10
+                horizontalCenter: parent.horizontalCenter
+            }
+
+            width: iconWidth + (iconWidth/2)
+            clip: true
+
+            text: "Test Launcher WIth Long text"
+        }
+    }
+
+    PlasmaComponents.Highlight {
+        id: highlighter
+        anchors.fill: parent
+        hover: true
+        opacity: 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+
+        hoverEnabled: true
+
+        onEntered: {
+            highlighter.opacity = 1
+        }
+
+        onExited: {
+            highlighter.opacity = 0
+        }
+
     }
 }

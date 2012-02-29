@@ -4,7 +4,7 @@ Name=SAL (QML)
 
 Icon=preferences-desktop-notification
 Type=Service
-X-KDE-ServiceTypes=Plasma/Applet,Plasma/Containment
+X-KDE-ServiceTypes=Plasma/Applet,Plasma/PopupApplet,Plasma/Containment
 
 X-KDE-ParentApp=plasma-desktop
 X-Plasma-API=declarativeappletscript
