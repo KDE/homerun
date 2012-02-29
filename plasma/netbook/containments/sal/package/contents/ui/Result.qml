@@ -25,7 +25,7 @@ Item {
     id: main
 
     property int iconWidth: 64
-    property string currentText: "test"
+    property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
 
     width: iconWidth * 2
@@ -58,9 +58,6 @@ Item {
             clip: true
             smooth: true
             elide: Text.ElideRight
-
-            text: currentText
-            //"Test Launcher WIth Long text"
         }
     }
 
@@ -84,6 +81,7 @@ Item {
 
         onPressed: {
             highlighter.opacity = 0
+            print("LABEL: " + currentText)
         }
 
         onEntered: {

@@ -60,7 +60,7 @@ Item {
 
                 Result {
                     id: result
-                    currentText: model["name"]
+                    currentText: model["id"]
                     currentIcon: model["icon"]
                 }
             }
