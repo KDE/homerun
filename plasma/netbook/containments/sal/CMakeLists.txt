@@ -1,7 +1,7 @@
 project(sal)
 
 install(DIRECTORY package/
-        DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/sal)
+        DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/org.kde.sal)
 
 install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-applet-sal.desktop)
 

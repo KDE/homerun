@@ -35,6 +35,7 @@
 #include <KIcon>
 
 #include <Plasma/Containment>
+#include <Plasma/Package>
 #include <plasma/containmentactionspluginsconfig.h>
 
 SalCorona::SalCorona(QObject *parent)
@@ -60,18 +61,6 @@ void SalCorona::init()
     setContainmentActionsDefaults(Plasma::Containment::CustomContainment, plugins);
 
     bool unlocked = immutability() == Plasma::Mutable;
-
-    QAction *lock = action("lock widgets");
-    if (lock) {
-        kDebug() << "unlock action";
-        //rename the lock action so that corona doesn't mess with it
-        addAction("unlock widgets", lock);
-        //rewire the action so we can check for a password
-        lock->disconnect(SIGNAL(triggered(bool)));
-        connect(lock, SIGNAL(triggered()), this, SLOT(toggleLock()));
-        lock->setIcon(KIcon(unlocked ? "object-locked" : "configure"));
-        lock->setText(unlocked ? i18n("Lock Screen") : i18n("Configure Widgets"));
-    }
 
     //the most important action ;)
     QAction *leave = new QAction(unlocked ? i18n("Leave Screensaver") : i18n("Unlock"), this);
@@ -107,7 +96,12 @@ void SalCorona::loadDefaultLayout()
     // a default clock
     c = containmentForScreen(desktop->primaryScreen());
     if (c) {
-        Plasma::Applet *clock =  Plasma::Applet::load("clock"/*, c->id() + 1*/);
+        Plasma::PackageStructure::Ptr structure = Plasma::PackageStructure::load("Plasma/Generic");
+        Plasma::Package *pkg = new Plasma::Package(QString(), "sal", structure);
+        kDebug() << "FILEPATH: " << pkg->filePath("mainscript");
+//        m_declarativeWidget->setQmlPath(m_package->filePath("mainscript"));
+        Plasma::Applet *clock =  Plasma::Applet::load("org.kde.sal"/*, c->id() + 1*/);
+        Q_ASSERT(clock);
         c->addApplet(clock, QPointF(KDialog::spacingHint(), KDialog::spacingHint()), true);
         clock->init();
         clock->flushPendingConstraintsEvents();

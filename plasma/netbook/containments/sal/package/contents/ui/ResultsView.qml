@@ -27,7 +27,7 @@ Item {
     //FIXME: figure out sizing properly..
     property int resultItemHeight: 70
 
-    property alias model: repeater.model
+    property alias model: gridView.model
 
     Flickable {
         id: resultsFlickable
@@ -38,39 +38,31 @@ Item {
         contentHeight: resultItemHeight * repeater.count
 
 
-        Flow {
-            id: flow
+        GridView {
+            id: gridView
             anchors {
                 fill: parent
                 leftMargin: resultItemHeight
                 rightMargin: resultItemHeight
             }
 
-            spacing: 20
+//            move: Transition {
+//                PropertyAnimation {
+//                    properties: "x,y"
+//                    easing.type: Easing.InOutQuad
+//                }
+//            }
+//
+            delegate: Result {
+                id: result
+                currentText: model["label"]
+                currentIcon: model["icon"]
+                currentId: model["id"]
 
-            move: Transition {
-                PropertyAnimation {
-                    properties: "x,y"
-                    easing.type: Easing.InOutQuad
-                }
-            }
-
-            Repeater {
-                id: repeater
-
-                Result {
-                    id: result
-                    currentText: model["label"]
-                    currentIcon: model["icon"]
-                    currentId: model["id"]
-
-                    onWasClickedChanged:  {
-                        print(result.currentId)
+                onWasClickedChanged:  {
+                    print(result.currentId)
 //                        appIndexToRun = result.currentIndex:
-                    }
                 }
-
-
             }
         }
     }
