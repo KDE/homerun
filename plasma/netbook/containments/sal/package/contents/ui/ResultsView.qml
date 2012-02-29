@@ -57,10 +57,11 @@ Item {
 
             Repeater {
                 id: repeater
-                model: 50
 
                 Result {
                     id: result
+                    currentText: model["name"]
+                    currentIcon: model["icon"]
                 }
             }
         }

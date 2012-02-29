@@ -25,6 +25,8 @@ Item {
     id: main
 
     property int iconWidth: 64
+    property string currentText: "test"
+    property alias currentIcon: resultIcon.icon;
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
@@ -42,7 +44,6 @@ Item {
 
             width: iconWidth
             height: iconWidth
-            icon: "system-shutdown"
         }
 
         PlasmaComponents.Label {
@@ -58,7 +59,8 @@ Item {
             smooth: true
             elide: Text.ElideRight
 
-            text: "Test Launcher WIth Long text"
+            text: currentText
+            //"Test Launcher WIth Long text"
         }
     }
 

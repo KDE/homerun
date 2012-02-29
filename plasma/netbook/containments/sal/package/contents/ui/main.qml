@@ -165,6 +165,20 @@ Item {
 
         onCurrentTabChanged: {
             print("TEST" + currentTab.text)
+            var text = currentTab.text
+//            if (text == "All") {
+//                
+//            } else if (text == "Apps") {
+//                
+//            } else if (text == "Files") {
+//                
+//            } else if (text == "YouTube") {
+//                runnerModel.allowedRunners = "youtube"
+//            } else if (text == "Bing") {
+//                runnerModel.allowedRunners = "bing
+//            } else if (text == "Social") {
+//                
+//            }
         }
     }
 
@@ -198,7 +212,7 @@ Item {
 
         ResultsView {
             anchors.fill: parent
-//            model: runnerModel
+            model: runnerModel
         }
 
         Component.onCompleted: {
