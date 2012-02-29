@@ -66,18 +66,7 @@ Item {
         }
     }
 
-    PlasmaComponents.Highlight {
-        id: highlighter
-        anchors.fill: parent
-        hover: true
-        opacity: 0
 
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 150
-            }
-        }
-    }
 
     MouseArea {
         anchors.fill: parent
@@ -91,14 +80,5 @@ Item {
             wasClicked = false
             wasClicked = true
         }
-
-        onEntered: {
-            highlighter.opacity = 1
-        }
-
-        onExited: {
-            highlighter.opacity = 0
-        }
-
     }
 }

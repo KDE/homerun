@@ -46,13 +46,9 @@ Item {
                 rightMargin: resultItemHeight
             }
 
-//            move: Transition {
-//                PropertyAnimation {
-//                    properties: "x,y"
-//                    easing.type: Easing.InOutQuad
-//                }
-//            }
-//
+            highlightFollowsCurrentItem: true
+
+            highlight: highlight
             delegate: Result {
                 id: result
                 currentText: model["label"]
@@ -62,6 +58,15 @@ Item {
                 onWasClickedChanged:  {
                     print(result.currentId)
 //                        appIndexToRun = result.currentIndex:
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+
+                    onEntered: {
+                        gridView.currentIndex = index
+                    }
                 }
             }
         }
@@ -75,5 +80,16 @@ Item {
             top: parent.top
             bottom: parent.bottom
         }
+    }
+
+    Component {
+        id: highlight
+
+        PlasmaComponents.Highlight {
+            id: highlighter
+        //    anchors.fill: parent
+            hover: true
+        }
+
     }
 }
