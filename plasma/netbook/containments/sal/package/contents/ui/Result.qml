@@ -31,9 +31,9 @@ Item {
 
     property bool wasClicked: false
 
-    width: 128 //iconWidth * 2
+    width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
-    height: iconWidth * 2
+    height: iconWidth + resultLabel.paintedHeight * 2
 
     Column {
         anchors.centerIn: parent
@@ -57,7 +57,7 @@ Item {
                 horizontalCenter: parent.horizontalCenter
             }
 
-            width: iconWidth + (iconWidth / 2)
+            width: iconWidth //+ (iconWidth / 2)
 
             clip: true
             smooth: true

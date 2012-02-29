@@ -25,8 +25,8 @@ Item {
     id: main
 
     //FIXME: figure out sizing properly..
-    property int resultItemHeight: 130
-    property int resultItemWidth: 150
+    property int resultItemHeight: 200
+    property int resultItemWidth: 200
 
     property alias model: gridView.model
 
@@ -37,7 +37,6 @@ Item {
         interactive: true
         clip: true
         contentHeight: resultItemHeight * gridView.count
-
 
         GridView {
             id: gridView
