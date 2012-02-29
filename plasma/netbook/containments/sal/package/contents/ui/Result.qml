@@ -28,6 +28,8 @@ Item {
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
 
+    property bool wasClicked: false
+
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
     height: iconWidth * 2
@@ -54,7 +56,7 @@ Item {
                 horizontalCenter: parent.horizontalCenter
             }
 
-            width: iconWidth + (iconWidth/2)
+            width: iconWidth + (iconWidth / 2)
             clip: true
             smooth: true
             elide: Text.ElideRight
@@ -81,7 +83,10 @@ Item {
 
         onPressed: {
             highlighter.opacity = 0
-            print("LABEL: " + currentText)
+            // because if we just change it to true, we won't
+            // do anything on a second click
+            wasClicked = false
+            wasClicked = true
         }
 
         onEntered: {

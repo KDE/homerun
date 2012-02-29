@@ -62,7 +62,14 @@ Item {
                     id: result
                     currentText: model["id"]
                     currentIcon: model["icon"]
+
+                    onWasClickedChanged:  {
+                        print(result.currentText)
+                        appIndexToRun = result.currentIndex:
+                    }
                 }
+
+
             }
         }
     }
