@@ -38,26 +38,8 @@ class SalCorona : public Plasma::Corona
 public:
     explicit SalCorona(QObject * parent = 0);
 
-    /**
-     * Loads the default (system wide) layout for this user
-     **/
+protected:
     void loadDefaultLayout();
-
-    virtual int numScreens() const;
-    virtual QRect screenGeometry(int id) const;
-
-private Q_SLOTS:
-    void updateActions(Plasma::ImmutabilityType immutability);
-    void toggleLock();
-    void unlock(QDBusMessage reply);
-    void dbusError(QDBusError error);
-    void unlockDesktop();
-    void numScreensUpdated(int newCount);
-
-private:
-    void init();
-
-    int m_numScreens;
 };
 
 #endif

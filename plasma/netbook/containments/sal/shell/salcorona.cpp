@@ -20,180 +20,29 @@
 
 #include "salcorona.h"
 
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QGraphicsLayout>
 #include <QAction>
+#include <plasma/context.h>
+#include <QFile>
+#include <QDir>
 
-#include <QDBusConnection>
-#include <QDBusInterface>
-#include <QDBusMessage>
-
-#include <KDebug>
-#include <KDialog>
-#include <KStandardDirs>
-#include <KIcon>
-
-#include <Plasma/Containment>
-#include <Plasma/Package>
-#include <plasma/containmentactionspluginsconfig.h>
-
-SalCorona::SalCorona(QObject *parent)
-    : Plasma::Corona(parent)
+SalCorona::SalCorona(QObject* parent)
+: Plasma::Corona(parent)
 {
-    init();
-}
-
-void SalCorona::init()
-{
-    setPreferredToolBoxPlugin(Plasma::Containment::DesktopContainment, "org.kde.desktoptoolbox");
-    setPreferredToolBoxPlugin(Plasma::Containment::CustomContainment, "org.kde.desktoptoolbox");
-    setPreferredToolBoxPlugin(Plasma::Containment::PanelContainment, "org.kde.paneltoolbox");
-    setPreferredToolBoxPlugin(Plasma::Containment::CustomPanelContainment, "org.kde.paneltoolbox");
-
-    QDesktopWidget *desktop = QApplication::desktop();
-    connect(desktop,SIGNAL(screenCountChanged(int)), SLOT(numScreensUpdated(int)));
-    m_numScreens = desktop->numScreens();
-
-    Plasma::ContainmentActionsPluginsConfig plugins;
-    plugins.addPlugin(Qt::NoModifier, Qt::RightButton, "minimalcontextmenu");
-    //should I add paste too?
-    setContainmentActionsDefaults(Plasma::Containment::CustomContainment, plugins);
-
-    bool unlocked = immutability() == Plasma::Mutable;
-
-    //the most important action ;)
-    QAction *leave = new QAction(unlocked ? i18n("Leave Screensaver") : i18n("Unlock"), this);
-    leave->setIcon(KIcon("system-lock-screen"));
-    leave->setShortcut(QKeySequence("esc"));
-    connect(leave, SIGNAL(triggered()), this, SLOT(unlockDesktop()));
-    addAction("unlock desktop", leave);
-
-    //updateShortcuts(); //just in case we ever get a config dialog
-
-    connect(this, SIGNAL(immutabilityChanged(Plasma::ImmutabilityType)), SLOT(updateActions(Plasma::ImmutabilityType)));
+    setPreferredToolBoxPlugin(Plasma::Containment::CustomContainment, "org.kde.nettoolbox");
 }
 
 void SalCorona::loadDefaultLayout()
 {
-    //kDebug();
-    QDesktopWidget *desktop = QApplication::desktop();
+    Plasma::Containment* c = addContainment("newspaper");
 
-    // create a containment for the screens
-    Plasma::Containment *c;
-    for(int screen = 0; screen < m_numScreens; ++screen)
-    {
-        QRect g = desktop->screenGeometry(screen);
-        kDebug() << "     screen" << screen << "geometry is" << g;
-        c = addContainment("saverdesktop");
-        if (c) {
-            c->setScreen(screen);
-            c->setFormFactor(Plasma::Planar);
-            c->flushPendingConstraintsEvents();
-        }
-    }
+    c->init();
 
-    // a default clock
-    c = containmentForScreen(desktop->primaryScreen());
-    if (c) {
-        Plasma::PackageStructure::Ptr structure = Plasma::PackageStructure::load("Plasma/Generic");
-        Plasma::Package *pkg = new Plasma::Package(QString(), "sal", structure);
-        kDebug() << "FILEPATH: " << pkg->filePath("mainscript");
-//        m_declarativeWidget->setQmlPath(m_package->filePath("mainscript"));
-        Plasma::Applet *clock =  Plasma::Applet::load("org.kde.sal"/*, c->id() + 1*/);
-        Q_ASSERT(clock);
-        c->addApplet(clock, QPointF(KDialog::spacingHint(), KDialog::spacingHint()), true);
-        clock->init();
-        clock->flushPendingConstraintsEvents();
-    }
-    //emit containmentAdded(c);
+    KConfigGroup invalidConfig;
+    c->setWallpaper("color");
+
+    c->save(invalidConfig);
+
+    emit containmentAdded(c);
+    c->addApplet("clock");
 }
-
-int SalCorona::numScreens() const
-{
-    return m_numScreens;
-}
-
-QRect SalCorona::screenGeometry(int id) const
-{
-    return QApplication::desktop()->screenGeometry(id);
-}
-
-void SalCorona::updateActions(Plasma::ImmutabilityType immutability)
-{
-    bool unlocked = immutability == Plasma::Mutable;
-    QAction *a = action("unlock widgets");
-    if (a) {
-        a->setIcon(KIcon(unlocked ? "object-locked" : "configure"));
-        a->setText(unlocked ? i18n("Lock Screen") : i18n("Configure Widgets"));
-    }
-    a = action("unlock desktop");
-    if (a) {
-        a->setText(unlocked ? i18n("Leave Screensaver") : i18n("Unlock"));
-    }
-}
-
-void SalCorona::toggleLock()
-{
-    //require a password to unlock
-    QDBusInterface lockprocess("org.kde.screenlocker", "/LockProcess", "org.kde.screenlocker.LockProcess", QDBusConnection::sessionBus(), this);
-    if (immutability() == Plasma::Mutable) {
-        setImmutability(Plasma::UserImmutable);
-        lockprocess.call(QDBus::NoBlock, "startLock");
-        kDebug() << "locking up!";
-    } else if (immutability() == Plasma::UserImmutable) {
-        QList<QVariant> args;
-        args << i18n("Unlock widgets to configure them");
-        bool sent = lockprocess.callWithCallback("checkPass", args, this, SLOT(unlock(QDBusMessage)), SLOT(dbusError(QDBusError)));
-        kDebug() << sent;
-    }
-}
-
-void SalCorona::unlock(QDBusMessage reply)
-{
-    //assuming everything went as expected
-    if (reply.arguments().isEmpty()) {
-        kDebug() << "quit succeeded, I guess";
-        return;
-    }
-    //else we were trying to unlock just the widgets
-    bool success = reply.arguments().first().toBool();
-    kDebug() << success;
-    if (success) {
-        setImmutability(Plasma::Mutable);
-    }
-}
-
-void SalCorona::dbusError(QDBusError error)
-{
-    kDebug() << error.errorString(error.type());
-    kDebug() << "bailing out";
-    //if it was the quit call and it failed, we shouldn't leave the user stuck in
-    //plasma-overlay forever.
-    qApp->quit();
-}
-
-void SalCorona::unlockDesktop()
-{
-    QDBusInterface lockprocess("org.kde.screenlocker", "/LockProcess",
-            "org.kde.screenlocker.LockProcess", QDBusConnection::sessionBus(), this);
-    bool sent = (lockprocess.isValid() &&
-            lockprocess.callWithCallback("quit", QList<QVariant>(), this, SLOT(unlock(QDBusMessage)), SLOT(dbusError(QDBusError))));
-    //the unlock slot above is a dummy that should never be called.
-    //somehow I need a valid reply slot or the error slot is never ever used.
-    if (!sent) {
-        //ah crud.
-        kDebug() << "bailing out!";
-        qApp->quit();
-    }
-}
-
-void SalCorona::numScreensUpdated(int newCount)
-{
-    m_numScreens = newCount;
-    //do something?
-}
-
-
-#include "salcorona.moc"
 

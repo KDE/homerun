@@ -37,220 +37,32 @@
 static const int SUPPRESS_SHOW_TIMEOUT = 500; // Number of millis to prevent reshow of dashboard
 
 
-class ScreenSaverWidgetExplorer : public Plasma::WidgetExplorer
-{
-public:
-    ScreenSaverWidgetExplorer(QGraphicsWidget *parent)
-        : Plasma::WidgetExplorer(parent)
-    {
-        connect(this, SIGNAL(closeClicked()), this, SLOT(deleteLater()));
-        m_svg = new Plasma::FrameSvg(this);
-        m_svg->setImagePath("widgets/frame");
-        m_svg->setElementPrefix("raised");
-        m_svg->setEnabledBorders(Plasma::FrameSvg::TopBorder);
-    }
-
-protected:
-    void resizeEvent(QGraphicsSceneResizeEvent *event)
-    {
-        m_svg->resizeFrame(event->newSize());
-    }
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-    {
-        Q_UNUSED(option)
-        Q_UNUSED(widget)
-        m_svg->paintFrame(painter);
-    }
-
-private:
-    Plasma::FrameSvg *m_svg;
-};
-
 SalView::SalView(Plasma::Containment *containment, QWidget *parent)
-    : Plasma::View(containment, parent),
-      m_suppressShow(false),
-      m_setupMode(false),
-      m_init(false)
+    : Plasma::View(containment, parent)
 {
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
-    if (!PlasmaApp::hasComposite()) {
+   // if (!PlasmaApp::hasComposite()) {
         setAutoFillBackground(false);
         setAttribute(Qt::WA_NoSystemBackground);
-    }
+    //}
 
-    setWallpaperEnabled(!PlasmaApp::hasComposite());
+//    setWallpaperEnabled(!PlasmaApp::hasComposite());
     installEventFilter(this);
 }
 
 SalView::~SalView()
 {
-    delete m_widgetExplorer.data();
-}
-
-void SalView::enableSetupMode()
-{
-    if (!m_setupMode) {
-        m_setupMode = true;
-        update();
-    }
-}
-
-void SalView::disableSetupMode()
-{
-    if (m_setupMode) {
-        m_setupMode = false;
-        update();
-    }
 }
 
 void SalView::drawBackground(QPainter *painter, const QRectF & rect)
 {
-    if (PlasmaApp::hasComposite()) {
+//    if (PlasmaApp::hasComposite()) {
         painter->setCompositionMode(QPainter::CompositionMode_Source);
         painter->fillRect(rect, Qt::transparent);
-    } else {
+ //   } else {
         Plasma::View::drawBackground(painter, rect);
-    }
-}
-
-void SalView::showWidgetExplorer()
-{
-    Plasma::Containment *c = containment();
-    if (!c) {
-        return;
-    }
-
-    if (m_widgetExplorer) {
-        delete m_widgetExplorer.data();
-    } else {
-        ScreenSaverWidgetExplorer *widgetExplorer = new ScreenSaverWidgetExplorer(c);
-        widgetExplorer->installEventFilter(this);
-        widgetExplorer->setContainment(c);
-        widgetExplorer->setLocation(Plasma::BottomEdge);
-        widgetExplorer->populateWidgetList();
-        widgetExplorer->setMaximumWidth(width());
-        widgetExplorer->adjustSize();
-        widgetExplorer->setZValue(1000000);
-        widgetExplorer->resize(width(), widgetExplorer->size().height());
-        widgetExplorer->setPos(0, containment()->geometry().height() - widgetExplorer->geometry().height());
-        m_widgetExplorer = widgetExplorer;
-    }
-}
-
-void SalView::hideWidgetExplorer()
-{
-    delete m_widgetExplorer.data();
-}
-
-void SalView::paintEvent(QPaintEvent *event)
-{
-    Plasma::View::paintEvent(event);
-}
-
-bool SalView::eventFilter(QObject *watched, QEvent *event)
-{
-    if (containment() && (watched == (QObject*)m_widgetExplorer.data()) &&
-        (event->type() == QEvent::GraphicsSceneResize || event->type() == QEvent::GraphicsSceneMove)) {
-        Plasma::WidgetExplorer *widgetExplorer = m_widgetExplorer.data();
-        widgetExplorer->setPos(0, containment()->geometry().height() - widgetExplorer->geometry().height());
-    }
-
-    return false;
-}
-
-void SalView::showView()
-{
-    if (isHidden()) {
-        if (m_suppressShow) {
-            kDebug() << "show was suppressed";
-            return;
-        }
-
-        setWindowState(Qt::WindowFullScreen);
-        //KWindowSystem::setOnAllDesktops(winId(), true);
-        //KWindowSystem::setState(winId(), NET::KeepAbove|NET::SkipTaskbar);
-
-        show();
-        raise();
-
-        m_suppressShow = true;
-        QTimer::singleShot(SUPPRESS_SHOW_TIMEOUT, this, SLOT(suppressShowTimeout()));
-    }
-}
-
-void SalView::setContainment(Plasma::Containment *newContainment)
-{
-    if (m_init && newContainment == containment()) {
-        return;
-    }
-
-    m_init = true;
-
-    if (containment()) {
-        disconnect(containment(), SIGNAL(showAddWidgetsInterface(QPointF)), this, SLOT(showWidgetExplorer()));
-    }
-
-    if (newContainment) {
-        connect(newContainment, SIGNAL(showAddWidgetsInterface(QPointF)), this, SLOT(showWidgetExplorer()));
-    }
-
-    if (m_widgetExplorer) {
-        m_widgetExplorer.data()->setContainment(newContainment);
-    }
-
-    View::setContainment(newContainment);
-}
-
-void SalView::hideView()
-{
-    if (isHidden()) {
-        return;
-    }
-
-    hideWidgetExplorer();
-
-    if (containment()) {
-        containment()->closeToolBox();
-    }
-
-    hide();
-    //let the lockprocess know
-    emit hidden();
-}
-
-void SalView::suppressShowTimeout()
-{
-    kDebug() << "SalView::suppressShowTimeout";
-    m_suppressShow = false;
-}
-
-void SalView::setOpacity(qreal opacity)
-{
-    setWindowOpacity(opacity);
-}
-
-void SalView::openToolBox()
-{
-    kDebug() << "close toolbox";
-    containment()->openToolBox();
-}
-
-void SalView::closeToolBox()
-{
-    kDebug() << "close toolbox";
-    containment()->closeToolBox();
-}
-
-void SalView::adjustSize(int screen)
-{
-    QDesktopWidget *desktop = QApplication::desktop();
-    int thisScreen = desktop->screenNumber(this);
-    if(screen == thisScreen)
-    {
-        setGeometry(desktop->screenGeometry(screen));
-    }
+  //  }
 }
 
 #include "salview.moc"

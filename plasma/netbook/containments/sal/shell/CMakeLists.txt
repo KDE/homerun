@@ -9,10 +9,6 @@ set(plasma-sal_SRCS
 
 kde4_add_ui_files(plasma-sal_SRCS BackgroundDialog.ui)
 
-set(plasmaapp_dbusXML org.kde.plasma-sal.App.xml)
-
-qt4_add_dbus_adaptor(plasma-sal_SRCS ${plasmaapp_dbusXML} plasmaapp.h PlasmaApp)
-
 kde4_add_executable(plasma-sal ${plasma-sal_SRCS})
 
 target_link_libraries(plasma-sal ${KDE4_PLASMA_LIBS} kworkspace  ${KDE4_KIO_LIBS} ${KDE4_KFILE_LIBS}

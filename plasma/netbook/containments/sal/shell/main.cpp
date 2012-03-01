@@ -52,10 +52,9 @@ int main(int argc, char **argv)
     options.add("setup",ki18n("Start unlocked for configuration."));
     KCmdLineArgs::addCmdLineOptions(options);
 
-    PlasmaApp *app = PlasmaApp::self();
+    PlasmaApp app;
     QApplication::setWindowIcon(KIcon("plasma"));
-    app->disableSessionManagement(); // I assume we'd never want a screensaver thing reppearing on login?
-    int rc = app->exec();
-    delete app;
+    app.disableSessionManagement(); // I assume we'd never want a screensaver thing reppearing on login?
+    int rc = app.exec();
     return rc;
 }

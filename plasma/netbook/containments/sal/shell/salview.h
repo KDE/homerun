@@ -41,45 +41,8 @@ public:
     SalView(Plasma::Containment* containment, QWidget *parent);
     ~SalView();
 
-    bool eventFilter(QObject *watched, QEvent *event);
-
-signals:
-    void hidden();
-
 protected:
     void drawBackground(QPainter *painter, const QRectF & rect);
-    void paintEvent(QPaintEvent *event);
-
-public slots:
-    void showView();
-    void hideView();
-    void setOpacity(qreal opacity);
-    void adjustSize(int screen);
-
-    /**
-     * Sets the containment for this view, which will also cause the view
-     * to track the geometry of the containment.
-     *
-     * @arg containment the containment to center the view on
-     */
-    void setContainment(Plasma::Containment *newContainment);
-    void hideWidgetExplorer();
-
-    void enableSetupMode();
-    void disableSetupMode();
-
-protected slots:
-    void showWidgetExplorer(); //FIXME actually this is toggle
-    void suppressShowTimeout();
-    void openToolBox();
-    void closeToolBox();
-
-private:
-    QWeakPointer<Plasma::WidgetExplorer> m_widgetExplorer;
-    QPoint m_appletBrowserDragStart;
-    bool m_suppressShow : 1;
-    bool m_setupMode : 1;
-    bool m_init : 1;
 };
 
 #endif // multiple inclusion guard
