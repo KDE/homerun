@@ -213,6 +213,11 @@ Item {
         ResultsView {
             anchors.fill: parent
             model: runnerModel
+
+            onAppIndexToRunChanged: {
+                print("RUNNING APP!")
+                runnerModel.run(appIndexToRun);
+            }
         }
 
         Component.onCompleted: {

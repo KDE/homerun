@@ -28,46 +28,47 @@ Item {
     property int resultItemHeight: 200
     property int resultItemWidth: 200
 
+    property int appIndexToRun: 0
+
     property alias model: gridView.model
 
+    GridView {
+        id: gridView
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
 
-        GridView {
-            id: gridView
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-                left: parent.left
-                right: parent.right
-            }
+        cellWidth: resultItemWidth
+        cellHeight: resultItemHeight
 
-            cellWidth: resultItemWidth
-            cellHeight: resultItemHeight
+        clip: true
 
-            highlightFollowsCurrentItem: true
-            clip: true
+        highlight: highlight
+        highlightFollowsCurrentItem: true
 
-            highlight: highlight
-            delegate: Result {
-                id: result
-                currentText: model["label"]
-                currentIcon: model["icon"]
-                currentId: model["id"]
+        delegate: Result {
+            id: result
+            currentText: model["label"]
+            currentIcon: model["icon"]
+            currentId: model["id"]
 
-                onWasClickedChanged:  {
-                    print(result.currentId)
-//                        appIndexToRun = result.currentIndex:
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onEntered: {
+                    gridView.currentIndex = index
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onEntered: {
-                        gridView.currentIndex = index
-                    }
+                onClicked: {
+                    appIndexToRun = gridView.currentIndex;
                 }
             }
         }
+    }
 
     PlasmaComponents.ScrollBar {
         id: scrollBar
