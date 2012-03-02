@@ -36,7 +36,7 @@ class ItemView;
 class LinearAppletOverlay;
 class IconActionCollection;
 class KRunnerModel;
-class KServiceModel;
+class SalServiceModel;
 class KKeySequenceWidget;
 
 namespace Plasma
@@ -100,7 +100,7 @@ private:
 
     Plasma::FrameSvg *m_background;
     KRunnerModel *m_runnerModel;
-    KServiceModel *m_serviceModel;
+    SalServiceModel *m_serviceModel;
     Plasma::IconWidget *m_backButton;
 
     int m_queryCounter;

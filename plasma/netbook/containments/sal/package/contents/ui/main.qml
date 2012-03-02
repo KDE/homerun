@@ -19,6 +19,7 @@
 
 import Qt 4.7
 import org.kde.runnermodel 0.1 as RunnerModels
+import org.kde.salservicemodel 0.1 as SalServiceModels
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -29,6 +30,9 @@ Item {
     id: main
     signal shrinkRequested
     state: height>48?"active":"passive"
+    SalServiceModels.SalServiceModel {
+        
+    }
 
     Component.onCompleted: {
         plasmoid.drawWallpaper = true
@@ -170,8 +174,9 @@ Item {
 
             } else if (text == "Apps") {
 
+                runnerModel.runners = [ "services", "kill", "kget", "calculator", "audioplayercontrol" ]
             } else if (text == "Files") {
-                runnerModel.runners = [ "sessions", "places" ]
+                runnerModel.runners = [ "sessions", "places", "solid" ]
             } else if (text == "YouTube") {
                 runnerModel.runners = "youtube"
             } else if (text == "Bing") {
@@ -179,6 +184,8 @@ Item {
             } else if (text == "Social") {
 
             }
+            //FIXME: make it search the current lense for stuff
+            //runnerModel.query = searchField.text
         }
     }
 

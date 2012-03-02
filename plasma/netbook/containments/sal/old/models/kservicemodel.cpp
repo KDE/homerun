@@ -55,7 +55,7 @@ bool KServiceItemHandler::openUrl(const KUrl& url)
 }
 
 
-KServiceModel::KServiceModel(const KConfigGroup &group, QObject *parent)
+KServiceModel::SalServiceModel (const KConfigGroup &group, QObject *parent)
         : QStandardItemModel(parent),
           m_config(group),
           m_path("/"),
@@ -72,7 +72,7 @@ KServiceModel::KServiceModel(const KConfigGroup &group, QObject *parent)
     loadRootEntries(this);
 }
 
-KServiceModel::~KServiceModel()
+KServiceModel::~SalServiceModel()
 {
 }
 

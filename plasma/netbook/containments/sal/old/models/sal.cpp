@@ -460,7 +460,7 @@ void SearchLaunch::constraintsEvent(Plasma::Constraints constraints)
          // create the models
         if (!m_runnerModel) {
             m_runnerModel = new KRunnerModel(this);
-            m_serviceModel = new KServiceModel(config(), this);
+            m_serviceModel = new SalServiceModel (config(), this);
             m_resultsView->setModel(m_serviceModel);
         }
 

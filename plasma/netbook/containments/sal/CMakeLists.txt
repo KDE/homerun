@@ -6,3 +6,4 @@ install(DIRECTORY package/
 install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-applet-sal.desktop)
 
 add_subdirectory(shell)
+add_subdirectory(model)

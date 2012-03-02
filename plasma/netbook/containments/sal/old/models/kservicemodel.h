@@ -35,13 +35,13 @@ namespace KServiceItemHandler {
     bool openUrl(const KUrl& url);
 }
 
-class  KServiceModel : public QStandardItemModel
+class  SalServiceModel : public QStandardItemModel
 {
     Q_OBJECT
 
 public:
-    KServiceModel(const KConfigGroup &group, QObject *parent);
-    virtual ~KServiceModel();
+    SalServiceModel (const KConfigGroup &group, QObject *parent);
+    virtual ~SalServiceModel();
 
     virtual QMimeData *mimeData(const QModelIndexList &indexes) const;
 
