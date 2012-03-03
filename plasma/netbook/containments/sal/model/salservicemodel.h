@@ -17,26 +17,24 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef RUNNERMODEL_H
-#define RUNNERMODEL_H
+#ifndef SALSERVICEMODEL_H
+#define SALSERVICEMODEL_H
 
 #include <QStandardItemModel>
 #include <QStringList>
-
-namespace Plasma
-{
-    class RunnerManager;
-    class QueryMatch;
-} // namespace Plasma
+#include <KService>
+#include <KServiceGroup>
+#include <KUrl>
+#include <QMimeData>
 
 class QTimer;
 
 class SalServiceModel : public QStandardItemModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
-    Q_PROPERTY(QStringList runners WRITE setRunners READ runners NOTIFY runnersChanged)
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
+//    Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
+//    Q_PROPERTY(QStringList runners WRITE setRunners READ runners NOTIFY runnersChanged)
+//    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     enum Roles {
@@ -53,40 +51,29 @@ public:
 
     SalServiceModel (QObject *parent = 0);
 
-    QString currentQuery() const;
-
-    QStringList runners() const;
-    void setRunners(const QStringList &allowedRunners);
-
     Q_SCRIPTABLE void run(int row);
 
     int rowCount(const QModelIndex&) const;
     int count() const;
     QVariant data(const QModelIndex&, int) const;
 
+    void setPath(const QString& path);
+    QString path() const;
+
 public Q_SLOTS:
     void scheduleQuery(const QString &query);
 
 Q_SIGNALS:
-    void queryChanged();
-    void countChanged();
     void runnersChanged();
 
-private Q_SLOTS:
-    void startQuery();
-
 private:
-    void createManager();
-
-private Q_SLOTS:
-    void matchesChanged(const QList<Plasma::QueryMatch> &matches);
-
+    void loadRootEntries();
+    void loadServiceGroup(KServiceGroup::Ptr group);
+    bool openUrl(const KUrl& url);
+    QMimeData* SalServiceModel::mimeData(const QModelIndexList &indexes) const;
 private:
-    Plasma::RunnerManager *m_manager;
-    QList<Plasma::QueryMatch> m_matches;
-    QStringList m_pendingRunnersList;
-    QString m_pendingQuery;
-    QTimer *m_startQueryTimer;
+    QList<KService::Ptr> m_serviceList;
+    QString m_path;
 };
 
 #endif
