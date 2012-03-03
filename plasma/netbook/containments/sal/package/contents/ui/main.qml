@@ -30,9 +30,8 @@ Item {
     id: main
     signal shrinkRequested
     state: height>48?"active":"passive"
-    SalServiceModels.SalServiceModel {
-        
-    }
+
+    SalServiceModels.SalServiceModel { }
 
     Component.onCompleted: {
         plasmoid.drawWallpaper = true

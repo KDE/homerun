@@ -20,7 +20,7 @@
 #ifndef RUNNERMODEL_H
 #define RUNNERMODEL_H
 
-#include <QAbstractListModel>
+#include <QStandardItemModel>
 #include <QStringList>
 
 namespace Plasma
@@ -31,7 +31,7 @@ namespace Plasma
 
 class QTimer;
 
-class SalServiceModel : public QAbstractListModel
+class SalServiceModel : public QStandardItemModel
 {
     Q_OBJECT
     Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
