@@ -32,7 +32,7 @@
 #include <Plasma/RunnerManager>
 
 SalServiceModel::SalServiceModel (QObject *parent)
-    : QStandardItemModel(parent)
+    : QAbstractListModel(parent)
     , m_path("/")
 {
     QHash<int, QByteArray> newRoleNames = roleNames();
@@ -51,15 +51,7 @@ SalServiceModel::SalServiceModel (QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(Type, "type");
-    roles.insert(Relevance, "relevance");
-    roles.insert(Data, "data");
-    roles.insert(Id, "id");
-    roles.insert(SubText, "description");
-    roles.insert(Enabled, "enabled");
-    roles.insert(RunnerId, "runnerid");
-    roles.insert(RunnerName, "runnerName");
-    roles.insert(Actions, "actions");
+
     setRoleNames(roles);
 }
 
@@ -75,44 +67,45 @@ int SalServiceModel::count() const
 
 QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 {
-//    if (!index.isValid() || index.parent().isValid() ||
-//        index.column() > 0 || index.row() < 0 || index.row() >= m_matches.count()) {
-//        // index requested must be valid, but we have no child items!
-//        //kDebug() << "invalid index requested";
-//        return QVariant();
-//    }
+    kDebug() << "TEST: " << index.row() << " " << index.column();
+    kDebug() << "#### coutn:" << m_serviceList.count();
+    if (!index.isValid() || index.row() >= m_serviceList.count()) {
+        return QVariant();
+    }
+    kDebug () << "$$$$$$$$$$$$$$$$$$$$$$";
 //
     if (role == Qt::DisplayRole) {
         return m_serviceList.at(index.row())->name();
-    } else if (role == Qt::DecorationRole) {
-        return m_serviceList.at(index.row())->icon();
-        return m_serviceList.at(index.row())->entryPath();
-    } else if (role == Type) {
-        return m_serviceList.at(index.row())->genericName();
- //       return m_matches.at(index.row()).type();
-    } else if (role == Relevance) {
-  //      return m_matches.at(index.row()).relevance();
-    } else if (role == Data) {
-//        return m_matches.at(index.row()).data();
-    } else if (role == Id) {
-  //      return m_matches.at(index.row()).id();
-    } else if (role == SubText) {
-    //    return m_matches.at(index.row()).subtext();
-    } else if (role == Enabled) {
-  //      return m_matches.at(index.row()).isEnabled();
-    } else if (role == RunnerId) {
-   //     return m_matches.at(index.row()).runner()->id();
-    } else if (role == RunnerName) {
-   //     return m_matches.at(index.row()).runner()->name();
-    } else if (role == Actions) {
-     //   QVariantList actions;
-       // Plasma::QueryMatch amatch = m_matches.at(index.row());
-      //  QList<QAction*> theactions = m_manager->actionsForMatch(amatch);
-      // foreach(QAction* action, theactions) {
-      //      actions += qVariantFromValue<QObject*>(action);
-      //  }
-       // return actions;
     }
+//    } else if (role == Qt::DecorationRole) {
+//        return m_serviceList.at(index.row())->icon();
+//        return m_serviceList.at(index.row())->entryPath();
+//    } else if (role == Type) {
+//        return m_serviceList.at(index.row())->genericName();
+// //       return m_matches.at(index.row()).type();
+//    } else if (role == Relevance) {
+//  //      return m_matches.at(index.row()).relevance();
+//    } else if (role == Data) {
+////        return m_matches.at(index.row()).data();
+//    } else if (role == Id) {
+//  //      return m_matches.at(index.row()).id();
+//    } else if (role == SubText) {
+//    //    return m_matches.at(index.row()).subtext();
+//    } else if (role == Enabled) {
+//  //      return m_matches.at(index.row()).isEnabled();
+//    } else if (role == RunnerId) {
+//   //     return m_matches.at(index.row()).runner()->id();
+//    } else if (role == RunnerName) {
+//   //     return m_matches.at(index.row()).runner()->name();
+//    } else if (role == Actions) {
+//     //   QVariantList actions;
+//       // Plasma::QueryMatch amatch = m_matches.at(index.row());
+//      //  QList<QAction*> theactions = m_manager->actionsForMatch(amatch);
+//      // foreach(QAction* action, theactions) {
+//      //      actions += qVariantFromValue<QObject*>(action);
+//      //  }
+//       // return actions;
+//    }
 
     return QVariant();
 }
@@ -171,8 +164,8 @@ void SalServiceModel::setPath(const QString &path)
     } else {
         Q_ASSERT(KServiceGroup::group(path));
         loadServiceGroup(KServiceGroup::group(path));
-        setSortRole(Qt::DisplayRole);
-        sort(0, Qt::AscendingOrder);
+ //       setSortRole(Qt::DisplayRole);
+//        sort(0, Qt::AscendingOrder);
     }
 
     endResetModel();
@@ -286,6 +279,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
                         genericName = service->comment();
                     }
                     kDebug() << "LOADSERVICEGROUP %%%%%%%%:" << service->name() << service->entryPath() << genericName;
+                m_serviceList.append(service);
 //                    appendRow(
 //                        StandardItemFactory::createItem(
 //                            KIcon(service->icon()),

@@ -29,7 +29,7 @@
 
 class QTimer;
 
-class SalServiceModel : public QStandardItemModel
+class SalServiceModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
