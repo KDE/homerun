@@ -76,10 +76,9 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 //
     if (role == Qt::DisplayRole) {
         return m_serviceList.at(index.row())->name();
+    } else if (role == Qt::DecorationRole) {
+        return m_serviceList.at(index.row())->icon();
     }
-//    } else if (role == Qt::DecorationRole) {
-//        return m_serviceList.at(index.row())->icon();
-//        return m_serviceList.at(index.row())->entryPath();
 //    } else if (role == Type) {
 //        return m_serviceList.at(index.row())->genericName();
 // //       return m_matches.at(index.row()).type();
