@@ -43,8 +43,8 @@ SalServiceModel::SalServiceModel (QObject *parent)
 
     setRoleNames(newRoleNames);
 
-//   setPath("/");
-    setPath("Internet/");
+    kDebug() << "SALSERVICEMODEL INITED";
+    setPath("/");
 
     //////////////////////////////////////////////////////////
 
@@ -71,13 +71,6 @@ int SalServiceModel::rowCount(const QModelIndex& index) const
 int SalServiceModel::count() const
 {
     return m_serviceList.count();
-}
-
-void SalServiceModel::run(int index)
-{
- //   if (index >= 0 && index < m_matches.count()) {
-//        m_manager->run(m_matches.at(index));
-  //  }
 }
 
 QVariant SalServiceModel::data(const QModelIndex &index, int role) const
@@ -124,14 +117,12 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-
-bool SalServiceModel::openUrl(const KUrl& url)
+bool SalServiceModel::openUrl(const QString& url)
 {
-    QString urlString = url.path();
-    KService::Ptr service = KService::serviceByDesktopPath(urlString);
+    KService::Ptr service = KService::serviceByDesktopPath(url);
 
     if (!service) {
-        service = KService::serviceByDesktopName(urlString);
+        service = KService::serviceByDesktopName(url);
     }
 
     if (!service) {
@@ -186,6 +177,7 @@ void SalServiceModel::setPath(const QString &path)
 
     endResetModel();
     emit countChanged();
+    kDebug() << "####### SETPATH CALLED (first time is from ctor)";
 }
 
 QString SalServiceModel::path() const

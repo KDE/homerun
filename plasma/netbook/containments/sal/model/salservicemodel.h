@@ -32,10 +32,8 @@ class QTimer;
 class SalServiceModel : public QStandardItemModel
 {
     Q_OBJECT
-//    Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
-//    Q_PROPERTY(QStringList runners WRITE setRunners READ runners NOTIFY runnersChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-
+    Q_PROPERTY(QString path WRITE setPath READ path)
 
 public:
     enum Roles {
@@ -52,8 +50,6 @@ public:
 
     SalServiceModel (QObject *parent = 0);
 
-    Q_SCRIPTABLE void run(int row);
-
     int rowCount(const QModelIndex&) const;
     int count() const;
     QVariant data(const QModelIndex&, int) const;
@@ -61,17 +57,17 @@ public:
     void setPath(const QString& path);
     QString path() const;
 
-public Q_SLOTS:
-    void scheduleQuery(const QString &query);
-
 Q_SIGNALS:
     void countChanged();
 
 private:
     void loadRootEntries();
     void loadServiceGroup(KServiceGroup::Ptr group);
-    bool openUrl(const KUrl& url);
+
+    bool openUrl(const QString& url);
+
     QMimeData* SalServiceModel::mimeData(const QModelIndexList &indexes) const;
+
 private:
     QList<KService::Ptr> m_serviceList;
     QString m_path;
