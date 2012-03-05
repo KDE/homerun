@@ -31,7 +31,7 @@ Item {
     signal shrinkRequested
     state: height>48?"active":"passive"
 
-    SalServiceModels.SalServiceModel { id: serviceModel;path: "Internet/" }
+    SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
 
     Component.onCompleted: {
         plasmoid.drawWallpaper = true

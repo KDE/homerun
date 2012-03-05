@@ -161,7 +161,6 @@ void SalServiceModel::setPath(const QString &path)
     if (path == "/") {
         loadRootEntries();
     } else {
-        Q_ASSERT(KServiceGroup::group(path));
         loadServiceGroup(KServiceGroup::group(path));
  //       setSortRole(Qt::DisplayRole);
 //        sort(0, Qt::AscendingOrder);
@@ -221,6 +220,8 @@ void SalServiceModel::loadRootEntries()
 //                        )
 //                    );
                 kDebug() << "$$$$$$$$$$$$$$$$$" << service->name() << "  COMMENT: " << service->comment() << "URL: " << url.toString();
+            m_serviceList.append(service);
+            kDebug() << "COUNT: " << m_serviceList.count();
                 }
 
                     if (groupSet.contains(groupName)) {
@@ -228,10 +229,9 @@ void SalServiceModel::loadRootEntries()
                     }
             }
 
-//            m_serviceList.append(service);
         }
 
-//        foreach (const KServiceGroup::Ptr group, groupSet) {
+        foreach (const KServiceGroup::Ptr group, groupSet) {
 //            if ((model != m_allRootEntriesModel)) {
 //                model->appendRow(
 //                    StandardItemFactory::createItem(
@@ -254,8 +254,8 @@ void SalServiceModel::loadRootEntries()
 //                );
 //                model->appendRow(item);
 //            }
-//        }
-//
+        }
+
 //        model->setSortRole(CommonModel::Weight);
 //        model->sort(0, Qt::DescendingOrder);
 }
@@ -278,7 +278,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
                         genericName = service->comment();
                     }
                     kDebug() << "LOADSERVICEGROUP %%%%%%%%:" << service->name() << service->entryPath() << genericName;
-                m_serviceList.append(service);
+            //    m_serviceList.append(service);
 //                    appendRow(
 //                        StandardItemFactory::createItem(
 //                            KIcon(service->icon()),
