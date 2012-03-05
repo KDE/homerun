@@ -34,7 +34,8 @@ class SalServiceModel : public QStandardItemModel
     Q_OBJECT
 //    Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
 //    Q_PROPERTY(QStringList runners WRITE setRunners READ runners NOTIFY runnersChanged)
-//    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+
 
 public:
     enum Roles {
@@ -64,7 +65,7 @@ public Q_SLOTS:
     void scheduleQuery(const QString &query);
 
 Q_SIGNALS:
-    void runnersChanged();
+    void countChanged();
 
 private:
     void loadRootEntries();

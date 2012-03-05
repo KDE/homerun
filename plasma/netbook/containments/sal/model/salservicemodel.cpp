@@ -43,7 +43,8 @@ SalServiceModel::SalServiceModel (QObject *parent)
 
     setRoleNames(newRoleNames);
 
-    setPath(m_path);
+//   setPath("/");
+    setPath("Internet/");
 
     //////////////////////////////////////////////////////////
 
@@ -88,44 +89,41 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 //        return QVariant();
 //    }
 //
-//    if (role == Qt::DisplayRole) {
-//        return m_matches.at(index.row()).text();
-//    } else if (role == Qt::DecorationRole) {
-//        return m_matches.at(index.row()).icon();
-//    } else if (role == Type) {
-//        return m_matches.at(index.row()).type();
-//    } else if (role == Relevance) {
-//        return m_matches.at(index.row()).relevance();
-//    } else if (role == Data) {
+    if (role == Qt::DisplayRole) {
+        return m_serviceList.at(index.row())->name();
+    } else if (role == Qt::DecorationRole) {
+        return m_serviceList.at(index.row())->icon();
+        return m_serviceList.at(index.row())->entryPath();
+    } else if (role == Type) {
+        return m_serviceList.at(index.row())->genericName();
+ //       return m_matches.at(index.row()).type();
+    } else if (role == Relevance) {
+  //      return m_matches.at(index.row()).relevance();
+    } else if (role == Data) {
 //        return m_matches.at(index.row()).data();
-//    } else if (role == Id) {
-//        return m_matches.at(index.row()).id();
-//    } else if (role == SubText) {
-//        return m_matches.at(index.row()).subtext();
-//    } else if (role == Enabled) {
-//        return m_matches.at(index.row()).isEnabled();
-//    } else if (role == RunnerId) {
-//        return m_matches.at(index.row()).runner()->id();
-//    } else if (role == RunnerName) {
-//        return m_matches.at(index.row()).runner()->name();
-//    } else if (role == Actions) {
-//        QVariantList actions;
-//        Plasma::QueryMatch amatch = m_matches.at(index.row());
-//        QList<QAction*> theactions = m_manager->actionsForMatch(amatch);
-//        foreach(QAction* action, theactions) {
-//            actions += qVariantFromValue<QObject*>(action);
-//        }
-//        return actions;
-//    }
-//
+    } else if (role == Id) {
+  //      return m_matches.at(index.row()).id();
+    } else if (role == SubText) {
+    //    return m_matches.at(index.row()).subtext();
+    } else if (role == Enabled) {
+  //      return m_matches.at(index.row()).isEnabled();
+    } else if (role == RunnerId) {
+   //     return m_matches.at(index.row()).runner()->id();
+    } else if (role == RunnerName) {
+   //     return m_matches.at(index.row()).runner()->name();
+    } else if (role == Actions) {
+     //   QVariantList actions;
+       // Plasma::QueryMatch amatch = m_matches.at(index.row());
+      //  QList<QAction*> theactions = m_manager->actionsForMatch(amatch);
+      // foreach(QAction* action, theactions) {
+      //      actions += qVariantFromValue<QObject*>(action);
+      //  }
+       // return actions;
+    }
+
     return QVariant();
 }
 
-    //kDebug() << "got matches:" << matches.count();
- //   beginResetModel();
- //   m_matches = matches;
- //   endResetModel();
- //   emit countChanged();
 
 bool SalServiceModel::openUrl(const KUrl& url)
 {
@@ -173,16 +171,21 @@ QMimeData * SalServiceModel::mimeData(const QModelIndexList &indexes) const
 
 void SalServiceModel::setPath(const QString &path)
 {
+    beginResetModel();
+    m_path = path;
     m_serviceList.clear();
 
     if (path == "/") {
         loadRootEntries();
     } else {
+        Q_ASSERT(KServiceGroup::group(path));
         loadServiceGroup(KServiceGroup::group(path));
         setSortRole(Qt::DisplayRole);
         sort(0, Qt::AscendingOrder);
     }
-    m_path = path;
+
+    endResetModel();
+    emit countChanged();
 }
 
 QString SalServiceModel::path() const
@@ -218,12 +221,11 @@ void SalServiceModel::loadRootEntries()
         if (!services.isEmpty()) {
             foreach (const KService::Ptr &service, services) {
 
-//                const QUrl url = QUrl(service->property("X-Plasma-Sal-Url", QVariant::String).toString());
-//                const int relevance = service->property("X-Plasma-Sal-Relevance", QVariant::Int).toInt();
-//                const QString groupName = url.path().remove(0, 1);
-//
-//                if ((model != m_allRootEntriesModel)) &&
-//                    (url.scheme() != "kservicegroup" || groupSet.contains(groupName))) {
+                const QUrl url = QUrl(service->property("X-Plasma-Sal-Url", QVariant::String).toString());
+                const int relevance = service->property("X-Plasma-Sal-Relevance", QVariant::Int).toInt();
+                const QString groupName = url.path().remove(0, 1);
+
+                if (url.scheme() != "kservicegroup" || groupSet.contains(groupName)) {
 //                    model->appendRow(
 //                        StandardItemFactory::createItem(
 //                            KIcon(service->icon()),
@@ -234,24 +236,15 @@ void SalServiceModel::loadRootEntries()
 //                                                        CommonModel::NoAction
 //                        )
 //                    );
-//                    } else if (model == m_allRootEntriesModel && (url.scheme() != "kservicegroup" || groupSet.contains(groupName))) {
-//                        QStandardItem * item  = StandardItemFactory::createItem(
-//                            KIcon(service->icon()),
-//                                                                                service->name(),
-//                                                                                service->comment(),
-//                                                                                service->storageId(),
-//                                                                                relevance,
-//                                                                                CommonModel::NoAction
-//                        );
-//                        model->appendRow(item);
-//                    }
-//
-//                    if (groupSet.contains(groupName)) {
-//                        groupSet.remove(groupName);
-//                    }
-//            }
-//
-            m_serviceList.append(service);
+                kDebug() << "$$$$$$$$$$$$$$$$$" << service->name() << "  COMMENT: " << service->comment() << "URL: " << url.toString();
+                }
+
+                    if (groupSet.contains(groupName)) {
+                        groupSet.remove(groupName);
+                    }
+            }
+
+//            m_serviceList.append(service);
         }
 
 //        foreach (const KServiceGroup::Ptr group, groupSet) {
@@ -281,26 +274,26 @@ void SalServiceModel::loadRootEntries()
 //
 //        model->setSortRole(CommonModel::Weight);
 //        model->sort(0, Qt::DescendingOrder);
-    }
 }
 
 void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
 {
-//    if (group && group->isValid()) {
-//        KServiceGroup::List list = group->entries();
-//
-//        for( KServiceGroup::List::ConstIterator it = list.constBegin();
-//            it != list.constEnd(); it++) {
-//            const KSycocaEntry::Ptr p = (*it);
-//
-//            if (p->isType(KST_KService)) {
-//                const KService::Ptr service = KService::Ptr::staticCast(p);
-//
-//                if (!service->noDisplay()) {
-//                    QString genericName = service->genericName();
-//                    if (genericName.isNull()) {
-//                        genericName = service->comment();
-//                    }
+    if (group && group->isValid()) {
+        KServiceGroup::List list = group->entries();
+
+        for( KServiceGroup::List::ConstIterator it = list.constBegin();
+            it != list.constEnd(); it++) {
+            const KSycocaEntry::Ptr p = (*it);
+
+            if (p->isType(KST_KService)) {
+                const KService::Ptr service = KService::Ptr::staticCast(p);
+
+                if (!service->noDisplay()) {
+                    QString genericName = service->genericName();
+                    if (genericName.isNull()) {
+                        genericName = service->comment();
+                    }
+                    kDebug() << "LOADSERVICEGROUP %%%%%%%%:" << service->name() << service->entryPath() << genericName;
 //                    appendRow(
 //                        StandardItemFactory::createItem(
 //                            KIcon(service->icon()),
@@ -311,17 +304,17 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
 //                                                        CommonModel::AddAction
 //                        )
 //                    );
-//                }
-//
-//            } else if (p->isType(KST_KServiceGroup)) {
-//                const KServiceGroup::Ptr subGroup = KServiceGroup::Ptr::staticCast(p);
-//
-//                if (!subGroup->noDisplay() && subGroup->childCount() > 0) {
-//                    loadServiceGroup(subGroup);
-//                }
-//            }
-//        }
-//    }
+                }
+
+            } else if (p->isType(KST_KServiceGroup)) {
+                const KServiceGroup::Ptr subGroup = KServiceGroup::Ptr::staticCast(p);
+
+                if (!subGroup->noDisplay() && subGroup->childCount() > 0) {
+                    loadServiceGroup(subGroup);
+                }
+            }
+        }
+    }
 }
 
 #include "salservicemodel.moc"
