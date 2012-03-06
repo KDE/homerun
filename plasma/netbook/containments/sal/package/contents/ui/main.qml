@@ -74,8 +74,22 @@ Item {
         MouseArea {
             anchors.fill: parent
 
+            hoverEnabled: true
+
             onClicked: {
                 serviceModel.path = "/"
+            }
+
+            //FIXME: add an svg highlight to it on mouse over. that'll look much better me thinks
+            onEntered: {
+                print("ENTERED!");
+                parent.width = 55;
+                parent.height = 55;
+            }
+
+            onExited: {
+                parent.width = 48;
+                parent.height = 48;
             }
         }
     }
