@@ -122,6 +122,7 @@ Item {
             } else if (text == "Files") {
                 resultsView.model = runnerModel;
                 runnerModel.runners = [ "sessions", "places", "solid" ]
+                runnerModel.query = "places"
             } else if (text == "YouTube") {
                 resultsView.model = runnerModel;
                 runnerModel.runners = "youtube"

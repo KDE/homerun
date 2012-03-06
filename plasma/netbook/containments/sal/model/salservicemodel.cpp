@@ -167,6 +167,7 @@ void SalServiceModel::setPath(const QString &path)
     if (path == "/") {
         loadRootEntries();
     } else {
+        kDebug() << "TRYING TO SET PATH TO: " << path;
         loadServiceGroup(KServiceGroup::group(path));
  //       setSortRole(Qt::DisplayRole);
 //        sort(0, Qt::AscendingOrder);
@@ -184,11 +185,11 @@ QString SalServiceModel::path() const
 
 void SalServiceModel::loadRootEntries()
 {
-    QStringList defaultEnabledEntries;
-    defaultEnabledEntries << "plasma-sal-contacts.desktop" << "plasma-sal-bookmarks.desktop"
-    << "plasma-sal-multimedia.desktop" << "plasma-sal-internet.desktop"
-    << "plasma-sal-graphics.desktop" << "plasma-sal-education.desktop"
-    << "plasma-sal-games.desktop" << "plasma-sal-office.desktop";
+//    QStringList defaultEnabledEntries;
+//    defaultEnabledEntries << "plasma-sal-contacts.desktop" << "plasma-sal-bookmarks.desktop"
+//    << "plasma-sal-multimedia.desktop" << "plasma-sal-internet.desktop"
+//    << "plasma-sal-graphics.desktop" << "plasma-sal-education.desktop"
+//    << "plasma-sal-games.desktop" << "plasma-sal-office.desktop";
 
     QHash<QString, KServiceGroup::Ptr> groupSet;
     KServiceGroup::Ptr group = KServiceGroup::root();
@@ -214,6 +215,7 @@ void SalServiceModel::loadRootEntries()
                 const int relevance = service->property("X-Plasma-Sal-Relevance", QVariant::Int).toInt();
                 const QString groupName = url.path().remove(0, 1);
 
+                kDebug() << "$$$$$$$$$$$$$$$$$" << service->name() << "  COMMENT: " << service->comment() << "URL: " << url.toString();
                 if (url.scheme() != "kservicegroup" || groupSet.contains(groupName)) {
 //                    model->appendRow(
 //                        StandardItemFactory::createItem(
@@ -225,7 +227,6 @@ void SalServiceModel::loadRootEntries()
 //                                                        CommonModel::NoAction
 //                        )
 //                    );
-                kDebug() << "$$$$$$$$$$$$$$$$$" << service->name() << "  COMMENT: " << service->comment() << "URL: " << url.toString();
             m_serviceList.append(service);
             kDebug() << "COUNT: " << m_serviceList.count();
                 }
