@@ -28,103 +28,9 @@ import "plasmapackage:/code/LayoutManager.js" as LayoutManager
 
 Item {
     id: main
-    signal shrinkRequested
-    state: height>48?"active":"passive"
-
-    SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
 
     Component.onCompleted: {
-        plasmoid.drawWallpaper = true
-        plasmoid.containmentType = "CustomContainment"
-        plasmoid.movableApplets = false
 
-        plasmoid.appletAdded.connect(addApplet)
-
-        appletsOrder = plasmoid.readConfig("AppletsOrder")
-
-        //array with all the applet ids, in order
-        var appletIds = Array()
-        if (appletsOrder.length > 0) {
-            appletIds = appletsOrder.split(":")
-        }
-
-        //all applets loaded, indicized by id
-        var appletsForId = new Array()
-
-        //fill appletsForId
-        for (var i = 0; i < plasmoid.applets.length; ++i) {
-            var applet = plasmoid.applets[i]
-            appletsForId[applet.id] = applet
-        }
-
-        //add applets present in AppletsOrder
-        for (var i = 0; i < appletIds.length; ++i) {
-            var id = appletIds[i]
-            var applet = appletsForId[id]
-            if (applet) {
-                addApplet(applet, Qt.point(-1,-1));
-                //discard it, so will be easy to find out who wasn't in the series
-                appletsForId[id] = null
-            }
-        }
-
-        for (var id in appletsForId) {
-            var applet = appletsForId[id]
-            if (applet) {
-                addApplet(applet, Qt.point(-1,-1));
-            }
-        }
-
-        plasmoid.appletAdded.connect(addApplet)
-        LayoutManager.saveOrder()
-    }
-
-
-    function addApplet(applet, pos)
-    {
-        var component = Qt.createComponent("PlasmoidContainer.qml")
-
-        if (applet.pluginName == "org.kde.sharelikeconnect") {
-            var plasmoidContainer = component.createObject(rightPanel);
-            plasmoidContainer.parent = rightPanel
-            plasmoidContainer.anchors.top = rightPanel.top
-            plasmoidContainer.anchors.bottom = rightPanel.bottom
-            plasmoidContainer.applet = applet
-            return
-
-        } else if (applet.pluginName == "digital-clock") {
-            var plasmoidContainer = component.createObject(rightPanel);
-            plasmoidContainer.parent = centerPanel
-            plasmoidContainer.anchors.top = centerPanel.top
-            plasmoidContainer.anchors.bottom = centerPanel.bottom
-            plasmoidContainer.applet = applet
-            return
-        }
-
-        var plasmoidContainer = component.createObject(tasksRow, {"x": pos.x, "y": pos.y});
-
-        var index = tasksRow.children.length
-        if (pos.x >= 0) {
-            //FIXME: this assumes items are square
-            index = pos.x/main.height
-        }
-        tasksRow.insertAt(plasmoidContainer, index)
-        plasmoidContainer.anchors.top = tasksRow.top
-        plasmoidContainer.anchors.bottom = tasksRow.bottom
-        plasmoidContainer.applet = applet
-
-    }
-
-    PlasmaCore.DataSource {
-          id: statusNotifierSource
-          engine: "statusnotifieritem"
-          interval: 0
-          onSourceAdded: {
-             connectSource(source)
-          }
-          Component.onCompleted: {
-              connectedSources = sources
-          }
     }
 
     PlasmaCore.Theme {
@@ -197,29 +103,14 @@ Item {
             right: parent.right
         }
 
-        property string skipItems
-
-        function insertAt(item, index)
-        {
-            LayoutManager.insertAt(item, index)
-        }
-
-        function remove(item)
-        {
-            LayoutManager.remove(item)
-        }
-
-        function saveOrder()
-        {
-            LayoutManager.saveOrder()
-        }
-
         spacing: 2
+
+        SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
 
         ResultsView {
             anchors.fill: parent
-//            model: runnerModel
-model: serviceModel
+            //model: runnerModel
+            model: serviceModel
 
             onUrlToRunChanged: {
                 serviceModel.openUrl(urlToRun);
@@ -228,15 +119,6 @@ model: serviceModel
             onAppIndexToRunChanged: {
                 print("RUNNING APP!")
                 runnerModel.run(appIndexToRun);
-            }
-        }
-
-        Component.onCompleted: {
-            items = plasmoid.readConfig("SkipItems")
-            if (items != "") {
-                skipItems = "^(?!" + items + ")"
-            } else {
-                skipItems = ""
             }
         }
     }
