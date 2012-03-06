@@ -44,7 +44,7 @@ SalServiceModel::SalServiceModel (QObject *parent)
     setRoleNames(newRoleNames);
 
     kDebug() << "SALSERVICEMODEL INITED";
-    setPath("Internet/");
+    setPath("/");
 
     //////////////////////////////////////////////////////////
 
@@ -283,7 +283,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
                         genericName = service->comment();
                     }
                     kDebug() << "LOADSERVICEGROUP %%%%%%%%:" << service->name() << service->entryPath() << genericName;
-            //    m_serviceList.append(service);
+                m_serviceList.append(service);
 //                    appendRow(
 //                        StandardItemFactory::createItem(
 //                            KIcon(service->icon()),
