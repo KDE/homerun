@@ -102,7 +102,7 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
 
-        PlasmaComponents.TabButton { text: "All"; iconSource: ""}
+        PlasmaComponents.TabButton { text: "Categories"; iconSource: ""}
         PlasmaComponents.TabButton { text: "Apps"; iconSource: "applications-other"}
         PlasmaComponents.TabButton { text: "Files"; iconSource: "folder-documents"}
         PlasmaComponents.TabButton { text: "YouTube"; iconSource: "youtube"}
@@ -112,18 +112,22 @@ Item {
         onCurrentTabChanged: {
             print("TEST" + currentTab.text)
             var text = currentTab.text
-            if (text == "All") {
-
+            if (text == "Categories") {
+                resultsView.model = serviceModel;
             } else if (text == "Apps") {
-
+                resultsView.model = runnerModel;
                 runnerModel.runners = [ "services", "kill", "kget", "calculator", "audioplayercontrol" ]
             } else if (text == "Files") {
+                resultsView.model = runnerModel;
                 runnerModel.runners = [ "sessions", "places", "solid" ]
             } else if (text == "YouTube") {
+                resultsView.model = runnerModel;
                 runnerModel.runners = "youtube"
             } else if (text == "Bing") {
+                resultsView.model = runnerModel;
                 runnerModel.runners = "bing"
             } else if (text == "Social") {
+                resultsView.model = runnerModel;
 
             }
             //FIXME: make it search the current lense for stuff
@@ -145,6 +149,7 @@ Item {
         SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
 
         ResultsView {
+            id: resultsView
             anchors.fill: parent
             //model: runnerModel
             model: serviceModel
