@@ -24,7 +24,7 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 Item {
     id: main
 
-    property int iconWidth: 128
+    property int iconWidth: 64
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
     property string currentId;

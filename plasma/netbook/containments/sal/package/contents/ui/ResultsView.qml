@@ -25,8 +25,8 @@ Item {
     id: main
 
     //FIXME: figure out sizing properly..
-    property int resultItemHeight: 200
-    property int resultItemWidth: 200
+    property int resultItemHeight: 128
+    property int resultItemWidth: 128
 
     property int appIndexToRun: 0
     property string urlToRun: ""
