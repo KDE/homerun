@@ -57,6 +57,29 @@ Item {
 
     RunnerModels.RunnerModel { id: runnerModel }
 
+    QtExtra.QIconItem {
+        id: homeIcon
+
+        anchors {
+            right: filterTabBar.left
+            top: filterTabBar.top
+            bottom: searchField.bottom
+        }
+
+        icon: "go-home"
+
+        width: 48
+        height: 48
+
+        MouseArea {
+            anchors.fill: parent
+
+            onClicked: {
+                serviceModel.path = "/"
+            }
+        }
+    }
+
     PlasmaComponents.TabBar {
         id: filterTabBar
 
