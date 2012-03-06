@@ -44,13 +44,14 @@ SalServiceModel::SalServiceModel (QObject *parent)
     setRoleNames(newRoleNames);
 
     kDebug() << "SALSERVICEMODEL INITED";
-    setPath("/");
+    setPath("Internet/");
 
     //////////////////////////////////////////////////////////
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(Url, "url");
 
     setRoleNames(roles);
 }
@@ -69,49 +70,53 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 {
     kDebug() << "TEST: " << index.row() << " " << index.column();
     kDebug() << "#### coutn:" << m_serviceList.count();
+
     if (!index.isValid() || index.row() >= m_serviceList.count()) {
         return QVariant();
     }
+
     kDebug () << "$$$$$$$$$$$$$$$$$$$$$$";
-//
+
     if (role == Qt::DisplayRole) {
         return m_serviceList.at(index.row())->name();
     } else if (role == Qt::DecorationRole) {
         return m_serviceList.at(index.row())->icon();
+    } else if (role == Url) {
+        QString pathAtRow = m_serviceList.at(index.row())->entryPath();
+
+        // if we're at root level, we want to descend into the selection..not execute
+        QString path;
+        if (m_path == "/") {
+            path = "kservicegroup:/" + pathAtRow;
+            kDebug() << "PATH IS AT DATA:" << m_path << "RETURNING PATH OF: " << path;
+        } else {
+            path = pathAtRow;
+        }
+        return path;
     }
-//    } else if (role == Type) {
-//        return m_serviceList.at(index.row())->genericName();
-// //       return m_matches.at(index.row()).type();
-//    } else if (role == Relevance) {
-//  //      return m_matches.at(index.row()).relevance();
-//    } else if (role == Data) {
-////        return m_matches.at(index.row()).data();
-//    } else if (role == Id) {
-//  //      return m_matches.at(index.row()).id();
-//    } else if (role == SubText) {
-//    //    return m_matches.at(index.row()).subtext();
-//    } else if (role == Enabled) {
-//  //      return m_matches.at(index.row()).isEnabled();
-//    } else if (role == RunnerId) {
-//   //     return m_matches.at(index.row()).runner()->id();
-//    } else if (role == RunnerName) {
-//   //     return m_matches.at(index.row()).runner()->name();
-//    } else if (role == Actions) {
-//     //   QVariantList actions;
-//       // Plasma::QueryMatch amatch = m_matches.at(index.row());
-//      //  QList<QAction*> theactions = m_manager->actionsForMatch(amatch);
-//      // foreach(QAction* action, theactions) {
-//      //      actions += qVariantFromValue<QObject*>(action);
-//      //  }
-//       // return actions;
-//    }
 
     return QVariant();
 }
 
 bool SalServiceModel::openUrl(const QString& url)
 {
-    KService::Ptr service = KService::serviceByDesktopPath(url);
+    KService::Ptr service;
+
+    if (url.startsWith("kservicegroup:/")) {
+        //remove the kservicegroup:/ url thingy
+//        const QString& trimmedUrl = url.right(url.length() - 15);
+        service = KService::serviceByStorageId(url);
+        setPath(service->name() + "/");
+
+        kDebug() << "SET PATH TO: " << m_path;
+
+        return true;
+    }
+
+    // never reached if he navigated to a menu/submenu
+
+    service  = KService::serviceByDesktopPath(url);
+    kDebug() << "RETRIEVED SERVICE NAME FROM CLICKED: " << service->name();
 
     if (!service) {
         service = KService::serviceByDesktopName(url);

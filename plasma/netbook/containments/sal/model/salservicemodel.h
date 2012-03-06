@@ -37,15 +37,7 @@ class SalServiceModel : public QAbstractListModel
 
 public:
     enum Roles {
-        Type = Qt::UserRole + 1,
-        Relevance,
-        Data,
-        Id,
-        SubText,
-        Enabled,
-        RunnerId,
-        RunnerName,
-        Actions
+        Url = Qt::UserRole + 1,
     };
 
     SalServiceModel (QObject *parent = 0);
@@ -57,6 +49,8 @@ public:
     void setPath(const QString& path);
     QString path() const;
 
+    Q_INVOKABLE bool openUrl(const QString& url);
+
 Q_SIGNALS:
     void countChanged();
 
@@ -64,7 +58,6 @@ private:
     void loadRootEntries();
     void loadServiceGroup(KServiceGroup::Ptr group);
 
-    bool openUrl(const QString& url);
 
     QMimeData* SalServiceModel::mimeData(const QModelIndexList &indexes) const;
 

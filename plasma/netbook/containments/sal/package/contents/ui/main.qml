@@ -31,7 +31,7 @@ Item {
     signal shrinkRequested
     state: height>48?"active":"passive"
 
-    SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
+    SalServiceModels.SalServiceModel { id: serviceModel; } // path: "/" }
 
     Component.onCompleted: {
         plasmoid.drawWallpaper = true
@@ -220,6 +220,10 @@ Item {
             anchors.fill: parent
 //            model: runnerModel
 model: serviceModel
+
+            onUrlToRunChanged: {
+                serviceModel.openUrl(urlToRun);
+            }
 
             onAppIndexToRunChanged: {
                 print("RUNNING APP!")

@@ -29,6 +29,7 @@ Item {
     property int resultItemWidth: 200
 
     property int appIndexToRun: 0
+    property string urlToRun: ""
 
     property alias model: gridView.model
 
@@ -65,6 +66,8 @@ Item {
 
                 onClicked: {
                     appIndexToRun = gridView.currentIndex;
+                    urlToRun = model["url"]
+                    print("URL CLICKED:" + model["url"]);
                 }
             }
         }
