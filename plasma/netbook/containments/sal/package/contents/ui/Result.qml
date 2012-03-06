@@ -61,7 +61,7 @@ Item {
 
             clip: true
             smooth: true
-//            elide: Text.ElideRight
+            elide: Text.ElideRight
             wrapMode: Text.WordWrap
         }
     }

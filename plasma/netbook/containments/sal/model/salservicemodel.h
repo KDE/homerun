@@ -1,5 +1,6 @@
 /*
     Copyright 2011 Aaron Seigo <aseigo@kde.org>
+    Copyright (C) 2012 Shaun Reich <shaun.reich@blue-systems.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
