@@ -78,6 +78,7 @@ Item {
 
             onClicked: {
                 serviceModel.path = "/"
+                resultsView.model = serviceModel
             }
 
             //FIXME: add an svg highlight to it on mouse over. that'll look much better me thinks
