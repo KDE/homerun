@@ -44,6 +44,8 @@ Item {
 
         cellWidth: resultItemWidth
         cellHeight: resultItemHeight
+        //TODO: something sane?
+        cacheBuffer: 128 * 10 //10 above, 10 below caching
 
         clip: true
 
