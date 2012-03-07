@@ -33,6 +33,17 @@ Item {
 
     property alias model: gridView.model
 
+    PlasmaCore.Dialog {
+        id: tooltipDialog
+
+        Component.onCompleted: {
+            tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
+            tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
+        }
+
+        mainItem: Text { text: "TEST!" }
+    }
+
     GridView {
         id: gridView
         anchors {
@@ -85,6 +96,10 @@ Item {
                 hoverEnabled: true
 
                 onEntered: {
+                    var point = tooltipDialog.popupPosition(parent)
+                    tooltipDialog.x = point.x
+                    tooltipDialog.y = point.y
+                    tooltipDialog.visible = true
                     gridView.currentIndex = index
                 }
 
