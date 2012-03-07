@@ -30,6 +30,8 @@ Item {
 
     property int appIndexToRun: 0
     property string urlToRun: ""
+    property string currentText: "";
+    property string currentIcon: "";
 
     property alias model: gridView.model
 
@@ -109,6 +111,8 @@ Item {
                 }
 
                 onClicked: {
+                    currentString = model["label"]
+                    currentIcon = model["icon"]
                     appIndexToRun = gridView.currentIndex;
                     //to emit the changed signal anyways, even though it (only seems to be) the same thing
                     urlToRun = "";

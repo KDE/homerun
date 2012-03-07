@@ -162,7 +162,7 @@ Item {
             left: parent.left
             right: parent.right
         }
-        //model: runnerModel
+
         model: serviceModel
 
         onUrlToRunChanged: {
@@ -173,7 +173,11 @@ Item {
             if (resultsView.model == runnerModel) {
                 print("RUNNING APP!")
                 runnerModel.run(appIndexToRun);
+                
+            //FIXME: (only temporary)
             }
+            print("TESTSREICH")
+            favoritesModel.append( {"text": currentString, "icon": currentIcon })
         }
     }
 
