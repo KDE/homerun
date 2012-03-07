@@ -122,9 +122,11 @@ Item {
             var text = currentTab.text
             if (text == "Categories") {
                 resultsView.model = serviceModel;
+                runnerModel.query = ""
             } else if (text == "Apps") {
                 resultsView.model = runnerModel;
                 runnerModel.runners = [ "services", "kill", "kget", "calculator", "audioplayercontrol" ]
+                runnerModel.query = ""
             } else if (text == "Files") {
                 resultsView.model = runnerModel;
                 runnerModel.runners = [ "sessions", "places", "solid" ]
@@ -132,12 +134,14 @@ Item {
             } else if (text == "YouTube") {
                 resultsView.model = runnerModel;
                 runnerModel.runners = "youtube"
+                runnerModel.query = ""
             } else if (text == "Bing") {
                 resultsView.model = runnerModel;
                 runnerModel.runners = "bing"
+                runnerModel.query = ""
             } else if (text == "Social") {
                 resultsView.model = runnerModel;
-
+                runnerModel.query = ""
             }
             //FIXME: make it search the current lense for stuff
             //runnerModel.query = searchField.text
