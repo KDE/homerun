@@ -101,6 +101,10 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 
 bool SalServiceModel::openUrl(const QString& url)
 {
+    if (url.isEmpty()) {
+        return false;
+    }
+
     KService::Ptr service;
 
     if (url.startsWith("kservicegroup:/")) {

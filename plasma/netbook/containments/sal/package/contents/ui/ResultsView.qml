@@ -66,6 +66,8 @@ Item {
 
                 onClicked: {
                     appIndexToRun = gridView.currentIndex;
+                    //to emit the changed signal anyways, even though it (only seems to be) the same thing
+                    urlToRun = "";
                     urlToRun = model["url"]
                     print("URL CLICKED:" + model["url"]);
                 }
