@@ -151,14 +151,13 @@ Item {
         }
     }
 
-
     SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
 
     ResultsView {
         id: resultsView
         anchors {
             top: searchField.bottom
-            bottom: parent.bottom
+            bottom: favoritesView.bottom
             left: parent.left
             right: parent.right
         }
@@ -175,5 +174,19 @@ Item {
                 runnerModel.run(appIndexToRun);
             }
         }
+    }
+
+    GridView {
+        id: favoritesView
+
+        anchors {
+            left: parent.left;
+            right: parent.right
+            bottom: parent.bottom
+            bottomMargin: 40
+        }
+
+        model: 1000
+        delegate: Text { text: "Favorite n" }
     }
 }
