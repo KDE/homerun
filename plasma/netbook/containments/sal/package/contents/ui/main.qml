@@ -168,8 +168,10 @@ Item {
             }
 
             onAppIndexToRunChanged: {
-                print("RUNNING APP!")
-                runnerModel.run(appIndexToRun);
+                if (resultsView.model == runnerModel) {
+                    print("RUNNING APP!")
+                    runnerModel.run(appIndexToRun);
+                }
             }
         }
     }
