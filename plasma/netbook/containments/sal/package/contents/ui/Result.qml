@@ -35,41 +35,38 @@ Item {
     //FIXME also hardcoded. probably use a text metric
     height: iconWidth + resultLabel.paintedHeight * 2
 
+    QtExtra.QIconItem {
+        id: resultIcon
 
-        QtExtra.QIconItem {
-            id: resultIcon
-
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-//                bottom: parent.bottom
-//                horizontalCenter: parent.horizontalCenter
-            }
-
-            width: iconWidth
-            height: iconWidth
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
         }
 
-        PlasmaComponents.Label {
-            id: resultLabel
+        width: iconWidth
+        height: iconWidth
+    }
 
-            anchors {
-                topMargin: 10
-                top: resultIcon.bottom
-                bottom: parent.bottom
-                left: parent.left
-                right: parent.right
-                rightMargin: 5
-                leftMargin: 5
-            }
+    PlasmaComponents.Label {
+        id: resultLabel
 
-            clip: true
-            smooth: true
-            elide: Text.ElideRight
-            horizontalAlignment: Text.AlignHCenter
+        anchors {
+            topMargin: 10
+            top: resultIcon.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+            rightMargin: 5
+            leftMargin: 5
+        }
+
+        clip: true
+        smooth: true
+        elide: Text.ElideRight
+        horizontalAlignment: Text.AlignHCenter
 //            wrapMode: Text.WordWrap
-        }
+    }
 
 
 
