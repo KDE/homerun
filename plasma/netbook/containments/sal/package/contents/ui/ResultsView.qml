@@ -96,6 +96,7 @@ Item {
                     tooltipDialog.visible = false
                 }
 
+                //FIXME: for the love of batman please fix me. 1 dialog is instantiated for each delegate if we need it or not. it sucks. it's slow.
                 PlasmaCore.Dialog {
                     id: tooltipDialog
 
