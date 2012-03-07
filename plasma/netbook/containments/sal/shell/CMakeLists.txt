@@ -1,23 +1,11 @@
-include_directories(${KDEBASE_WORKSPACE_SOURCE_DIR}/libs ${KDEBASE_WORKSPACE_SOURCE_DIR}/libs/plasmagenericshell)
-
-set(plasma-sal_SRCS
+set(salviewer_SRCS
+    fullview.cpp
     main.cpp
-    plasmaapp.cpp
-    salcorona.cpp
-    salview.cpp
 )
 
-kde4_add_ui_files(plasma-sal_SRCS BackgroundDialog.ui)
+kde4_add_executable(salviewer ${salviewer_SRCS})
 
-kde4_add_executable(plasma-sal ${plasma-sal_SRCS})
+target_link_libraries(salviewer ${KDE4_KDEUI_LIBS} ${KDE4_PLASMA_LIBS})
 
-target_link_libraries(plasma-sal ${KDE4_PLASMA_LIBS} kworkspace  ${KDE4_KIO_LIBS} ${KDE4_KFILE_LIBS}
-                                     ${X11_X11_LIB} plasmagenericshell)
-if(X11_Xrender_FOUND)
-  target_link_libraries(plasma-sal ${X11_Xrender_LIB})
-endif(X11_Xrender_FOUND)
+install(TARGETS salviewer ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-set_target_properties(plasma-sal PROPERTIES OUTPUT_NAME plasma-sal)
-
-install(TARGETS plasma-sal ${INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES plasma-salrc DESTINATION ${CONFIG_INSTALL_DIR})
