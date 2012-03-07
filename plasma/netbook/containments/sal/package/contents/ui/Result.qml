@@ -53,7 +53,7 @@ Item {
         id: resultLabel
 
         anchors {
-            topMargin: 10
+            bottomMargin: 6
             top: resultIcon.bottom
             bottom: parent.bottom
             left: parent.left
