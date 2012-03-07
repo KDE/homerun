@@ -33,17 +33,6 @@ Item {
 
     property alias model: gridView.model
 
-    PlasmaCore.Dialog {
-        id: tooltipDialog
-
-        Component.onCompleted: {
-            tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
-            tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
-        }
-
-        mainItem: Text { text: "TEST!" }
-    }
-
     GridView {
         id: gridView
         anchors {
@@ -101,6 +90,21 @@ Item {
                     tooltipDialog.y = point.y
                     tooltipDialog.visible = true
                     gridView.currentIndex = index
+                }
+
+                onExited: {
+                    tooltipDialog.visible = false
+                }
+
+                PlasmaCore.Dialog {
+                    id: tooltipDialog
+
+                    Component.onCompleted: {
+                        tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
+                        tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
+                    }
+
+                    mainItem: Text { text: model.label}
                 }
 
                 onClicked: {
