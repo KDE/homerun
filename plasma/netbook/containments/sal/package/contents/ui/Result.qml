@@ -35,6 +35,17 @@ Item {
     //FIXME also hardcoded. probably use a text metric
     height: iconWidth + resultLabel.paintedHeight * 2
 
+    opacity: 0
+
+    Component.onCompleted: {
+        opacity = 1
+    }
+
+    Behavior on opacity {
+        NumberAnimation { duration: 200 }
+    }
+
+
     QtExtra.QIconItem {
         id: resultIcon
 

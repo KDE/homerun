@@ -151,34 +151,28 @@ Item {
         }
     }
 
-    Flow {
+
+    SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
+
+    ResultsView {
+        id: resultsView
         anchors {
             top: searchField.bottom
-            topMargin: 10
             bottom: parent.bottom
             left: parent.left
             right: parent.right
         }
+        //model: runnerModel
+        model: serviceModel
 
-        spacing: 2
+        onUrlToRunChanged: {
+            serviceModel.openUrl(urlToRun);
+        }
 
-        SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
-
-        ResultsView {
-            id: resultsView
-            anchors.fill: parent
-            //model: runnerModel
-            model: serviceModel
-
-            onUrlToRunChanged: {
-                serviceModel.openUrl(urlToRun);
-            }
-
-            onAppIndexToRunChanged: {
-                if (resultsView.model == runnerModel) {
-                    print("RUNNING APP!")
-                    runnerModel.run(appIndexToRun);
-                }
+        onAppIndexToRunChanged: {
+            if (resultsView.model == runnerModel) {
+                print("RUNNING APP!")
+                runnerModel.run(appIndexToRun);
             }
         }
     }
