@@ -39,6 +39,7 @@ Item {
         id: resultIcon
 
         anchors {
+            topMargin: 5
             top: parent.top
             left: parent.left
             right: parent.right
