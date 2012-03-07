@@ -56,12 +56,13 @@ Item {
 
             anchors {
                 topMargin: 10
-                horizontalCenter: parent.horizontalCenter
                 top: resultIcon.bottom
                 bottom: parent.bottom
+                left: parent.left
+                right: parent.right
+                rightMargin: 5
+                leftMargin: 5
             }
-
-            width: (iconWidth * 2) - 10
 
             clip: true
             smooth: true
