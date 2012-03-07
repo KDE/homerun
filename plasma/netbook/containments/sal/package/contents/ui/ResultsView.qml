@@ -42,6 +42,24 @@ Item {
             right: parent.right
         }
 
+        focus: true
+
+        Keys.onPressed: {
+            if (event.key == Qt.Key_Left) {
+                moveCurrentIndexLeft();
+                event.accepted = true;
+            } else if (event.key == Qt.Key_Right) {
+                moveCurrentIndexRight();
+                event.accepted = true;
+            } else if (event.key == Qt.Key_Up) {
+                moveCurrentIndexUp();
+                event.accepted = true;
+            } else if (event.key == Qt.Key_Down) {
+                moveCurrentIndexDown();
+                event.accepted = true;
+            }
+        }
+
         cellWidth: resultItemWidth
         cellHeight: resultItemHeight
         //TODO: something sane?
