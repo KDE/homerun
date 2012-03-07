@@ -157,7 +157,7 @@ Item {
         id: resultsView
         anchors {
             top: searchField.bottom
-            bottom: favoritesView.bottom
+            bottom: favoritesView.top
             left: parent.left
             right: parent.right
         }
@@ -183,10 +183,14 @@ Item {
             left: parent.left;
             right: parent.right
             bottom: parent.bottom
-            bottomMargin: 40
         }
 
+        clip: true
+        interactive: false
+        //FIXME: use anchoring
+        height: 90
+
         model: 1000
-        delegate: Text { text: "Favorite n" }
+        delegate: Favorite { id: favorite; currentText: " FAVORITE"; currentIcon: "bookmarks" }
     }
 }
