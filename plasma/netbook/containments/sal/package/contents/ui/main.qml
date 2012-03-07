@@ -121,6 +121,7 @@ Item {
         PlasmaComponents.TabButton { text: "Social"; iconSource: "applications-internet"}
 
         onCurrentTabChanged: {
+            plasmoid.writeConfig("TEST", "TEST")
             print("TEST" + currentTab.text)
             var text = currentTab.text
             if (text == "Categories") {

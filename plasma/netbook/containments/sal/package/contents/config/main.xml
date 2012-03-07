@@ -5,13 +5,11 @@
       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
   <kcfgfile name=""/>
 
-  <group name="General">
-    <entry name="AppletsOrder" type="String">
-      <label>list of all applets</label>
+  <group name="TEST">
+    <entry name="TEST" type="Bool">
+      <default>true</default>
     </entry>
-    <entry name="SkipItems" type="String">
-      <label>list of all notifier items to skip</label>
-    </entry>
+>
   </group>
 
 </kcfg>
