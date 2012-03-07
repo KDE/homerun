@@ -36,14 +36,6 @@ SalServiceModel::SalServiceModel (QObject *parent)
     : QAbstractListModel(parent)
     , m_path("/")
 {
-    QHash<int, QByteArray> newRoleNames = roleNames();
-//    newRoleNames[CommonModel::Description] = "description";
-//    newRoleNames[CommonModel::Url] = "url";
-//    newRoleNames[CommonModel::Weight] = "weight";
-//    newRoleNames[CommonModel::ActionTypeRole] = "action";
-
-    setRoleNames(newRoleNames);
-
     kDebug() << "SALSERVICEMODEL INITED";
     setPath("/");
 
