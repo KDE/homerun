@@ -177,6 +177,16 @@ Item {
         }
     }
 
+    ListModel {
+        id: favoritesModel
+
+        ListElement { text: "TEST1"; icon: "bookmarks"}
+        ListElement { text: "TEST2"; icon: "bookmarks"}
+        ListElement { text: "TEST3"; icon: "bookmarks"}
+        ListElement { text: "TEST4"; icon: "bookmarks"}
+        ListElement { text: "TEST5"; icon: "bookmarks"}
+    }
+
     GridView {
         id: favoritesView
 
@@ -191,7 +201,7 @@ Item {
         //FIXME: use anchoring
         height: 90
 
-        model: 1000
-        delegate: Favorite { id: favorite; currentText: " FAVORITE"; currentIcon: "bookmarks" }
+        model: favoritesModel
+        delegate: Favorite { id: favorite; currentText: model.text; currentIcon: model.icon}
     }
 }
