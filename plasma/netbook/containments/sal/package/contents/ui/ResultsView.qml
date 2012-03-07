@@ -60,6 +60,10 @@ Item {
             }
         }
 
+         Keys.onReturnPressed: {
+            print("PRESSED")
+        }
+
         cellWidth: resultItemWidth
         cellHeight: resultItemHeight
         //TODO: something sane?
