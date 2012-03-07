@@ -30,6 +30,9 @@ import "plasmapackage:/code/LayoutManager.js" as LayoutManager
 Item {
     id: main
 
+    width: 2000
+    height: 3000
+
     Component.onCompleted: {
 
     }

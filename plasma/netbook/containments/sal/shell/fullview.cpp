@@ -32,6 +32,7 @@
 #include <QFileInfo>
 #include <QResizeEvent>
 #include <QTimer>
+#include <QDesktopWidget>
 
 #include <KCmdLineArgs>
 #include <KIconLoader>
@@ -188,7 +189,10 @@ void FullView::addApplet(const QString &name, const QString &containment,
     m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
     setWindowTitle(m_applet->name());
     setWindowIcon(SmallIcon(m_applet->icon()));
-    resize(m_applet->size().toSize());
+    kDebug() << "%%%%%%%%%%%%%%%%%%%%%%%%%m_applet size: " << m_applet->size() << "PREFERRED: " << m_applet->preferredHeight();
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect screenRect = desktop->rect();
+    resize(screenRect.right(), screenRect.bottom());
     connect(m_applet, SIGNAL(appletTransformedItself()), this, SLOT(appletTransformedItself()));
     kDebug() << "connecting ----------------";
 
