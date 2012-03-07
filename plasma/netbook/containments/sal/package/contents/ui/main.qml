@@ -48,9 +48,14 @@ Item {
         }
 
         onTextChanged: {
-            resultsView.model = runnerModel
-            runnerModel.query = text;
-            print("COUNT:" + runnerModel.count)
+            if (text == "") {
+                // it's null, probably makes sense to switch back to the category model
+                resultsView.model = serviceModel;
+            } else {
+                resultsView.model = runnerModel;
+                runnerModel.query = text;
+                print("COUNT:" + runnerModel.count)
+            }
         }
 
         focus: true
