@@ -35,14 +35,16 @@ Item {
     //FIXME also hardcoded. probably use a text metric
     height: iconWidth + resultLabel.paintedHeight * 2
 
-    Column {
-        anchors.centerIn: parent
 
         QtExtra.QIconItem {
             id: resultIcon
 
             anchors {
-                horizontalCenter: parent.horizontalCenter
+                top: parent.top
+                left: parent.left
+                right: parent.right
+//                bottom: parent.bottom
+//                horizontalCenter: parent.horizontalCenter
             }
 
             width: iconWidth
@@ -55,16 +57,18 @@ Item {
             anchors {
                 topMargin: 10
                 horizontalCenter: parent.horizontalCenter
+                top: resultIcon.bottom
+                bottom: parent.bottom
             }
 
-            width: iconWidth //+ (iconWidth / 2)
+            width: (iconWidth * 2) - 10
 
             clip: true
             smooth: true
             elide: Text.ElideRight
-            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+//            wrapMode: Text.WordWrap
         }
-    }
 
 
 
