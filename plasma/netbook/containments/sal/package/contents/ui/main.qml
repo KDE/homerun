@@ -48,6 +48,7 @@ Item {
         }
 
         onTextChanged: {
+            resultsView.model = runnerModel
             runnerModel.query = text;
             print("COUNT:" + runnerModel.count)
         }

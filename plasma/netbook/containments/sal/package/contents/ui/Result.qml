@@ -69,8 +69,6 @@ Item {
 //            wrapMode: Text.WordWrap
     }
 
-
-
     MouseArea {
         anchors.fill: parent
 
