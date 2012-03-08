@@ -218,5 +218,7 @@ Item {
                 favoritesModel.remove(index)
             }
         }
+
+        highlight: PlasmaComponents.Highlight { hover: true}
     }
 }
