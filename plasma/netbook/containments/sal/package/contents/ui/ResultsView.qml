@@ -76,6 +76,24 @@ Item {
         highlight: highlight
         highlightFollowsCurrentItem: true
 
+        PlasmaCore.Dialog {
+            id: tooltipDialog
+
+            Component.onCompleted: {
+                tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
+                tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
+            }
+
+            mainItem: tooltipText
+        }
+
+        //FIXME: it won't respond by resizing when i change the text through the onEntered event.
+        //it only abides by what it was given at ctor time. need a way to change that...
+        Text {
+            id: tooltipText
+            text: "THIS IS A TEST TEXT ITEM"
+        }
+
         delegate: Result {
             id: result
             currentText: model["label"]
@@ -91,6 +109,7 @@ Item {
                     tooltipDialog.x = point.x
                     tooltipDialog.y = point.y
                     tooltipDialog.visible = true
+                    tooltipText.text = model["label"]
                     gridView.currentIndex = index
                 }
 
@@ -98,17 +117,7 @@ Item {
                     tooltipDialog.visible = false
                 }
 
-                //FIXME: for the love of batman please fix me. 1 dialog is instantiated for each delegate if we need it or not. it sucks. it's slow.
-                PlasmaCore.Dialog {
-                    id: tooltipDialog
 
-                    Component.onCompleted: {
-                        tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
-                        tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
-                    }
-
-                    mainItem: Text { text: model.label}
-                }
 
                 onClicked: {
                     currentString = model["label"]
