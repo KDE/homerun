@@ -45,7 +45,6 @@ Item {
         NumberAnimation { duration: 200 }
     }
 
-
     QtExtra.QIconItem {
         id: resultIcon
 
@@ -58,6 +57,28 @@ Item {
 
         width: iconWidth
         height: iconWidth
+    }
+
+    QtExtra.QIconItem {
+        id: removeIcon
+
+        anchors {
+            topMargin: 10
+            top: parent.top
+            right: parent.right
+        }
+
+        width: 32
+        height: 32
+        icon: "list-remove"
+
+        MouseArea {
+            anchors.fill: parent
+
+            onClicked: {
+                print("LIST ITEM REMOVED CLICKED")
+            }
+        }
     }
 
     PlasmaComponents.Label {
@@ -81,7 +102,12 @@ Item {
     }
 
     MouseArea {
-        anchors.fill: parent
+        anchors {
+            left: resultIcon.left
+            top: resultIcon.top
+            bottom: resultIcon.bottom
+            right: removeIcon.left
+        }
 
         hoverEnabled: true
 

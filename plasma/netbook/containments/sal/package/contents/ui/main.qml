@@ -173,11 +173,10 @@ Item {
             if (resultsView.model == runnerModel) {
                 print("RUNNING APP!")
                 runnerModel.run(appIndexToRun);
-                
-            //FIXME: (only temporary)
             }
-            print("TESTSREICH")
-            favoritesModel.append( {"text": currentString, "icon": currentIcon })
+
+            print( "%%%%%%%%%%%%%%%%%%% APPENDING ICON: " + currentIcon);
+            favoritesModel.append( {"text": currentString, "icon": currentIcon });
         }
     }
 
@@ -206,6 +205,10 @@ Item {
         height: 90
 
         model: favoritesModel
-        delegate: Favorite { id: favorite; currentText: model.text; currentIcon: model.icon}
+        delegate: Favorite {
+            id: favorite;
+            currentText: model.text;
+            currentIcon: model.icon
+        }
     }
 }

@@ -112,6 +112,7 @@ Item {
 
                 onClicked: {
                     currentString = model["label"]
+                    //FIXME: why is the icon null for soem reason on a favorite add?
                     currentIcon = model["icon"]
                     appIndexToRun = gridView.currentIndex;
                     //to emit the changed signal anyways, even though it (only seems to be) the same thing
