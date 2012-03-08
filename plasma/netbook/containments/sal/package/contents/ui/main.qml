@@ -209,6 +209,10 @@ Item {
             id: favorite;
             currentText: model.text;
             currentIcon: model.icon
+
+            onWasRemovedChanged: {
+                favoritesModel.remove(index)
+            }
         }
     }
 }

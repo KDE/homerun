@@ -30,6 +30,7 @@ Item {
     property string currentId;
 
     property bool wasClicked: false
+    property bool wasRemoved: false
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
@@ -77,6 +78,7 @@ Item {
 
             onClicked: {
                 print("LIST ITEM REMOVED CLICKED")
+                wasRemoved = true
             }
         }
     }
