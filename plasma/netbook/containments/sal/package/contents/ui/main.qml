@@ -199,6 +199,10 @@ Item {
             bottom: parent.bottom
         }
 
+        //FIXME: make it not hardcoded..
+        cellWidth: 140
+        cellHeight: 120
+
         clip: true
         interactive: false
         //FIXME: use anchoring
