@@ -33,9 +33,9 @@ Item {
     property string currentText: "";
     property string currentIcon: "";
 
-    property string favoriteUrl: ""
-    property string favoriteIcon: ""
-    property string favoriteText: ""
+    property string currentFavoriteUrl: ""
+    property string currentFavoriteIcon: ""
+    property string currentFavoriteText: ""
 
     property alias model: gridView.model
 
@@ -150,7 +150,8 @@ Item {
                 hoverEnabled: true
 
                 onClicked: {
-                    favoriteText = result.currentText
+                    currentFavoriteText = result.currentText
+                    currentFavoriteIcon = result.currentIcon
                 }
 
                 onEntered: {
