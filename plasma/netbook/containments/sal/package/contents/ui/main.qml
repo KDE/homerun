@@ -201,7 +201,6 @@ Item {
         cellHeight: 120
 
         clip: true
-        interactive: false
         //FIXME: use anchoring
         height: 90
 
