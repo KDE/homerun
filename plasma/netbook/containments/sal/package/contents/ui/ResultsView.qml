@@ -34,7 +34,7 @@ Item {
     property string currentIcon: "";
 
     property string currentFavoriteUrl: ""
-    property string currentFavoriteIcon: ""
+    property variant currentFavoriteIcon
     property string currentFavoriteText: ""
 
     property alias model: gridView.model
