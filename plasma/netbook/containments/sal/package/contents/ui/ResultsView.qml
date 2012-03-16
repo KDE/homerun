@@ -135,7 +135,7 @@ Item {
             }
 
             function resultEntered() {
-                var point = tooltipDialog.popupPosition(parent)
+                var point = tooltipDialog.popupPosition(result)
                 tooltipDialog.x = point.x
                 tooltipDialog.y = point.y
                 tooltipDialog.visible = true
