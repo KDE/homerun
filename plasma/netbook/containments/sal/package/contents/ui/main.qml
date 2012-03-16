@@ -182,12 +182,6 @@ Item {
 
     ListModel {
         id: favoritesModel
-
-        ListElement { text: "TEST1"; icon: "bookmarks"}
-        ListElement { text: "TEST2"; icon: "bookmarks"}
-        ListElement { text: "TEST3"; icon: "bookmarks"}
-        ListElement { text: "TEST4"; icon: "bookmarks"}
-        ListElement { text: "TEST5"; icon: "bookmarks"}
     }
 
     GridView {

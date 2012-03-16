@@ -28,6 +28,7 @@ Item {
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
     property string currentId;
+    property alias favoriteIcon: favoriteIcon
 
     property bool wasClicked: false
 
@@ -44,6 +45,7 @@ Item {
     Behavior on opacity {
         NumberAnimation { duration: 200 }
     }
+
 
 
     QtExtra.QIconItem {
@@ -89,8 +91,32 @@ Item {
             highlighter.opacity = 0
             // because if we just change it to true, we won't
             // do anything on a second click
-            wasClicked = false
-            wasClicked = true
+//            wasClicked = false
+//            wasClicked = true
         }
     }
+
+    QtExtra.QIconItem {
+        id: favoriteIcon
+
+        anchors {
+            top: parent.top
+            right: parent.right
+//            bottom: parent.bottom
+        }
+
+        icon: "bookmarks"
+        visible: false
+        width: 16
+        height: 16
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onPressed: {
+                print("TEST")
+            }
+        }
+    }
+
 }
