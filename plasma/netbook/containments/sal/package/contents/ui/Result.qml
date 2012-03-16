@@ -42,7 +42,7 @@ Item {
 
     Behavior on opacity {
         NumberAnimation {
-            duration: 250
+            duration: 300
             easing.type: Easing.OutQuad
         }
     }
@@ -90,8 +90,16 @@ Item {
 //            bottom: parent.bottom
         }
 
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutQuad
+            }
+        }
+
         icon: "bookmarks"
-        visible: false
+        opacity: 0
         width: 32
         height: 32
     }

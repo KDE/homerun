@@ -154,11 +154,11 @@ Item {
                 }
 
                 onEntered: {
-                    result.favoriteIcon.visible = true
+                    result.favoriteIcon.opacity = 1
                 }
 
                 onExited: {
-                    result.favoriteIcon.visible = false
+                    result.favoriteIcon.opacity = 0
                 }
             }
         }
