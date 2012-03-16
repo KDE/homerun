@@ -33,6 +33,10 @@ Item {
     property string currentText: "";
     property string currentIcon: "";
 
+    property string favoriteUrl: ""
+    property string favoriteIcon: ""
+    property string favoriteText: ""
+
     property alias model: gridView.model
 
     GridView {
@@ -144,6 +148,10 @@ Item {
                 }
 
                 hoverEnabled: true
+
+                onClicked: {
+                    favoriteText = result.currentText
+                }
 
                 onEntered: {
                     result.favoriteIcon.visible = true

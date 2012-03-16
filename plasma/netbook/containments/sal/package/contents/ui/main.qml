@@ -176,7 +176,10 @@ Item {
             }
 
             print( "%%%%%%%%%%%%%%%%%%% APPENDING ICON: " + currentIcon);
-            favoritesModel.append( {"text": currentString, "icon": currentIcon });
+        }
+
+        onFavoriteTextChanged: {
+            favoritesModel.append( {"text": favoriteText, "icon": favoriteIcon });
         }
     }
 
