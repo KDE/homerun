@@ -111,7 +111,6 @@ Item {
                 hoverEnabled: true
 
                 onEntered: {
-                    result.favoriteIcon.visible = true
                     var point = tooltipDialog.popupPosition(parent)
                     tooltipDialog.x = point.x
                     tooltipDialog.y = point.y
@@ -121,7 +120,6 @@ Item {
                 }
 
                 onExited: {
-                    result.favoriteIcon.visible = false
                     tooltipDialog.visible = false
                 }
 
@@ -148,10 +146,11 @@ Item {
                 hoverEnabled: true
 
                 onEntered: {
+                    result.favoriteIcon.visible = true
                 }
 
                 onExited: {
-                    
+                    result.favoriteIcon.visible = false
                 }
             }
         }
