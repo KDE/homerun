@@ -116,7 +116,6 @@ Item {
         hoverEnabled: true
 
         onPressed: {
-            highlighter.opacity = 0
             // because if we just change it to true, we won't
             // do anything on a second click
             wasClicked = false

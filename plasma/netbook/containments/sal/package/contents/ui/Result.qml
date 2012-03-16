@@ -41,7 +41,10 @@ Item {
     }
 
     Behavior on opacity {
-        NumberAnimation { duration: 200 }
+        NumberAnimation {
+            duration: 250
+            easing.type: Easing.OutQuad
+        }
     }
 
     QtExtra.QIconItem {
@@ -89,7 +92,7 @@ Item {
 
         icon: "bookmarks"
         visible: false
-        width: 16
-        height: 16
+        width: 32
+        height: 32
     }
 }
