@@ -30,8 +30,6 @@ Item {
     property string currentId;
     property alias favoriteIcon: favoriteIcon
 
-    property bool wasClicked: false
-
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
     height: iconWidth + resultLabel.paintedHeight * 2
@@ -45,8 +43,6 @@ Item {
     Behavior on opacity {
         NumberAnimation { duration: 200 }
     }
-
-
 
     QtExtra.QIconItem {
         id: resultIcon
@@ -82,20 +78,6 @@ Item {
 //            wrapMode: Text.WordWrap
     }
 
-    MouseArea {
-        anchors.fill: parent
-
-        hoverEnabled: true
-
-        onPressed: {
-            highlighter.opacity = 0
-            // because if we just change it to true, we won't
-            // do anything on a second click
-//            wasClicked = false
-//            wasClicked = true
-        }
-    }
-
     QtExtra.QIconItem {
         id: favoriteIcon
 
@@ -109,14 +91,5 @@ Item {
         visible: false
         width: 16
         height: 16
-
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            onPressed: {
-                print("TEST")
-            }
-        }
     }
-
 }

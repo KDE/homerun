@@ -101,7 +101,13 @@ Item {
             currentId: model["id"]
 
             MouseArea {
-                anchors.fill: parent
+                anchors {
+                    left: parent.left
+                    right: result.favoriteIcon.left
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+
                 hoverEnabled: true
 
                 onEntered: {
@@ -128,6 +134,24 @@ Item {
                     urlToRun = "";
                     urlToRun = model["url"]
                     print("URL CLICKED:" + model["url"]);
+                }
+            }
+
+            MouseArea {
+                anchors {
+                    left: result.favoriteIcon.left
+                    right: parent.right
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+
+                hoverEnabled: true
+
+                onEntered: {
+                }
+
+                onExited: {
+                    
                 }
             }
         }
