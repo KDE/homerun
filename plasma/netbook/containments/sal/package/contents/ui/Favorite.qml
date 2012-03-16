@@ -31,6 +31,7 @@ Item {
 
     property bool wasClicked: false
     property bool wasRemoved: false
+    property bool wasEntered: false
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
@@ -120,6 +121,21 @@ Item {
             // do anything on a second click
             wasClicked = false
             wasClicked = true
+        }
+    }
+
+    MouseArea {
+        anchors {
+            left: parent.left
+            right: resultIcon.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+
+        hoverEnabled: true
+
+        onEntered: {
+            wasEntered = true
         }
     }
 }

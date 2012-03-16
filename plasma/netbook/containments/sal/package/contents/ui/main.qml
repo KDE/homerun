@@ -214,6 +214,10 @@ Item {
             onWasRemovedChanged: {
                 favoritesModel.remove(index)
             }
+
+            onWasEnteredChanged: {
+                favoritesView.currentIndex = index
+            }
         }
 
         highlight: PlasmaComponents.Highlight { hover: true}
