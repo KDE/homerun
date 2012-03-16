@@ -115,12 +115,7 @@ Item {
                 hoverEnabled: true
 
                 onEntered: {
-                    var point = tooltipDialog.popupPosition(parent)
-                    tooltipDialog.x = point.x
-                    tooltipDialog.y = point.y
-                    tooltipDialog.visible = true
-                    tooltipText.text = model["label"]
-                    gridView.currentIndex = index
+                    resultEntered();
                 }
 
                 onExited: {
@@ -137,6 +132,15 @@ Item {
                     urlToRun = model["url"]
                     print("URL CLICKED:" + model["url"]);
                 }
+            }
+
+            function resultEntered() {
+                var point = tooltipDialog.popupPosition(parent)
+                tooltipDialog.x = point.x
+                tooltipDialog.y = point.y
+                tooltipDialog.visible = true
+                tooltipText.text = model["label"]
+                gridView.currentIndex = index
             }
 
             MouseArea {
@@ -156,6 +160,7 @@ Item {
 
                 onEntered: {
                     result.favoriteIcon.opacity = 1
+                    resultEntered();
                 }
 
                 onExited: {
