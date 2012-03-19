@@ -42,7 +42,10 @@ Item {
     }
 
     Behavior on opacity {
-        NumberAnimation { duration: 200 }
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.OutQuad
+        }
     }
 
     QtExtra.QIconItem {
@@ -73,6 +76,15 @@ Item {
         width: 32
         height: 32
         icon: "list-remove"
+
+        opacity: 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutQuad
+            }
+        }
     }
 
     PlasmaComponents.Label {
