@@ -210,12 +210,20 @@ Item {
             currentText: model.text;
             currentIcon: model.icon
 
-            onWasRemovedChanged: {
-                favoritesModel.remove(index)
-            }
+//                favoritesModel.remove(index)
 
-            onWasEnteredChanged: {
-                favoritesView.currentIndex = index
+            MouseArea {
+                anchors.fill: parent
+
+                hoverEnabled: true
+
+                onPressed: {
+                    print("pressed")
+                }
+
+                onEntered: {
+                    favoritesView.currentIndex = index
+                }
             }
         }
 

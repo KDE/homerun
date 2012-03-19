@@ -29,9 +29,7 @@ Item {
     property alias currentIcon: resultIcon.icon;
     property string currentId;
 
-    property bool wasClicked: false
-    property bool wasRemoved: false
-    property bool wasEntered: false
+    property alias removeIcon: removeIcon
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
@@ -75,15 +73,6 @@ Item {
         width: 32
         height: 32
         icon: "list-remove"
-
-        MouseArea {
-            anchors.fill: parent
-
-            onClicked: {
-                print("LIST ITEM REMOVED CLICKED")
-                wasRemoved = true
-            }
-        }
     }
 
     PlasmaComponents.Label {
@@ -104,38 +93,5 @@ Item {
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignHCenter
 //            wrapMode: Text.WordWrap
-    }
-
-    MouseArea {
-        anchors {
-            left: resultIcon.left
-            top: resultIcon.top
-            bottom: resultIcon.bottom
-            right: removeIcon.left
-        }
-
-        hoverEnabled: true
-
-        onPressed: {
-            // because if we just change it to true, we won't
-            // do anything on a second click
-            wasClicked = false
-            wasClicked = true
-        }
-    }
-
-    MouseArea {
-        anchors {
-            left: parent.left
-            right: resultIcon.right
-            top: parent.top
-            bottom: parent.bottom
-        }
-
-        hoverEnabled: true
-
-        onEntered: {
-            wasEntered = true
-        }
     }
 }
