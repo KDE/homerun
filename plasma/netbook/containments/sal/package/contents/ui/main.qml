@@ -222,6 +222,7 @@ Item {
                 onPressed: {
                     print("pressed")
                     print("URL: " + currentUrl)
+                    serviceModel.openUrl(currentUrl);
                 }
 
                 onEntered: {
