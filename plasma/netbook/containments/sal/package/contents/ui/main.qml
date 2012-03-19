@@ -205,20 +205,44 @@ Item {
         height: 100
 
         model: favoritesModel
+
         delegate: Favorite {
             id: favorite;
             currentText: model.text;
             currentIcon: model.icon
 
-//                favoritesModel.remove(index)
-
             MouseArea {
-                anchors.fill: parent
+                anchors {
+                    left: parent.left
+                    right: favorite.removeIcon.left
+                    top: parent.top
+                    bottom: parent.bottom
+                }
 
                 hoverEnabled: true
 
                 onPressed: {
                     print("pressed")
+                }
+
+                onEntered: {
+                    print("entered")
+                    favoritesView.currentIndex = index
+                }
+            }
+
+            MouseArea {
+                anchors {
+                    left: favorite.removeIcon.left
+                    right: parent.right
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+
+                hoverEnabled: true
+
+                onPressed: {
+                   favoritesModel.remove(index)
                 }
 
                 onEntered: {
