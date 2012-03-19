@@ -175,7 +175,7 @@ Item {
             print( "%%%%%%%%%%%%%%%%%%% APPENDING ICON: " + currentIcon);
         }
 
-        onCurrentFavoriteTextChanged: {
+        onCurrentFavoriteIconChanged: {
             favoritesModel.append( {"text": currentFavoriteText, "icon": currentFavoriteIcon });
         }
     }
@@ -205,7 +205,7 @@ Item {
 
         delegate: Favorite {
             id: favorite;
-            currentText: model.text;
+            currentText: model.text
             currentIcon: model.icon
 
             MouseArea {
