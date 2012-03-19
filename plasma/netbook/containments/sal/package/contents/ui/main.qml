@@ -198,11 +198,11 @@ Item {
 
         //FIXME: make it not hardcoded..
         cellWidth: 140
-        cellHeight: 120
+        cellHeight: 100
 
         clip: true
         //FIXME: use anchoring
-        height: 90
+        height: 100
 
         model: favoritesModel
         delegate: Favorite {
