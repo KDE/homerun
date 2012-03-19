@@ -27,6 +27,7 @@ Item {
     property int iconWidth: 64
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
+    property string currentUrl: ""
     property string currentId;
 
     property alias removeIcon: removeIcon

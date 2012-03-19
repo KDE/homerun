@@ -66,7 +66,7 @@ Item {
             }
         }
 
-         Keys.onReturnPressed: {
+        Keys.onReturnPressed: {
             print("PRESSED")
         }
 
@@ -103,6 +103,7 @@ Item {
             currentText: model["label"]
             currentIcon: model["icon"]
             currentId: model["id"]
+            currentUrl: model["url"]
 
             MouseArea {
                 anchors {
@@ -123,9 +124,6 @@ Item {
                 }
 
                 onClicked: {
-                    currentString = model["label"]
-                    //FIXME: why is the icon null for soem reason on a favorite add?
-                    currentIcon = model["icon"]
                     appIndexToRun = gridView.currentIndex;
                     //to emit the changed signal anyways, even though it (only seems to be) the same thing
                     urlToRun = "";
@@ -156,6 +154,7 @@ Item {
                 onClicked: {
                     currentFavoriteText = result.currentText
                     currentFavoriteIcon = result.currentIcon
+                    currentFavoriteUrl = result.currentUrl
                 }
 
                 onEntered: {

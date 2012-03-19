@@ -176,7 +176,7 @@ Item {
         }
 
         onCurrentFavoriteIconChanged: {
-            favoritesModel.append( {"text": currentFavoriteText, "icon": currentFavoriteIcon });
+            favoritesModel.append( {"text": currentFavoriteText, "icon": currentFavoriteIcon, "url": currentFavoriteUrl} );
         }
     }
 
@@ -207,6 +207,7 @@ Item {
             id: favorite;
             currentText: model.text
             currentIcon: model.icon
+            currentUrl: model.url
 
             MouseArea {
                 anchors {
@@ -220,6 +221,7 @@ Item {
 
                 onPressed: {
                     print("pressed")
+                    print("URL: " + currentUrl)
                 }
 
                 onEntered: {
