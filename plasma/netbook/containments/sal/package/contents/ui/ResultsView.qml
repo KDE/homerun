@@ -133,12 +133,24 @@ Item {
             }
 
             function resultEntered() {
-                var point = tooltipDialog.popupPosition(result)
-                tooltipDialog.x = point.x
-                tooltipDialog.y = point.y
-                tooltipDialog.visible = true
-                tooltipText.text = model["label"]
+                tooltipShowTimer.restart()
+
                 gridView.currentIndex = index
+            }
+
+            Timer {
+                id: tooltipShowTimer
+
+                interval: 500
+                repeat: false
+
+                onTriggered:   {
+                    var point = tooltipDialog.popupPosition(result)
+                    tooltipDialog.x = point.x
+                    tooltipDialog.y = point.y
+                    tooltipDialog.visible = true
+                    tooltipText.text = model["label"]
+                }
             }
 
             MouseArea {
