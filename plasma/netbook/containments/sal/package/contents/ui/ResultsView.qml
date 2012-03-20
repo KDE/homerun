@@ -120,6 +120,9 @@ Item {
                 }
 
                 onExited: {
+                    tooltipShowTimer.restart()
+                    tooltipShowTimer.running = false
+
                     tooltipDialog.visible = false
                 }
 
