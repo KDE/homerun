@@ -122,6 +122,16 @@ FullView::~FullView()
     storeCurrentApplet();
 }
 
+void FullView::keyPressEvent (QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape) {
+        hide();
+        event->accept();
+    }
+
+    QGraphicsView::keyPressEvent(event);
+}
+
 void FullView::addApplet(const QString &name, const QString &containment,
                          const QString& wallpaper, const QVariantList &args)
 {

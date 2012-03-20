@@ -53,7 +53,8 @@ public:
 
 protected:
     void showEvent(QShowEvent *event);
-    virtual void focusOutEvent ( QFocusEvent* event );
+    virtual void focusOutEvent(QFocusEvent *event);
+    virtual void keyPressEvent(QKeyEvent *event);
 
 private Q_SLOTS:
     void appletTransformedItself();
