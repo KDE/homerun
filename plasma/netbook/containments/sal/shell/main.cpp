@@ -30,7 +30,7 @@
 
 #include <QPixmapCache>
 
-#include <KApplication>
+#include <KUniqueApplication>
 #include <KAboutData>
 #include <KAction>
 #include <KCmdLineArgs>
@@ -157,7 +157,13 @@ int main(int argc, char **argv)
     options.add("list-remote", ki18n("List zeroconf announced remote widgets"));
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KApplication app;
+    if (!KUniqueApplication::start()) {
+
+        kDebug() << "ALREADY RUNNING!";
+        return 0;
+    }
+
+    KUniqueApplication app;
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs() ;
 

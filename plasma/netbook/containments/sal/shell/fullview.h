@@ -26,6 +26,8 @@
 #ifndef FULLVIEW_H
 #define FULLVIEW_H
 
+#include <KMainWindow>
+
 #include <Plasma/Applet>
 
 #include <Plasma/Corona>
@@ -39,7 +41,7 @@ namespace Plasma
     class AccessAppletJob;
 }
 
-class FullView : public QGraphicsView
+class FullView : public KMainWindow
 {
     Q_OBJECT
 
@@ -72,7 +74,8 @@ private:
     bool hasStorageGroupFor(Plasma::Applet *applet) const;
     void storeCurrentApplet();
 
-    Plasma::Corona m_corona;
+    QGraphicsView *m_view;
+    Plasma::Corona *m_corona;
     Plasma::FormFactor m_formfactor;
     Plasma::Location m_location;
     Plasma::Containment *m_containment;

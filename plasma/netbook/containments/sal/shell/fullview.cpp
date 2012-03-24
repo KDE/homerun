@@ -33,6 +33,7 @@
 #include <QResizeEvent>
 #include <QTimer>
 #include <QDesktopWidget>
+#include <QPushButton>
 
 #include <KCmdLineArgs>
 #include <KIconLoader>
@@ -48,15 +49,22 @@
 using namespace Plasma;
 
 FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidget *parent)
-    : QGraphicsView(parent),
+    : KMainWindow(),
       m_formfactor(Plasma::Planar),
       m_location(Plasma::Floating),
       m_containment(0),
+      m_corona(0),
+      m_view(0),
       m_applet(0),
       m_appletShotTimer(0),
       m_persistentConfig(persistent)
 {
-    setFrameStyle(QFrame::NoFrame);
+
+    m_view = new QGraphicsView(this);
+    setCentralWidget(m_view);
+
+    m_view->setFrameStyle(QFrame::NoFrame);
+
     QString formfactor = ff.toLower();
     if (formfactor.isEmpty() || formfactor == "planar") {
         m_formfactor = Plasma::Planar;
@@ -89,47 +97,46 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAutoFillBackground(false);
-    viewport()->setAutoFillBackground(false);
+    m_view->viewport()->setAutoFillBackground(false);
     setAttribute(Qt::WA_NoSystemBackground);
-    viewport()->setAttribute(Qt::WA_NoSystemBackground);
+    m_view->viewport()->setAttribute(Qt::WA_NoSystemBackground);
     Plasma::WindowEffects::overrideShadow(winId(), true);
 
 
     Plasma::ContainmentActionsPluginsConfig containmentActionPlugins;
     containmentActionPlugins.addPlugin(Qt::NoModifier, Qt::RightButton, "contextmenu");
 
-    m_corona.setContainmentActionsDefaults(Plasma::Containment::DesktopContainment, containmentActionPlugins);
-    m_corona.setContainmentActionsDefaults(Plasma::Containment::CustomContainment, containmentActionPlugins);
-    m_corona.setContainmentActionsDefaults(Plasma::Containment::PanelContainment, containmentActionPlugins);
-    m_corona.setContainmentActionsDefaults(Plasma::Containment::CustomPanelContainment, containmentActionPlugins);
+    m_corona = new Plasma::Corona(this);
+    m_corona->setContainmentActionsDefaults(Plasma::Containment::DesktopContainment, containmentActionPlugins);
+    m_corona->setContainmentActionsDefaults(Plasma::Containment::CustomContainment, containmentActionPlugins);
+    m_corona->setContainmentActionsDefaults(Plasma::Containment::PanelContainment, containmentActionPlugins);
+    m_corona->setContainmentActionsDefaults(Plasma::Containment::CustomPanelContainment, containmentActionPlugins);
 
-    setScene(&m_corona);
-    connect(&m_corona, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(sceneRectChanged(QRectF)));
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    m_view->setScene(m_corona);
+    connect(m_corona, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(sceneRectChanged(QRectF)));
+    m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
 void FullView::focusOutEvent ( QFocusEvent* event )
 {
     kDebug() << "FOCUS OUT!!";
 //    hide();
-    QGraphicsView::focusOutEvent ( event );
 }
 
 FullView::~FullView()
 {
-    storeCurrentApplet();
+//    storeCurrentApplet();
 }
 
 void FullView::keyPressEvent (QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {
-        hide();
+//        hide();
         event->accept();
     }
 
-    QGraphicsView::keyPressEvent(event);
 }
 
 void FullView::addApplet(const QString &name, const QString &containment,
@@ -138,7 +145,7 @@ void FullView::addApplet(const QString &name, const QString &containment,
     kDebug() << "adding applet" << name << "in" << containment;
     if (!m_containment || m_containment->pluginName() != containment) {
         delete m_containment;
-        m_containment = m_corona.addContainment(containment);
+        m_containment = m_corona->addContainment(containment);
         connect(m_containment, SIGNAL(appletRemoved(Plasma::Applet*)), this, SLOT(appletRemoved(Plasma::Applet*)));
     }
 
@@ -149,7 +156,7 @@ void FullView::addApplet(const QString &name, const QString &containment,
     m_containment->setFormFactor(m_formfactor);
     m_containment->setLocation(m_location);
     m_containment->resize(size());
-    setScene(m_containment->scene());
+    m_view->setScene(m_containment->scene());
 
     if (name.startsWith("plasma:") || name.startsWith("zeroconf:")) {
         kDebug() << "accessing remote: " << name;
@@ -195,7 +202,7 @@ void FullView::addApplet(const QString &name, const QString &containment,
         m_applet->configChanged();
     }
 
-    setSceneRect(m_applet->sceneBoundingRect());
+    m_view->setSceneRect(m_applet->sceneBoundingRect());
     m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
     setWindowTitle(m_applet->name());
     setWindowIcon(SmallIcon(m_applet->icon()));
@@ -203,6 +210,7 @@ void FullView::addApplet(const QString &name, const QString &containment,
     QDesktopWidget *desktop = QApplication::desktop();
     QRect screenRect = desktop->rect();
     resize(screenRect.right(), screenRect.bottom());
+    m_view->resize(screenRect.right(), screenRect.bottom());
     connect(m_applet, SIGNAL(appletTransformedItself()), this, SLOT(appletTransformedItself()));
     kDebug() << "connecting ----------------";
 
@@ -295,7 +303,7 @@ void FullView::plasmoidAccessFinished(Plasma::AccessAppletJob *job)
         m_applet = job->applet();
         m_containment->addApplet(m_applet, QPointF(-1, -1), false);
         m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
-        setSceneRect(m_applet->sceneBoundingRect());
+        m_view->setSceneRect(m_applet->sceneBoundingRect());
         setWindowTitle(m_applet->name());
         setWindowIcon(SmallIcon(m_applet->icon()));
     } else {
@@ -323,7 +331,7 @@ void FullView::showEvent(QShowEvent *)
 
 void FullView::resizeEvent(QResizeEvent *event)
 {
-    QGraphicsView::resizeEvent(event);
+//    QGraphicsView::resizeEvent(event);
 
     if (!m_containment) {
         return;
@@ -366,27 +374,27 @@ void FullView::resizeEvent(QResizeEvent *event)
     // up to infinity memory in exponential increments
     if (newSize.isValid()) {
         m_applet->resize(QSizeF(newWidth, newHeight));
-        setSceneRect(m_applet->sceneBoundingRect());
+        m_view->setSceneRect(m_applet->sceneBoundingRect());
     }
 }
 
 void FullView::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event)
-    qApp->quit();
+//    qApp->quit();
 }
 
 void FullView::appletTransformedItself()
 {
     resize(m_applet->size().toSize());
-    setSceneRect(m_applet->sceneBoundingRect());
+    m_view->setSceneRect(m_applet->sceneBoundingRect());
 }
 
 void FullView::sceneRectChanged(const QRectF &rect)
 {
     Q_UNUSED(rect)
     if (m_applet) {
-        setSceneRect(m_applet->sceneBoundingRect());
+        m_view->setSceneRect(m_applet->sceneBoundingRect());
     }
 }
 
