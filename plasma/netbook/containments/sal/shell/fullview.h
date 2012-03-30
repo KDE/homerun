@@ -57,12 +57,12 @@ protected:
     void showEvent(QShowEvent *event);
     virtual void focusOutEvent(QFocusEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
+    virtual void closeEvent(QCloseEvent *event);
 
 private Q_SLOTS:
     void appletTransformedItself();
     void sceneRectChanged(const QRectF &rect);
     void resizeEvent(QResizeEvent *event);
-    void closeEvent(QCloseEvent *event);
     void appletRemoved(Plasma::Applet *applet);
     void plasmoidAccessFinished(Plasma::AccessAppletJob *job);
     void screenshotPlasmoid();

@@ -127,16 +127,23 @@ void FullView::focusOutEvent ( QFocusEvent* event )
 
 FullView::~FullView()
 {
+    kDebug() << "DTOR HIT";
 //    storeCurrentApplet();
 }
 
-void FullView::keyPressEvent (QKeyEvent *event)
+
+void FullView::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {
 //        hide();
         event->accept();
     }
 
+}
+
+void FullView::closeEvent(QCloseEvent *event)
+{
+    kDebug() << "CLOSE EVENT";
 }
 
 void FullView::addApplet(const QString &name, const QString &containment,
@@ -314,6 +321,7 @@ void FullView::plasmoidAccessFinished(Plasma::AccessAppletJob *job)
 
 void FullView::appletRemoved(Plasma::Applet *applet)
 {
+    kDebug()  << "APPLETREMOVED";
     if (m_applet == applet) {
         m_applet = 0;
         if (!checkShotTimer()) {
@@ -376,12 +384,6 @@ void FullView::resizeEvent(QResizeEvent *event)
         m_applet->resize(QSizeF(newWidth, newHeight));
         m_view->setSceneRect(m_applet->sceneBoundingRect());
     }
-}
-
-void FullView::closeEvent(QCloseEvent *event)
-{
-    Q_UNUSED(event)
-//    qApp->quit();
 }
 
 void FullView::appletTransformedItself()
