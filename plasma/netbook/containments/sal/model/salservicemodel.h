@@ -60,7 +60,7 @@ private:
     void loadServiceGroup(KServiceGroup::Ptr group);
 
 
-    QMimeData* SalServiceModel::mimeData(const QModelIndexList &indexes) const;
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
 
 private:
     QList<KService::Ptr> m_serviceList;
