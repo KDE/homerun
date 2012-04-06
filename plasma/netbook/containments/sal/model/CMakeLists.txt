@@ -13,6 +13,7 @@ target_link_libraries(salservicemodelplugin
         ${QT_QTCORE_LIBRARY}
         ${QT_QTDECLARATIVE_LIBRARY}
         ${KDE4_PLASMA_LIBS}
+        ${KDE4_KIO_LIBS}
         )
 
 install(TARGETS salservicemodelplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/salservicemodel)
