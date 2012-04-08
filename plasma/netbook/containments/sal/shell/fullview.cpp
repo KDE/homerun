@@ -27,6 +27,8 @@
 
 #include "fullview.h"
 
+#include "salvieweradaptor.h"
+
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -59,6 +61,7 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
       m_appletShotTimer(0),
       m_persistentConfig(persistent)
 {
+    new SalViewerAdaptor(this);
 
     m_view = new QGraphicsView(this);
     setCentralWidget(m_view);
@@ -131,6 +134,10 @@ FullView::~FullView()
 //    storeCurrentApplet();
 }
 
+void FullView::showPopup(int x, int y)
+{
+
+}
 
 void FullView::keyPressEvent(QKeyEvent *event)
 {

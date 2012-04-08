@@ -44,6 +44,7 @@ namespace Plasma
 class FullView : public KMainWindow
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.salViewer")
 
 public:
     explicit FullView(const QString &formfactor = "planar", const QString &location = "floating", bool persistentConfig = false, QWidget *parent = 0);
@@ -52,6 +53,9 @@ public:
     void addApplet(const QString &name, const QString& containment,
                    const QString& wallpaper, const QVariantList &args = QVariantList());
     void screenshotAll();
+
+public Q_SLOTS:
+    void showPopup(int x, int y);
 
 protected:
     void showEvent(QShowEvent *event);
