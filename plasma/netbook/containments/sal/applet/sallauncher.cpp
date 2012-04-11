@@ -59,7 +59,10 @@ void SalLauncher::init()
 void SalLauncher::iconClicked()
 {
     kDebug() << "ICON CLICKED!";
-//    KToolInvocation::startServiceByDesktopPath
+    QString error;
+    //oddly doesn't work?
+    //KToolInvocation::startServiceByDesktopPath("salviewer.desktop", QStringList(), &error);
+    //kDebug() << "ERROR?: " << error;
     KRun::runCommand("salviewer", 0);
 }
 

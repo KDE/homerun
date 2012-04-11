@@ -62,6 +62,9 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
       m_persistentConfig(persistent)
 {
     new SalViewerAdaptor(this);
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    dbus.registerObject("/SalViewer", this);
+    dbus.registerService("org.kde.salViewer");
 
     m_view = new QGraphicsView(this);
     setCentralWidget(m_view);

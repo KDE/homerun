@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Service
+Icon=kde
+X-KDE-ServiceTypes=
+X-DBUS-StartupType=Unique
+X-KDE-StartupNotify=false
+Exec=salviewer
+
+Name=Search and Launch application
+
+Comment=Displays Search and Launch in a popup
