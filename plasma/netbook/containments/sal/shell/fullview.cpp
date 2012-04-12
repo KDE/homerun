@@ -123,9 +123,6 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-    hide();
-    m_view->hide();
 }
 
 void FullView::focusOutEvent ( QFocusEvent* event )
@@ -150,6 +147,7 @@ void FullView::showPopup(int screen)
     const QRect rect = w.availableGeometry(screen);
 
     setGeometry(rect);
+    show();
 }
 
 void FullView::keyPressEvent(QKeyEvent *event)

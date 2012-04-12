@@ -309,7 +309,6 @@ themeFound:
     } else {
         kDebug() << "just load applet";
         view.addApplet("org.kde.sal", containment, wallpaper, appletArgs);
-        view.show();
     }
 
 
