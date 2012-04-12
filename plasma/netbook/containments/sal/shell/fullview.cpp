@@ -48,6 +48,7 @@
 #include <Plasma/Package>
 #include <Plasma/Wallpaper>
 #include <Plasma/WindowEffects>
+#include <Plasma/PushButton>
 using namespace Plasma;
 
 FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidget *parent)
@@ -59,7 +60,8 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
       m_view(0),
       m_applet(0),
       m_appletShotTimer(0),
-      m_persistentConfig(persistent)
+      m_persistentConfig(persistent),
+      m_closeButton(0)
 {
     new SalViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
@@ -99,7 +101,6 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
         m_location = Plasma::LeftEdge;
     }
 
-
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAutoFillBackground(false);
@@ -107,7 +108,6 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     setAttribute(Qt::WA_NoSystemBackground);
     m_view->viewport()->setAttribute(Qt::WA_NoSystemBackground);
     Plasma::WindowEffects::overrideShadow(winId(), true);
-
 
     Plasma::ContainmentActionsPluginsConfig containmentActionPlugins;
     containmentActionPlugins.addPlugin(Qt::NoModifier, Qt::RightButton, "contextmenu");
@@ -118,6 +118,12 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     m_corona->setContainmentActionsDefaults(Plasma::Containment::PanelContainment, containmentActionPlugins);
     m_corona->setContainmentActionsDefaults(Plasma::Containment::CustomPanelContainment, containmentActionPlugins);
 
+    m_closeButton = new Plasma::PushButton();
+    m_closeButton->setIcon(KIcon("dialog-close"));
+    m_closeButton->setText("Close");
+    m_closeButton->setZValue(1);
+    m_corona->addItem(m_closeButton);
+
     m_view->setScene(m_corona);
     connect(m_corona, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(sceneRectChanged(QRectF)));
     m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -125,7 +131,7 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
-void FullView::focusOutEvent ( QFocusEvent* event )
+void FullView::focusOutEvent(QFocusEvent* event)
 {
     kDebug() << "FOCUS OUT!!";
 //    hide();
@@ -135,6 +141,7 @@ FullView::~FullView()
 {
     kDebug() << "DTOR HIT";
 //    storeCurrentApplet();
+    delete m_closeButton;
 }
 
 void FullView::showPopup(int screen)

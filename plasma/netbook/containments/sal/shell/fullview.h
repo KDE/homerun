@@ -39,6 +39,7 @@ class QTimer;
 namespace Plasma
 {
     class AccessAppletJob;
+class PushButton;
 }
 
 class FullView : public KMainWindow
@@ -89,6 +90,7 @@ private:
     // passed through cli by default, config files
     // are non-persistent in plasmoidviewer.
     bool m_persistentConfig;
+    Plasma::PushButton *m_closeButton;
 };
 
 #endif
