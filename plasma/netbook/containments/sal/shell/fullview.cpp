@@ -137,9 +137,9 @@ FullView::~FullView()
 //    storeCurrentApplet();
 }
 
-void FullView::showPopup(int x, int y)
+void FullView::showPopup(int screen)
 {
-
+    kDebug() << "POPUP REQUESTED";
 }
 
 void FullView::keyPressEvent(QKeyEvent *event)

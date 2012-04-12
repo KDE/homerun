@@ -55,7 +55,7 @@ public:
     void screenshotAll();
 
 public Q_SLOTS:
-    void showPopup(int x, int y);
+    void showPopup(int screen);
 
 protected:
     void showEvent(QShowEvent *event);

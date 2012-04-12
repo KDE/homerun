@@ -24,9 +24,13 @@
 #include <QtGui/QGraphicsScene>
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QGraphicsLinearLayout>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDBusInterface>
 
 #include <Plasma/PushButton>
 #include <Plasma/IconWidget>
+#include <Plasma/Containment>
 
 #include <KSharedConfig>
 #include <KLocale>
@@ -54,16 +58,26 @@ void SalLauncher::init()
     connect(m_icon, SIGNAL(clicked()), this, SLOT(iconClicked()));
 
     layout->addItem(m_icon);
+
+    //oddly doesn't work?
+    //KToolInvocation::startServiceByDesktopPath("salviewer.desktop", QStringList(), &error);
+    //kDebug() << "ERROR?: " << error;
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.salViewer")) {
+        kDebug() << "Service not registered, launching salviewer";
+        KRun::runCommand("salviewer", 0);
+    }
 }
 
 void SalLauncher::iconClicked()
 {
     kDebug() << "ICON CLICKED!";
-    QString error;
-    //oddly doesn't work?
-    //KToolInvocation::startServiceByDesktopPath("salviewer.desktop", QStringList(), &error);
-    //kDebug() << "ERROR?: " << error;
-    KRun::runCommand("salviewer", 0);
+    QDBusConnection bus = QDBusConnection::sessionBus();
+
+    QDBusInterface *interface = new QDBusInterface("org.kde.salViewer", "/SalViewer", "org.kde.salViewer", bus, this);
+
+    QPoint position = popupPosition(QSize());
+
+    interface->call("showPopup", containment()->screen());
 }
 
 #include "sallauncher.moc"

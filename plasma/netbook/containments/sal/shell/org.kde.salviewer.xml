@@ -2,8 +2,7 @@
 <node>
   <interface name="org.kde.salViewer">
     <method name="showPopup">
-      <arg name="x" type="i" direction="in"/>
-      <arg name="y" type="i" direction="in"/>
+      <arg name="screen" type="i" direction="in"/>
     </method>
   </interface>
 </node>

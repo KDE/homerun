@@ -316,6 +316,8 @@ themeFound:
     QAction *action = KStandardAction::quit(&app, SLOT(quit()), &view);
     view.addAction(action);
 
+    app.setQuitOnLastWindowClosed(false);
+
     return app.exec();
 }
 
