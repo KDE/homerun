@@ -131,10 +131,17 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 }
 
+void FullView::focusInEvent(QFocusEvent* event)
+{
+    kDebug() << "FOCUS IN";
+    QWidget::focusInEvent(event);
+}
+
+
 void FullView::focusOutEvent(QFocusEvent* event)
 {
     kDebug() << "FOCUS OUT!!";
-//    hide();
+    hide();
 }
 
 FullView::~FullView()
@@ -153,17 +160,19 @@ void FullView::showPopup(int screen)
     QDesktopWidget w;
     const QRect rect = w.availableGeometry(screen);
 
+    kDebug() << "Rect, w: " << rect.width() << " h: " << rect.height();
+
     setGeometry(rect);
     show();
 }
 
 void FullView::keyPressEvent(QKeyEvent *event)
 {
+    kDebug() << "KEYPRESS";
     if (event->key() == Qt::Key_Escape) {
-//        hide();
+        hide();
         event->accept();
     }
-
 }
 
 void FullView::closeEvent(QCloseEvent *event)

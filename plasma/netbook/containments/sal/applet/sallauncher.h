@@ -50,6 +50,7 @@ public:
 
 private Q_SLOTS:
     void iconClicked();
+    void checkAndLaunch();
 
 private:
     Plasma::IconWidget *m_icon;

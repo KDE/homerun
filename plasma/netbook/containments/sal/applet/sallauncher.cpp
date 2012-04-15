@@ -62,6 +62,11 @@ void SalLauncher::init()
     //oddly doesn't work?
     //KToolInvocation::startServiceByDesktopPath("salviewer.desktop", QStringList(), &error);
     //kDebug() << "ERROR?: " << error;
+    checkAndLaunch();
+}
+
+void SalLauncher::checkAndLaunch()
+{
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.salViewer")) {
         kDebug() << "Service not registered, launching salviewer";
         KRun::runCommand("salviewer", 0);
@@ -71,11 +76,11 @@ void SalLauncher::init()
 void SalLauncher::iconClicked()
 {
     kDebug() << "ICON CLICKED!";
+    checkAndLaunch();
+
     QDBusConnection bus = QDBusConnection::sessionBus();
 
     QDBusInterface *interface = new QDBusInterface("org.kde.salViewer", "/SalViewer", "org.kde.salViewer", bus, this);
-
-    QPoint position = popupPosition(QSize());
 
     interface->call("showPopup", containment()->screen());
 }

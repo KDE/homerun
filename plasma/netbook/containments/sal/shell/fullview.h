@@ -60,6 +60,7 @@ public Q_SLOTS:
 
 protected:
     void showEvent(QShowEvent *event);
+    virtual void focusInEvent(QFocusEvent *event);
     virtual void focusOutEvent(QFocusEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void closeEvent(QCloseEvent *event);
