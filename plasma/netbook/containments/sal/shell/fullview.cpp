@@ -36,6 +36,7 @@
 #include <QTimer>
 #include <QDesktopWidget>
 #include <QPushButton>
+#include <QGraphicsView>
 
 #include <KCmdLineArgs>
 #include <KIconLoader>
@@ -52,12 +53,11 @@
 using namespace Plasma;
 
 FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidget *parent)
-    : KMainWindow(),
+    : QGraphicsView(),
       m_formfactor(Plasma::Planar),
       m_location(Plasma::Floating),
       m_containment(0),
       m_corona(0),
-      m_view(0),
       m_applet(0),
       m_appletShotTimer(0),
       m_persistentConfig(persistent),
@@ -68,67 +68,41 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     dbus.registerObject("/SalViewer", this);
     dbus.registerService("org.kde.salViewer");
 
-    m_view = new QGraphicsView(this);
-    setCentralWidget(m_view);
+    m_corona = new Plasma::Corona(this);
+    setScene(m_corona);
 
-    m_view->setFrameStyle(QFrame::NoFrame);
+    m_applet = Plasma::Applet::load("org.kde.sal");
 
-    QString formfactor = ff.toLower();
-    if (formfactor.isEmpty() || formfactor == "planar") {
-        m_formfactor = Plasma::Planar;
-    } else if (formfactor == "vertical") {
-        m_formfactor = Plasma::Vertical;
-    } else if (formfactor == "horizontal") {
-        m_formfactor = Plasma::Horizontal;
-    } else if (formfactor == "mediacenter") {
-        m_formfactor = Plasma::MediaCenter;
+    if (!m_applet) {
+        kDebug() << "failed to load";
+        return;
     }
 
-    QString location = loc.toLower();
-    if (loc.isEmpty() || loc == "floating") {
-        m_location = Plasma::Floating;
-    } else if (loc == "desktop") {
-        m_location = Plasma::Desktop;
-    } else if (loc == "fullscreen") {
-        m_location = Plasma::FullScreen;
-    } else if (loc == "top") {
-        m_location = Plasma::TopEdge;
-    } else if (loc == "bottom") {
-        m_location = Plasma::BottomEdge;
-    } else if (loc == "right") {
-        m_location = Plasma::RightEdge;
-    } else if (loc == "left") {
-        m_location = Plasma::LeftEdge;
-    }
+    m_containment = m_corona->addContainment("null");
+    m_containment->addApplet(m_applet, QPointF(-1, -1), false);
+    m_containment->resize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+
+    m_applet->setPos(0, 0);
+    m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
+    setSceneRect(m_applet->sceneBoundingRect());
+    setWindowTitle(m_applet->name());
+    setWindowIcon(SmallIcon(m_applet->icon()));
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setFrameStyle(QFrame::NoFrame);
 
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAutoFillBackground(false);
-    m_view->viewport()->setAutoFillBackground(false);
+    viewport()->setAutoFillBackground(false);
     setAttribute(Qt::WA_NoSystemBackground);
-    m_view->viewport()->setAttribute(Qt::WA_NoSystemBackground);
+    viewport()->setAttribute(Qt::WA_NoSystemBackground);
     Plasma::WindowEffects::overrideShadow(winId(), true);
 
-    Plasma::ContainmentActionsPluginsConfig containmentActionPlugins;
-    containmentActionPlugins.addPlugin(Qt::NoModifier, Qt::RightButton, "contextmenu");
-
-    m_corona = new Plasma::Corona(this);
-    m_corona->setContainmentActionsDefaults(Plasma::Containment::DesktopContainment, containmentActionPlugins);
-    m_corona->setContainmentActionsDefaults(Plasma::Containment::CustomContainment, containmentActionPlugins);
-    m_corona->setContainmentActionsDefaults(Plasma::Containment::PanelContainment, containmentActionPlugins);
-    m_corona->setContainmentActionsDefaults(Plasma::Containment::CustomPanelContainment, containmentActionPlugins);
-
-    m_closeButton = new Plasma::PushButton();
-    m_closeButton->setIcon(KIcon("dialog-close"));
-    m_closeButton->setText("Close");
-    m_closeButton->setZValue(1);
-    m_corona->addItem(m_closeButton);
-
-    m_view->setScene(m_corona);
-    connect(m_corona, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(sceneRectChanged(QRectF)));
-    m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+//    m_applet->addAction(QString("remove"), KStandardAction::quit(this, SLOT(hide()), m_applet));
+    // enforce the applet being our size
+    connect(m_applet, SIGNAL(geometryChanged()), this, SLOT(updateGeometry()));
+    updateGeometry();
 }
 
 void FullView::focusInEvent(QFocusEvent* event)
@@ -136,7 +110,6 @@ void FullView::focusInEvent(QFocusEvent* event)
     kDebug() << "FOCUS IN";
     QWidget::focusInEvent(event);
 }
-
 
 void FullView::focusOutEvent(QFocusEvent* event)
 {
@@ -146,9 +119,15 @@ void FullView::focusOutEvent(QFocusEvent* event)
 
 FullView::~FullView()
 {
+    m_containment->destroy(false);
     kDebug() << "DTOR HIT";
 //    storeCurrentApplet();
     delete m_closeButton;
+}
+
+void FullView::showEvent(QShowEvent *event)
+{
+    
 }
 
 void FullView::showPopup(int screen)
@@ -173,6 +152,7 @@ void FullView::keyPressEvent(QKeyEvent *event)
         hide();
         event->accept();
     }
+    QGraphicsView::keyPressEvent(event);
 }
 
 void FullView::closeEvent(QCloseEvent *event)
@@ -180,284 +160,48 @@ void FullView::closeEvent(QCloseEvent *event)
     kDebug() << "CLOSE EVENT";
 }
 
-void FullView::addApplet(const QString &name, const QString &containment,
-                         const QString& wallpaper, const QVariantList &args)
+void FullView::setContainment(Plasma::Containment *c)
 {
-    kDebug() << "adding applet" << name << "in" << containment;
-    if (!m_containment || m_containment->pluginName() != containment) {
-        delete m_containment;
-        m_containment = m_corona->addContainment(containment);
-        connect(m_containment, SIGNAL(appletRemoved(Plasma::Applet*)), this, SLOT(appletRemoved(Plasma::Applet*)));
+    if (m_containment) {
+        disconnect(m_containment, 0, this, 0);
     }
 
-    if (!wallpaper.isEmpty()) {
-        m_containment->setWallpaper(wallpaper);
-    }
-
-    m_containment->setFormFactor(m_formfactor);
-    m_containment->setLocation(m_location);
-    m_containment->resize(size());
-    m_view->setScene(m_containment->scene());
-
-    if (name.startsWith("plasma:") || name.startsWith("zeroconf:")) {
-        kDebug() << "accessing remote: " << name;
-        AccessManager::self()->accessRemoteApplet(KUrl(name));
-        connect(AccessManager::self(), SIGNAL(finished(Plasma::AccessAppletJob*)),
-                this, SLOT(plasmoidAccessFinished(Plasma::AccessAppletJob*)));
-        return;
-    }
-
-    if (m_applet) {
-        // we already have an applet!
-        storeCurrentApplet();
-        disconnect(m_applet);
-        m_applet->destroy();
-    }
-
-    QFileInfo info(name);
-    if (!info.isAbsolute()) {
-        info = QFileInfo(QDir::currentPath() + "/" + name);
-    }
-
-    if (info.exists()) {
-        m_applet = Applet::loadPlasmoid(info.absoluteFilePath());
-    }
-
-    if (m_applet) {
-        m_containment->addApplet(m_applet, QPointF(-1, -1), false);
-    } else if (name.isEmpty()) {
-        return;
-    } else {
-        m_applet = m_containment->addApplet(name, args, QRectF(0, 0, -1, -1));
-    }
-
-    if (!m_applet) {
-        return;
-    }
-
-    if (hasStorageGroupFor(m_applet) && m_persistentConfig) {
-        KConfigGroup cg = m_applet->config();
-        KConfigGroup storage = storageGroup(m_applet);
-        cg.deleteGroup();
-        storage.copyTo(&cg);
-        m_applet->configChanged();
-    }
-
-    m_view->setSceneRect(m_applet->sceneBoundingRect());
-    m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
-    setWindowTitle(m_applet->name());
-    setWindowIcon(SmallIcon(m_applet->icon()));
-    kDebug() << "%%%%%%%%%%%%%%%%%%%%%%%%%m_applet size: " << m_applet->size() << "PREFERRED: " << m_applet->preferredHeight();
-    QDesktopWidget *desktop = QApplication::desktop();
-    QRect screenRect = desktop->rect();
-    resize(screenRect.right(), screenRect.bottom());
-    m_view->resize(screenRect.right(), screenRect.bottom());
-    connect(m_applet, SIGNAL(appletTransformedItself()), this, SLOT(appletTransformedItself()));
-    kDebug() << "connecting ----------------";
-
-    checkShotTimer();
-}
-
-bool FullView::checkShotTimer()
-{
-    KCmdLineArgs *cliArgs = KCmdLineArgs::parsedArgs();
-    if (cliArgs->isSet("screenshot") || cliArgs->isSet("screenshot-all")) {
-        if (!m_appletShotTimer) {
-            m_appletShotTimer = new QTimer(this);
-            m_appletShotTimer->setSingleShot(true);
-            m_appletShotTimer->setInterval(3000);
-            connect(m_appletShotTimer, SIGNAL(timeout()), this, SLOT(screenshotPlasmoid()));
-        }
-
-        m_appletShotTimer->start();
-        return true;
-    }
-
-    return false;
-}
-
-void FullView::screenshotAll()
-{
-    KPluginInfo::List infoList = Plasma::Applet::listAppletInfo();
-    foreach (const KPluginInfo &info, infoList) {
-        m_appletsToShoot.append(info.pluginName());
-    }
-    shootNextPlasmoid();
-}
-
-void FullView::shootNextPlasmoid()
-{
-    if (m_appletsToShoot.isEmpty()) {
-        QApplication::quit();
-        return;
-    }
-
-    if (m_applet) {
-        m_applet->destroy();
-        m_applet = 0;
-    }
-
-    resize(512, 512);
-    QString next = m_appletsToShoot.takeFirst();
-    addApplet(next, "null", QString(), QVariantList());
-    if (!m_applet) {
-        shootNextPlasmoid();
-    } else if (m_applet->size().width() < 256 && m_applet->size().height() < 256) {
-        resize(512, 512);
-    }
-}
-
-void FullView::screenshotPlasmoid()
-{
-    if (!m_applet) {
-        shootNextPlasmoid();
-        return;
-    }
-
-    if (m_applet->hasFailedToLaunch()) {
-        m_applet->destroy();
-        return;
-    } else if (m_applet->configurationRequired()) {
-        QTimer::singleShot(3000, this, SLOT(screenshotPlasmoid()));
-        return;
-    }
-
-    QStyleOptionGraphicsItem opt;
-    opt.initFrom(this);
-    opt.exposedRect = m_applet->boundingRect();
-    QPixmap p(size());
-    p.fill(Qt::transparent);
-    {
-    QPainter painter(&p);
-    render(&painter);
-    //m_applet->paint(&painter, &opt, this);
-    }
-    p.save(m_applet->pluginName() + ".png");
-
-    shootNextPlasmoid();
-}
-
-void FullView::plasmoidAccessFinished(Plasma::AccessAppletJob *job)
-{
-    kDebug() << "!!!! PLASMOID ACCESS FINISHED!";
-    if (!job->error() && job->applet()) {
-        m_applet = job->applet();
-        m_containment->addApplet(m_applet, QPointF(-1, -1), false);
-        m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
-        m_view->setSceneRect(m_applet->sceneBoundingRect());
-        setWindowTitle(m_applet->name());
-        setWindowIcon(SmallIcon(m_applet->icon()));
-    } else {
-        //TODO: some nice userfriendly error.
-        kDebug() << "plasmoid access failed: " << job->errorString();
-    }
-}
-
-void FullView::appletRemoved(Plasma::Applet *applet)
-{
-    kDebug()  << "APPLETREMOVED";
-    if (m_applet == applet) {
-        m_applet = 0;
-        if (!checkShotTimer()) {
-            close();
-        }
-    }
-}
-
-void FullView::showEvent(QShowEvent *)
-{
-    if (size().width() < 10 && size().height() < 10) {
-        resize(400, 500);
-    }
+    m_containment = c;
+    updateGeometry();
 }
 
 void FullView::resizeEvent(QResizeEvent *event)
 {
-//    QGraphicsView::resizeEvent(event);
+    Q_UNUSED(event)
+    updateGeometry();
+//    emit geometryChanged();
+}
 
+void FullView::updateGeometry()
+{
     if (!m_containment) {
         return;
     }
 
-    m_containment->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-    m_containment->setMinimumSize(size());
-    m_containment->setMaximumSize(size());
-    m_containment->resize(size());
-    if (m_containment->layout()) {
-        return;
-    }
+    //kDebug() << "New applet geometry is" << m_applet->geometry();
 
-    if (!m_applet) {
-        return;
-    }
-
-    //kDebug() << size();
-    qreal newWidth = 0;
-    qreal newHeight = 0;
-
-    if (false && m_applet->aspectRatioMode() == Plasma::KeepAspectRatio) {
-        // The applet always keeps its aspect ratio, so let's respect it.
-        qreal ratio = m_applet->size().width() / m_applet->size().height();
-        qreal widthForCurrentHeight = (qreal)size().height() * ratio;
-        if (widthForCurrentHeight > size().width()) {
-            newHeight = size().width() / ratio;
-            newWidth = newHeight * ratio;
-        } else {
-            newWidth = widthForCurrentHeight;
-            newHeight = newWidth / ratio;
-        }
-    } else {
-        newWidth = size().width();
-        newHeight = size().height();
-    }
-    QSizeF newSize(newWidth, newHeight);
-
-    // check if the rect is valid, or else it seems to try to allocate
-    // up to infinity memory in exponential increments
-    if (newSize.isValid()) {
-        m_applet->resize(QSizeF(newWidth, newHeight));
-        m_view->setSceneRect(m_applet->sceneBoundingRect());
-    }
-}
-
-void FullView::appletTransformedItself()
-{
-    resize(m_applet->size().toSize());
-    m_view->setSceneRect(m_applet->sceneBoundingRect());
-}
-
-void FullView::sceneRectChanged(const QRectF &rect)
-{
-    Q_UNUSED(rect)
     if (m_applet) {
-        m_view->setSceneRect(m_applet->sceneBoundingRect());
+        if (m_applet->size().toSize() != size()) {
+            m_applet->resize(size());
+        }
+
+        setSceneRect(m_applet->sceneBoundingRect());
     }
-}
 
-bool FullView::hasStorageGroupFor(Plasma::Applet *applet) const
-{
-    KConfigGroup stored = KConfigGroup(KGlobal::config(), "StoredApplets");
-    return stored.groupList().contains(applet->pluginName());
-}
+    if ((windowFlags() & Qt::FramelessWindowHint) &&
+        m_applet->backgroundHints() != Plasma::Applet::NoBackground) {
 
-KConfigGroup FullView::storageGroup(Plasma::Applet *applet) const
-{
-    KConfigGroup stored = KConfigGroup(KGlobal::config(), "StoredApplets");
-    return KConfigGroup(&stored, applet->pluginName());
-}
+        // TODO: Use the background's mask for blur
+        QRegion mask;
+    mask += QRect(QPoint(), size());
 
-void FullView::storeCurrentApplet()
-{
-    if (m_applet && m_persistentConfig) {
-        KConfigGroup cg;
-        m_applet->save(cg);
-        cg = m_applet->config();
-        KConfigGroup storage = storageGroup(m_applet);
-        storage.deleteGroup();
-        cg.copyTo(&storage);
-        KGlobal::config()->sync();
-    }
+    Plasma::WindowEffects::enableBlurBehind(winId(), true, mask);
+        }
 }
 
 #include "fullview.moc"
-

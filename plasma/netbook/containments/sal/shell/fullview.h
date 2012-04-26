@@ -42,7 +42,7 @@ namespace Plasma
 class PushButton;
 }
 
-class FullView : public KMainWindow
+class FullView : public QGraphicsView
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.kde.salViewer")
@@ -51,12 +51,10 @@ public:
     explicit FullView(const QString &formfactor = "planar", const QString &location = "floating", bool persistentConfig = false, QWidget *parent = 0);
     ~FullView();
 
-    void addApplet(const QString &name, const QString& containment,
-                   const QString& wallpaper, const QVariantList &args = QVariantList());
-    void screenshotAll();
-
 public Q_SLOTS:
     void showPopup(int screen);
+    void setContainment(Plasma::Containment *containment);
+    void updateGeometry();
 
 protected:
     void showEvent(QShowEvent *event);
@@ -64,23 +62,9 @@ protected:
     virtual void focusOutEvent(QFocusEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void closeEvent(QCloseEvent *event);
-
-private Q_SLOTS:
-    void appletTransformedItself();
-    void sceneRectChanged(const QRectF &rect);
-    void resizeEvent(QResizeEvent *event);
-    void appletRemoved(Plasma::Applet *applet);
-    void plasmoidAccessFinished(Plasma::AccessAppletJob *job);
-    void screenshotPlasmoid();
-
+    virtual void resizeEvent(QResizeEvent *event);
 private:
-    void shootNextPlasmoid();
-    bool checkShotTimer();
-    KConfigGroup storageGroup(Plasma::Applet *applet) const;
-    bool hasStorageGroupFor(Plasma::Applet *applet) const;
-    void storeCurrentApplet();
 
-    QGraphicsView *m_view;
     Plasma::Corona *m_corona;
     Plasma::FormFactor m_formfactor;
     Plasma::Location m_location;

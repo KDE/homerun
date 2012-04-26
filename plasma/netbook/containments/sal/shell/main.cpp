@@ -294,22 +294,7 @@ themeFound:
 
     FullView view(formfactor, location, persistentConfig);
 
-    if (args->isSet("list-remote")) {
-        kDebug() << "list remote...";
-        /**
-        QList<KUrl> list = AccessManager::self()->remotePlasmoids();
-        foreach (const KUrl &url, list) {
-            std::cout << url.prettyUrl().toLocal8Bit().data() << std::endl;
-        }
-        */
-        new RemotePlasmoidWatcher(AccessManager::self());
-    } else if (args->isSet("screenshot-all")) {
-        view.show();
-        view.screenshotAll();
-    } else {
-        kDebug() << "just load applet";
-        view.addApplet("org.kde.sal", containment, wallpaper, appletArgs);
-    }
+    view.show();
 
 
     QAction *action = KStandardAction::quit(&app, SLOT(quit()), &view);
