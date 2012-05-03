@@ -144,7 +144,7 @@ Item {
             Timer {
                 id: tooltipShowTimer
 
-                interval: 500
+                interval: 1500
                 repeat: false
 
                 onTriggered:   {
