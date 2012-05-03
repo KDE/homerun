@@ -82,7 +82,7 @@ void SalLauncher::iconClicked()
 
     QDBusInterface interface("org.kde.salViewer", "/SalViewer", "org.kde.salViewer", bus);
 
-    interface.asyncCall("showPopup", containment()->screen());
+    interface.asyncCall("toggle", containment()->screen());
 }
 
 #include "sallauncher.moc"

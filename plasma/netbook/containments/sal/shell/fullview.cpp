@@ -130,19 +130,24 @@ void FullView::showEvent(QShowEvent *event)
     
 }
 
-void FullView::showPopup(int screen)
+void FullView::toggle(int screen)
 {
-    kDebug() << "POPUP REQUESTED";
-    KWindowSystem::setState( winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove );
-    KWindowSystem::forceActiveWindow(winId());
+    if (isVisible()) {
+        kDebug() << "HIDING POPUP";
+        hide();
+    } else {
+        kDebug() << "SHOWING POPUP";
+        KWindowSystem::setState( winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove );
+        KWindowSystem::forceActiveWindow(winId());
 
-    QDesktopWidget w;
-    const QRect rect = w.availableGeometry(screen);
+        QDesktopWidget w;
+        const QRect rect = w.availableGeometry(screen);
 
-    kDebug() << "Rect, w: " << rect.width() << " h: " << rect.height();
+        kDebug() << "Rect, w: " << rect.width() << " h: " << rect.height();
 
-    setGeometry(rect);
-    show();
+        setGeometry(rect);
+        show();
+    }
 }
 
 void FullView::keyPressEvent(QKeyEvent *event)

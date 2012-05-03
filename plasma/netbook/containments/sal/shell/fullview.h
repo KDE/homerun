@@ -52,7 +52,7 @@ public:
     ~FullView();
 
 public Q_SLOTS:
-    void showPopup(int screen);
+    void toggle(int screen);
     void setContainment(Plasma::Containment *containment);
     void updateGeometry();
 
