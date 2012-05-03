@@ -294,9 +294,6 @@ themeFound:
 
     FullView view(formfactor, location, persistentConfig);
 
-    view.show();
-
-
     QAction *action = KStandardAction::quit(&app, SLOT(quit()), &view);
     view.addAction(action);
 
