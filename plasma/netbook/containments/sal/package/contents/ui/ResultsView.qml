@@ -124,6 +124,7 @@ Item {
                     tooltipShowTimer.running = false
 
                     tooltipDialog.visible = false
+                    gridView.currentIndex = -1
                 }
 
                 onClicked: {
