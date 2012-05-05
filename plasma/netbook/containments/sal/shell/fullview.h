@@ -1,5 +1,6 @@
 /*
  * Copyright 2007 Aaron Seigo <aseigo@kde.org
+ * Copyright (C) 2012 Shaun Reich <shaun.reich@blue-systems.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -66,15 +67,8 @@ protected:
 private:
 
     Plasma::Corona *m_corona;
-    Plasma::FormFactor m_formfactor;
-    Plasma::Location m_location;
     Plasma::Containment *m_containment;
     Plasma::Applet *m_applet;
-    QStringList m_appletsToShoot;
-    QTimer *m_appletShotTimer;
-    // passed through cli by default, config files
-    // are non-persistent in plasmoidviewer.
-    bool m_persistentConfig;
     Plasma::PushButton *m_closeButton;
 };
 

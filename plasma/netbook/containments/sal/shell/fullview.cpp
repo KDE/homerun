@@ -2,6 +2,7 @@
  * Copyright 2007 Frerich Raabe <raabe@kde.org>
  * Copyright 2007 Aaron Seigo <aseigo@kde.org>
  * Copyright 2008 Aleix Pol <aleixpol@gmail.com>
+ * Copyright (C) 2012 Shaun Reich <shaun.reich@blue-systems.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -54,13 +55,9 @@ using namespace Plasma;
 
 FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidget *parent)
     : QGraphicsView(),
-      m_formfactor(Plasma::Planar),
-      m_location(Plasma::Floating),
       m_containment(0),
       m_corona(0),
       m_applet(0),
-      m_appletShotTimer(0),
-      m_persistentConfig(persistent),
       m_closeButton(0)
 {
     new SalViewerAdaptor(this);
@@ -74,7 +71,7 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     m_applet = Plasma::Applet::load("org.kde.sal");
 
     if (!m_applet) {
-        kDebug() << "failed to load";
+        kDebug() << "failed to load SAL";
         return;
     }
 
@@ -99,6 +96,12 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
     Plasma::WindowEffects::overrideShadow(winId(), true);
 
+    m_closeButton = new Plasma::PushButton(m_containment);
+    m_closeButton->setText(i18n("Close"));
+    m_closeButton->setIcon(KIcon("dialog-close"));
+    m_closeButton->setMinimumSize(64, 64);
+    m_corona->addItem(m_closeButton);
+
 //    m_applet->addAction(QString("remove"), KStandardAction::quit(this, SLOT(hide()), m_applet));
     // enforce the applet being our size
     connect(m_applet, SIGNAL(geometryChanged()), this, SLOT(updateGeometry()));
@@ -121,13 +124,11 @@ FullView::~FullView()
 {
     m_containment->destroy(false);
     kDebug() << "DTOR HIT";
-//    storeCurrentApplet();
     delete m_closeButton;
 }
 
 void FullView::showEvent(QShowEvent *event)
 {
-    
 }
 
 void FullView::toggle(int screen)
@@ -157,6 +158,7 @@ void FullView::keyPressEvent(QKeyEvent *event)
         hide();
         event->accept();
     }
+
     QGraphicsView::keyPressEvent(event);
 }
 
@@ -188,8 +190,6 @@ void FullView::updateGeometry()
         return;
     }
 
-    //kDebug() << "New applet geometry is" << m_applet->geometry();
-
     if (m_applet) {
         if (m_applet->size().toSize() != size()) {
             m_applet->resize(size());
@@ -198,15 +198,14 @@ void FullView::updateGeometry()
         setSceneRect(m_applet->sceneBoundingRect());
     }
 
-    if ((windowFlags() & Qt::FramelessWindowHint) &&
-        m_applet->backgroundHints() != Plasma::Applet::NoBackground) {
+    if ((windowFlags() & Qt::FramelessWindowHint) && m_applet->backgroundHints() != Plasma::Applet::NoBackground) {
 
         // TODO: Use the background's mask for blur
         QRegion mask;
-    mask += QRect(QPoint(), size());
+        mask += QRect(QPoint(), size());
 
-    Plasma::WindowEffects::enableBlurBehind(winId(), true, mask);
-        }
+        Plasma::WindowEffects::enableBlurBehind(winId(), true, mask);
+    }
 }
 
 #include "fullview.moc"
