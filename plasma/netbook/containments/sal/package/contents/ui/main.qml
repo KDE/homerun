@@ -31,7 +31,8 @@ Item {
     id: main
 
     Component.onCompleted: {
-
+        plasmoid.writeConfig("favorites", "TEST", "TEST2");
+        print("@@@@@: " + plasmoid.readConfig("favorites"))
     }
 
     PlasmaCore.Theme {
@@ -118,7 +119,6 @@ Item {
         PlasmaComponents.TabButton { text: "Social"; iconSource: "applications-internet"}
 
         onCurrentTabChanged: {
-            plasmoid.writeConfig("TEST", "TEST")
             print("TEST" + currentTab.text)
             var text = currentTab.text
             if (text == "Categories") {
