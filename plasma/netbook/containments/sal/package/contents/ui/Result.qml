@@ -29,7 +29,9 @@ Item {
     property alias currentIcon: resultIcon.icon;
     property string currentUrl;
     property string currentId;
+    //to allow public access to these members..
     property alias favoriteIcon: favoriteIcon
+    property alias resultLabel: resultLabel
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric

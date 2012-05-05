@@ -133,7 +133,11 @@ Item {
             }
 
             function resultEntered() {
-                tooltipShowTimer.restart()
+                if (resultLabel.truncated == true) {
+                    // there's not enough room for the result's text to be displayed, so it's
+                    // being ellided/truncated. only then should the tooltip be shown.
+                    tooltipShowTimer.restart()
+                }
 
                 gridView.currentIndex = index
             }
