@@ -120,11 +120,7 @@ Item {
                 }
 
                 onExited: {
-                    tooltipShowTimer.restart()
-                    tooltipShowTimer.running = false
-
-                    tooltipDialog.visible = false
-                    gridView.currentIndex = -1
+                    resultExited();
                 }
 
                 onClicked: {
@@ -140,6 +136,14 @@ Item {
                 tooltipShowTimer.restart()
 
                 gridView.currentIndex = index
+            }
+
+            function resultExited() {
+                tooltipShowTimer.restart()
+                tooltipShowTimer.running = false
+
+                tooltipDialog.visible = false
+                gridView.currentIndex = -1
             }
 
             Timer {
@@ -180,6 +184,7 @@ Item {
 
                 onExited: {
                     result.favoriteIcon.opacity = 0
+                    resultExited();
                 }
             }
         }
