@@ -1,6 +1,0 @@
-add_subdirectory( aurorae )
-add_subdirectory( oxygen )
-add_subdirectory( plastik )
-add_subdirectory( b2 )
-add_subdirectory( laptop )
-add_subdirectory( tabstrip )

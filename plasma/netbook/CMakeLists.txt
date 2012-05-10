@@ -1,7 +1,0 @@
-add_subdirectory(applets)
-add_subdirectory(containments)
-add_subdirectory(dataengines)
-add_subdirectory(desktoptheme)
-if(NOT WIN32)
-add_subdirectory(shell)
-endif(NOT WIN32)
