@@ -27,6 +27,7 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 
 Item {
     id: main
+    signal closeClicked
 
     Component.onCompleted: {
         plasmoid.writeConfig("favorites", "TEST", "TEST2");
@@ -37,6 +38,17 @@ Item {
         id: background
         anchors.fill: parent
         imagePath: "dialogs/background"
+    }
+
+    PlasmaComponents.ToolButton {
+        anchors {
+            right: main.right
+            top: main.top
+            rightMargin: background.margins.right
+            topMargin: background.margins.top
+        }
+        iconSource: "window-close"
+        onClicked: main.closeClicked()
     }
 
     PlasmaComponents.TextField {

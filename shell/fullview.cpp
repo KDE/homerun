@@ -71,6 +71,7 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.sal/contents/ui/main.qml");
     setSource(source);
 
+    connect(rootObject(), SIGNAL(closeClicked()), SLOT(hide()));
     updateGeometry();
 }
 
