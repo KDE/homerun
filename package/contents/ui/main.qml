@@ -35,8 +35,10 @@ Item {
         print("@@@@@: " + plasmoid.readConfig("favorites"))
     }
 
-    PlasmaCore.Theme {
-        id: theme
+    PlasmaCore.FrameSvgItem {
+        id: background
+        anchors.fill: parent
+        imagePath: "dialogs/background"
     }
 
     PlasmaComponents.TextField {
@@ -108,6 +110,7 @@ Item {
 
         anchors {
             top: parent.top
+            topMargin: background.margins.top
             horizontalCenter: parent.horizontalCenter
         }
 
@@ -158,6 +161,8 @@ Item {
             bottom: favoritesView.top
             left: parent.left
             right: parent.right
+            leftMargin: background.margins.left
+            rightMargin: background.margins.right
         }
 
         model: serviceModel
@@ -188,9 +193,12 @@ Item {
         id: favoritesView
 
         anchors {
-            left: parent.left;
+            left: parent.left
             right: parent.right
             bottom: parent.bottom
+            leftMargin: background.margins.left
+            rightMargin: background.margins.right
+            bottomMargin: background.margins.bottom
         }
 
         //FIXME: make it not hardcoded..

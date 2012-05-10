@@ -81,6 +81,7 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
 
     m_applet->setPos(0, 0);
     m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
+    m_applet->setBackgroundHints(Plasma::Applet::NoBackground);
     setSceneRect(m_applet->sceneBoundingRect());
     setWindowTitle(m_applet->name());
     setWindowIcon(SmallIcon(m_applet->icon()));
