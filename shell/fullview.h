@@ -27,23 +27,9 @@
 #ifndef FULLVIEW_H
 #define FULLVIEW_H
 
-#include <KMainWindow>
+#include <QDeclarativeView>
 
-#include <Plasma/Applet>
-
-#include <Plasma/Corona>
-
-#include <QGraphicsView>
-
-class QTimer;
-
-namespace Plasma
-{
-    class AccessAppletJob;
-class PushButton;
-}
-
-class FullView : public QGraphicsView
+class FullView : public QDeclarativeView
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.kde.salViewer")
@@ -54,22 +40,14 @@ public:
 
 public Q_SLOTS:
     void toggle(int screen);
-    void setContainment(Plasma::Containment *containment);
     void updateGeometry();
 
 protected:
-    void showEvent(QShowEvent *event);
     virtual void focusInEvent(QFocusEvent *event);
     virtual void focusOutEvent(QFocusEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void closeEvent(QCloseEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
-private:
-
-    Plasma::Corona *m_corona;
-    Plasma::Containment *m_containment;
-    Plasma::Applet *m_applet;
-    Plasma::PushButton *m_closeButton;
 };
 
 #endif

@@ -177,11 +177,6 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    if (args->isSet("list-containments")) {
-        listPlugins(Plasma::Containment::listContainments());
-        return 0;
-    }
-
     if (args->isSet("list-themes")) {
         listPlugins(Plasma::Theme::listThemeInfo());
         return 0;
@@ -218,25 +213,6 @@ appletFound:
     kDebug() << "setting Location to" << args->getOption("location");
 
     QString containment = args->getOption("containment");
-    if (args->isSet("containment")) {
-
-        kDebug() << "setting containment to" << containment;
-
-        KPluginInfo::List containmentList = Plasma::Containment::listContainments();
-
-        foreach (const KPluginInfo& info, containmentList) {
-
-            if (info.pluginName() == containment) {
-                goto containmentFound;
-            }
-        }
-
-        kError() << "Fatal error. Containment: " + containment +
-            " is invalid. Did you run kbuildsycoca4? List known containments through --list-containments";
-        kError() << "Note: only accepts containment Plugin Name (visible through --list-containments), not user-visible name";
-        return 1;
-
-    }
 
 containmentFound:
 

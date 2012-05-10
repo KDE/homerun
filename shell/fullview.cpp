@@ -30,64 +30,35 @@
 
 #include "salvieweradaptor.h"
 
-#include <QApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QResizeEvent>
-#include <QTimer>
 #include <QDesktopWidget>
-#include <QPushButton>
-#include <QGraphicsView>
+#include <QKeyEvent>
 
-#include <KCmdLineArgs>
-#include <KIconLoader>
+#include <kdeclarative.h>
+
+#include <KDebug>
+#include <KStandardDirs>
+#include <KUrl>
 #include <KWindowSystem>
 
-#include <Plasma/AccessManager>
-#include <Plasma/AccessAppletJob>
-#include <Plasma/Containment>
-#include <Plasma/ContainmentActions>
-#include <Plasma/Package>
-#include <Plasma/Wallpaper>
 #include <Plasma/WindowEffects>
-#include <Plasma/PushButton>
-using namespace Plasma;
 
 FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidget *parent)
-    : QGraphicsView(),
-      m_containment(0),
-      m_corona(0),
-      m_applet(0),
-      m_closeButton(0)
+: QDeclarativeView()
 {
     new SalViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerObject("/SalViewer", this);
     dbus.registerService("org.kde.salViewer");
 
-    m_corona = new Plasma::Corona(this);
-    setScene(m_corona);
+    KDeclarative kdeclarative;
+    kdeclarative.setDeclarativeEngine(engine());
+    kdeclarative.initialize();
+    //binds things like kconfig and icons
+    kdeclarative.setupBindings();
 
-    m_applet = Plasma::Applet::load("org.kde.sal");
-
-    if (!m_applet) {
-        kDebug() << "failed to load SAL";
-        return;
-    }
-
-    m_containment = m_corona->addContainment("null");
-    m_containment->addApplet(m_applet, QPointF(-1, -1), false);
-    m_containment->resize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-
-    m_applet->setPos(0, 0);
-    m_applet->setFlag(QGraphicsItem::ItemIsMovable, false);
-    m_applet->setBackgroundHints(Plasma::Applet::NoBackground);
-    setSceneRect(m_applet->sceneBoundingRect());
-    setWindowTitle(m_applet->name());
-    setWindowIcon(SmallIcon(m_applet->icon()));
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setFrameStyle(QFrame::NoFrame);
+    setResizeMode(SizeRootObjectToView);
 
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -97,15 +68,9 @@ FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidg
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
     Plasma::WindowEffects::overrideShadow(winId(), true);
 
-    m_closeButton = new Plasma::PushButton(m_containment);
-    m_closeButton->setText(i18n("Close"));
-    m_closeButton->setIcon(KIcon("dialog-close"));
-    m_closeButton->setMinimumSize(64, 64);
-    m_corona->addItem(m_closeButton);
+    KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.sal/contents/ui/main.qml");
+    setSource(source);
 
-//    m_applet->addAction(QString("remove"), KStandardAction::quit(this, SLOT(hide()), m_applet));
-    // enforce the applet being our size
-    connect(m_applet, SIGNAL(geometryChanged()), this, SLOT(updateGeometry()));
     updateGeometry();
 }
 
@@ -123,13 +88,7 @@ void FullView::focusOutEvent(QFocusEvent* event)
 
 FullView::~FullView()
 {
-    m_containment->destroy(false);
     kDebug() << "DTOR HIT";
-    delete m_closeButton;
-}
-
-void FullView::showEvent(QShowEvent *event)
-{
 }
 
 void FullView::toggle(int screen)
@@ -160,7 +119,7 @@ void FullView::keyPressEvent(QKeyEvent *event)
         event->accept();
     }
 
-    QGraphicsView::keyPressEvent(event);
+    QDeclarativeView::keyPressEvent(event);
 }
 
 void FullView::closeEvent(QCloseEvent *event)
@@ -168,45 +127,21 @@ void FullView::closeEvent(QCloseEvent *event)
     kDebug() << "CLOSE EVENT";
 }
 
-void FullView::setContainment(Plasma::Containment *c)
-{
-    if (m_containment) {
-        disconnect(m_containment, 0, this, 0);
-    }
-
-    m_containment = c;
-    updateGeometry();
-}
-
 void FullView::resizeEvent(QResizeEvent *event)
 {
-    Q_UNUSED(event)
+    QDeclarativeView::resizeEvent(event);
     updateGeometry();
-//    emit geometryChanged();
 }
 
 void FullView::updateGeometry()
 {
-    if (!m_containment) {
-        return;
-    }
+    /*
+    // TODO: Use the background's mask for blur
+    QRegion mask;
+    mask += QRect(QPoint(), size());
 
-    if (m_applet) {
-        if (m_applet->size().toSize() != size()) {
-            m_applet->resize(size());
-        }
-
-        setSceneRect(m_applet->sceneBoundingRect());
-    }
-
-    if ((windowFlags() & Qt::FramelessWindowHint) && m_applet->backgroundHints() != Plasma::Applet::NoBackground) {
-
-        // TODO: Use the background's mask for blur
-        QRegion mask;
-        mask += QRect(QPoint(), size());
-
-        Plasma::WindowEffects::enableBlurBehind(winId(), true, mask);
-    }
+    Plasma::WindowEffects::enableBlurBehind(winId(), true, mask);
+    */
 }
 
 #include "fullview.moc"
