@@ -35,7 +35,7 @@ class FullView : public QDeclarativeView
     Q_CLASSINFO("D-Bus Interface", "org.kde.salViewer")
 
 public:
-    explicit FullView(const QString &formfactor = "planar", const QString &location = "floating", bool persistentConfig = false, QWidget *parent = 0);
+    FullView();
     ~FullView();
 
 public Q_SLOTS:

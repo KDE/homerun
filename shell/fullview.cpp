@@ -42,7 +42,7 @@
 
 #include <Plasma/WindowEffects>
 
-FullView::FullView(const QString &ff, const QString &loc, bool persistent, QWidget *parent)
+FullView::FullView()
 : QDeclarativeView()
 {
     new SalViewerAdaptor(this);
