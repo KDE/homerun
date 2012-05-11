@@ -1,5 +1,7 @@
 project(sal)
 
+SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+
 find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
 include(KDE4Defaults)
 
