@@ -103,7 +103,9 @@ bool SalServiceModel::openUrl(const QString& url)
         //remove the kservicegroup:/ url thingy
 //        const QString& trimmedUrl = url.right(url.length() - 15);
         service = KService::serviceByStorageId(url);
-        setPath(service->name() + "/");
+        QString salUrl = service->property("X-Plasma-Sal-Url").toString();
+        // salUrl is of the form "kservicegroup://root/Something/". We want the "Something" part.
+        setPath(salUrl.section('/', -1, -1, QString::SectionSkipEmpty) + '/');
 
         kDebug() << "SET PATH TO: " << m_path;
 
