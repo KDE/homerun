@@ -78,7 +78,7 @@ FullView::FullView()
 void FullView::focusInEvent(QFocusEvent* event)
 {
     kDebug() << "FOCUS IN";
-    QWidget::focusInEvent(event);
+    QDeclarativeView::focusInEvent(event);
 }
 
 void FullView::focusOutEvent(QFocusEvent* event)
@@ -100,7 +100,6 @@ void FullView::toggle(int screen)
     } else {
         kDebug() << "SHOWING POPUP";
         KWindowSystem::setState( winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove );
-        KWindowSystem::forceActiveWindow(winId());
 
         QDesktopWidget w;
         const QRect rect = w.availableGeometry(screen);
@@ -109,6 +108,7 @@ void FullView::toggle(int screen)
 
         setGeometry(rect);
         show();
+        KWindowSystem::forceActiveWindow(winId());
     }
 }
 
