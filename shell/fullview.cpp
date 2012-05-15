@@ -84,6 +84,7 @@ void FullView::focusInEvent(QFocusEvent* event)
 void FullView::focusOutEvent(QFocusEvent* event)
 {
     kDebug() << "FOCUS OUT!!";
+    event->accept();
     hide();
 }
 
