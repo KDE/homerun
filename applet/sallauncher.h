@@ -49,7 +49,7 @@ public:
     void init();
 
 private Q_SLOTS:
-    void iconClicked();
+    void toggleSalViewer();
     void checkAndLaunch();
 
 private:

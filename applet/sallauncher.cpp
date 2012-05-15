@@ -55,7 +55,8 @@ void SalLauncher::init()
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("kde");
 
-    connect(m_icon, SIGNAL(clicked()), this, SLOT(iconClicked()));
+    connect(m_icon, SIGNAL(clicked()), SLOT(toggleSalViewer()));
+    connect(this, SIGNAL(activate()), SLOT(toggleSalViewer()));
 
     layout->addItem(m_icon);
 
@@ -73,7 +74,7 @@ void SalLauncher::checkAndLaunch()
     }
 }
 
-void SalLauncher::iconClicked()
+void SalLauncher::toggleSalViewer()
 {
     kDebug() << "ICON CLICKED!";
     checkAndLaunch();
