@@ -82,9 +82,9 @@ Item {
                     } else if (text == "Documents") {
                         modelArgs = [ "sessions", "places", "solid" ];
                     } else if (text == "YouTube") {
-                        modelArgs = "youtube";
+                        modelArgs = ["youtube"];
                     } else if (text == "Bing") {
-                        modelArgs = "bing";
+                        modelArgs = ["bing"];
                     }
                     tab = tabContent.createObject(tabGroup, {"modelName": modelName, "modelArgs": modelArgs});
                 }
