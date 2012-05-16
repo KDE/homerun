@@ -41,6 +41,12 @@ FocusScope {
         }
     }
 
+    Component {
+        id: placesModelComponent
+        SalComponents.PlacesModel {
+        }
+    }
+
     PlasmaComponents.TextField {
         id: searchField
 
@@ -92,6 +98,8 @@ FocusScope {
     Component.onCompleted: {
         if (modelName == "ServiceModel") {
             view.model = serviceModelComponent.createObject(view);
+        } else if (modelName == "PlacesModel") {
+            view.model = placesModelComponent.createObject(view);
         } else {
             view.model = runnerModelComponent.createObject(view);
             view.model.runners = modelArgs;

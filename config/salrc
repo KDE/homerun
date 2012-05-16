@@ -12,8 +12,7 @@ modelArgs=services,kill,kget,calculator,audioplayercontrol
 [Page 2]
 name=Documents
 icon=folder-documents
-modelName=RunnerModel
-modelArgs=sessions,places,solid
+modelName=PlacesModel
 
 [Page 3]
 name=YouTube

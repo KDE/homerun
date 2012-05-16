@@ -2,6 +2,7 @@ project(salcomponents)
 
 set(salcomponents_SRCS
     pagemodel.cpp
+    placesmodel.cpp
     salservicemodel.cpp
     salcomponentsplugin.cpp
     )
@@ -15,6 +16,7 @@ target_link_libraries(salcomponentsplugin
         ${QT_QTDECLARATIVE_LIBRARY}
         ${KDE4_PLASMA_LIBS}
         ${KDE4_KIO_LIBS}
+        ${KDE4_KFILE_LIBS}
         )
 
 install(TARGETS salcomponentsplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/components)
