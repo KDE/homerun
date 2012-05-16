@@ -19,4 +19,4 @@ install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAM
 
 add_subdirectory(applet)
 add_subdirectory(shell)
-add_subdirectory(model)
+add_subdirectory(components)

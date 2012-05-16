@@ -17,13 +17,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef RUNNERMODELPLUGIN_H
-#define RUNNERMODELPLUGIN_H
+#ifndef SALCOMPONENTSPLUGIN_H
+#define SALCOMPONENTSPLUGIN_H
 
 #include <QDeclarativeExtensionPlugin>
 
 
-class SalServiceModelPlugin : public QDeclarativeExtensionPlugin
+class SalComponentsPlugin : public QDeclarativeExtensionPlugin
 {
     Q_OBJECT
 
@@ -31,6 +31,6 @@ public:
     void registerTypes(const char *uri);
 };
 
-Q_EXPORT_PLUGIN2(datamodelsplugin, SalServiceModelPlugin)
+Q_EXPORT_PLUGIN2(salcomponentsplugin, SalComponentsPlugin)
 
 #endif

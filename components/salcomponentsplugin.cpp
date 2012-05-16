@@ -1,6 +1,7 @@
 /*
- *   Copyright 2011 by Marco Martin <mart@kde.org>
-
+ *   Copyright 2012 Shaun Reich <shaun.reich@blue-systems.com>
+ *   Copyright 2012 by Aurélien Gâteau <agateau@kde.org>
+ *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2, or
@@ -17,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "salservicemodelplugin.h"
+#include "salcomponentsplugin.h"
 
 #include <QtDeclarative/qdeclarative.h>
 
@@ -25,13 +26,13 @@
 
 #include "salservicemodel.h"
 
-void SalServiceModelPlugin::registerTypes(const char *uri)
+void SalComponentsPlugin::registerTypes(const char *uri)
 {
-    Q_ASSERT(uri == QLatin1String("org.kde.salservicemodel"));
+    Q_ASSERT(uri == QLatin1String("org.kde.sal.components"));
     qmlRegisterType<SalServiceModel>(uri, 0, 1, "SalServiceModel");
     qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
     qRegisterMetaType<Plasma::QueryMatch *>("QueryMatch");
 }
 
-#include "salservicemodelplugin.moc"
+#include "salcomponentsplugin.moc"
 

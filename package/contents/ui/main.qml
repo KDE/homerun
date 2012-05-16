@@ -20,7 +20,7 @@
 
 import Qt 4.7
 import org.kde.runnermodel 0.1 as RunnerModels
-import org.kde.salservicemodel 0.1 as SalServiceModels
+import org.kde.sal.components 0.1 as SalComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -162,7 +162,7 @@ Item {
         }
     }
 
-    SalServiceModels.SalServiceModel { id: serviceModel; path: "/" }
+    SalComponents.SalServiceModel { id: serviceModel; path: "/" }
 
     ResultsView {
         id: resultsView
