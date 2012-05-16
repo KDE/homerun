@@ -180,6 +180,7 @@ void SalServiceModel::setPath(const QString &path)
 
     endResetModel();
     emit countChanged();
+    pathChanged(path);
     kDebug() << "####### SETPATH CALLED (first time is from ctor)";
 }
 

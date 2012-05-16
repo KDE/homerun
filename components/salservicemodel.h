@@ -34,7 +34,7 @@ class SalServiceModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(QString path WRITE setPath READ path)
+    Q_PROPERTY(QString path WRITE setPath READ path NOTIFY pathChanged)
 
 public:
     enum Roles {
@@ -55,6 +55,7 @@ public:
 
 Q_SIGNALS:
     void countChanged();
+    void pathChanged(const QString&);
 
 private:
     void loadRootEntries();
