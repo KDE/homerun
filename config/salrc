@@ -1,0 +1,27 @@
+[Page 0]
+name=Dashboard
+icon=kde
+modelName=ServiceModel
+
+[Page 1]
+name=Applications
+icon=applications-other
+modelName=RunnerModel
+modelArgs=services,kill,kget,calculator,audioplayercontrol
+
+[Page 2]
+name=Documents
+icon=folder-documents
+modelName=runnerModel
+modelArgs=sessions,places,solid
+
+[Page 3]
+name=YouTube
+icon=youtube
+modelName=RunnerModel
+modelArgs=youtube
+
+[Page 4]
+name=Bing
+modelName=RunnerModel
+modelArgs=bing

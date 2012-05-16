@@ -24,12 +24,12 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 FocusScope {
     id: main
 
+    signal indexClicked(int index)
+
     //FIXME: figure out sizing properly..
     property int resultItemHeight: 128
     property int resultItemWidth: 128
 
-    property int appIndexToRun: 0
-    property string urlToRun: ""
     property string currentText: "";
     property string currentIcon: "";
 
@@ -124,11 +124,7 @@ FocusScope {
                 }
 
                 onClicked: {
-                    appIndexToRun = gridView.currentIndex;
-                    //to emit the changed signal anyways, even though it (only seems to be) the same thing
-                    urlToRun = "";
-                    urlToRun = model["url"]
-                    print("URL CLICKED:" + model["url"]);
+                    indexClicked(gridView.currentIndex);
                 }
             }
 

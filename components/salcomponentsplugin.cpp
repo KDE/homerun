@@ -24,11 +24,13 @@
 
 #include <Plasma/QueryMatch>
 
+#include "pagemodel.h"
 #include "salservicemodel.h"
 
 void SalComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.sal.components"));
+    qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<SalServiceModel>(uri, 0, 1, "SalServiceModel");
     qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
     qRegisterMetaType<Plasma::QueryMatch *>("QueryMatch");

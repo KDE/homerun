@@ -1,6 +1,7 @@
 project(salcomponents)
 
 set(salcomponents_SRCS
+    pagemodel.cpp
     salservicemodel.cpp
     salcomponentsplugin.cpp
     )

@@ -19,15 +19,14 @@
  */
 
 import Qt 4.7
-import org.kde.runnermodel 0.1 as RunnerModels
 import org.kde.sal.components 0.1 as SalComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
-import org.kde.qtextracomponents 0.1 as QtExtra
 
 Item {
     id: main
     signal closeClicked
+    property alias pageConfigFileName: pageModel.configFileName
 
     Component.onCompleted: {
         plasmoid.writeConfig("favorites", "TEST", "TEST2");
@@ -51,68 +50,11 @@ Item {
         onClicked: main.closeClicked()
     }
 
-    PlasmaComponents.TextField {
-        id: searchField
+    SalComponents.PageModel { id: pageModel }
 
-        anchors {
-            top: filterTabBar.bottom
-            left: filterTabBar.left
-            right: filterTabBar.right
-        }
-
-        onTextChanged: {
-            if (text == "") {
-                // it's null, probably makes sense to switch back to the category model
-                resultsView.model = serviceModel;
-            } else {
-                resultsView.model = runnerModel;
-                runnerModel.query = text;
-                print("COUNT:" + runnerModel.count)
-            }
-        }
-
-        focus: true
-        clearButtonShown: true
-    }
-
-    RunnerModels.RunnerModel { id: runnerModel }
-
-    QtExtra.QIconItem {
-        id: homeIcon
-
-        anchors {
-            right: filterTabBar.left
-            top: filterTabBar.top
-            bottom: searchField.bottom
-        }
-
-        icon: "go-home"
-
-        width: 48
-        height: 48
-
-        MouseArea {
-            anchors.fill: parent
-
-            hoverEnabled: true
-
-            onClicked: {
-                serviceModel.path = "/"
-                resultsView.model = serviceModel
-            }
-
-            //FIXME: add an svg highlight to it on mouse over. that'll look much better me thinks
-            onEntered: {
-                print("ENTERED!");
-                parent.width = 55;
-                parent.height = 55;
-            }
-
-            onExited: {
-                parent.width = 48;
-                parent.height = 48;
-            }
-        }
+    Component {
+        id: tabContent
+        TabContent {}
     }
 
     PlasmaComponents.TabBar {
@@ -124,13 +66,37 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
 
-        PlasmaComponents.TabButton { text: "Categories"; iconSource: ""}
-        PlasmaComponents.TabButton { text: "Apps"; iconSource: "applications-other"}
-        PlasmaComponents.TabButton { text: "Files"; iconSource: "folder-documents"}
-        PlasmaComponents.TabButton { text: "YouTube"; iconSource: "youtube"}
-        PlasmaComponents.TabButton { text: "Bing"; iconSource: "bing"}
-        PlasmaComponents.TabButton { text: "Social"; iconSource: "applications-internet"}
+        Repeater {
+            model: pageModel
+            PlasmaComponents.TabButton {
+                text: model.name
+                iconSource: model.iconName
+                Component.onCompleted: {
+                    tab = tabContent.createObject(tabGroup, {"modelName": model.modelName, "modelArgs": model.modelArgs});
+                }
+            }
+        }
 
+        layout.onChildrenChanged: {
+            // Workaround to make sure there is a current tab when pageModel
+            // is done loading
+            function isTab(tab) {
+                return tab && tab["iconSource"] !== undefined;
+            }
+            if (isTab(filterTabBar.currentTab)) {
+                return;
+            }
+            var idx;
+            for (idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
+                var item = filterTabBar.layout.children[idx];
+                if (isTab(item)) {
+                    filterTabBar.currentTab = item;
+                    break;
+                }
+            }
+        }
+
+        /*
         onCurrentTabChanged: {
             print("TEST" + currentTab.text)
             var text = currentTab.text
@@ -141,7 +107,7 @@ Item {
                 resultsView.model = runnerModel;
                 runnerModel.runners = [ "services", "kill", "kget", "calculator", "audioplayercontrol" ]
                 runnerModel.query = ""
-            } else if (text == "Files") {
+            } else if (text == "Documents") {
                 resultsView.model = runnerModel;
                 runnerModel.runners = [ "sessions", "places", "solid" ]
                 runnerModel.query = "places"
@@ -160,120 +126,20 @@ Item {
             //FIXME: make it search the current lense for stuff
             //runnerModel.query = searchField.text
         }
+        */
     }
 
-    SalComponents.SalServiceModel { id: serviceModel; path: "/" }
-
-    ResultsView {
-        id: resultsView
+    PlasmaComponents.TabGroup {
+        id: tabGroup
         anchors {
-            top: searchField.bottom
-            bottom: favoritesView.top
-            left: parent.left
-            right: parent.right
-            leftMargin: background.margins.left
-            rightMargin: background.margins.right
-        }
-
-        model: serviceModel
-
-        onUrlToRunChanged: {
-            serviceModel.openUrl(urlToRun);
-        }
-
-        onAppIndexToRunChanged: {
-            if (resultsView.model == runnerModel) {
-                print("RUNNING APP!")
-                runnerModel.run(appIndexToRun);
-            }
-
-            print( "%%%%%%%%%%%%%%%%%%% APPENDING ICON: " + currentIcon);
-        }
-
-        onCurrentFavoriteIconChanged: {
-            favoritesModel.append( {"text": currentFavoriteText, "icon": currentFavoriteIcon, "url": currentFavoriteUrl} );
-        }
-    }
-
-    ListModel {
-        id: favoritesModel
-    }
-
-    GridView {
-        id: favoritesView
-
-        anchors {
-            left: parent.left
-            right: parent.right
+            top: filterTabBar.bottom
             bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+            topMargin: 12
+            bottomMargin: background.margins.bottom
             leftMargin: background.margins.left
             rightMargin: background.margins.right
-            bottomMargin: background.margins.bottom
         }
-
-        //FIXME: make it not hardcoded..
-        cellWidth: 140
-        cellHeight: 100
-
-        clip: true
-        //FIXME: use anchoring
-        height: 100
-
-        model: favoritesModel
-
-        delegate: Favorite {
-            id: favorite;
-            currentText: model.text
-            currentIcon: model.icon
-            currentUrl: model.url
-
-            MouseArea {
-                anchors {
-                    left: parent.left
-                    right: favorite.removeIcon.left
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-
-                hoverEnabled: true
-
-                onPressed: {
-                    print("pressed")
-                    print("URL: " + currentUrl)
-                    serviceModel.openUrl(currentUrl);
-                }
-
-                onEntered: {
-                    print("entered")
-                    favoritesView.currentIndex = index
-                }
-            }
-
-            MouseArea {
-                anchors {
-                    left: favorite.removeIcon.left
-                    right: parent.right
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-
-                hoverEnabled: true
-
-                onPressed: {
-                   favoritesModel.remove(index)
-                }
-
-                onEntered: {
-                    favorite.removeIcon.opacity = 1
-                    favoritesView.currentIndex = index
-                }
-
-                onExited: {
-                    favorite.removeIcon.opacity = 0
-                }
-            }
-        }
-
-        highlight: PlasmaComponents.Highlight { hover: true}
     }
 }
