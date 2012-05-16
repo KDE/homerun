@@ -54,10 +54,30 @@ FocusScope {
         clearButtonShown: true
     }
 
-    ResultsView {
-        id: view
+    Row {
+        id: breadCrumbRow
         anchors {
             top: searchField.bottom
+            topMargin: 12
+            left: parent.left
+        }
+        visible: view.path != "/"
+        spacing: 6
+
+        PlasmaComponents.Button {
+            iconSource: "go-home"
+            onClicked: view.model.path = "/"
+        }
+        Text {
+            text: view.path
+        }
+    }
+
+    ResultsView {
+        id: view
+        property string path: view.model.path ? view.model.path : "/"
+        anchors {
+            top: breadCrumbRow.bottom
             topMargin: 12
             bottom: parent.bottom
             left: parent.left
