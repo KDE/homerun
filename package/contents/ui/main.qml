@@ -28,6 +28,7 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 Item {
     id: main
     signal closeClicked
+    property alias pageConfigFileName: pageModel.configFileName
 
     Component.onCompleted: {
         plasmoid.writeConfig("favorites", "TEST", "TEST2");
@@ -77,6 +78,8 @@ Item {
 
     RunnerModels.RunnerModel { id: runnerModel }
 
+    SalComponents.PageModel { id: pageModel }
+
     QtExtra.QIconItem {
         id: homeIcon
 
@@ -124,12 +127,13 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
 
-        PlasmaComponents.TabButton { text: "Categories"; iconSource: ""}
-        PlasmaComponents.TabButton { text: "Apps"; iconSource: "applications-other"}
-        PlasmaComponents.TabButton { text: "Files"; iconSource: "folder-documents"}
-        PlasmaComponents.TabButton { text: "YouTube"; iconSource: "youtube"}
-        PlasmaComponents.TabButton { text: "Bing"; iconSource: "bing"}
-        PlasmaComponents.TabButton { text: "Social"; iconSource: "applications-internet"}
+        Repeater {
+            model: pageModel
+            PlasmaComponents.TabButton {
+                text: model.name
+                iconSource: model.iconName
+            }
+        }
 
         onCurrentTabChanged: {
             print("TEST" + currentTab.text)

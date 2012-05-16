@@ -1,0 +1,11 @@
+[Page 0]
+name=Dashboard
+icon=kde
+
+[Page 1]
+name=Applications
+icon=applications-other
+
+[Page 2]
+name=Documents
+icon=folder-documents
