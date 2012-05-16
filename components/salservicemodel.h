@@ -51,6 +51,7 @@ public:
     QString path() const;
 
     Q_INVOKABLE bool openUrl(const QString& url);
+    Q_INVOKABLE void run(int row);
 
 Q_SIGNALS:
     void countChanged();

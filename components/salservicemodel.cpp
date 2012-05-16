@@ -91,6 +91,13 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+void SalServiceModel::run(int row)
+{
+    QModelIndex idx = index(row, 0);
+    QString url = data(idx, Url).toString();
+    openUrl(url);
+}
+
 bool SalServiceModel::openUrl(const QString& url)
 {
     if (url.isEmpty()) {
