@@ -135,6 +135,25 @@ Item {
             }
         }
 
+        layout.onChildrenChanged: {
+            // Workaround to make sure there is a current tab when pageModel
+            // is done loading
+            function isTab(tab) {
+                return tab && tab["iconSource"] !== undefined;
+            }
+            if (isTab(filterTabBar.currentTab)) {
+                return;
+            }
+            var idx;
+            for (idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
+                var item = filterTabBar.layout.children[idx];
+                if (isTab(item)) {
+                    filterTabBar.currentTab = item;
+                    break;
+                }
+            }
+        }
+
         onCurrentTabChanged: {
             print("TEST" + currentTab.text)
             var text = currentTab.text
