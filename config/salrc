@@ -12,7 +12,7 @@ modelArgs=services,kill,kget,calculator,audioplayercontrol
 [Page 2]
 name=Documents
 icon=folder-documents
-modelName=runnerModel
+modelName=RunnerModel
 modelArgs=sessions,places,solid
 
 [Page 3]
