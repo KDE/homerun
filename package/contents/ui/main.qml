@@ -72,21 +72,7 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
-                    var modelName = "RunnerModel";
-                    var modelArgs;
-                    var text = model.name;
-                    if (text == "Dashboard") {
-                        modelName = "ServiceModel";
-                    } else if (text == "Applications") {
-                        modelArgs = [ "services", "kill", "kget", "calculator", "audioplayercontrol" ];
-                    } else if (text == "Documents") {
-                        modelArgs = [ "sessions", "places", "solid" ];
-                    } else if (text == "YouTube") {
-                        modelArgs = ["youtube"];
-                    } else if (text == "Bing") {
-                        modelArgs = ["bing"];
-                    }
-                    tab = tabContent.createObject(tabGroup, {"modelName": modelName, "modelArgs": modelArgs});
+                    tab = tabContent.createObject(tabGroup, {"modelName": model.modelName, "modelArgs": model.modelArgs});
                 }
             }
         }

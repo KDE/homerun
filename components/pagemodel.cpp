@@ -26,6 +26,8 @@ class Page
 public:
     QString m_name;
     QString m_iconName;
+    QString m_modelName;
+    QStringList m_modelArgs;
 
     static Page *createFromGroup(const KConfigGroup &group)
     {
@@ -35,11 +37,18 @@ public:
             kWarning() << "Missing 'name' key in page group" << group.name();
             return 0;
         }
+        QString modelName = group.readEntry("modelName");
+        if (modelName.isEmpty()) {
+            kWarning() << "Missing 'modelName' key in page group" << group.name();
+            return 0;
+        }
 
         // Create page and read optional keys
         Page *page = new Page;
         page->m_name = name;
+        page->m_modelName = modelName;
         page->m_iconName = group.readEntry("icon");
+        page->m_modelArgs = group.readEntry("modelArgs", QStringList());
         return page;
     }
 };
@@ -51,6 +60,8 @@ PageModel::PageModel(QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "name");
     roles.insert(IconNameRole, "iconName");
+    roles.insert(ModelNameRole, "modelName");
+    roles.insert(ModelArgsRole, "modelArgs");
 
     setRoleNames(roles);
 }
@@ -116,6 +127,10 @@ QVariant PageModel::data(const QModelIndex &index, int role) const
         return page->m_name;
     case IconNameRole:
         return page->m_iconName;
+    case ModelNameRole:
+        return page->m_modelName;
+    case ModelArgsRole:
+        return page->m_modelArgs;
     default:
         kWarning() << "Unhandled role" << role;
         return QVariant();

@@ -36,6 +36,8 @@ class PageModel : public QAbstractListModel
 public:
     enum {
         IconNameRole = Qt::UserRole + 1,
+        ModelNameRole,
+        ModelArgsRole,
     };
 
     PageModel(QObject *parent = 0);

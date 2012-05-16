@@ -40,9 +40,12 @@ void PageModelTest::testLoad()
         "[Page 0]\n"
         "name=page0\n"
         "icon=icon0\n"
+        "modelName=mod0\n"
         "\n"
         "[Page 1]\n"
         "name=page1\n"
+        "modelName=mod1\n"
+        "modelArgs=arg0,arg1\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
@@ -55,10 +58,14 @@ void PageModelTest::testLoad()
     QModelIndex index = model.index(0, 0);
     MY_COMPARE(Qt::DisplayRole, "page0");
     MY_COMPARE(PageModel::IconNameRole, "icon0");
+    MY_COMPARE(PageModel::ModelNameRole, "mod0");
+    QCOMPARE(index.data(PageModel::ModelArgsRole).toStringList(), QStringList());
 
     index = model.index(1, 0);
     MY_COMPARE(Qt::DisplayRole, "page1");
     MY_COMPARE(PageModel::IconNameRole, "");
+    MY_COMPARE(PageModel::ModelNameRole, "mod1");
+    QCOMPARE(index.data(PageModel::ModelArgsRole).toStringList(), QStringList() << "arg0" << "arg1");
     #undef MY_COMPARE
 }
 
