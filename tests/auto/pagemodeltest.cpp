@@ -34,39 +34,99 @@ static KTemporaryFile *generateTestFile(const QString &content)
     return file;
 }
 
-void PageModelTest::testLoad()
+void PageModelTest::testPageOrder()
 {
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
-        "[Page 0]\n"
+        "[Page0]\n"
         "name=page0\n"
-        "icon=icon0\n"
-        "modelName=mod0\n"
-        "\n"
-        "[Page 1]\n"
+        "source0=foo\n"
+        "[Page5]\n"
+        "name=page5\n"
+        "source0=foo\n"
+        "[Page4]\n"
+        "name=page4\n"
+        "source0=foo\n"
+        "[Page2]\n"
+        "name=page2\n"
+        "source0=foo\n"
+        "[Page3]\n"
+        "name=page3\n"
+        "source0=foo\n"
+        "[Page6]\n"
+        "name=page6\n"
+        "source0=foo\n"
+        "[Page1]\n"
         "name=page1\n"
-        "modelName=mod1\n"
-        "modelArgs=arg0,arg1\n"
+        "source0=foo\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
     PageModel model;
     model.setConfig(config);
 
-    QCOMPARE(model.rowCount(), 2);
+    QCOMPARE(model.rowCount(), 7);
 
-    #define MY_COMPARE(role, value) QCOMPARE(index.data(role).toString(), QString(value))
+    for (int row = 0; row < 7; ++row) {
+        QModelIndex index = model.index(row, 0);
+        QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("page%1").arg(row));
+    }
+}
+
+void PageModelTest::testLoadKeys_data()
+{
+    QTest::addColumn<QString>("configText");
+    QTest::addColumn<QString>("name");
+    QTest::addColumn<QString>("iconName");
+    QTest::addColumn<QStringList>("sources");
+
+    QTest::newRow("name+icon")
+        <<  "[Page0]\n"
+            "name=page0\n"
+            "icon=icon0\n"
+            "source0=foo\n"
+        << "page0"
+        << "icon0"
+        << (QStringList() << "foo");
+
+    QTest::newRow("name-only")
+        <<  "[Page0]\n"
+            "name=page0\n"
+            "source0=foo\n"
+        << "page0"
+        << QString()
+        << (QStringList() << "foo");
+
+    QTest::newRow("multi-sources")
+        <<  "[Page0]\n"
+            "name=page0\n"
+            "source0=foo\n"
+            "source1=bar\n"
+        << "page0"
+        << QString()
+        << (QStringList() << "foo" << "bar");
+}
+
+void PageModelTest::testLoadKeys()
+{
+    QFETCH(QString, configText);
+    QFETCH(QString, name);
+    QFETCH(QString, iconName);
+    QFETCH(QStringList, sources);
+
+    // Create config file
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    PageModel model;
+    model.setConfig(config);
+
+    QCOMPARE(model.rowCount(), 1);
+
     QModelIndex index = model.index(0, 0);
-    MY_COMPARE(Qt::DisplayRole, "page0");
-    MY_COMPARE(PageModel::IconNameRole, "icon0");
-    MY_COMPARE(PageModel::ModelNameRole, "mod0");
-    QCOMPARE(index.data(PageModel::ModelArgsRole).toStringList(), QStringList());
-
-    index = model.index(1, 0);
-    MY_COMPARE(Qt::DisplayRole, "page1");
-    MY_COMPARE(PageModel::IconNameRole, "");
-    MY_COMPARE(PageModel::ModelNameRole, "mod1");
-    QCOMPARE(index.data(PageModel::ModelArgsRole).toStringList(), QStringList() << "arg0" << "arg1");
-    #undef MY_COMPARE
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
+    QCOMPARE(index.data(PageModel::IconNameRole).toString(), iconName);
+    QCOMPARE(index.data(PageModel::SourcesRole).toStringList(), sources);
 }
 
 #include "pagemodeltest.moc"

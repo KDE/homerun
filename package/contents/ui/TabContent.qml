@@ -24,8 +24,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 
 FocusScope {
     id: root
-    property string modelName
-    property variant modelArgs
+    property variant sources
 
     Component {
         id: serviceModelComponent
@@ -44,6 +43,17 @@ FocusScope {
     Component {
         id: placesModelComponent
         SalComponents.PlacesModel {
+        }
+    }
+
+    Component {
+        id: resultsViewComponent
+        ResultsView {
+            width: parent.width
+
+            onIndexClicked: {
+                model.run(index);
+            }
         }
     }
 
@@ -75,25 +85,6 @@ FocusScope {
         Column {
             id: resultsColumn
             width: parent.width
-            ResultsView {
-                id: view
-                width: parent.width
-
-                onIndexClicked: {
-                    model.run(index);
-                }
-            }
-            Repeater {
-                model: 10
-                ResultsView {
-                    model: view.model
-                    width: parent.width
-
-                    onIndexClicked: {
-                        model.run(index);
-                    }
-                }
-            }
         }
     }
 
@@ -108,13 +99,23 @@ FocusScope {
     }
 
     Component.onCompleted: {
-        if (modelName == "ServiceModel") {
-            view.model = serviceModelComponent.createObject(view);
-        } else if (modelName == "PlacesModel") {
-            view.model = placesModelComponent.createObject(view);
-        } else {
-            view.model = runnerModelComponent.createObject(view);
-            view.model.runners = modelArgs;
+        var idx;
+        for (idx = 0; idx < sources.length; ++idx) {
+            var tokens = sources[idx].split(":");
+            var modelName = tokens[0];
+            var model;
+            if (modelName == "ServiceModel") {
+                model = serviceModelComponent.createObject(root);
+            } else if (modelName == "PlacesModel") {
+                model = placesModelComponent.createObject(root);
+            } else {
+                model = runnerModelComponent.createObject(root);
+            }
+            if (tokens.length == 2) {
+                var args = tokens[1].split(",");
+                model.runners = args;
+            }
+            resultsViewComponent.createObject(resultsColumn, {"model": model});
         }
     }
 }

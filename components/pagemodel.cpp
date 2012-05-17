@@ -26,8 +26,7 @@ class Page
 public:
     QString m_name;
     QString m_iconName;
-    QString m_modelName;
-    QStringList m_modelArgs;
+    QStringList m_sources;
 
     static Page *createFromGroup(const KConfigGroup &group)
     {
@@ -37,18 +36,24 @@ public:
             kWarning() << "Missing 'name' key in page group" << group.name();
             return 0;
         }
-        QString modelName = group.readEntry("modelName");
-        if (modelName.isEmpty()) {
-            kWarning() << "Missing 'modelName' key in page group" << group.name();
+        QStringList sources;
+        QMap<QString, QString> map = group.entryMap();
+        auto it = map.constBegin(), end = map.constEnd();
+        for (; it != end; ++it) {
+            if (it.key().startsWith("source")) {
+                sources << it.value();
+            }
+        }
+        if (sources.isEmpty()) {
+            kWarning() << "No source defined in page group" << group.name();
             return 0;
         }
 
         // Create page and read optional keys
         Page *page = new Page;
         page->m_name = name;
-        page->m_modelName = modelName;
+        page->m_sources = sources;
         page->m_iconName = group.readEntry("icon");
-        page->m_modelArgs = group.readEntry("modelArgs", QStringList());
         return page;
     }
 };
@@ -60,8 +65,7 @@ PageModel::PageModel(QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "name");
     roles.insert(IconNameRole, "iconName");
-    roles.insert(ModelNameRole, "modelName");
-    roles.insert(ModelArgsRole, "modelArgs");
+    roles.insert(SourcesRole, "sources");
 
     setRoleNames(roles);
 }
@@ -90,10 +94,14 @@ void PageModel::setConfig(const KSharedConfig::Ptr &ptr)
     m_config = ptr;
     qDeleteAll(m_pageList);
     m_pageList.clear();
+    QStringList pageGroupList;
     Q_FOREACH(const QString &groupName, m_config->groupList()) {
-        if (!groupName.startsWith("Page ")) {
-            continue;
+        if (groupName.startsWith("Page")) {
+            pageGroupList << groupName;
         }
+    }
+    pageGroupList.sort();
+    Q_FOREACH(const QString &groupName, pageGroupList) {
         KConfigGroup group = m_config->group(groupName);
         Page *page = Page::createFromGroup(group);
         if (page) {
@@ -127,10 +135,8 @@ QVariant PageModel::data(const QModelIndex &index, int role) const
         return page->m_name;
     case IconNameRole:
         return page->m_iconName;
-    case ModelNameRole:
-        return page->m_modelName;
-    case ModelArgsRole:
-        return page->m_modelArgs;
+    case SourcesRole:
+        return page->m_sources;
     default:
         kWarning() << "Unhandled role" << role;
         return QVariant();
