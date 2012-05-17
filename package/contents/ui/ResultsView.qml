@@ -42,7 +42,7 @@ Column {
     property string path: model.path ? model.path : "/"
 
     PlasmaComponents.Label {
-        text: "Header"
+        text: model.name
         width: parent.width
     }
 

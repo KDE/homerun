@@ -30,6 +30,7 @@ FocusScope {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
             path: "/"
+            property string name: "Applications"
         }
     }
 
@@ -37,12 +38,14 @@ FocusScope {
         id: runnerModelComponent
         RunnerModels.RunnerModel {
             query: searchField.text
+            property string name
         }
     }
 
     Component {
         id: placesModelComponent
         SalComponents.PlacesModel {
+            property string name: "Places"
         }
     }
 
@@ -114,6 +117,7 @@ FocusScope {
             if (tokens.length == 2) {
                 var args = tokens[1].split(",");
                 model.runners = args;
+                model.name = args[0];
             }
             resultsViewComponent.createObject(resultsColumn, {"model": model});
         }
