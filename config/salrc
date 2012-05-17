@@ -1,26 +1,21 @@
-[Page 0]
+[Page0]
 name=Dashboard
 icon=kde
-modelName=ServiceModel
+source0=ServiceModel
+source1=PlacesModel
 
-[Page 1]
+[Page1]
 name=Applications
 icon=applications-other
-modelName=RunnerModel
-modelArgs=services,kill,kget,calculator,audioplayercontrol
+source0=ServiceModel
 
-[Page 2]
+[Page2]
 name=Documents
 icon=folder-documents
-modelName=PlacesModel
+source0=PlacesModel
 
-[Page 3]
-name=YouTube
-icon=youtube
-modelName=RunnerModel
-modelArgs=youtube
-
-[Page 4]
-name=Bing
-modelName=RunnerModel
-modelArgs=bing
+[Page3]
+name=Internet
+icon=applications-internet
+source0=RunnerModel:youtube
+source1=RunnerModel:bing

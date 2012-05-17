@@ -24,13 +24,13 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 
 FocusScope {
     id: root
-    property string modelName
-    property variant modelArgs
+    property variant sources
 
     Component {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
             path: "/"
+            property string name: "Applications"
         }
     }
 
@@ -38,12 +38,25 @@ FocusScope {
         id: runnerModelComponent
         RunnerModels.RunnerModel {
             query: searchField.text
+            property string name
         }
     }
 
     Component {
         id: placesModelComponent
         SalComponents.PlacesModel {
+            property string name: "Places"
+        }
+    }
+
+    Component {
+        id: resultsViewComponent
+        ResultsView {
+            width: parent.width
+
+            onIndexClicked: {
+                model.run(index);
+            }
         }
     }
 
@@ -60,49 +73,53 @@ FocusScope {
         clearButtonShown: true
     }
 
-    Row {
-        id: breadCrumbRow
+    Flickable {
+        id: resultsFlickable
         anchors {
             top: searchField.bottom
             topMargin: 12
+            bottom: parent.bottom
             left: parent.left
+            right: scrollBar.left
         }
-        visible: view.path != "/"
-        spacing: 6
-
-        PlasmaComponents.Button {
-            iconSource: "go-home"
-            onClicked: view.model.path = "/"
-        }
-        Text {
-            text: view.path
+        contentWidth: width
+        contentHeight: resultsColumn.height
+        clip: true
+        Column {
+            id: resultsColumn
+            width: parent.width
         }
     }
 
-    ResultsView {
-        id: view
-        property string path: view.model.path ? view.model.path : "/"
+    PlasmaComponents.ScrollBar {
+        id: scrollBar
+        flickableItem: resultsFlickable
         anchors {
-            top: breadCrumbRow.bottom
-            topMargin: 12
-            bottom: parent.bottom
-            left: parent.left
             right: parent.right
-        }
-
-        onIndexClicked: {
-            model.run(index);
+            top: searchField.bottom
+            bottom: parent.bottom
         }
     }
 
     Component.onCompleted: {
-        if (modelName == "ServiceModel") {
-            view.model = serviceModelComponent.createObject(view);
-        } else if (modelName == "PlacesModel") {
-            view.model = placesModelComponent.createObject(view);
-        } else {
-            view.model = runnerModelComponent.createObject(view);
-            view.model.runners = modelArgs;
+        var idx;
+        for (idx = 0; idx < sources.length; ++idx) {
+            var tokens = sources[idx].split(":");
+            var modelName = tokens[0];
+            var model;
+            if (modelName == "ServiceModel") {
+                model = serviceModelComponent.createObject(root);
+            } else if (modelName == "PlacesModel") {
+                model = placesModelComponent.createObject(root);
+            } else {
+                model = runnerModelComponent.createObject(root);
+            }
+            if (tokens.length == 2) {
+                var args = tokens[1].split(",");
+                model.runners = args;
+                model.name = args[0];
+            }
+            resultsViewComponent.createObject(resultsColumn, {"model": model});
         }
     }
 }

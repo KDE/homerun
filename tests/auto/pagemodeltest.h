@@ -26,7 +26,9 @@ class PageModelTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    void testLoad();
+    void testPageOrder();
+    void testLoadKeys();
+    void testLoadKeys_data();
 };
 
 #endif /* PAGEMODELTEST_H */

@@ -72,7 +72,7 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
-                    tab = tabContent.createObject(tabGroup, {"modelName": model.modelName, "modelArgs": model.modelArgs});
+                    tab = tabContent.createObject(tabGroup, {"sources": model.sources});
                 }
             }
         }
