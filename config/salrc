@@ -15,10 +15,7 @@ icon=folder-documents
 source0=PlacesModel
 
 [Page3]
-name=YouTube
-icon=youtube
+name=Internet
+icon=applications-internet
 source0=RunnerModel:youtube
-
-[Page4]
-name=Bing
-source0=RunnerModel:bing
+source1=RunnerModel:bing
