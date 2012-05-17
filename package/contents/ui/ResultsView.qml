@@ -119,10 +119,10 @@ Column {
 
         delegate: Result {
             id: result
-            currentText: model["label"]
-            currentIcon: model["icon"]
-            currentId: model["id"]
-            currentUrl: model["url"]
+            currentText: model.label ? model.label : ""
+            currentIcon: model.icon ? model.icon : ""
+            currentId: model.id ? model.id : ""
+            currentUrl: model.url ? model.url : ""
 
             MouseArea {
                 anchors {
