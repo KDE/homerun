@@ -53,6 +53,7 @@ FocusScope {
         id: resultsViewComponent
         ResultsView {
             width: parent.width
+            visible: model.count > 0
 
             onIndexClicked: {
                 model.run(index);
