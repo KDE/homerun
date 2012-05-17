@@ -60,29 +60,10 @@ FocusScope {
         clearButtonShown: true
     }
 
-    Row {
-        id: breadCrumbRow
-        anchors {
-            top: searchField.bottom
-            topMargin: 12
-            left: parent.left
-        }
-        visible: view.path != "/"
-        spacing: 6
-
-        PlasmaComponents.Button {
-            iconSource: "go-home"
-            onClicked: view.model.path = "/"
-        }
-        Text {
-            text: view.path
-        }
-    }
-
     Flickable {
         id: resultsFlickable
         anchors {
-            top: breadCrumbRow.bottom
+            top: searchField.bottom
             topMargin: 12
             bottom: parent.bottom
             left: parent.left
@@ -96,7 +77,6 @@ FocusScope {
             width: parent.width
             ResultsView {
                 id: view
-                property string path: view.model.path ? view.model.path : "/"
                 width: parent.width
 
                 onIndexClicked: {
@@ -122,8 +102,8 @@ FocusScope {
         flickableItem: resultsFlickable
         anchors {
             right: parent.right
-            top: resultsFlickable.top
-            bottom: resultsFlickable.bottom
+            top: searchField.bottom
+            bottom: parent.bottom
         }
     }
 

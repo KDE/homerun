@@ -21,7 +21,7 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
-FocusScope {
+Column {
     id: main
 
     signal indexClicked(int index)
@@ -39,11 +39,34 @@ FocusScope {
 
     property alias model: gridView.model
 
-    height: gridView.contentHeight
+    property string path: model.path ? model.path : "/"
+
+    PlasmaComponents.Label {
+        text: "Header"
+        width: parent.width
+    }
+
+    Row {
+        id: breadCrumbRow
+        width: parent.width
+        visible: main.path != "/"
+        spacing: 6
+
+        PlasmaComponents.Button {
+            iconSource: "go-home"
+            onClicked: model.path = "/"
+        }
+        Text {
+            text: main.path
+        }
+    }
 
     GridView {
         id: gridView
-        anchors.fill: parent
+        width: parent.width
+
+        // Defining "height" as "contentHeight" would be simpler, but it causes "Binding loop detected" error messages
+        height: Math.ceil(count * cellWidth / width) * cellHeight
 
         // Disable the GridView flickable so that it does not interfer with the global flickable
         interactive: false
@@ -72,8 +95,6 @@ FocusScope {
         cellHeight: resultItemHeight
         //TODO: something sane?
         cacheBuffer: 128 * 10 //10 above, 10 below caching
-
-        clip: true
 
         highlight: highlight
         highlightFollowsCurrentItem: true
