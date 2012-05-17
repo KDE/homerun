@@ -39,16 +39,14 @@ FocusScope {
 
     property alias model: gridView.model
 
+    height: gridView.contentHeight
+
     GridView {
         id: gridView
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
+        anchors.fill: parent
 
-        focus: true
+        // Disable the GridView flickable so that it does not interfer with the global flickable
+        interactive: false
 
         Keys.onPressed: {
             if (event.key == Qt.Key_Left) {
@@ -187,16 +185,6 @@ FocusScope {
                     resultExited();
                 }
             }
-        }
-    }
-
-    PlasmaComponents.ScrollBar {
-        id: scrollBar
-        flickableItem: gridView
-        anchors {
-            right: parent.right
-            top: parent.top
-            bottom: parent.bottom
         }
     }
 

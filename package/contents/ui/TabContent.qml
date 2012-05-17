@@ -79,19 +79,51 @@ FocusScope {
         }
     }
 
-    ResultsView {
-        id: view
-        property string path: view.model.path ? view.model.path : "/"
+    Flickable {
+        id: resultsFlickable
         anchors {
             top: breadCrumbRow.bottom
             topMargin: 12
             bottom: parent.bottom
             left: parent.left
-            right: parent.right
+            right: scrollBar.left
         }
+        contentWidth: width
+        contentHeight: resultsColumn.height
+        clip: true
+        Column {
+            id: resultsColumn
+            width: parent.width
+            ResultsView {
+                id: view
+                property string path: view.model.path ? view.model.path : "/"
+                width: parent.width
 
-        onIndexClicked: {
-            model.run(index);
+                onIndexClicked: {
+                    model.run(index);
+                }
+            }
+            Repeater {
+                model: 10
+                ResultsView {
+                    model: view.model
+                    width: parent.width
+
+                    onIndexClicked: {
+                        model.run(index);
+                    }
+                }
+            }
+        }
+    }
+
+    PlasmaComponents.ScrollBar {
+        id: scrollBar
+        flickableItem: resultsFlickable
+        anchors {
+            right: parent.right
+            top: resultsFlickable.top
+            bottom: resultsFlickable.bottom
         }
     }
 
