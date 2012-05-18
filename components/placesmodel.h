@@ -19,18 +19,46 @@
 #ifndef PLACESMODEL_H
 #define PLACESMODEL_H
 
-#include <KFilePlacesModel>
+#include <QSortFilterProxyModel>
+
+#include <KUrl>
+
+class KDirModel;
+class KFilePlacesModel;
 
 /**
  * Adapts KFilePlacesModel to make it SAL friendly
  */
-class PlacesModel : public KFilePlacesModel
+class PlacesModel : public QSortFilterProxyModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
 
 public:
     PlacesModel(QObject *parent = 0);
     Q_INVOKABLE void run(int row);
+
+    int count() const;
+
+    QString path() const;
+    void setPath(const QString &path);
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
+
+Q_SIGNALS:
+    void countChanged();
+    void pathChanged(const QString &);
+
+private:
+    KFilePlacesModel *m_placesModel;
+    KDirModel *m_dirModel;
+    KUrl m_rootUrl;
+    QString m_rootName;
+
+    void switchToPlacesModel();
+    void switchToDirModel();
+    void openDirUrl(const KUrl &url);
 };
 
 #endif /* PLACESMODEL_H */

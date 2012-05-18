@@ -19,12 +19,57 @@
 #include "placesmodel.h"
 
 #include <KDebug>
-#include <KMimeType>
-#include <KRun>
+#include <KDirLister>
+#include <KDirModel>
+#include <KFilePlacesModel>
 
 PlacesModel::PlacesModel(QObject *parent)
-: KFilePlacesModel(parent)
+: QSortFilterProxyModel(parent)
+, m_placesModel(new KFilePlacesModel(this))
+, m_dirModel(new KDirModel(this))
 {
+    setDynamicSortFilter(true);
+    switchToPlacesModel();
+}
+
+void PlacesModel::run(int row)
+{
+    QModelIndex sourceIndex = mapToSource(index(row, 0));
+    if (sourceModel() == m_placesModel) {
+        KUrl theUrl = m_placesModel->url(sourceIndex);
+        switchToDirModel();
+
+        m_rootUrl = theUrl;
+        m_rootUrl.adjustPath(KUrl::AddTrailingSlash);
+        m_rootName = "/" + sourceIndex.data(Qt::DisplayRole).toString();
+        openDirUrl(theUrl);
+    } else {
+        KFileItem item = m_dirModel->itemForIndex(sourceIndex);
+        if (item.isDir()) {
+            openDirUrl(item.url());
+        } else {
+            item.run();
+        }
+    }
+}
+
+int PlacesModel::count() const
+{
+    int c = rowCount(QModelIndex());
+    return c;
+}
+
+QVariant PlacesModel::data(const QModelIndex &index, int role) const
+{
+    QVariant v = QSortFilterProxyModel::data(index, role);
+    return v;
+}
+
+void PlacesModel::switchToPlacesModel()
+{
+    setSourceModel(m_placesModel);
+    sort(-1, Qt::AscendingOrder);
+
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
@@ -32,15 +77,49 @@ PlacesModel::PlacesModel(QObject *parent)
     setRoleNames(roles);
 }
 
-void PlacesModel::run(int row)
+void PlacesModel::switchToDirModel()
 {
-    KUrl theUrl = url(index(row, 0));
-    KMimeType::Ptr mimeTypePtr = KMimeType::findByUrl(theUrl);
-    if (!mimeTypePtr) {
-        kError() << "Unable to determine mimetype for" << theUrl;
-        return;
+    setSourceModel(m_dirModel);
+    sort(0, Qt::AscendingOrder);
+
+    QHash<int, QByteArray> roles;
+    roles.insert(Qt::DisplayRole, "label");
+    roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(KFilePlacesModel::UrlRole, "url");
+    setRoleNames(roles);
+}
+
+QString PlacesModel::path() const
+{
+    if (sourceModel() == m_placesModel) {
+        return "/";
     }
-    KRun::runUrl(theUrl, mimeTypePtr->name(), 0);
+    KUrl url = m_dirModel->dirLister()->url();
+    url.adjustPath(KUrl::RemoveTrailingSlash);
+    QString relativePath = KUrl::relativeUrl(m_rootUrl, url);
+    if (relativePath == "./") {
+        return m_rootName;
+    }
+    return QString("%1/%2").arg(m_rootName).arg(relativePath);
+}
+
+void PlacesModel::setPath(const QString &newPath)
+{
+    if (newPath == "/") {
+        switchToPlacesModel();
+    } else {
+        KUrl url = m_rootUrl;
+        // Ugly: skip the first path token: it is the place name
+        url.addPath(newPath.section('/', 2));
+        openDirUrl(url);
+    }
+    pathChanged(path());
+}
+
+void PlacesModel::openDirUrl(const KUrl &url)
+{
+    m_dirModel->dirLister()->openUrl(url);
+    pathChanged(path());
 }
 
 #include "placesmodel.moc"

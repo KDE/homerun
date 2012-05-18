@@ -40,10 +40,15 @@ Column {
     property alias model: gridView.model
 
     property string path: model.path ? model.path : "/"
+    onPathChanged: pathModel.update(path)
 
     PlasmaComponents.Label {
         text: model.name
         width: parent.width
+    }
+
+    PathModel {
+        id: pathModel
     }
 
     Row {
@@ -52,12 +57,12 @@ Column {
         visible: main.path != "/"
         spacing: 6
 
-        PlasmaComponents.Button {
-            iconSource: "go-home"
-            onClicked: model.path = "/"
-        }
-        Text {
-            text: main.path
+        Repeater {
+            model: pathModel
+            delegate: PlasmaComponents.ToolButton {
+                text: model.text
+                onClicked: main.model.path = model.path
+            }
         }
     }
 
