@@ -106,8 +106,8 @@ bool SalServiceModel::openUrl(const QString& url)
 //        const QString& trimmedUrl = url.right(url.length() - 15);
         service = KService::serviceByStorageId(url);
         QString salUrl = service->property("X-Plasma-Sal-Url").toString();
-        // salUrl is of the form "kservicegroup://root/Something/". We want the "Something" part.
-        setPath(salUrl.section('/', -1, -1, QString::SectionSkipEmpty) + '/');
+        // salUrl is of the form "kservicegroup://root/Something/". We want the "/Something" part.
+        setPath("/" % salUrl.section('/', 2, -1, QString::SectionSkipEmpty));
 
         kDebug() << "SET PATH TO: " << m_path;
 
@@ -168,9 +168,8 @@ void SalServiceModel::setPath(const QString &path)
         loadRootEntries();
     } else {
         kDebug() << "TRYING TO SET PATH TO: " << path;
-        loadServiceGroup(KServiceGroup::group(path));
- //       setSortRole(Qt::DisplayRole);
-//        sort(0, Qt::AscendingOrder);
+        QString relPath = path.mid(1) % "/";
+        loadServiceGroup(KServiceGroup::group(relPath));
     }
 
     endResetModel();
