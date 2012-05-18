@@ -130,7 +130,7 @@ bool SalServiceModel::openUrl(const QString& url)
     return KRun::run(*service, KUrl::List(), 0);
 }
 
-QMimeData * SalServiceModel::mimeData(const QModelIndexList &indexes) const
+QMimeData * SalServiceModel::mimeData(const QModelIndexList &/*indexes*/) const
 {
 //    KUrl::List urls;
 //
@@ -211,9 +211,7 @@ void SalServiceModel::loadRootEntries()
         KService::List services = KServiceTypeTrader::self()->query("Plasma/Sal/Menu");
         if (!services.isEmpty()) {
             foreach (const KService::Ptr &service, services) {
-
                 const QUrl url = QUrl(service->property("X-Plasma-Sal-Url", QVariant::String).toString());
-                const int relevance = service->property("X-Plasma-Sal-Relevance", QVariant::Int).toInt();
                 const QString groupName = url.path().remove(0, 1);
 
                 if (url.scheme() != "kservicegroup" || groupSet.contains(groupName)) {
