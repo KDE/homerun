@@ -61,14 +61,9 @@ int SalServiceModel::count() const
 
 QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 {
-    kDebug() << "TEST: " << index.row() << " " << index.column();
-    kDebug() << "#### coutn:" << m_serviceList.count();
-
     if (!index.isValid() || index.row() >= m_serviceList.count()) {
         return QVariant();
     }
-
-    kDebug () << "$$$$$$$$$$$$$$$$$$$$$$";
 
     if (role == Qt::DisplayRole) {
         return m_serviceList.at(index.row())->name();
@@ -221,7 +216,6 @@ void SalServiceModel::loadRootEntries()
                 const int relevance = service->property("X-Plasma-Sal-Relevance", QVariant::Int).toInt();
                 const QString groupName = url.path().remove(0, 1);
 
-                kDebug() << "$$$$$$$$$$$$$$$$$" << service->name() << "  COMMENT: " << service->comment() << "URL: " << url.toString();
                 if (url.scheme() != "kservicegroup" || groupSet.contains(groupName)) {
 //                    model->appendRow(
 //                        StandardItemFactory::createItem(
@@ -233,15 +227,13 @@ void SalServiceModel::loadRootEntries()
 //                                                        CommonModel::NoAction
 //                        )
 //                    );
-            m_serviceList.append(service);
-            kDebug() << "COUNT: " << m_serviceList.count();
+                    m_serviceList.append(service);
                 }
 
-                    if (groupSet.contains(groupName)) {
-                        groupSet.remove(groupName);
-                    }
+                if (groupSet.contains(groupName)) {
+                    groupSet.remove(groupName);
+                }
             }
-
         }
 
         foreach (const KServiceGroup::Ptr group, groupSet) {
@@ -290,8 +282,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
                     if (genericName.isNull()) {
                         genericName = service->comment();
                     }
-                    kDebug() << "LOADSERVICEGROUP %%%%%%%%:" << service->name() << service->entryPath() << genericName;
-                m_serviceList.append(service);
+                    m_serviceList.append(service);
 //                    appendRow(
 //                        StandardItemFactory::createItem(
 //                            KIcon(service->icon()),

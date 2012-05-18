@@ -105,9 +105,6 @@ void FullView::toggle(int screen)
 
         QDesktopWidget w;
         const QRect rect = w.availableGeometry(screen);
-
-        kDebug() << "Rect, w: " << rect.width() << " h: " << rect.height();
-
         setGeometry(rect);
         show();
         KWindowSystem::forceActiveWindow(winId());
@@ -116,7 +113,6 @@ void FullView::toggle(int screen)
 
 void FullView::keyPressEvent(QKeyEvent *event)
 {
-    kDebug() << "KEYPRESS";
     if (event->key() == Qt::Key_Escape) {
         hide();
         event->accept();
