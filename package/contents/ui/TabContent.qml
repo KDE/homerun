@@ -113,7 +113,7 @@ FocusScope {
                 model = serviceModelComponent.createObject(root);
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(root);
-            } else if (modelName == "FavoritesModel") {
+            } else if (modelName == "FavoriteModel") {
                 model = root.favoriteModel;
             } else {
                 model = runnerModelComponent.createObject(root);

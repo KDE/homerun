@@ -10,7 +10,7 @@ url=dolphin
 [Page0]
 name=Dashboard
 icon=kde
-source-1=FavoritesModel
+source-1=FavoriteModel
 source0=PlacesModel
 source1=RunnerModel:activityrunner
 source2=RunnerModel:audioplayercontrol

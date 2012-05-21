@@ -19,7 +19,7 @@
 */
 
 // Own
-#include "favoritesmodel.h"
+#include "favoritemodel.h"
 
 // Qt
 
@@ -42,10 +42,10 @@ static KService::Ptr findService(const QString &name)
     return service;
 }
 
-FavoritesModel::FavoritesModel(QObject *parent)
+FavoriteModel::FavoriteModel(QObject *parent)
 : QAbstractListModel(parent)
 {
-    kDebug() << "SalFavoritesModel INITED";
+    kDebug() << "SalFavoriteModel INITED";
 
     //////////////////////////////////////////////////////////
 
@@ -57,16 +57,16 @@ FavoritesModel::FavoritesModel(QObject *parent)
     setRoleNames(roles);
 }
 
-FavoritesModel::~FavoritesModel()
+FavoriteModel::~FavoriteModel()
 {
 }
 
-QString FavoritesModel::configFileName() const
+QString FavoriteModel::configFileName() const
 {
     return m_config.isNull() ? QString() : m_config->name();
 }
 
-void FavoritesModel::setConfigFileName(const QString &name)
+void FavoriteModel::setConfigFileName(const QString &name)
 {
     if (name == configFileName()) {
         return;
@@ -74,7 +74,7 @@ void FavoritesModel::setConfigFileName(const QString &name)
     setConfig(KSharedConfig::openConfig(name));
 }
 
-void FavoritesModel::setConfig(const KSharedConfig::Ptr &ptr)
+void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
 {
     m_config = ptr;
     kDebug() << "----------------> Restoring Stuff...";
@@ -108,7 +108,7 @@ void FavoritesModel::setConfig(const KSharedConfig::Ptr &ptr)
     configFileNameChanged();
 }
 
-void FavoritesModel::add(const QString &entryPath)
+void FavoriteModel::add(const QString &entryPath)
 {
     KService::Ptr service = findService(entryPath);
     if (service.isNull()) {
@@ -127,7 +127,7 @@ void FavoritesModel::add(const QString &entryPath)
     baseGroup.sync();
 }
 
-void FavoritesModel::remove(const QString &entryPath)
+void FavoriteModel::remove(const QString &entryPath)
 {
     int row = indexOfByPath(entryPath);
     if (row == -1) {
@@ -145,12 +145,12 @@ void FavoritesModel::remove(const QString &entryPath)
     baseGroup.sync();
 }
 
-bool FavoritesModel::isFavorite(const QString &entryPath) const
+bool FavoriteModel::isFavorite(const QString &entryPath) const
 {
     return indexOfByPath(entryPath) != -1;
 }
 
-int FavoritesModel::indexOfByPath(const QString &entryPath) const
+int FavoriteModel::indexOfByPath(const QString &entryPath) const
 {
     int row;
     for (row = m_favoriteList.count() - 1; row >= 0; --row) {
@@ -161,12 +161,12 @@ int FavoritesModel::indexOfByPath(const QString &entryPath) const
     return row;
 }
 
-int FavoritesModel::count() const
+int FavoriteModel::count() const
 {
     return m_favoriteList.count();
 }
 
-int FavoritesModel::rowCount(const QModelIndex &index) const
+int FavoriteModel::rowCount(const QModelIndex &index) const
 {
     if (index.isValid()) {
         return 0;
@@ -174,7 +174,7 @@ int FavoritesModel::rowCount(const QModelIndex &index) const
     return m_favoriteList.count();
 }
 
-QVariant FavoritesModel::data(const QModelIndex &index, int role) const
+QVariant FavoriteModel::data(const QModelIndex &index, int role) const
 {
     KService::Ptr service = m_favoriteList.value(index.row());
     if (service.isNull()) {
@@ -192,7 +192,7 @@ QVariant FavoritesModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void FavoritesModel::run(int row)
+void FavoriteModel::run(int row)
 {
     KService::Ptr service = m_favoriteList.value(row);
     if (service.isNull()) {
@@ -202,7 +202,7 @@ void FavoritesModel::run(int row)
     KRun::run(*service, KUrl::List(), 0);
 }
 
-//void FavoritesModel::add(const QUrl &url, const QModelIndex &before)
+//void FavoriteModel::add(const QUrl &url, const QModelIndex &before)
 //{
 //
 //    KService::Ptr service = KService::serviceByDesktopPath(url.path());
@@ -284,7 +284,7 @@ void FavoritesModel::run(int row)
 //    }
 //}
 //
-//void FavoritesModel::save(KConfigGroup &cg)
+//void FavoriteModel::save(KConfigGroup &cg)
 //{
 //    kDebug() << "----------------> Saving Stuff...";
 //
@@ -304,4 +304,4 @@ void FavoritesModel::run(int row)
 //    }
 //}
 
-#include "favoritesmodel.moc"
+#include "favoritemodel.moc"

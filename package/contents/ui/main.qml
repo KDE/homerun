@@ -55,7 +55,7 @@ Item {
         configFileName: main.configFileName
     }
 
-    SalComponents.FavoritesModel {
+    SalComponents.FavoriteModel {
         id: favoriteModel
         configFileName: main.configFileName
     }

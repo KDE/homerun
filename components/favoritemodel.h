@@ -18,15 +18,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef FAVORITESMODEL_H
-#define FAVORITESMODEL_H
+#ifndef FAVORITEMODEL_H
+#define FAVORITEMODEL_H
 
 #include <QAbstractListModel>
 
 #include <KService>
 #include <KSharedConfig>
 
-class FavoritesModel : public QAbstractListModel
+class FavoriteModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
@@ -37,8 +37,8 @@ public:
         UrlRole = Qt::UserRole + 1,
     };
 
-    FavoritesModel(QObject *parent = 0);
-    ~FavoritesModel();
+    FavoriteModel(QObject *parent = 0);
+    ~FavoriteModel();
 
     int count() const;
 
@@ -67,4 +67,4 @@ private:
     int indexOfByPath(const QString &) const;
 };
 
-#endif // FAVORITESMODEL_H
+#endif // FAVORITEMODEL_H
