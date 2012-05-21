@@ -91,12 +91,8 @@ void FavoritesModel::setConfig(const KSharedConfig::Ptr &ptr)
     }
 
     QStringList names;
-    if (favoritesConfigs.isEmpty()) {
-        names << "konqueror" << "kmail" << "systemsettings" << "dolphin";
-    } else {
-        Q_FOREACH(const KConfigGroup &config, favoritesConfigs) {
-            names << config.readEntry("url");
-        }
+    Q_FOREACH(const KConfigGroup &config, favoritesConfigs) {
+        names << config.readEntry("url");
     }
 
     beginResetModel();
@@ -124,6 +120,11 @@ void FavoritesModel::add(const QString &entryPath)
     m_favoriteList << service;
     endInsertRows();
     countChanged();
+
+    KConfigGroup baseGroup(m_config, "favorites");
+    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(row));
+    group.writeEntry("url", entryPath);
+    baseGroup.sync();
 }
 
 void FavoritesModel::remove(const QString &entryPath)
@@ -137,6 +138,11 @@ void FavoritesModel::remove(const QString &entryPath)
     m_favoriteList.removeAt(row);
     endRemoveRows();
     countChanged();
+
+    KConfigGroup baseGroup(m_config, "favorites");
+    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(row));
+    group.deleteGroup();
+    baseGroup.sync();
 }
 
 bool FavoritesModel::isFavorite(const QString &entryPath) const
