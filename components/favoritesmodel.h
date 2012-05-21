@@ -54,10 +54,12 @@ public:
     Q_INVOKABLE void remove(const QString &entryPath);
     Q_INVOKABLE bool isFavorite(const QString &entryPath) const;
 
+    Q_INVOKABLE void run(int row);
+
 Q_SIGNALS:
     void countChanged();
     void configFileNameChanged();
-    
+
 private:
     KSharedConfig::Ptr m_config;
     QList<KService::Ptr> m_favoriteList;

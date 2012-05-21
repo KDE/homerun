@@ -192,6 +192,16 @@ QVariant FavoritesModel::data(const QModelIndex &index, int role) const
     }
 }
 
+void FavoritesModel::run(int row)
+{
+    KService::Ptr service = m_favoriteList.value(row);
+    if (service.isNull()) {
+        kWarning() << "Invalid row";
+        return;
+    }
+    KRun::run(*service, KUrl::List(), 0);
+}
+
 //void FavoritesModel::add(const QUrl &url, const QModelIndex &before)
 //{
 //
