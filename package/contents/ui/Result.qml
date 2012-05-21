@@ -25,13 +25,21 @@ Item {
     id: main
 
     property int iconWidth: 64
+    property QtObject favoriteModel
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
-    property string currentUrl;
+    property string entryPath
     property string currentId;
     //to allow public access to these members..
     property alias favoriteIcon: favoriteIcon
     property alias resultLabel: resultLabel
+
+    property bool isFavorite: favoriteModel.isFavorite(entryPath)
+
+    signal clicked
+    property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
+    signal entered
+    signal exited
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
@@ -41,6 +49,7 @@ Item {
 
     Component.onCompleted: {
         opacity = 1
+        itemMouseArea.clicked.connect(clicked)
     }
 
     Behavior on opacity {
@@ -88,11 +97,13 @@ Item {
         id: favoriteIcon
 
         anchors {
-            top: parent.top
             right: parent.right
-//            bottom: parent.bottom
+            top: parent.top
+            rightMargin: 4
+            topMargin: anchors.rightMargin
         }
 
+        visible: entryPath != ""
 
         Behavior on opacity {
             NumberAnimation {
@@ -100,10 +111,66 @@ Item {
                 easing.type: Easing.OutQuad
             }
         }
-
         icon: "bookmarks"
-        opacity: 0
-        width: 32
-        height: 32
+
+        opacity: {
+            if (isFavorite) {
+                return favoriteMouseArea.containsMouse ? 0.5 : 1;
+            } else {
+                return favoriteMouseArea.containsMouse ? 1 : (containsMouse ? 0.5 : 0);
+            }
+        }
+        width: 22
+        height: width
+    }
+
+    QtExtra.QIconItem {
+        anchors {
+            right: favoriteIcon.right
+            bottom: favoriteIcon.bottom
+        }
+
+        visible: entryPath != ""
+
+        icon: isFavorite ? "list-remove" : "list-add"
+        opacity: favoriteMouseArea.containsMouse ? 1 : 0
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutQuad
+            }
+        }
+        width: 16
+        height: width
+    }
+
+    MouseArea {
+        id: itemMouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+    }
+
+    MouseArea {
+        // If MouseArea were a child of favoriteIcon it would not work
+        // when favoriteIcon.opacity is 0. That's why it is a sibling.
+        id: favoriteMouseArea
+        anchors.fill: favoriteIcon
+        hoverEnabled: true
+
+        onClicked: {
+            if (isFavorite) {
+                favoriteModel.remove(entryPath);
+            } else {
+                favoriteModel.add(entryPath);
+            }
+            // Overwrite "isFavorite" property to reflect the change.
+            // It is a bit of a hack, but "isFavorite" does not get
+            // updated after the change, so we have to update it ourself.
+            //
+            // We read the result from favoriteModel instead of using
+            // !favorite so that if favoriting this item failed for some
+            // reason, we do not show wrong favorite status.
+            isFavorite = favoriteModel.isFavorite(entryPath);
+        }
     }
 }

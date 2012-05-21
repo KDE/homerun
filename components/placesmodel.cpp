@@ -59,12 +59,6 @@ int PlacesModel::count() const
     return c;
 }
 
-QVariant PlacesModel::data(const QModelIndex &index, int role) const
-{
-    QVariant v = QSortFilterProxyModel::data(index, role);
-    return v;
-}
-
 void PlacesModel::switchToPlacesModel()
 {
     setSourceModel(m_placesModel);
@@ -73,7 +67,6 @@ void PlacesModel::switchToPlacesModel()
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(KFilePlacesModel::UrlRole, "url");
     setRoleNames(roles);
 }
 
@@ -85,7 +78,6 @@ void PlacesModel::switchToDirModel()
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(KFilePlacesModel::UrlRole, "url");
     setRoleNames(roles);
 }
 

@@ -1,6 +1,7 @@
 /*
     Copyright 2009 Ivan Cukic <ivan.cukic+kde@gmail.com>
     Copyright 2010 Marco Martin <notmart@gmail.com>
+    Copyright 2012 Aurélien Gâteau <agateau@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,48 +19,53 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef FAVOURITESMODEL_H
-#define FAVOURITESMODEL_H
+#ifndef FAVORITEMODEL_H
+#define FAVORITEMODEL_H
 
+#include <QAbstractListModel>
 
-#include <KConfigGroup>
-
-#include <Plasma/QueryMatch>
-
-#include <QStandardItemModel>
-#include <QStringList>
 #include <KService>
-#include <KServiceGroup>
-#include <KUrl>
-#include <QMimeData>
+#include <KSharedConfig>
 
-namespace Plasma {
-    class RunnerManager;
-}
-
-class QTimer;
-
-class FavoritesModel : public QAbstractListModel
+class FavoriteModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
 
 public:
     enum Roles {
-        Url = Qt::UserRole + 1,
+        EntryPathRole = Qt::UserRole + 1,
     };
 
-    FavoritesModel (QObject *parent = 0);
+    FavoriteModel(QObject *parent = 0);
+    ~FavoriteModel();
 
-    int rowCount(const QModelIndex&) const;
     int count() const;
-    QVariant data(const QModelIndex&, int) const;
 
-    void restore(KConfigGroup &cg);
+    QString configFileName() const;
+    void setConfigFileName(const QString &name);
+
+    void setConfig(const KSharedConfig::Ptr &);
+
+    int rowCount(const QModelIndex &) const;
+    QVariant data(const QModelIndex &, int role) const;
+
+    Q_INVOKABLE void add(const QString &entryPath);
+    Q_INVOKABLE void remove(const QString &entryPath);
+    Q_INVOKABLE bool isFavorite(const QString &entryPath) const;
+
+    Q_INVOKABLE void run(int row);
 
 Q_SIGNALS:
     void countChanged();
+    void configFileNameChanged();
+
+private:
+    KSharedConfig::Ptr m_config;
+    QList<KService::Ptr> m_favoriteList;
+
+    int indexOfByPath(const QString &) const;
 };
 
-#endif // FAVOURITESMODEL_H
-
+#endif // FAVORITEMODEL_H

@@ -26,12 +26,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 Item {
     id: main
     signal closeClicked
-    property alias pageConfigFileName: pageModel.configFileName
-
-    Component.onCompleted: {
-        plasmoid.writeConfig("favorites", "TEST", "TEST2");
-        print("@@@@@: " + plasmoid.readConfig("favorites"))
-    }
+    property string configFileName
 
     PlasmaCore.FrameSvgItem {
         id: background
@@ -50,11 +45,20 @@ Item {
         onClicked: main.closeClicked()
     }
 
-    SalComponents.PageModel { id: pageModel }
+    SalComponents.PageModel {
+        id: pageModel
+        configFileName: main.configFileName
+    }
+
+    SalComponents.FavoriteModel {
+        id: favoriteModel
+        configFileName: main.configFileName
+    }
 
     Component {
         id: tabContent
-        TabContent {}
+        TabContent {
+        }
     }
 
     PlasmaComponents.TabBar {
@@ -72,7 +76,7 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
-                    tab = tabContent.createObject(tabGroup, {"sources": model.sources});
+                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModel": favoriteModel});
                 }
             }
         }
@@ -95,38 +99,6 @@ Item {
                 }
             }
         }
-
-        /*
-        onCurrentTabChanged: {
-            print("TEST" + currentTab.text)
-            var text = currentTab.text
-            if (text == "Categories") {
-                resultsView.model = serviceModel;
-                runnerModel.query = ""
-            } else if (text == "Apps") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = [ "services", "kill", "kget", "calculator", "audioplayercontrol" ]
-                runnerModel.query = ""
-            } else if (text == "Documents") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = [ "sessions", "places", "solid" ]
-                runnerModel.query = "places"
-            } else if (text == "YouTube") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = "youtube"
-                runnerModel.query = ""
-            } else if (text == "Bing") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = "bing"
-                runnerModel.query = ""
-            } else if (text == "Social") {
-                resultsView.model = runnerModel;
-                runnerModel.query = ""
-            }
-            //FIXME: make it search the current lense for stuff
-            //runnerModel.query = searchField.text
-        }
-        */
     }
 
     PlasmaComponents.TabGroup {

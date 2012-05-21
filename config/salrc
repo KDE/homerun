@@ -1,6 +1,16 @@
+[favorites][favorite-1]
+entryPath=konqueror
+
+[favorites][favorite-2]
+entryPath=kmail2
+
+[favorites][favorite-3]
+entryPath=dolphin
+
 [Page0]
 name=Dashboard
 icon=kde
+source-1=FavoriteModel
 source0=PlacesModel
 source1=RunnerModel:activityrunner
 source2=RunnerModel:audioplayercontrol

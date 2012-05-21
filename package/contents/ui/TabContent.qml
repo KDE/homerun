@@ -24,6 +24,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 
 FocusScope {
     id: root
+    property QtObject favoriteModel
     property variant sources
 
     Component {
@@ -112,6 +113,8 @@ FocusScope {
                 model = serviceModelComponent.createObject(root);
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(root);
+            } else if (modelName == "FavoriteModel") {
+                model = root.favoriteModel;
             } else {
                 model = runnerModelComponent.createObject(root);
             }
@@ -120,7 +123,7 @@ FocusScope {
                 model.runners = args;
                 model.name = args[0];
             }
-            resultsViewComponent.createObject(resultsColumn, {"model": model});
+            resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
         }
     }
 }

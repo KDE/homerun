@@ -1,6 +1,7 @@
 /*
     Copyright 2009 Ivan Cukic <ivan.cukic+kde@gmail.com>
     Copyright 2010 Marco Martin <notmart@gmail.com>
+    Copyright 2012 Aurélien Gâteau <agateau@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,85 +20,185 @@
 */
 
 // Own
-#include "favoritesmodel.h"
+#include "favoritemodel.h"
 
 // Qt
 
 // KDE
-#include <KService>
-#include <KIcon>
 #include <KDebug>
+#include <KIcon>
 #include <KRun>
+#include <KService>
 
 //Plasma
 #include <Plasma/AbstractRunner>
 #include <Plasma/RunnerManager>
 
-FavoritesModel::FavoritesModel(QObject *parent)
-        : QStandardItemModel(parent)
+static KService::Ptr findService(const QString &name)
 {
-    kDebug() << "SalFavoritesModel INITED";
+    KService::Ptr service = KService::serviceByDesktopPath(name);
+    if (!service) {
+        service = KService::serviceByDesktopName(name);
+    }
+    return service;
+}
 
-    //////////////////////////////////////////////////////////
-
+FavoriteModel::FavoriteModel(QObject *parent)
+: QAbstractListModel(parent)
+{
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(Url, "url");
+    roles.insert(EntryPathRole, "entryPath");
 
     setRoleNames(roles);
 }
 
-FavoritesModel::~FavoritesModel()
+FavoriteModel::~FavoriteModel()
 {
 }
 
-void FavoritesModel::restore(KConfigGroup &cg)
+QString FavoriteModel::configFileName() const
 {
-    kDebug() << "----------------> Restoring Stuff...";
+    return m_config.isNull() ? QString() : m_config->name();
+}
 
-    KConfigGroup stripGroup(&cg, "stripwidget");
+void FavoriteModel::setConfigFileName(const QString &name)
+{
+    if (name == configFileName()) {
+        return;
+    }
+    setConfig(KSharedConfig::openConfig(name));
+}
 
-    // get all the favourites
-    QStringList groupNames(stripGroup.groupList());
-    qSort(groupNames);
-    QMap<uint, KConfigGroup> favouritesConfigs;
-    foreach (const QString &favouriteGroup, stripGroup.groupList()) {
-        if (favouriteGroup.startsWith("favourite-")) {
-            KConfigGroup favouriteConfig(&stripGroup, favouriteGroup);
-            favouritesConfigs.insert(favouriteGroup.split("-").last().toUInt(), favouriteConfig);
+void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
+{
+    m_config = ptr;
+
+    KConfigGroup baseGroup(m_config, "favorites");
+
+    // get all the favorites
+    QMap<uint, KConfigGroup> favoritesConfigs;
+    foreach (const QString &favoriteGroup, baseGroup.groupList()) {
+        if (favoriteGroup.startsWith("favorite-")) {
+            KConfigGroup favoriteConfig(&baseGroup, favoriteGroup);
+            favoritesConfigs.insert(favoriteGroup.split("-").last().toUInt(), favoriteConfig);
         }
     }
 
-    QVector<QString> urls;
-    int numIcons;
+    QStringList names;
+    Q_FOREACH(const KConfigGroup &config, favoritesConfigs) {
+        names << config.readEntry("entryPath");
+    }
 
-    if (favouritesConfigs.isEmpty()) {
-        numIcons = 4;
-        urls << "konqueror" << "kmail" << "systemsettings" << "dolphin";
+    beginResetModel();
+    m_favoriteList.clear();
+    Q_FOREACH(const QString &name, names) {
+        KService::Ptr service = findService(name);
+        if (!service.isNull()) {
+            m_favoriteList << service;
+        }
+    }
+    endResetModel();
+    countChanged();
+    configFileNameChanged();
+}
+
+void FavoriteModel::add(const QString &entryPath)
+{
+    KService::Ptr service = findService(entryPath);
+    if (service.isNull()) {
+        kWarning() << "Could not find a service for" << entryPath;
+        return;
+    }
+    int row = m_favoriteList.count();
+    beginInsertRows(QModelIndex(), row, row);
+    m_favoriteList << service;
+    endInsertRows();
+    countChanged();
+
+    KConfigGroup baseGroup(m_config, "favorites");
+    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(row));
+    group.writeEntry("entryPath", entryPath);
+    baseGroup.sync();
+}
+
+void FavoriteModel::remove(const QString &entryPath)
+{
+    int row = indexOfByPath(entryPath);
+    if (row == -1) {
+        kWarning() << entryPath << "is not in the favorites";
+        return;
+    }
+    beginRemoveRows(QModelIndex(), row, row);
+    m_favoriteList.removeAt(row);
+    endRemoveRows();
+    countChanged();
+
+    KConfigGroup baseGroup(m_config, "favorites");
+    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(row));
+    group.deleteGroup();
+    baseGroup.sync();
+}
+
+bool FavoriteModel::isFavorite(const QString &entryPath) const
+{
+    return indexOfByPath(entryPath) != -1;
+}
+
+int FavoriteModel::indexOfByPath(const QString &entryPath) const
+{
+    int row;
+    for (row = m_favoriteList.count() - 1; row >= 0; --row) {
+        if (m_favoriteList[row]->entryPath() == entryPath) {
+            break;
+        }
+    }
+    return row;
+}
+
+int FavoriteModel::count() const
+{
+    return m_favoriteList.count();
+}
+
+int FavoriteModel::rowCount(const QModelIndex &index) const
+{
+    if (index.isValid()) {
+        return 0;
+    }
+    return m_favoriteList.count();
+}
+
+QVariant FavoriteModel::data(const QModelIndex &index, int role) const
+{
+    KService::Ptr service = m_favoriteList.value(index.row());
+    if (service.isNull()) {
+        return QVariant();
+    }
+    if (role == Qt::DisplayRole) {
+        return service->name();
+    } else if (role == Qt::DecorationRole) {
+        return KIcon(service->icon());
+    } else if (role == EntryPathRole) {
+        return service->entryPath();
     } else {
-        urls.resize(favouritesConfigs.size());
-        QMap<uint, KConfigGroup>::const_iterator it = favouritesConfigs.constBegin();
-        int i = 0;
-        while (it != favouritesConfigs.constEnd()) {
-            KConfigGroup favouriteConfig = it.value();
-
-            urls[i] = favouriteConfig.readEntry("url");
-            ++i;
-            ++it;
-        }
-        numIcons = stripGroup.groupList().size();
-    }
-
-    for (int i = 0; i < numIcons; ++i ) {
-        if (!urls[i].isNull()) {
-            add(urls[i]);
-        }
+        kWarning() << "Unhandled role" << role;
+        return QVariant();
     }
 }
 
+void FavoriteModel::run(int row)
+{
+    KService::Ptr service = m_favoriteList.value(row);
+    if (service.isNull()) {
+        kWarning() << "Invalid row";
+        return;
+    }
+    KRun::run(*service, KUrl::List(), 0);
+}
 
-//void FavoritesModel::add(const QUrl &url, const QModelIndex &before)
+//void FavoriteModel::add(const QUrl &url, const QModelIndex &before)
 //{
 //
 //    KService::Ptr service = KService::serviceByDesktopPath(url.path());
@@ -179,7 +280,7 @@ void FavoritesModel::restore(KConfigGroup &cg)
 //    }
 //}
 //
-//void FavoritesModel::save(KConfigGroup &cg)
+//void FavoriteModel::save(KConfigGroup &cg)
 //{
 //    kDebug() << "----------------> Saving Stuff...";
 //
@@ -191,7 +292,7 @@ void FavoritesModel::restore(KConfigGroup &cg)
 //
 //    for (int i = 0; i <= rowCount(); i++) {
 //        QModelIndex currentIndex = index(i, 0);
-//        KConfigGroup config(&stripGroup, QString("favourite-%1").arg(i));
+//        KConfigGroup config(&stripGroup, QString("favorite-%1").arg(i));
 //        QString url = currentIndex.data(CommonModel::Url).value<QString>();
 //        if (!url.isNull()) {
 //            config.writeEntry("url", url);
@@ -199,4 +300,4 @@ void FavoritesModel::restore(KConfigGroup &cg)
 //    }
 //}
 
-#include "favoritesmodel.moc"
+#include "favoritemodel.moc"
