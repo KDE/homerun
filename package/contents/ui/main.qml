@@ -26,7 +26,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 Item {
     id: main
     signal closeClicked
-    property alias pageConfigFileName: pageModel.configFileName
+    property string configFileName
 
     Component.onCompleted: {
         plasmoid.writeConfig("favorites", "TEST", "TEST2");
@@ -50,11 +50,20 @@ Item {
         onClicked: main.closeClicked()
     }
 
-    SalComponents.PageModel { id: pageModel }
+    SalComponents.PageModel {
+        id: pageModel
+        configFileName: main.configFileName
+    }
+
+    SalComponents.FavoritesModel {
+        id: favoriteModel
+        configFileName: main.configFileName
+    }
 
     Component {
         id: tabContent
-        TabContent {}
+        TabContent {
+        }
     }
 
     PlasmaComponents.TabBar {
@@ -72,7 +81,7 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
-                    tab = tabContent.createObject(tabGroup, {"sources": model.sources});
+                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModel": favoriteModel});
                 }
             }
         }

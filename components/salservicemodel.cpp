@@ -260,6 +260,7 @@ void SalServiceModel::loadRootEntries()
 
 //        model->setSortRole(CommonModel::Weight);
 //        model->sort(0, Qt::DescendingOrder);
+    sort(-1, Qt::AscendingOrder);
 }
 
 void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
@@ -301,6 +302,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
             }
         }
     }
+    sort(0, Qt::AscendingOrder);
 }
 
 #include "salservicemodel.moc"

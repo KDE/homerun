@@ -18,48 +18,51 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef FAVOURITESMODEL_H
-#define FAVOURITESMODEL_H
+#ifndef FAVORITESMODEL_H
+#define FAVORITESMODEL_H
 
+#include <QAbstractListModel>
 
-#include <KConfigGroup>
-
-#include <Plasma/QueryMatch>
-
-#include <QStandardItemModel>
-#include <QStringList>
 #include <KService>
-#include <KServiceGroup>
-#include <KUrl>
-#include <QMimeData>
-
-namespace Plasma {
-    class RunnerManager;
-}
-
-class QTimer;
+#include <KSharedConfig>
 
 class FavoritesModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
 
 public:
     enum Roles {
-        Url = Qt::UserRole + 1,
+        UrlRole = Qt::UserRole + 1,
     };
 
-    FavoritesModel (QObject *parent = 0);
+    FavoritesModel(QObject *parent = 0);
+    ~FavoritesModel();
 
-    int rowCount(const QModelIndex&) const;
     int count() const;
-    QVariant data(const QModelIndex&, int) const;
 
-    void restore(KConfigGroup &cg);
+    QString configFileName() const;
+    void setConfigFileName(const QString &name);
+
+    void setConfig(const KSharedConfig::Ptr &);
+
+    int rowCount(const QModelIndex &) const;
+    QVariant data(const QModelIndex &, int role) const;
+
+    Q_INVOKABLE void add(const QString &entryPath);
+    Q_INVOKABLE void remove(const QString &entryPath);
+    Q_INVOKABLE bool isFavorite(const QString &entryPath) const;
 
 Q_SIGNALS:
     void countChanged();
+    void configFileNameChanged();
+    
+private:
+    KSharedConfig::Ptr m_config;
+    QList<KService::Ptr> m_favoriteList;
+
+    int indexOfByPath(const QString &) const;
 };
 
-#endif // FAVOURITESMODEL_H
-
+#endif // FAVORITESMODEL_H

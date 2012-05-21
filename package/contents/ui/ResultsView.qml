@@ -33,9 +33,7 @@ Column {
     property string currentText: "";
     property string currentIcon: "";
 
-    property string currentFavoriteUrl: ""
-    property variant currentFavoriteIcon
-    property string currentFavoriteText: ""
+    property QtObject favoriteModel
 
     property alias model: gridView.model
 
@@ -124,6 +122,7 @@ Column {
 
         delegate: Result {
             id: result
+            favoriteModel: main.favoriteModel
             currentText: model.label ? model.label : ""
             currentIcon: model.icon ? model.icon : ""
             currentId: model.id ? model.id : ""
@@ -182,33 +181,6 @@ Column {
                     tooltipDialog.y = point.y
                     tooltipDialog.visible = true
                     tooltipText.text = model["label"]
-                }
-            }
-
-            MouseArea {
-                anchors {
-                    left: result.favoriteIcon.left
-                    right: parent.right
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-
-                hoverEnabled: true
-
-                onClicked: {
-                    currentFavoriteText = result.currentText
-                    currentFavoriteIcon = result.currentIcon
-                    currentFavoriteUrl = result.currentUrl
-                }
-
-                onEntered: {
-                    result.favoriteIcon.opacity = 1
-                    resultEntered();
-                }
-
-                onExited: {
-                    result.favoriteIcon.opacity = 0
-                    resultExited();
                 }
             }
         }

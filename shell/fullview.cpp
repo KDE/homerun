@@ -70,7 +70,7 @@ FullView::FullView()
 
     KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.sal/contents/ui/main.qml");
     setSource(source);
-    rootObject()->setProperty("pageConfigFileName", "salrc");
+    rootObject()->setProperty("configFileName", "salrc");
 
     connect(rootObject(), SIGNAL(closeClicked()), SLOT(hide()));
     updateGeometry();

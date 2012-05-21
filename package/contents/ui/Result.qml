@@ -25,6 +25,7 @@ Item {
     id: main
 
     property int iconWidth: 64
+    property QtObject favoriteModel
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
     property string currentUrl;
@@ -32,6 +33,8 @@ Item {
     //to allow public access to these members..
     property alias favoriteIcon: favoriteIcon
     property alias resultLabel: resultLabel
+
+    property bool isFavorite: favoriteModel.isFavorite(currentUrl)
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
@@ -102,8 +105,25 @@ Item {
         }
 
         icon: "bookmarks"
-        opacity: 0
+        opacity: (isFavorite || favoriteMouseArea.containsMouse) ? 1 : 0
         width: 32
         height: 32
+    }
+        
+    MouseArea {
+        // If MouseArea were a child of favoriteIcon it would not work
+        // when favoriteIcon.opacity is 0. That's why it is a sibling.
+        id: favoriteMouseArea
+        anchors.fill: favoriteIcon
+        hoverEnabled: true
+
+        onClicked: {
+            var url = currentUrl;
+            if (isFavorite) {
+                favoriteModel.remove(url);
+            } else {
+                favoriteModel.add(url);
+            }
+        }
     }
 }

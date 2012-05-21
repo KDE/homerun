@@ -1,6 +1,7 @@
 project(salcomponents)
 
 set(salcomponents_SRCS
+    favoritesmodel.cpp
     pagemodel.cpp
     placesmodel.cpp
     salservicemodel.cpp
