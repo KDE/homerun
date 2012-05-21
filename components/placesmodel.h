@@ -44,8 +44,6 @@ public:
     QString path() const;
     void setPath(const QString &path);
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
-
 Q_SIGNALS:
     void countChanged();
     void pathChanged(const QString &);
