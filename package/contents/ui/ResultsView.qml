@@ -126,7 +126,7 @@ Column {
             currentText: model.label ? model.label : ""
             currentIcon: model.icon ? model.icon : ""
             currentId: model.id ? model.id : ""
-            currentUrl: model.url ? model.url : ""
+            entryPath: model.entryPath ? model.entryPath : ""
 
             onClicked: indexClicked(gridView.currentIndex)
             onContainsMouseChanged: {

@@ -35,7 +35,7 @@ class FavoriteModel : public QAbstractListModel
 
 public:
     enum Roles {
-        UrlRole = Qt::UserRole + 1,
+        EntryPathRole = Qt::UserRole + 1,
     };
 
     FavoriteModel(QObject *parent = 0);

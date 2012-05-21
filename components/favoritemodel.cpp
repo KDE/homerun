@@ -49,7 +49,7 @@ FavoriteModel::FavoriteModel(QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(UrlRole, "url");
+    roles.insert(EntryPathRole, "entryPath");
 
     setRoleNames(roles);
 }
@@ -180,7 +180,7 @@ QVariant FavoriteModel::data(const QModelIndex &index, int role) const
         return service->name();
     } else if (role == Qt::DecorationRole) {
         return KIcon(service->icon());
-    } else if (role == UrlRole) {
+    } else if (role == EntryPathRole) {
         return service->entryPath();
     } else {
         kWarning() << "Unhandled role" << role;

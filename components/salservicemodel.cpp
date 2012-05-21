@@ -44,7 +44,7 @@ SalServiceModel::SalServiceModel (QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(Url, "url");
+    roles.insert(EntryPathRole, "entryPath");
 
     setRoleNames(roles);
 }
@@ -69,18 +69,12 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
         return m_serviceList.at(index.row())->name();
     } else if (role == Qt::DecorationRole) {
         return m_serviceList.at(index.row())->icon();
-    } else if (role == Url) {
-        QString pathAtRow = m_serviceList.at(index.row())->entryPath();
-
-        // if we're at root level, we want to descend into the selection..not execute
-        QString path;
+    } else if (role == EntryPathRole) {
         if (m_path == "/") {
-            path = "kservicegroup:/" + pathAtRow;
-            kDebug() << "PATH IS AT DATA:" << m_path << "RETURNING PATH OF: " << path;
-        } else {
-            path = pathAtRow;
+            // Items at root level are not "favoritable", so don't return an entryPath
+            return QVariant();
         }
-        return path;
+        return m_serviceList.at(index.row())->entryPath();
     }
 
     return QVariant();
@@ -88,46 +82,15 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 
 void SalServiceModel::run(int row)
 {
-    QModelIndex idx = index(row, 0);
-    QString url = data(idx, Url).toString();
-    openUrl(url);
-}
-
-bool SalServiceModel::openUrl(const QString& url)
-{
-    if (url.isEmpty()) {
-        return false;
-    }
-
-    KService::Ptr service;
-
-    if (url.startsWith("kservicegroup:/")) {
-        //remove the kservicegroup:/ url thingy
-//        const QString& trimmedUrl = url.right(url.length() - 15);
-        service = KService::serviceByStorageId(url);
+    KService::Ptr service = m_serviceList.at(row);
+    if (m_path == "/") {
+        // We are at root level, we want to descend into the selection, not execute
         QString salUrl = service->property("X-Plasma-Sal-Url").toString();
         // salUrl is of the form "kservicegroup://root/Something/". We want the "/Something" part.
         setPath("/" % salUrl.section('/', 2, -1, QString::SectionSkipEmpty));
-
-        kDebug() << "SET PATH TO: " << m_path;
-
-        return true;
+    } else {
+        KRun::run(*service, KUrl::List(), 0);
     }
-
-    // never reached if he navigated to a menu/submenu
-
-    service  = KService::serviceByDesktopPath(url);
-    kDebug() << "RETRIEVED SERVICE NAME FROM CLICKED: " << service->name();
-
-    if (!service) {
-        service = KService::serviceByDesktopName(url);
-    }
-
-    if (!service) {
-        return false;
-    }
-
-    return KRun::run(*service, KUrl::List(), 0);
 }
 
 QMimeData * SalServiceModel::mimeData(const QModelIndexList &/*indexes*/) const

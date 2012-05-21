@@ -38,7 +38,7 @@ class SalServiceModel : public QAbstractListModel
 
 public:
     enum Roles {
-        Url = Qt::UserRole + 1,
+        EntryPathRole = Qt::UserRole + 1,
     };
 
     SalServiceModel (QObject *parent = 0);
@@ -50,7 +50,6 @@ public:
     void setPath(const QString& path);
     QString path() const;
 
-    Q_INVOKABLE bool openUrl(const QString& url);
     Q_INVOKABLE void run(int row);
 
 Q_SIGNALS:

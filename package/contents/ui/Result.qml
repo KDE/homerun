@@ -28,13 +28,13 @@ Item {
     property QtObject favoriteModel
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
-    property string currentUrl;
+    property string entryPath
     property string currentId;
     //to allow public access to these members..
     property alias favoriteIcon: favoriteIcon
     property alias resultLabel: resultLabel
 
-    property bool isFavorite: favoriteModel.isFavorite(currentUrl)
+    property bool isFavorite: favoriteModel.isFavorite(entryPath)
 
     signal clicked
     property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
@@ -103,6 +103,8 @@ Item {
             topMargin: anchors.rightMargin
         }
 
+        visible: entryPath != ""
+
         Behavior on opacity {
             NumberAnimation {
                 duration: 250
@@ -127,6 +129,8 @@ Item {
             right: favoriteIcon.right
             bottom: favoriteIcon.bottom
         }
+
+        visible: entryPath != ""
 
         icon: isFavorite ? "list-remove" : "list-add"
         opacity: favoriteMouseArea.containsMouse ? 1 : 0
@@ -154,11 +158,10 @@ Item {
         hoverEnabled: true
 
         onClicked: {
-            var url = currentUrl;
             if (isFavorite) {
-                favoriteModel.remove(url);
+                favoriteModel.remove(entryPath);
             } else {
-                favoriteModel.add(url);
+                favoriteModel.add(entryPath);
             }
             // Overwrite "isFavorite" property to reflect the change.
             // It is a bit of a hack, but "isFavorite" does not get
@@ -167,7 +170,7 @@ Item {
             // We read the result from favoriteModel instead of using
             // !favorite so that if favoriting this item failed for some
             // reason, we do not show wrong favorite status.
-            isFavorite = favoriteModel.isFavorite(url);
+            isFavorite = favoriteModel.isFavorite(entryPath);
         }
     }
 }
