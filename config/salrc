@@ -1,11 +1,11 @@
 [favorites][favorite-1]
-url=konqueror
+entryPath=konqueror
 
 [favorites][favorite-2]
-url=kmail2
+entryPath=kmail2
 
 [favorites][favorite-3]
-url=dolphin
+entryPath=dolphin
 
 [Page0]
 name=Dashboard

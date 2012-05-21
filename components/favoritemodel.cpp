@@ -88,7 +88,7 @@ void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
 
     QStringList names;
     Q_FOREACH(const KConfigGroup &config, favoritesConfigs) {
-        names << config.readEntry("url");
+        names << config.readEntry("entryPath");
     }
 
     beginResetModel();
@@ -119,7 +119,7 @@ void FavoriteModel::add(const QString &entryPath)
 
     KConfigGroup baseGroup(m_config, "favorites");
     KConfigGroup group(&baseGroup, QString("favorite-%1").arg(row));
-    group.writeEntry("url", entryPath);
+    group.writeEntry("entryPath", entryPath);
     baseGroup.sync();
 }
 
