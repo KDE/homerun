@@ -28,11 +28,6 @@ Item {
     signal closeClicked
     property string configFileName
 
-    Component.onCompleted: {
-        plasmoid.writeConfig("favorites", "TEST", "TEST2");
-        print("@@@@@: " + plasmoid.readConfig("favorites"))
-    }
-
     PlasmaCore.FrameSvgItem {
         id: background
         anchors.fill: parent
@@ -104,38 +99,6 @@ Item {
                 }
             }
         }
-
-        /*
-        onCurrentTabChanged: {
-            print("TEST" + currentTab.text)
-            var text = currentTab.text
-            if (text == "Categories") {
-                resultsView.model = serviceModel;
-                runnerModel.query = ""
-            } else if (text == "Apps") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = [ "services", "kill", "kget", "calculator", "audioplayercontrol" ]
-                runnerModel.query = ""
-            } else if (text == "Documents") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = [ "sessions", "places", "solid" ]
-                runnerModel.query = "places"
-            } else if (text == "YouTube") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = "youtube"
-                runnerModel.query = ""
-            } else if (text == "Bing") {
-                resultsView.model = runnerModel;
-                runnerModel.runners = "bing"
-                runnerModel.query = ""
-            } else if (text == "Social") {
-                resultsView.model = runnerModel;
-                runnerModel.query = ""
-            }
-            //FIXME: make it search the current lense for stuff
-            //runnerModel.query = searchField.text
-        }
-        */
     }
 
     PlasmaComponents.TabGroup {

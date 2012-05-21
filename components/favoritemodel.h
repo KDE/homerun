@@ -1,6 +1,7 @@
 /*
     Copyright 2009 Ivan Cukic <ivan.cukic+kde@gmail.com>
     Copyright 2010 Marco Martin <notmart@gmail.com>
+    Copyright 2012 Aurélien Gâteau <agateau@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

@@ -1,6 +1,7 @@
 /*
     Copyright 2009 Ivan Cukic <ivan.cukic+kde@gmail.com>
     Copyright 2010 Marco Martin <notmart@gmail.com>
+    Copyright 2012 Aurélien Gâteau <agateau@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,10 +25,10 @@
 // Qt
 
 // KDE
-#include <KService>
-#include <KIcon>
 #include <KDebug>
+#include <KIcon>
 #include <KRun>
+#include <KService>
 
 //Plasma
 #include <Plasma/AbstractRunner>
@@ -45,10 +46,6 @@ static KService::Ptr findService(const QString &name)
 FavoriteModel::FavoriteModel(QObject *parent)
 : QAbstractListModel(parent)
 {
-    kDebug() << "SalFavoriteModel INITED";
-
-    //////////////////////////////////////////////////////////
-
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
@@ -77,7 +74,6 @@ void FavoriteModel::setConfigFileName(const QString &name)
 void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
 {
     m_config = ptr;
-    kDebug() << "----------------> Restoring Stuff...";
 
     KConfigGroup baseGroup(m_config, "favorites");
 
