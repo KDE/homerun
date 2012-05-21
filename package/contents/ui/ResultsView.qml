@@ -128,26 +128,12 @@ Column {
             currentId: model.id ? model.id : ""
             currentUrl: model.url ? model.url : ""
 
-            MouseArea {
-                anchors {
-                    left: parent.left
-                    right: result.favoriteIcon.left
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-
-                hoverEnabled: true
-
-                onEntered: {
+            onClicked: indexClicked(gridView.currentIndex)
+            onContainsMouseChanged: {
+                if (containsMouse) {
                     resultEntered();
-                }
-
-                onExited: {
+                } else {
                     resultExited();
-                }
-
-                onClicked: {
-                    indexClicked(gridView.currentIndex);
                 }
             }
 
