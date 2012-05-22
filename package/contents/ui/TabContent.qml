@@ -32,6 +32,10 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
+
+            function urlForObject(obj) {
+                return "service://" + obj.entryPath;
+            }
         }
     }
 
@@ -40,6 +44,10 @@ FocusScope {
         RunnerModels.RunnerModel {
             query: searchField.text
             property string name
+
+            function urlForObject(obj) {
+                return "krunner://" + obj.runnerid + "/" + query + "#" + obj.id;
+            }
         }
     }
 

@@ -122,13 +122,22 @@ Column {
 
         delegate: Result {
             id: result
-            favoriteModel: main.favoriteModel
-            currentText: model.label ? model.label : ""
-            currentIcon: model.icon ? model.icon : ""
-            currentId: model.id ? model.id : ""
-            entryPath: model.entryPath ? model.entryPath : ""
+            currentText: model.label
+            currentIcon: model.icon
+            favoriteIcon: GridView.view.model == main.favoriteModel ? "list-remove" : "bookmarks"
 
             onClicked: indexClicked(gridView.currentIndex)
+
+            onFavoriteClicked: {
+                var qmodel = GridView.view.model;
+                var url = qmodel.urlForObject(model);
+                if (qmodel == favoriteModel) {
+                    favoriteModel.remove(url);
+                } else {
+                    favoriteModel.add(url);
+                }
+            }
+
             onContainsMouseChanged: {
                 if (containsMouse) {
                     resultEntered();
