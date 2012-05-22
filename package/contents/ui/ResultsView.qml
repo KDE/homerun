@@ -122,13 +122,30 @@ Column {
 
         delegate: Result {
             id: result
-            favoriteModel: main.favoriteModel
-            currentText: model.label ? model.label : ""
-            currentIcon: model.icon ? model.icon : ""
-            currentId: model.id ? model.id : ""
-            entryPath: model.entryPath ? model.entryPath : ""
+            property bool isFavoriteModel: GridView.view.model == main.favoriteModel
+            currentText: model.label
+            currentIcon: model.icon
+            showFavoriteIcon: isFavoriteModel || canBeFavorited()
+            favoriteIcon: isFavoriteModel ? "list-remove" : "bookmarks"
 
             onClicked: indexClicked(gridView.currentIndex)
+
+            function canBeFavorited() {
+                var qmodel = GridView.view.model;
+                return "serviceIdForObject" in qmodel && qmodel.serviceIdForObject(model) !== undefined;
+            }
+
+            onFavoriteClicked: {
+                var qmodel = GridView.view.model;
+                if (qmodel == favoriteModel) {
+                    favoriteModel.removeAt(model.index);
+                } else {
+                    var serviceId = qmodel.serviceIdForObject(model);
+                    favoriteModel.append(serviceId);
+                    showFeedback();
+                }
+            }
+
             onContainsMouseChanged: {
                 if (containsMouse) {
                     resultEntered();

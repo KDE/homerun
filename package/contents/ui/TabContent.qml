@@ -32,6 +32,13 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
+
+            function serviceIdForObject(obj) {
+                if (obj.entryPath === undefined) {
+                    return undefined;
+                }
+                return obj.entryPath.replace(/.*\//, ""); // Keep only filename
+            }
         }
     }
 
@@ -40,6 +47,14 @@ FocusScope {
         RunnerModels.RunnerModel {
             query: searchField.text
             property string name
+
+            function serviceIdForObject(obj) {
+                if (obj.runnerid == "services") {
+                    return obj.data;
+                } else {
+                    return undefined;
+                }
+            }
         }
     }
 
