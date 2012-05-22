@@ -142,6 +142,7 @@ Column {
                 } else {
                     var serviceId = qmodel.serviceIdForObject(model);
                     favoriteModel.append(serviceId);
+                    showFeedback();
                 }
             }
 

@@ -50,6 +50,16 @@ Item {
         favoriteMouseArea.clicked.connect(favoriteClicked)
     }
 
+    Component {
+        id: favoriteFeedbackComponent
+        FavoriteFeedback {
+        }
+    }
+
+    function showFeedback() {
+        favoriteFeedbackComponent.createObject(favoriteIcon);
+    }
+
     Behavior on opacity {
         NumberAnimation {
             duration: 300
