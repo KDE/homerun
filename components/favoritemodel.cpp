@@ -67,26 +67,25 @@ void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
     KConfigGroup baseGroup(m_config, "favorites");
 
     // get all the favorites
-    QMap<uint, KConfigGroup> favoritesConfigs;
+    QMap<int, KService::Ptr> favoriteMap;
     foreach (const QString &favoriteGroup, baseGroup.groupList()) {
         if (favoriteGroup.startsWith("favorite-")) {
             KConfigGroup favoriteConfig(&baseGroup, favoriteGroup);
-            favoritesConfigs.insert(favoriteGroup.split("-").last().toUInt(), favoriteConfig);
+            int rank = favoriteGroup.split("-").last().toInt();
+            QString id = favoriteConfig.readEntry("serviceId");
+            KService::Ptr service = KService::serviceByStorageId(id);
+            if (!service.isNull()) {
+                favoriteMap.insert(rank, service);
+            }
         }
-    }
-
-    QStringList names;
-    Q_FOREACH(const KConfigGroup &config, favoritesConfigs) {
-        names << config.readEntry("serviceId");
     }
 
     beginResetModel();
     m_favoriteList.clear();
-    Q_FOREACH(const QString &name, names) {
-        KService::Ptr service = KService::serviceByStorageId(name);
-        if (!service.isNull()) {
-            m_favoriteList << service;
-        }
+    auto it = favoriteMap.constBegin(), end = favoriteMap.constEnd();
+    for (; it != end; ++it) {
+        FavoriteInfo info = { it.key(), it.value() };
+        m_favoriteList << info;
     }
     endResetModel();
     countChanged();
@@ -100,14 +99,17 @@ void FavoriteModel::append(const QString &serviceId)
         kWarning() << "Could not find a service for" << serviceId;
         return;
     }
+    int rank = m_favoriteList.last().rank + 1;
+    FavoriteInfo info = { rank, service };
+
     int row = m_favoriteList.count();
     beginInsertRows(QModelIndex(), row, row);
-    m_favoriteList << service;
+    m_favoriteList << info;
     endInsertRows();
     countChanged();
 
     KConfigGroup baseGroup(m_config, "favorites");
-    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(row));
+    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(rank));
     group.writeEntry("serviceId", serviceId);
     baseGroup.sync();
 }
@@ -119,12 +121,12 @@ void FavoriteModel::removeAt(int row)
         return;
     }
     beginRemoveRows(QModelIndex(), row, row);
-    m_favoriteList.removeAt(row);
+    FavoriteInfo info = m_favoriteList.takeAt(row);
     endRemoveRows();
     countChanged();
 
     KConfigGroup baseGroup(m_config, "favorites");
-    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(row));
+    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(info.rank));
     group.deleteGroup();
     baseGroup.sync();
 }
@@ -144,7 +146,7 @@ int FavoriteModel::rowCount(const QModelIndex &index) const
 
 QVariant FavoriteModel::data(const QModelIndex &index, int role) const
 {
-    KService::Ptr service = m_favoriteList.value(index.row());
+    KService::Ptr service = m_favoriteList.value(index.row()).service;
     if (service.isNull()) {
         return QVariant();
     }
@@ -160,7 +162,7 @@ QVariant FavoriteModel::data(const QModelIndex &index, int role) const
 
 void FavoriteModel::run(int row)
 {
-    KService::Ptr service = m_favoriteList.value(row);
+    KService::Ptr service = m_favoriteList.value(row).service;
     if (service.isNull()) {
         kWarning() << "Invalid row";
         return;

@@ -27,6 +27,12 @@
 #include <KService>
 #include <KSharedConfig>
 
+struct FavoriteInfo
+{
+    int rank;
+    KService::Ptr service;
+};
+
 class FavoriteModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -58,7 +64,7 @@ Q_SIGNALS:
 
 private:
     KSharedConfig::Ptr m_config;
-    QList<KService::Ptr> m_favoriteList;
+    QList<FavoriteInfo> m_favoriteList;
 };
 
 #endif // FAVORITEMODEL_H
