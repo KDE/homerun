@@ -33,8 +33,11 @@ FocusScope {
             path: "/"
             property string name: "Applications"
 
-            function urlForObject(obj) {
-                return "service://" + obj.entryPath;
+            function serviceIdForObject(obj) {
+                if (obj.entryPath === undefined) {
+                    return undefined;
+                }
+                return obj.entryPath.replace(/.*\//, ""); // Keep only filename
             }
         }
     }
@@ -45,8 +48,12 @@ FocusScope {
             query: searchField.text
             property string name
 
-            function urlForObject(obj) {
-                return "krunner://" + obj.runnerid + "/" + query + "#" + obj.id;
+            function serviceIdForObject(obj) {
+                if (obj.runnerid == "services") {
+                    return obj.data;
+                } else {
+                    return undefined;
+                }
             }
         }
     }

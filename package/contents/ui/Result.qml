@@ -28,6 +28,7 @@ Item {
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
     property alias favoriteIcon: favoriteIcon.icon
+    property alias showFavoriteIcon: favoriteIcon.visible
     property alias resultLabel: resultLabel
 
     property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse

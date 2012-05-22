@@ -1,11 +1,11 @@
 [favorites][favorite-1]
-entryPath=konqueror
+serviceId=konqueror
 
 [favorites][favorite-2]
-entryPath=kmail2
+serviceId=kmail2
 
 [favorites][favorite-3]
-entryPath=dolphin
+serviceId=dolphin
 
 [Page0]
 name=Dashboard

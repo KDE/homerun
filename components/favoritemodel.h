@@ -34,10 +34,6 @@ class FavoriteModel : public QAbstractListModel
     Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
 
 public:
-    enum Roles {
-        EntryPathRole = Qt::UserRole + 1,
-    };
-
     FavoriteModel(QObject *parent = 0);
     ~FavoriteModel();
 
@@ -51,9 +47,8 @@ public:
     int rowCount(const QModelIndex &) const;
     QVariant data(const QModelIndex &, int role) const;
 
-    Q_INVOKABLE void add(const QString &entryPath);
-    Q_INVOKABLE void remove(const QString &entryPath);
-    Q_INVOKABLE bool isFavorite(const QString &entryPath) const;
+    Q_INVOKABLE void append(const QString &serviceId);
+    Q_INVOKABLE void removeAt(int row);
 
     Q_INVOKABLE void run(int row);
 
@@ -64,8 +59,6 @@ Q_SIGNALS:
 private:
     KSharedConfig::Ptr m_config;
     QList<KService::Ptr> m_favoriteList;
-
-    int indexOfByPath(const QString &) const;
 };
 
 #endif // FAVORITEMODEL_H
