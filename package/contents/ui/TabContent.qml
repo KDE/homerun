@@ -31,8 +31,8 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
-            function favoriteIcon(obj) {
-                return obj.entryPath === undefined ? "" : "bookmarks";
+            function favoriteAction(obj) {
+                return obj.entryPath === undefined ? "" : "add";
             }
 
             function triggerFavoriteAction(obj) {
@@ -57,7 +57,7 @@ FocusScope {
         id: placesModelComponent
         SalComponents.PlacesModel {
             property string name: "Places"
-            function favoriteIcon(obj) {
+            function favoriteAction(obj) {
                 return "";
             }
         }

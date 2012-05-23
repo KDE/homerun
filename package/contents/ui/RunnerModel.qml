@@ -28,8 +28,8 @@ RunnerModels.RunnerModel {
     property string name
     property QtObject favoriteModel
 
-    function favoriteIcon(obj) {
-        return obj.runnerid == "services" ? "bookmarks" : ""
+    function favoriteAction(obj) {
+        return obj.runnerid == "services" ? "add" : ""
     }
 
     function triggerFavoriteAction(obj) {

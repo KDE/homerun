@@ -124,8 +124,17 @@ Column {
             id: result
             currentText: model.label
             currentIcon: model.icon
-            showFavoriteIcon: model.favoriteIcon != ""
-            favoriteIcon: GridView.view.model.favoriteIcon(model)
+            showFavoriteIcon: model.favoriteAction != ""
+            favoriteIcon: {
+                switch (GridView.view.model.favoriteAction(model)) {
+                case "add":
+                    return "bookmarks";
+                case "remove":
+                    return "list-remove";
+                default:
+                    return "";
+                }
+            }
 
             onClicked: indexClicked(gridView.currentIndex)
 
