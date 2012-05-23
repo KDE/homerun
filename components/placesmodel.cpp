@@ -67,6 +67,7 @@ void PlacesModel::switchToPlacesModel()
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(FavoriteActionRole, "favoriteAction");
     setRoleNames(roles);
 }
 
@@ -78,6 +79,7 @@ void PlacesModel::switchToDirModel()
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(FavoriteActionRole, "favoriteAction");
     setRoleNames(roles);
 }
 
@@ -112,6 +114,38 @@ void PlacesModel::openDirUrl(const KUrl &url)
 {
     m_dirModel->dirLister()->openUrl(url);
     pathChanged(path());
+}
+
+QVariant PlacesModel::data(const QModelIndex& index, int role) const
+{
+    if (role != FavoriteActionRole) {
+        return QSortFilterProxyModel::data(index, role);
+    }
+    if (index.row() < 0 || index.row() >= rowCount()) {
+        return QVariant();
+    }
+    QModelIndex sourceIndex = mapToSource(index);
+    QString value;
+    if (sourceModel() == m_placesModel) {
+        value = m_placesModel->isDevice(sourceIndex) ? "" : "remove";
+    } else {
+        KFileItem item = m_dirModel->itemForIndex(sourceIndex);
+        value = item.isDir() ? "add" : "";
+    }
+    return value;
+}
+
+void PlacesModel::triggerFavoriteActionAt(int row)
+{
+    QModelIndex idx = index(row, 0);
+    QModelIndex sourceIndex = mapToSource(idx);
+    if (sourceModel() == m_placesModel) {
+        m_placesModel->removePlace(sourceIndex);
+    } else {
+        KFileItem item = m_dirModel->itemForIndex(sourceIndex);
+        Q_ASSERT(item.isDir());
+        m_placesModel->addPlace(item.name(), item.url(), item.iconName());
+    }
 }
 
 #include "placesmodel.moc"

@@ -58,7 +58,13 @@ FocusScope {
         SalComponents.PlacesModel {
             property string name: "Places"
             function favoriteAction(obj) {
-                return "";
+                return obj.favoriteAction;
+            }
+            function triggerFavoriteAction(obj) {
+                // The C++ and JavaScript methods to trigger favorite action
+                // cannot be named the same. If they were, the code would enter
+                // an infinite loop.
+                triggerFavoriteActionAt(obj.index);
             }
         }
     }

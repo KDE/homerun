@@ -36,13 +36,20 @@ class PlacesModel : public QSortFilterProxyModel
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
 
 public:
+    enum {
+        FavoriteActionRole = Qt::UserRole,
+    };
+
     PlacesModel(QObject *parent = 0);
     Q_INVOKABLE void run(int row);
+    Q_INVOKABLE void triggerFavoriteActionAt(int row);
 
     int count() const;
 
     QString path() const;
     void setPath(const QString &path);
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 
 Q_SIGNALS:
     void countChanged();
