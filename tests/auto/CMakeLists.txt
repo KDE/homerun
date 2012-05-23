@@ -27,3 +27,10 @@ sal_add_unit_test(pagemodeltest ${salcomponents_SOURCE_DIR}/pagemodel.cpp)
 
 # X11-dependent tests
 sal_add_unit_test(favoritemodeltest_x11 ${salcomponents_SOURCE_DIR}/favoritemodel.cpp)
+
+# Definition of the "check" target
+set(_check_command ${CMAKE_CTEST_COMMAND} --verbose)
+add_custom_target(check COMMAND
+    if [ -n \"$$DISPLAY\" ] \; then ${_check_command} \; else ${_check_command} --exclude-regex '_x11' \; fi
+    )
+add_dependencies(check buildtests)
