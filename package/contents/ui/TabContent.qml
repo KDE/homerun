@@ -18,7 +18,6 @@
  */
 
 import Qt 4.7
-import org.kde.runnermodel 0.1 as RunnerModels
 import org.kde.sal.components 0.1 as SalComponents
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
@@ -44,17 +43,8 @@ FocusScope {
 
     Component {
         id: runnerModelComponent
-        RunnerModels.RunnerModel {
+        RunnerModel {
             query: searchField.text
-            property string name
-
-            function serviceIdForObject(obj) {
-                if (obj.runnerid == "services") {
-                    return obj.data;
-                } else {
-                    return undefined;
-                }
-            }
         }
     }
 
