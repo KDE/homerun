@@ -26,12 +26,16 @@ import org.kde.runnermodel 0.1 as RunnerModels
  */
 RunnerModels.RunnerModel {
     property string name
+    property QtObject favoriteModel
 
-    function serviceIdForObject(obj) {
-        if (obj.runnerid == "services") {
-            return obj.data;
-        } else {
-            return undefined;
+    function favoriteIcon(obj) {
+        return obj.runnerid == "services" ? "bookmarks" : ""
+    }
+
+    function triggerFavoriteAction(obj) {
+        if (obj.runnerid != "services") {
+            return;
         }
+        favoriteModel.append(obj.data);
     }
 }

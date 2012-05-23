@@ -31,12 +31,16 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
+            function favoriteIcon(obj) {
+                return obj.entryPath === undefined ? "" : "bookmarks";
+            }
 
-            function serviceIdForObject(obj) {
+            function triggerFavoriteAction(obj) {
                 if (obj.entryPath === undefined) {
-                    return undefined;
+                    return;
                 }
-                return obj.entryPath.replace(/.*\//, ""); // Keep only filename
+                var serviceId = obj.entryPath.replace(/.*\//, ""); // Keep only filename
+                favoriteModel.append(serviceId);
             }
         }
     }
@@ -45,6 +49,7 @@ FocusScope {
         id: runnerModelComponent
         RunnerModel {
             query: searchField.text
+            favoriteModel: root.favoriteModel
         }
     }
 
@@ -52,6 +57,9 @@ FocusScope {
         id: placesModelComponent
         SalComponents.PlacesModel {
             property string name: "Places"
+            function favoriteIcon(obj) {
+                return "";
+            }
         }
     }
 
