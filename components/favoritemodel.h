@@ -50,8 +50,8 @@ public:
 
     void setConfig(const KSharedConfig::Ptr &);
 
-    int rowCount(const QModelIndex &) const;
-    QVariant data(const QModelIndex &, int role) const;
+    int rowCount(const QModelIndex & = QModelIndex()) const;
+    QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const;
 
     Q_INVOKABLE void append(const QString &serviceId);
     Q_INVOKABLE void removeAt(int row);
