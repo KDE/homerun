@@ -31,12 +31,16 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
+            function favoriteAction(obj) {
+                return obj.entryPath === undefined ? "" : "add";
+            }
 
-            function serviceIdForObject(obj) {
+            function triggerFavoriteAction(obj) {
                 if (obj.entryPath === undefined) {
-                    return undefined;
+                    return;
                 }
-                return obj.entryPath.replace(/.*\//, ""); // Keep only filename
+                var serviceId = obj.entryPath.replace(/.*\//, ""); // Keep only filename
+                favoriteModel.append(serviceId);
             }
         }
     }
@@ -45,6 +49,7 @@ FocusScope {
         id: runnerModelComponent
         RunnerModel {
             query: searchField.text
+            favoriteModel: root.favoriteModel
         }
     }
 
@@ -52,6 +57,15 @@ FocusScope {
         id: placesModelComponent
         SalComponents.PlacesModel {
             property string name: "Places"
+            function favoriteAction(obj) {
+                return obj.favoriteAction;
+            }
+            function triggerFavoriteAction(obj) {
+                // The C++ and JavaScript methods to trigger favorite action
+                // cannot be named the same. If they were, the code would enter
+                // an infinite loop.
+                triggerFavoriteActionAt(obj.index);
+            }
         }
     }
 

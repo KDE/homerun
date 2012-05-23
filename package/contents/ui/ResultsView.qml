@@ -122,28 +122,25 @@ Column {
 
         delegate: Result {
             id: result
-            property bool isFavoriteModel: GridView.view.model == main.favoriteModel
             currentText: model.label
             currentIcon: model.icon
-            showFavoriteIcon: isFavoriteModel || canBeFavorited()
-            favoriteIcon: isFavoriteModel ? "list-remove" : "bookmarks"
+            showFavoriteIcon: model.favoriteAction != ""
+            favoriteIcon: {
+                switch (GridView.view.model.favoriteAction(model)) {
+                case "add":
+                    return "bookmarks";
+                case "remove":
+                    return "list-remove";
+                default:
+                    return "";
+                }
+            }
 
             onClicked: indexClicked(gridView.currentIndex)
 
-            function canBeFavorited() {
-                var qmodel = GridView.view.model;
-                return "serviceIdForObject" in qmodel && qmodel.serviceIdForObject(model) !== undefined;
-            }
-
             onFavoriteClicked: {
-                var qmodel = GridView.view.model;
-                if (qmodel == favoriteModel) {
-                    favoriteModel.removeAt(model.index);
-                } else {
-                    var serviceId = qmodel.serviceIdForObject(model);
-                    favoriteModel.append(serviceId);
-                    showFeedback();
-                }
+                GridView.view.model.triggerFavoriteAction(model);
+                showFeedback();
             }
 
             onContainsMouseChanged: {
