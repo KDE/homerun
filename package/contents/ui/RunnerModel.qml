@@ -20,13 +20,19 @@
 import QtQuick 1.1
 
 import org.kde.runnermodel 0.1 as RunnerModels
+import org.kde.sal.components 0.1 as SalComponents
 
 /**
  * Inherits from Plasma RunnerModel to add SAL-related features
  */
 RunnerModels.RunnerModel {
-    property string name
+    id: main
+    property string name: main.runnerInfoProvider.name
     property QtObject favoriteModel
+
+    property QtObject runnerInfoProvider: SalComponents.RunnerInfoProvider {
+        runnerId: main.runners.length >= 1 ? main.runners[0] : ""
+    }
 
     function favoriteAction(obj) {
         return obj.runnerid == "services" ? "add" : ""

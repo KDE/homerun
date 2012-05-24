@@ -140,7 +140,6 @@ FocusScope {
             if (tokens.length == 2) {
                 var args = tokens[1].split(",");
                 model.runners = args;
-                model.name = args[0];
             }
             resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
         }
