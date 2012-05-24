@@ -27,6 +27,7 @@
 #include "favoritemodel.h"
 #include "pagemodel.h"
 #include "placesmodel.h"
+#include "runnerinfoprovider.h"
 #include "salservicemodel.h"
 
 void SalComponentsPlugin::registerTypes(const char *uri)
@@ -35,6 +36,7 @@ void SalComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<FavoriteModel>(uri, 0, 1, "FavoriteModel");
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
+    qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
     qmlRegisterType<SalServiceModel>(uri, 0, 1, "SalServiceModel");
     qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
     qRegisterMetaType<Plasma::QueryMatch *>("QueryMatch");

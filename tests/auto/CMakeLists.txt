@@ -4,6 +4,7 @@ macro(sal_add_unit_test _test)
     qt4_automoc(${_src})
     kde4_add_unit_test(${_test} ${_src})
     target_link_libraries(${_test}
+        ${KDE4_PLASMA_LIBS}
         ${KDE4_KIO_LIBS}
         ${KDE4_KDEUI_LIBS}
         ${KDE4_KDECORE_LIBS}
@@ -24,6 +25,7 @@ include_directories(
 
 # X11-independent tests
 sal_add_unit_test(pagemodeltest ${salcomponents_SOURCE_DIR}/pagemodel.cpp)
+sal_add_unit_test(runnerinfoprovidertest ${salcomponents_SOURCE_DIR}/runnerinfoprovider.cpp)
 
 # X11-dependent tests
 sal_add_unit_test(favoritemodeltest_x11 ${salcomponents_SOURCE_DIR}/favoritemodel.cpp)
