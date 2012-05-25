@@ -138,8 +138,11 @@ FocusScope {
                 model = runnerModelComponent.createObject(root);
             }
             if (tokens.length == 2) {
-                var args = tokens[1].split(",");
-                model.runners = args;
+                if ("arguments" in model) {
+                    model.arguments = tokens[1].split(",");
+                } else {
+                    console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
+                }
             }
             resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
         }

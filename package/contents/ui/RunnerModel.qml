@@ -28,6 +28,7 @@ import org.kde.sal.components 0.1 as SalComponents
 RunnerModels.RunnerModel {
     id: main
     property string name: main.runnerInfoProvider.name
+    property alias arguments: main.runners
     property QtObject favoriteModel
 
     property QtObject runnerInfoProvider: SalComponents.RunnerInfoProvider {
