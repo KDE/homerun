@@ -27,6 +27,7 @@
 // KDE
 #include <KDebug>
 #include <KIcon>
+#include <KLocale>
 #include <KRun>
 #include <KService>
 
@@ -134,6 +135,11 @@ void FavoriteModel::removeAt(int row)
 int FavoriteModel::count() const
 {
     return m_favoriteList.count();
+}
+
+QString FavoriteModel::name() const
+{
+    return i18n("Favorite Applications");
 }
 
 int FavoriteModel::rowCount(const QModelIndex &index) const
