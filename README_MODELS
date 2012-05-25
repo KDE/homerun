@@ -14,7 +14,7 @@ Name of the item icon
 - access: read-only
 - mandatory: yes
 Returns a translated name for the model. This name is used as a title for the
-view associated with the mode.
+view associated with the model.
 
 ### int count
 - access: read-only
