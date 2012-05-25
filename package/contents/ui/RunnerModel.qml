@@ -19,13 +19,13 @@
 
 import QtQuick 1.1
 
-import org.kde.runnermodel 0.1 as RunnerModels
+import org.kde.sal.fixes 0.1 as SalFixes
 import org.kde.sal.components 0.1 as SalComponents
 
 /**
  * Inherits from Plasma RunnerModel to add SAL-related features
  */
-RunnerModels.RunnerModel {
+SalFixes.RunnerModel {
     id: main
     property string name: main.runnerInfoProvider.name
     property alias arguments: main.runners
