@@ -19,6 +19,7 @@
 
 import Qt 4.7
 import org.kde.sal.components 0.1 as SalComponents
+import org.kde.sal.fixes 0.1 as SalFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
@@ -56,7 +57,7 @@ FocusScope {
 
     Component {
         id: favoriteModelComponent
-        PlasmaCore.SortFilterModel {
+        SalFixes.SortFilterModel {
             property string name: "Favorite Applications"
             filterRegExp: searchField.text
 
@@ -79,7 +80,7 @@ FocusScope {
 
     Component {
         id: placesModelComponent
-        PlasmaCore.SortFilterModel {
+        SalFixes.SortFilterModel {
             id: placesFilterModel
             property string name: "Favorite Places"
             property alias path: realPlacesModel.path
