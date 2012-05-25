@@ -69,20 +69,26 @@ int RunnerModel::count() const
 
 QStringList RunnerModel::runners() const
 {
-    return m_manager ? m_manager->allowedRunners() : QStringList();
+    return m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
 }
 
-void RunnerModel::setRunners(const QStringList &allowedRunners)
+void RunnerModel::setRunners(const QStringList &allowedRunners_)
 {
+    //sort the list to make comparison with current runner list meaningful
+    QStringList allowedRunners = allowedRunners_;
+    allowedRunners.sort();
+    if (runners() == allowedRunners) {
+        return;
+    }
     if (m_manager) {
         m_manager->setAllowedRunners(allowedRunners);
 
         //automagically enter single runner mode if there's only 1 allowed runner
         m_manager->setSingleMode(allowedRunners.count() == 1);
-        emit runnersChanged();
     } else {
         m_pendingRunnersList = allowedRunners;
     }
+    emit runnersChanged();
 }
 
 void RunnerModel::run(int index)
