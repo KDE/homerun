@@ -20,18 +20,13 @@
 #ifndef DATAMODEL_H
 #define DATAMODEL_H
 
-#include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
-#include <QVector>
-
-#include <Plasma/DataEngine>
 
 class QTimer;
 
 namespace Plasma
 {
 
-class DataSource;
 class DataModel;
 
 
@@ -113,105 +108,6 @@ private:
     QString m_sortRole;
     QHash<QString, int> m_roleIds;
 };
-
-class DataModel : public QAbstractItemModel
-{
-    Q_OBJECT
-
-    /**
-     * The instance of DataSource to construct this model on
-     */
-    Q_PROPERTY(QObject *dataSource READ dataSource WRITE setDataSource)
-
-    /**
-     *  It's a regular expression. Only data with keys that match this filter expression will be inserted in the model
-     */
-    Q_PROPERTY(QString keyRoleFilter READ keyRoleFilter WRITE setKeyRoleFilter)
-
-    /**
-     * it's a regular expression. If the DataSource is connected to more than one source, only inserts data from sources matching this filter expression in the model.
-     * If we want to have a source watch all sources beginning with say "name:", the required regexp would be sourceFilter: "name:.*"
-     */
-    Q_PROPERTY(QString sourceFilter READ sourceFilter WRITE setSourceFilter)
-
-    /**
-     * How many items are in this model
-     */
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-
-public:
-    DataModel(QObject* parent=0);
-    ~DataModel();
-
-    void setDataSource(QObject *source);
-    QObject *dataSource() const;
-
-    /**
-     * Include only items with a key that matches this regexp in the model
-     */
-    void setKeyRoleFilter(const QString& key);
-    QString keyRoleFilter() const;
-
-    /**
-     * Include only sources that matches this regexp in the model
-     */
-    void setSourceFilter(const QString& key);
-    QString sourceFilter() const;
-
-    int roleNameToId(const QString &name);
-
-    //Reimplemented
-    QVariant data(const QModelIndex &index, int role) const;
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex &child) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
-
-    int count() const {return countItems();}
-
-    /**
-     * Returns the item at index in the list model.
-     * This allows the item data to be accessed (but not modified) from JavaScript.
-     * It returns an Object with a property for each role.
-     *
-     * @arg int i the row we want
-     */
-    Q_INVOKABLE QVariantHash get(int i) const;
-
-protected:
-    void setItems(const QString &sourceName, const QVariantList &list);
-    inline int countItems() const;
-
-Q_SIGNALS:
-    void countChanged();
-
-private Q_SLOTS:
-    void dataUpdated(const QString &sourceName, const Plasma::DataEngine::Data &data);
-    void removeSource(const QString &sourceName);
-
-private:
-    DataSource *m_dataSource;
-    QString m_keyRoleFilter;
-    QRegExp m_keyRoleFilterRE;
-    QString m_sourceFilter;
-    QRegExp m_sourceFilterRE;
-    QMap<QString, QVector<QVariant> > m_items;
-    QHash<int, QByteArray> m_roleNames;
-    QHash<QString, int> m_roleIds;
-    int m_maxRoleId;
-};
-
-int DataModel::countItems() const
-{
-    int count = 0;
-    foreach (const QVector<QVariant> &v, m_items) {
-        count += v.count();
-    }
-    return count;
-}
 
 }
 #endif
