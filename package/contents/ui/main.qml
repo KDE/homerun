@@ -53,12 +53,6 @@ Item {
     SalComponents.FavoriteModel {
         id: favoriteModel
         configFileName: main.configFileName
-        function favoriteAction(obj) {
-            return "remove";
-        }
-        function triggerFavoriteAction(obj) {
-            removeAt(obj.index);
-        }
     }
 
     Component {

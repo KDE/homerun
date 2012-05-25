@@ -19,6 +19,8 @@
 
 import Qt 4.7
 import org.kde.sal.components 0.1 as SalComponents
+import org.kde.sal.fixes 0.1 as SalFixes
+import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
 FocusScope {
@@ -54,17 +56,51 @@ FocusScope {
     }
 
     Component {
+        id: favoriteModelComponent
+        SalFixes.SortFilterModel {
+            property string name: "Favorite Applications"
+            filterRegExp: searchField.text
+
+            sourceModel: root.favoriteModel
+
+            function favoriteAction(obj) {
+                return "remove";
+            }
+
+            function triggerFavoriteAction(obj) {
+                var sourceRow = mapRowToSource(obj.index);
+                sourceModel.removeAt(sourceRow);
+            }
+
+            function run(row) {
+                sourceModel.run(mapRowToSource(row));
+            }
+        }
+    }
+
+    Component {
         id: placesModelComponent
-        SalComponents.PlacesModel {
-            property string name: "Places"
+        SalFixes.SortFilterModel {
+            id: placesFilterModel
+            property string name: "Favorite Places"
+            property alias path: realPlacesModel.path
+            filterRegExp: searchField.text
+
+            sourceModel: SalComponents.PlacesModel {
+                id: realPlacesModel
+            }
+
             function favoriteAction(obj) {
                 return obj.favoriteAction;
             }
+
             function triggerFavoriteAction(obj) {
-                // The C++ and JavaScript methods to trigger favorite action
-                // cannot be named the same. If they were, the code would enter
-                // an infinite loop.
-                triggerFavoriteActionAt(obj.index);
+                var sourceRow = mapRowToSource(obj.index);
+                sourceModel.triggerFavoriteActionAt(sourceRow);
+            }
+
+            function run(row) {
+                sourceModel.run(mapRowToSource(row));
             }
         }
     }
@@ -133,7 +169,7 @@ FocusScope {
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(root);
             } else if (modelName == "FavoriteModel") {
-                model = root.favoriteModel;
+                model = favoriteModelComponent.createObject(root);
             } else {
                 model = runnerModelComponent.createObject(root);
             }
