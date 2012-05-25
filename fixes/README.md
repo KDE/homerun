@@ -15,3 +15,10 @@ https://git.reviewboard.kde.org/r/105042/
 
 ### New methods: mapRowFromSource, mapRowToSource
 https://git.reviewboard.kde.org/r/105044/
+
+## RunnerModel
+### Do not reset Plasma::RunnerModel when new matches are added
+https://git.reviewboard.kde.org/r/104917/
+
+### Fix behavior of "runners" property
+https://git.reviewboard.kde.org/r/105024/
