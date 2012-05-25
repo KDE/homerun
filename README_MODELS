@@ -32,6 +32,11 @@ Used for models which can be navigated through. Should start with "/".
 - mandatory: no
 Used to perform a query or filter results of a model.
 
+### array(string) arguments
+- access: read-write
+- mandatory: no
+Define optional model arguments.
+
 ## Methods
 ### void run(int row)
 - mandatory: yes
