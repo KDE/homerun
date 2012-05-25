@@ -27,11 +27,6 @@ rowCount(QModelIndex()).
 - mandatory: no
 Used for models which can be navigated through. Should start with "/".
 
-### string query
-- access: read-write
-- mandatory: no
-Used to perform a query or filter results of a model.
-
 ### array(string) arguments
 - access: read-write
 - mandatory: no
