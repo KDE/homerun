@@ -2,6 +2,7 @@ project(salfixes)
 
 set(salfixes_SRCS
     datamodel.cpp
+    runnermodel.cpp
     salfixesplugin.cpp
     )
 

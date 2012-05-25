@@ -23,10 +23,11 @@
 #include <QAbstractListModel>
 #include <QStringList>
 
+#include <Plasma/QueryMatch>
+
 namespace Plasma
 {
     class RunnerManager;
-    class QueryMatch;
 } // namespace Plasma
 
 class QTimer;
