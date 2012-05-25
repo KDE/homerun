@@ -94,6 +94,10 @@ public:
      */
     Q_INVOKABLE QVariantHash get(int i) const;
 
+    Q_INVOKABLE int mapRowToSource(int i) const;
+
+    Q_INVOKABLE int mapRowFromSource(int i) const;
+
 Q_SIGNALS:
     void countChanged();
 
