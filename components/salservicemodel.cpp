@@ -80,7 +80,7 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void SalServiceModel::run(int row)
+bool SalServiceModel::trigger(int row)
 {
     KService::Ptr service = m_serviceList.at(row);
     if (m_path == "/") {
@@ -88,8 +88,9 @@ void SalServiceModel::run(int row)
         QString salUrl = service->property("X-Plasma-Sal-Url").toString();
         // salUrl is of the form "kservicegroup://root/Something/". We want the "/Something" part.
         setPath("/" % salUrl.section('/', 2, -1, QString::SectionSkipEmpty));
+        return false;
     } else {
-        KRun::run(*service, KUrl::List(), 0);
+        return KRun::run(*service, KUrl::List(), 0);
     }
 }
 

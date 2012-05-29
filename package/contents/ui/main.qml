@@ -58,6 +58,7 @@ Item {
     Component {
         id: tabContent
         TabContent {
+            onCloseRequested: main.closeClicked();
         }
     }
 

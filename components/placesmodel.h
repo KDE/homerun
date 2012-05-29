@@ -41,7 +41,7 @@ public:
     };
 
     PlacesModel(QObject *parent = 0);
-    Q_INVOKABLE void run(int row);
+    Q_INVOKABLE bool trigger(int row);
     Q_INVOKABLE void triggerFavoriteActionAt(int row);
 
     int count() const;

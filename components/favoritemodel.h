@@ -58,7 +58,7 @@ public:
     Q_INVOKABLE void append(const QString &serviceId);
     Q_INVOKABLE void removeAt(int row);
 
-    Q_INVOKABLE void run(int row);
+    Q_INVOKABLE bool trigger(int row);
 
 Q_SIGNALS:
     void countChanged();

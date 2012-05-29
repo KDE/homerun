@@ -50,7 +50,7 @@ public:
     void setPath(const QString& path);
     QString path() const;
 
-    Q_INVOKABLE void run(int row);
+    Q_INVOKABLE bool trigger(int row);
 
 Q_SIGNALS:
     void countChanged();

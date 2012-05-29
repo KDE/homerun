@@ -32,8 +32,9 @@ PlacesModel::PlacesModel(QObject *parent)
     switchToPlacesModel();
 }
 
-void PlacesModel::run(int row)
+bool PlacesModel::trigger(int row)
 {
+    bool close = false;
     QModelIndex sourceIndex = mapToSource(index(row, 0));
     if (sourceModel() == m_placesModel) {
         KUrl theUrl = m_placesModel->url(sourceIndex);
@@ -49,8 +50,10 @@ void PlacesModel::run(int row)
             openDirUrl(item.url());
         } else {
             item.run();
+            close = true;
         }
     }
+    return close;
 }
 
 int PlacesModel::count() const

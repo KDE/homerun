@@ -28,6 +28,8 @@ FocusScope {
     property QtObject favoriteModel
     property variant sources
 
+    signal closeRequested
+
     Component {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
@@ -72,8 +74,8 @@ FocusScope {
                 sourceModel.removeAt(sourceRow);
             }
 
-            function run(row) {
-                sourceModel.run(mapRowToSource(row));
+            function trigger(row) {
+                return sourceModel.trigger(mapRowToSource(row));
             }
         }
     }
@@ -99,8 +101,8 @@ FocusScope {
                 sourceModel.triggerFavoriteActionAt(sourceRow);
             }
 
-            function run(row) {
-                sourceModel.run(mapRowToSource(row));
+            function trigger(row) {
+                return sourceModel.trigger(mapRowToSource(row));
             }
         }
     }
@@ -112,7 +114,9 @@ FocusScope {
             visible: model.count > 0
 
             onIndexClicked: {
-                model.run(index);
+                if (model.trigger(index)) {
+                    closeRequested();
+                }
             }
         }
     }

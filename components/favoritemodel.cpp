@@ -166,14 +166,14 @@ QVariant FavoriteModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void FavoriteModel::run(int row)
+bool FavoriteModel::trigger(int row)
 {
     KService::Ptr service = m_favoriteList.value(row).service;
     if (service.isNull()) {
         kWarning() << "Invalid row";
-        return;
+        return false;
     }
-    KRun::run(*service, KUrl::List(), 0);
+    return KRun::run(*service, KUrl::List(), 0);
 }
 
 #include "favoritemodel.moc"

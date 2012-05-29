@@ -45,4 +45,9 @@ SalFixes.RunnerModel {
         }
         favoriteModel.append(obj.data);
     }
+
+    function trigger(row) {
+        run(row);
+        return true;
+    }
 }

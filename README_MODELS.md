@@ -33,9 +33,10 @@ Used for models which can be navigated through. Should start with "/".
 Define optional model arguments.
 
 ## Methods
-### void run(int row)
+### bool trigger(int row)
 - mandatory: yes
-Triggers the action associated with the item at row "row"
+Triggers the action associated with the item at row "row". Returns true if SAL
+should close itself.
 
 ### string favoriteAction(ModelData modelData)
 - mandatory: yes
