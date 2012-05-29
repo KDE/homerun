@@ -68,24 +68,12 @@ PageModel::PageModel(QObject *parent)
     roles.insert(SourcesRole, "sources");
 
     setRoleNames(roles);
+    setConfig(KSharedConfig::openConfig("salrc"));
 }
 
 PageModel::~PageModel()
 {
     qDeleteAll(m_pageList);
-}
-
-QString PageModel::configFileName() const
-{
-    return m_config.isNull() ? QString() : m_config->name();
-}
-
-void PageModel::setConfigFileName(const QString &name)
-{
-    if (name == configFileName()) {
-        return;
-    }
-    setConfig(KSharedConfig::openConfig(name));
 }
 
 void PageModel::setConfig(const KSharedConfig::Ptr &ptr)
@@ -109,8 +97,6 @@ void PageModel::setConfig(const KSharedConfig::Ptr &ptr)
         }
     }
     endResetModel();
-
-    configFileNameChanged();
 }
 
 int PageModel::rowCount(const QModelIndex &parent) const

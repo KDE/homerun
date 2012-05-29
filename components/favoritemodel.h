@@ -38,7 +38,6 @@ class FavoriteModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
 
 public:
     FavoriteModel(QObject *parent = 0);
@@ -46,9 +45,6 @@ public:
 
     int count() const;
     QString name() const;
-
-    QString configFileName() const;
-    void setConfigFileName(const QString &name);
 
     void setConfig(const KSharedConfig::Ptr &);
 
@@ -62,7 +58,6 @@ public:
 
 Q_SIGNALS:
     void countChanged();
-    void configFileNameChanged();
 
 private:
     KSharedConfig::Ptr m_config;

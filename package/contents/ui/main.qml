@@ -26,7 +26,6 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 Item {
     id: main
     signal closeRequested
-    property string configFileName
 
     property variant tabContentList: []
 
@@ -49,12 +48,17 @@ Item {
 
     SalComponents.PageModel {
         id: pageModel
-        configFileName: main.configFileName
     }
 
     SalComponents.FavoriteModel {
         id: favoriteModel
-        configFileName: main.configFileName
+
+        function favoriteAction(obj) {
+            return "remove";
+        }
+        function triggerFavoriteAction(obj) {
+            removeAt(obj.index);
+        }
     }
 
     Component {

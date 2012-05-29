@@ -42,23 +42,11 @@ FavoriteModel::FavoriteModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
     setRoleNames(roles);
+    setConfig(KSharedConfig::openConfig("salrc"));
 }
 
 FavoriteModel::~FavoriteModel()
 {
-}
-
-QString FavoriteModel::configFileName() const
-{
-    return m_config.isNull() ? QString() : m_config->name();
-}
-
-void FavoriteModel::setConfigFileName(const QString &name)
-{
-    if (name == configFileName()) {
-        return;
-    }
-    setConfig(KSharedConfig::openConfig(name));
 }
 
 void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
@@ -90,7 +78,6 @@ void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
     }
     endResetModel();
     countChanged();
-    configFileNameChanged();
 }
 
 void FavoriteModel::append(const QString &serviceId)

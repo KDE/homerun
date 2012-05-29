@@ -31,7 +31,6 @@ class Page;
 class PageModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
 
 public:
     enum {
@@ -42,16 +41,10 @@ public:
     PageModel(QObject *parent = 0);
     ~PageModel();
 
-    QString configFileName() const;
-    void setConfigFileName(const QString &name);
-
     void setConfig(const KSharedConfig::Ptr &);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
-
-Q_SIGNALS:
-    void configFileNameChanged();
 
 private:
     KSharedConfig::Ptr m_config;
