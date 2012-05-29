@@ -42,6 +42,9 @@ Item {
             rightMargin: background.margins.right
             topMargin: background.margins.top
         }
+
+        visible: !(main.embedded === undefined)
+
         iconSource: "window-close"
         onClicked: closeRequested()
     }

@@ -72,6 +72,8 @@ FullView::FullView()
     setSource(source);
 
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
+    rootObject()->setProperty("embedded", true);
+
     updateGeometry();
 }
 
