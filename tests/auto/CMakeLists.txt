@@ -25,10 +25,10 @@ include_directories(
 
 # X11-independent tests
 sal_add_unit_test(pagemodeltest ${salcomponents_SOURCE_DIR}/pagemodel.cpp)
-sal_add_unit_test(runnerinfoprovidertest ${salcomponents_SOURCE_DIR}/runnerinfoprovider.cpp)
 
 # X11-dependent tests
 sal_add_unit_test(favoritemodeltest_x11 ${salcomponents_SOURCE_DIR}/favoritemodel.cpp)
+sal_add_unit_test(runnerinfoprovidertest_x11 ${salcomponents_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
 
 # Definition of the "check" target
 set(_check_command ${CMAKE_CTEST_COMMAND} --verbose)
