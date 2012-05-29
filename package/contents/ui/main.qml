@@ -28,6 +28,8 @@ Item {
     signal closeRequested
     property string configFileName
 
+    property variant tabContentList: []
+
     PlasmaCore.FrameSvgItem {
         id: background
         anchors.fill: parent
@@ -42,7 +44,7 @@ Item {
             topMargin: background.margins.top
         }
         iconSource: "window-close"
-        onClicked: main.closeRequested()
+        onClicked: closeRequested()
     }
 
     SalComponents.PageModel {
@@ -58,7 +60,9 @@ Item {
     Component {
         id: tabContent
         TabContent {
-            onResultTriggered: main.closeRequested();
+            // FIXME: If SAL is a containment mode, onResultTriggered should
+            // call reset() instead of emitting closeRequested()
+            onResultTriggered: closeRequested()
         }
     }
 
@@ -78,27 +82,41 @@ Item {
                 iconSource: model.iconName
                 Component.onCompleted: {
                     tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModel": favoriteModel});
+                    var lst = tabContentList;
+                    lst.push(tab);
+                    tabContentList = lst;
                 }
             }
+        }
+
+        function isTab(tab) {
+            return tab && tab["iconSource"] !== undefined;
         }
 
         layout.onChildrenChanged: {
             // Workaround to make sure there is a current tab when pageModel
             // is done loading
-            function isTab(tab) {
-                return tab && tab["iconSource"] !== undefined;
-            }
             if (isTab(filterTabBar.currentTab)) {
                 return;
             }
+            filterTabBar.currentTab = firstTab();
+        }
+
+        function firstTab() {
             var idx;
             for (idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
                 var item = filterTabBar.layout.children[idx];
                 if (isTab(item)) {
-                    filterTabBar.currentTab = item;
-                    break;
+                    return item;
                 }
             }
+            return null;
+        }
+
+        function goToFirstTab() {
+            currentTab = filterTabBar.firstTab();
+            // Setting currentTab does not change the tab content, so do it ourselves
+            tabGroup.currentTab = currentTab.tab;
         }
     }
 
@@ -114,5 +132,12 @@ Item {
             leftMargin: background.margins.left
             rightMargin: background.margins.right
         }
+    }
+
+    function reset() {
+        filterTabBar.goToFirstTab();
+        tabContentList.forEach(function(content) {
+            content.reset();
+        });
     }
 }

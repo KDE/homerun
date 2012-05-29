@@ -48,6 +48,9 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void closeEvent(QCloseEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
+
+private:
+    void resetAndHide();
 };
 
 #endif

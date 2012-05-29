@@ -86,7 +86,7 @@ void FullView::focusOutEvent(QFocusEvent* event)
 {
     kDebug() << "FOCUS OUT!!";
     event->accept();
-    hide();
+    resetAndHide();
 }
 
 FullView::~FullView()
@@ -98,7 +98,7 @@ void FullView::toggle(int screen)
 {
     if (isVisible()) {
         kDebug() << "HIDING POPUP";
-        hide();
+        resetAndHide();
     } else {
         kDebug() << "SHOWING POPUP";
         KWindowSystem::setState( winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove );
@@ -109,6 +109,12 @@ void FullView::toggle(int screen)
         show();
         KWindowSystem::forceActiveWindow(winId());
     }
+}
+
+void FullView::resetAndHide()
+{
+    hide();
+    QMetaObject::invokeMethod(rootObject(), "reset");
 }
 
 void FullView::keyPressEvent(QKeyEvent *event)

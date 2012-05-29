@@ -30,6 +30,9 @@ FocusScope {
 
     signal resultTriggered
 
+    // Internal
+    property variant models: []
+
     Component {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
@@ -164,6 +167,7 @@ FocusScope {
 
     Component.onCompleted: {
         var idx;
+        var lst = new Array();
         for (idx = 0; idx < sources.length; ++idx) {
             var tokens = sources[idx].split(":");
             var modelName = tokens[0];
@@ -185,6 +189,18 @@ FocusScope {
                 }
             }
             resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+
+            lst.push(model);
         }
+        models = lst;
+    }
+
+    function reset() {
+        searchField.text = "";
+        models.forEach(function(model) {
+            if ("path" in model) {
+                model.path = "/";
+            }
+        });
     }
 }
