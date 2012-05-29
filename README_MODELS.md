@@ -35,8 +35,9 @@ Define optional model arguments.
 ## Methods
 ### bool trigger(int row)
 - mandatory: yes
-Triggers the action associated with the item at row "row". Returns true if SAL
-should close itself.
+Triggers the action associated with the item at row "row".
+Returns true if the trigger started an action outside of SAL, false if it did
+not (for example because it changed the "path")
 
 ### string favoriteAction(ModelData modelData)
 - mandatory: yes

@@ -72,7 +72,7 @@ FullView::FullView()
     setSource(source);
     rootObject()->setProperty("configFileName", "salrc");
 
-    connect(rootObject(), SIGNAL(closeClicked()), SLOT(hide()));
+    connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
     updateGeometry();
 }
 

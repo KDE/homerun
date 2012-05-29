@@ -28,7 +28,7 @@ FocusScope {
     property QtObject favoriteModel
     property variant sources
 
-    signal closeRequested
+    signal resultTriggered
 
     Component {
         id: serviceModelComponent
@@ -115,7 +115,7 @@ FocusScope {
 
             onIndexClicked: {
                 if (model.trigger(index)) {
-                    closeRequested();
+                    resultTriggered();
                 }
             }
         }

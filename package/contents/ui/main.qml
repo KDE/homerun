@@ -25,7 +25,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 
 Item {
     id: main
-    signal closeClicked
+    signal closeRequested
     property string configFileName
 
     PlasmaCore.FrameSvgItem {
@@ -42,7 +42,7 @@ Item {
             topMargin: background.margins.top
         }
         iconSource: "window-close"
-        onClicked: main.closeClicked()
+        onClicked: main.closeRequested()
     }
 
     SalComponents.PageModel {
@@ -58,7 +58,7 @@ Item {
     Component {
         id: tabContent
         TabContent {
-            onCloseRequested: main.closeClicked();
+            onResultTriggered: main.closeRequested();
         }
     }
 
