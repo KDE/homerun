@@ -24,7 +24,7 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
 FocusScope {
-    id: root
+    id: main
     property QtObject favoriteModel
     property variant sources
 
@@ -56,7 +56,7 @@ FocusScope {
         id: runnerModelComponent
         RunnerModel {
             query: searchField.text
-            favoriteModel: root.favoriteModel
+            favoriteModel: main.favoriteModel
         }
     }
 
@@ -66,7 +66,7 @@ FocusScope {
             property string name: "Favorite Applications"
             filterRegExp: searchField.text
 
-            sourceModel: root.favoriteModel
+            sourceModel: main.favoriteModel
 
             function favoriteAction(obj) {
                 return "remove";
@@ -173,13 +173,13 @@ FocusScope {
             var modelName = tokens[0];
             var model;
             if (modelName == "ServiceModel") {
-                model = serviceModelComponent.createObject(root);
+                model = serviceModelComponent.createObject(main);
             } else if (modelName == "PlacesModel") {
-                model = placesModelComponent.createObject(root);
+                model = placesModelComponent.createObject(main);
             } else if (modelName == "FavoriteModel") {
-                model = favoriteModelComponent.createObject(root);
+                model = favoriteModelComponent.createObject(main);
             } else {
-                model = runnerModelComponent.createObject(root);
+                model = runnerModelComponent.createObject(main);
             }
             if (tokens.length == 2) {
                 if ("arguments" in model) {

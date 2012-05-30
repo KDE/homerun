@@ -19,9 +19,9 @@
 import QtQuick 1.1
 
 ListModel {
-    id: root
+    id: main
     function update(path) {
-        root.clear();
+        main.clear();
         var tokens = path.split("/");
         var tokenPath = "/";
         for (var idx = 0; idx < tokens.length; ++idx) {
@@ -31,7 +31,7 @@ ListModel {
             }
             tokenPath += token;
             var text = token == "" ? "/" : token;
-            root.append({"text": text, "path": tokenPath});
+            main.append({"text": text, "path": tokenPath});
         }
     }
 }
