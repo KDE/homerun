@@ -27,6 +27,8 @@ Item {
     id: main
     signal closeRequested
 
+    property bool embedded: false
+
     property variant tabContentList: []
 
     PlasmaCore.FrameSvgItem {
@@ -43,7 +45,7 @@ Item {
             topMargin: background.margins.top
         }
 
-        visible: !(main.embedded === undefined)
+        visible: embedded
 
         iconSource: "window-close"
         onClicked: closeRequested()
