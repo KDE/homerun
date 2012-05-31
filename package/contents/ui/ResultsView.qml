@@ -45,6 +45,12 @@ FocusScope {
     onPathChanged: pathModel.update(path)
 
     PlasmaComponents.Label {
+        id: headerLabel
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
         text: model.name
         width: parent.width
     }
@@ -56,7 +62,7 @@ FocusScope {
     Row {
         id: breadCrumbRow
         anchors {
-            top: parent.top
+            top: headerLabel.bottom
             left: parent.left
             right: parent.right
         }
