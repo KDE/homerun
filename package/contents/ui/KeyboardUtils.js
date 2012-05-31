@@ -22,7 +22,11 @@ function setTabOrder(lst) {
     var lastIdx = lst.length - 1;
     for (idx = 0; idx <= lastIdx; ++idx) {
         var item = lst[idx];
-        item.KeyNavigation.backtab = lst[idx > 0 ? idx - 1 : lastIdx];
-        item.KeyNavigation.tab = lst[idx < lastIdx ? idx + 1 : 0];
+        if (idx > 0) {
+            item.KeyNavigation.backtab = lst[idx - 1];
+        }
+        if (idx < lastIdx) {
+            item.KeyNavigation.tab = lst[idx + 1];
+        }
     }
 }
