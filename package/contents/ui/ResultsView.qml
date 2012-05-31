@@ -44,6 +44,11 @@ FocusScope {
     property string path: model.path ? model.path : "/"
     onPathChanged: pathModel.update(path)
 
+    PathModel {
+        id: pathModel
+    }
+
+    // UI
     PlasmaComponents.Label {
         id: headerLabel
         anchors {
@@ -53,10 +58,6 @@ FocusScope {
         }
         text: model.name
         width: parent.width
-    }
-
-    PathModel {
-        id: pathModel
     }
 
     Row {
@@ -217,6 +218,7 @@ FocusScope {
         }
     }
 
+    // Scripting
     Component.onCompleted: {
         KeyboardUtils.setTabOrder([breadCrumbRow, gridView]);
     }
