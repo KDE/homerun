@@ -204,9 +204,7 @@ FocusScope {
             }
         }
 
-        Keys.onReturnPressed: {
-            print("PRESSED")
-        }
+        Keys.onReturnPressed: indexClicked(currentIndex)
 
         cellWidth: resultItemWidth
         cellHeight: resultItemHeight
