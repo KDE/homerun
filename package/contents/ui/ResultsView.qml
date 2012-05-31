@@ -21,8 +21,6 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
-import "KeyboardUtils.js" as KeyboardUtils
-
 FocusScope {
     id: main
 
@@ -161,8 +159,6 @@ FocusScope {
         visible: main.path != "/"
         spacing: 6
 
-        focus: visible
-
         Repeater {
             model: pathModel
             delegate: PlasmaComponents.ToolButton {
@@ -180,13 +176,21 @@ FocusScope {
             right: parent.right
         }
 
-        focus: !breadCrumbRow.visible
+        focus: true
 
         // Defining "height" as "contentHeight" would be simpler, but it causes "Binding loop detected" error messages
         height: Math.ceil(count * cellWidth / width) * cellHeight
 
         // Disable the GridView flickable so that it does not interfer with the global flickable
         interactive: false
+
+        currentIndex: -1
+
+        onActiveFocusChanged: {
+            if (focus && currentIndex == -1 && count > 0) {
+                currentIndex = 0;
+            }
+        }
 
         Keys.onPressed: {
             if (event.key == Qt.Key_Left) {
@@ -215,10 +219,5 @@ FocusScope {
         highlightFollowsCurrentItem: true
 
         delegate: result
-    }
-
-    // Scripting
-    Component.onCompleted: {
-        KeyboardUtils.setTabOrder([breadCrumbRow, gridView]);
     }
 }

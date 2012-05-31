@@ -172,7 +172,7 @@ FocusScope {
     // Scripting
     Component.onCompleted: {
         var views = createResultsViews();
-        var widgets = [searchField].concat(views);
+        var widgets = [searchField].concat(views).concat(searchField);
         KeyboardUtils.setTabOrder(widgets);
     }
 
