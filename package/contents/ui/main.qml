@@ -88,9 +88,12 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
-                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModel": favoriteModel});
+                    var content = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModel": favoriteModel});
                     var lst = tabContentList;
-                    lst.push(tab);
+                    if (lst.length == 0) {
+                        content.forceActiveFocus();
+                    }
+                    lst.push(content);
                     tabContentList = lst;
                 }
             }

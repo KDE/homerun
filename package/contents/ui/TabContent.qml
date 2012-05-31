@@ -23,6 +23,8 @@ import org.kde.sal.fixes 0.1 as SalFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
+import "KeyboardUtils.js" as KeyboardUtils
+
 FocusScope {
     id: main
     property QtObject favoriteModel
@@ -33,6 +35,7 @@ FocusScope {
     // Internal
     property variant models: []
 
+    // Models
     Component {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
@@ -110,6 +113,7 @@ FocusScope {
         }
     }
 
+    // UI
     Component {
         id: resultsViewComponent
         ResultsView {
@@ -165,9 +169,17 @@ FocusScope {
         }
     }
 
+    // Scripting
     Component.onCompleted: {
+        var views = createResultsViews();
+        var widgets = [searchField].concat(views);
+        KeyboardUtils.setTabOrder(widgets);
+    }
+
+    function createResultsViews() {
         var idx;
         var lst = new Array();
+        var views = new Array();
         for (idx = 0; idx < sources.length; ++idx) {
             var tokens = sources[idx].split(":");
             var modelName = tokens[0];
@@ -188,11 +200,14 @@ FocusScope {
                     console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
                 }
             }
-            resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+            var view = resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+            views.push(view);
 
             lst.push(model);
         }
         models = lst;
+
+        return views;
     }
 
     function reset() {

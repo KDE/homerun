@@ -21,8 +21,12 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
-Column {
+import "KeyboardUtils.js" as KeyboardUtils
+
+FocusScope {
     id: main
+
+    height: childrenRect.height
 
     signal indexClicked(int index)
 
@@ -51,9 +55,15 @@ Column {
 
     Row {
         id: breadCrumbRow
-        width: parent.width
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
         visible: main.path != "/"
         spacing: 6
+
+        focus: visible
 
         Repeater {
             model: pathModel
@@ -66,7 +76,13 @@ Column {
 
     GridView {
         id: gridView
-        width: parent.width
+        anchors {
+            top: breadCrumbRow.bottom
+            left: parent.left
+            right: parent.right
+        }
+
+        focus: !breadCrumbRow.visible
 
         // Defining "height" as "contentHeight" would be simpler, but it causes "Binding loop detected" error messages
         height: Math.ceil(count * cellWidth / width) * cellHeight
@@ -193,5 +209,9 @@ Column {
             id: highlighter
             hover: true
         }
+    }
+
+    Component.onCompleted: {
+        KeyboardUtils.setTabOrder([breadCrumbRow, gridView]);
     }
 }
