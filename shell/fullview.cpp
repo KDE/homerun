@@ -64,11 +64,10 @@ FullView::FullView()
 
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_NoSystemBackground);
     setAutoFillBackground(false);
     viewport()->setAutoFillBackground(false);
-    setAttribute(Qt::WA_NoSystemBackground);
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
-    Plasma::WindowEffects::overrideShadow(winId(), true);
 
     KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.sal/contents/ui/main.qml");
     setSource(source);
@@ -119,7 +118,8 @@ void FullView::toggle(int screen)
         resetAndHide();
     } else {
         kDebug() << "SHOWING POPUP";
-        KWindowSystem::setState( winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove );
+        KWindowSystem::setState(winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove);
+        Plasma::WindowEffects::overrideShadow(winId(), true);
 
         QDesktopWidget w;
         const QRect rect = w.availableGeometry(screen);
