@@ -40,10 +40,12 @@
 #include <KUrl>
 #include <KWindowSystem>
 
+#include <Plasma/FrameSvg>
 #include <Plasma/WindowEffects>
 
 FullView::FullView()
 : QDeclarativeView()
+, m_backgroundSvg(new Plasma::FrameSvg(this))
 {
     new SalViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
@@ -74,7 +76,22 @@ FullView::FullView()
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
     rootObject()->setProperty("embedded", true);
 
-    updateGeometry();
+    setupBackground();
+}
+
+void FullView::setupBackground()
+{
+    if (Plasma::WindowEffects::isEffectAvailable(Plasma::WindowEffects::BlurBehind)) {
+        m_backgroundSvg->setImagePath("translucent/dialogs/background");
+    } else {
+        m_backgroundSvg->setImagePath("dialogs/background");
+    }
+    qreal left, top, bottom, right;
+    m_backgroundSvg->getMargins(left, top, bottom, right);
+    rootObject()->setProperty("leftMargin", left);
+    rootObject()->setProperty("topMargin", top);
+    rootObject()->setProperty("rightMargin", right);
+    rootObject()->setProperty("bottomMargin", bottom);
 }
 
 void FullView::focusInEvent(QFocusEvent* event)
@@ -141,13 +158,15 @@ void FullView::resizeEvent(QResizeEvent *event)
 
 void FullView::updateGeometry()
 {
-    /*
-    // TODO: Use the background's mask for blur
-    QRegion mask;
-    mask += QRect(QPoint(), size());
+    m_backgroundSvg->resizeFrame(size());
+    if (Plasma::WindowEffects::isEffectAvailable(Plasma::WindowEffects::BlurBehind)) {
+        Plasma::WindowEffects::enableBlurBehind(winId(), true, m_backgroundSvg->mask());
+    }
+}
 
-    Plasma::WindowEffects::enableBlurBehind(winId(), true, mask);
-    */
+void FullView::drawBackground(QPainter *painter, const QRectF &/*rect*/)
+{
+    m_backgroundSvg->paintFrame(painter);
 }
 
 #include "fullview.moc"

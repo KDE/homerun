@@ -29,6 +29,10 @@
 
 #include <QDeclarativeView>
 
+namespace Plasma {
+class FrameSvg;
+}
+
 class FullView : public QDeclarativeView
 {
     Q_OBJECT
@@ -48,9 +52,13 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void closeEvent(QCloseEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
+    virtual void drawBackground(QPainter *painter, const QRectF&rect);
 
 private:
+    void setupBackground();
     void resetAndHide();
+
+    Plasma::FrameSvg *m_backgroundSvg;
 };
 
 #endif

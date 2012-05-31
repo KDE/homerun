@@ -28,21 +28,19 @@ Item {
     signal closeRequested
 
     property bool embedded: false
+    property real leftMargin: 12
+    property real topMargin: 12
+    property real rightMargin: 12
+    property real bottomMargin: 12
 
     property variant tabContentList: []
-
-    PlasmaCore.FrameSvgItem {
-        id: background
-        anchors.fill: parent
-        imagePath: "dialogs/background"
-    }
 
     PlasmaComponents.ToolButton {
         anchors {
             right: main.right
             top: main.top
-            rightMargin: background.margins.right
-            topMargin: background.margins.top
+            rightMargin: main.rightMargin
+            topMargin: main.topMargin
         }
 
         visible: embedded
@@ -80,7 +78,7 @@ Item {
 
         anchors {
             top: parent.top
-            topMargin: background.margins.top
+            topMargin: main.topMargin
             horizontalCenter: parent.horizontalCenter
         }
 
@@ -137,9 +135,9 @@ Item {
             left: parent.left
             right: parent.right
             topMargin: 12
-            bottomMargin: background.margins.bottom
-            leftMargin: background.margins.left
-            rightMargin: background.margins.right
+            bottomMargin: main.bottomMargin
+            leftMargin: main.leftMargin
+            rightMargin: main.rightMargin
         }
     }
 
