@@ -48,7 +48,98 @@ FocusScope {
         id: pathModel
     }
 
+    // Components
+    Component {
+        id: highlight
+
+        PlasmaComponents.Highlight {
+            id: highlighter
+            hover: true
+        }
+    }
+
+    Component {
+        id: result
+        Result {
+            currentText: model.label
+            currentIcon: model.icon
+            showFavoriteIcon: model.favoriteAction != ""
+            favoriteIcon: {
+                switch (GridView.view.model.favoriteAction(model)) {
+                case "add":
+                    return "bookmarks";
+                case "remove":
+                    return "list-remove";
+                default:
+                    return "";
+                }
+            }
+
+            onClicked: indexClicked(gridView.currentIndex)
+
+            onFavoriteClicked: {
+                GridView.view.model.triggerFavoriteAction(model);
+                showFeedback();
+            }
+
+            onContainsMouseChanged: {
+                if (containsMouse) {
+                    resultEntered();
+                } else {
+                    resultExited();
+                }
+            }
+
+            function resultEntered() {
+                if (resultLabel.truncated == true) {
+                    // there's not enough room for the result's text to be displayed, so it's
+                    // being ellided/truncated. only then should the tooltip be shown.
+                    tooltipShowTimer.restart()
+                }
+
+                gridView.currentIndex = index
+            }
+
+            function resultExited() {
+                tooltipShowTimer.restart()
+                tooltipShowTimer.running = false
+
+                tooltipDialog.visible = false
+                gridView.currentIndex = -1
+            }
+
+            Timer {
+                id: tooltipShowTimer
+
+                interval: 800
+                repeat: false
+
+                onTriggered:   {
+                    var point = tooltipDialog.popupPosition(parent)
+                    tooltipDialog.x = point.x
+                    tooltipDialog.y = point.y
+                    tooltipDialog.visible = true
+                    tooltipText.text = model["label"]
+                }
+            }
+        }
+    }
+
     // UI
+    PlasmaCore.Dialog {
+        id: tooltipDialog
+
+        Component.onCompleted: {
+            tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
+            tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
+        }
+
+        mainItem: Text {
+            id: tooltipText
+            text: "THIS IS A TEST TEXT ITEM"
+        }
+    }
+
     PlasmaComponents.Label {
         id: headerLabel
         anchors {
@@ -125,97 +216,7 @@ FocusScope {
         highlight: highlight
         highlightFollowsCurrentItem: true
 
-        PlasmaCore.Dialog {
-            id: tooltipDialog
-
-            Component.onCompleted: {
-                tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
-                tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
-            }
-
-            mainItem: tooltipText
-        }
-
-        //FIXME: it won't respond by resizing when i change the text through the onEntered event.
-        //it only abides by what it was given at ctor time. need a way to change that...
-        Text {
-            id: tooltipText
-            text: "THIS IS A TEST TEXT ITEM"
-        }
-
-        delegate: Result {
-            id: result
-            currentText: model.label
-            currentIcon: model.icon
-            showFavoriteIcon: model.favoriteAction != ""
-            favoriteIcon: {
-                switch (GridView.view.model.favoriteAction(model)) {
-                case "add":
-                    return "bookmarks";
-                case "remove":
-                    return "list-remove";
-                default:
-                    return "";
-                }
-            }
-
-            onClicked: indexClicked(gridView.currentIndex)
-
-            onFavoriteClicked: {
-                GridView.view.model.triggerFavoriteAction(model);
-                showFeedback();
-            }
-
-            onContainsMouseChanged: {
-                if (containsMouse) {
-                    resultEntered();
-                } else {
-                    resultExited();
-                }
-            }
-
-            function resultEntered() {
-                if (resultLabel.truncated == true) {
-                    // there's not enough room for the result's text to be displayed, so it's
-                    // being ellided/truncated. only then should the tooltip be shown.
-                    tooltipShowTimer.restart()
-                }
-
-                gridView.currentIndex = index
-            }
-
-            function resultExited() {
-                tooltipShowTimer.restart()
-                tooltipShowTimer.running = false
-
-                tooltipDialog.visible = false
-                gridView.currentIndex = -1
-            }
-
-            Timer {
-                id: tooltipShowTimer
-
-                interval: 800
-                repeat: false
-
-                onTriggered:   {
-                    var point = tooltipDialog.popupPosition(result)
-                    tooltipDialog.x = point.x
-                    tooltipDialog.y = point.y
-                    tooltipDialog.visible = true
-                    tooltipText.text = model["label"]
-                }
-            }
-        }
-    }
-
-    Component {
-        id: highlight
-
-        PlasmaComponents.Highlight {
-            id: highlighter
-            hover: true
-        }
+        delegate: result
     }
 
     // Scripting
