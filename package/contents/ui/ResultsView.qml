@@ -186,6 +186,17 @@ FocusScope {
 
         currentIndex: -1
 
+        cellWidth: resultItemWidth
+        cellHeight: resultItemHeight
+        //TODO: something sane?
+        cacheBuffer: 128 * 10 //10 above, 10 below caching
+
+        highlight: highlight
+        highlightFollowsCurrentItem: true
+
+        delegate: result
+
+        // Code
         onActiveFocusChanged: {
             if (focus && currentIndex == -1 && count > 0) {
                 currentIndex = 0;
@@ -209,15 +220,5 @@ FocusScope {
         }
 
         Keys.onReturnPressed: indexClicked(currentIndex)
-
-        cellWidth: resultItemWidth
-        cellHeight: resultItemHeight
-        //TODO: something sane?
-        cacheBuffer: 128 * 10 //10 above, 10 below caching
-
-        highlight: highlight
-        highlightFollowsCurrentItem: true
-
-        delegate: result
     }
 }
