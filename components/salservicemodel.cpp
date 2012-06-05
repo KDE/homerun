@@ -32,6 +32,24 @@
 
 #include <Plasma/RunnerManager>
 
+Node Node::fromServiceGroup(KServiceGroup::Ptr group)
+{
+    Node node;
+    node.icon = KIcon(group->icon());
+    node.name = group->caption();
+    node.entryPath = group->entryPath();
+    return node;
+}
+
+Node Node::fromService(KService::Ptr service)
+{
+    Node node;
+    node.icon = KIcon(service->icon());
+    node.name = service->name();
+    node.service = service;
+    return node;
+}
+
 SalServiceModel::SalServiceModel (QObject *parent)
     : QAbstractListModel(parent)
     , m_path("/")
@@ -48,30 +66,31 @@ SalServiceModel::SalServiceModel (QObject *parent)
 
 int SalServiceModel::rowCount(const QModelIndex& index) const
 {
-    return index.isValid() ? 0 : m_serviceList.count();
+    return index.isValid() ? 0 : m_nodeList.count();
 }
 
 int SalServiceModel::count() const
 {
-    return m_serviceList.count();
+    return m_nodeList.count();
 }
 
 QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || index.row() >= m_serviceList.count()) {
+    if (!index.isValid() || index.row() >= m_nodeList.count()) {
         return QVariant();
     }
 
+    const Node &node = m_nodeList.at(index.row());
     if (role == Qt::DisplayRole) {
-        return m_serviceList.at(index.row())->name();
+        return node.name;
     } else if (role == Qt::DecorationRole) {
-        return m_serviceList.at(index.row())->icon();
+        return node.icon;
     } else if (role == EntryPathRole) {
         if (m_path == "/") {
             // Items at root level are not "favoritable", so don't return an entryPath
             return QVariant();
         }
-        return m_serviceList.at(index.row())->entryPath();
+        return node.entryPath;
     }
 
     return QVariant();
@@ -79,15 +98,19 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
 
 bool SalServiceModel::trigger(int row)
 {
-    KService::Ptr service = m_serviceList.at(row);
+    const Node &node = m_nodeList.at(row);
     if (m_path == "/") {
+        /*
         // We are at root level, we want to descend into the selection, not execute
         QString salUrl = service->property("X-Plasma-Sal-Url").toString();
         // salUrl is of the form "kservicegroup://root/Something/". We want the "/Something" part.
         setPath("/" % salUrl.section('/', 2, -1, QString::SectionSkipEmpty));
+        */
+        QString entryPath = node.entryPath;
+        setPath("/" % entryPath.left(entryPath.length() - 1));
         return false;
     } else {
-        return KRun::run(*service, KUrl::List(), 0);
+        return KRun::run(*node.service, KUrl::List(), 0);
     }
 }
 
@@ -95,7 +118,7 @@ void SalServiceModel::setPath(const QString &path)
 {
     beginResetModel();
     m_path = path;
-    m_serviceList.clear();
+    m_nodeList.clear();
 
     if (path == "/") {
         loadRootEntries();
@@ -116,9 +139,8 @@ QString SalServiceModel::path() const
 
 void SalServiceModel::loadRootEntries()
 {
-    QSet<QString> groupSet;
     KServiceGroup::Ptr group = KServiceGroup::root();
-    KServiceGroup::List list = group->entries();
+    KServiceGroup::List list = group->entries(false /* sorted: set to false as it does not seem to work */);
 
     for( KServiceGroup::List::ConstIterator it = list.constBegin(); it != list.constEnd(); it++) {
         const KSycocaEntry::Ptr p = (*it);
@@ -127,34 +149,16 @@ void SalServiceModel::loadRootEntries()
             KServiceGroup::Ptr subGroup = KServiceGroup::Ptr::staticCast(p);
 
             if (!subGroup->noDisplay() && subGroup->childCount() > 0) {
-                groupSet.insert(subGroup->relPath());
+                m_nodeList << Node::fromServiceGroup(subGroup);
             }
         }
     }
-
-    KService::List services = KServiceTypeTrader::self()->query("Plasma/Sal/Menu");
-    if (!services.isEmpty()) {
-        foreach (const KService::Ptr &service, services) {
-            const QUrl url = QUrl(service->property("X-Plasma-Sal-Url", QVariant::String).toString());
-            const QString groupName = url.path().remove(0, 1);
-
-            if (url.scheme() != "kservicegroup" || groupSet.contains(groupName)) {
-                m_serviceList.append(service);
-            }
-
-            if (groupSet.contains(groupName)) {
-                groupSet.remove(groupName);
-            }
-        }
-    }
-
-    sort(-1, Qt::AscendingOrder);
 }
 
 void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
 {
     if (group && group->isValid()) {
-        KServiceGroup::List list = group->entries();
+        KServiceGroup::List list = group->entries(false /* see above */);
 
         for( KServiceGroup::List::ConstIterator it = list.constBegin();
             it != list.constEnd(); it++) {
@@ -168,7 +172,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
                     if (genericName.isNull()) {
                         genericName = service->comment();
                     }
-                    m_serviceList.append(service);
+                    m_nodeList << Node::fromService(service);
                 }
 
             } else if (p->isType(KST_KServiceGroup)) {
@@ -180,7 +184,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
             }
         }
     }
-    sort(0, Qt::AscendingOrder);
+    //sort(0, Qt::AscendingOrder);
 }
 
 #include "salservicemodel.moc"
