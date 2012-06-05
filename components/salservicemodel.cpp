@@ -116,7 +116,7 @@ QString SalServiceModel::path() const
 
 void SalServiceModel::loadRootEntries()
 {
-    QHash<QString, KServiceGroup::Ptr> groupSet;
+    QSet<QString> groupSet;
     KServiceGroup::Ptr group = KServiceGroup::root();
     KServiceGroup::List list = group->entries();
 
@@ -127,7 +127,7 @@ void SalServiceModel::loadRootEntries()
             KServiceGroup::Ptr subGroup = KServiceGroup::Ptr::staticCast(p);
 
             if (!subGroup->noDisplay() && subGroup->childCount() > 0) {
-                groupSet.insert(subGroup->relPath(), subGroup);
+                groupSet.insert(subGroup->relPath());
             }
         }
     }
