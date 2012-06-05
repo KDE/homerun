@@ -21,14 +21,31 @@
 #ifndef SALSERVICEMODEL_H
 #define SALSERVICEMODEL_H
 
-#include <QStandardItemModel>
+#include <QAbstractListModel>
 #include <QStringList>
+
+#include <KIcon>
 #include <KService>
 #include <KServiceGroup>
 #include <KUrl>
-#include <QMimeData>
 
 class QTimer;
+
+struct Node
+{
+    KIcon icon;
+    QString name;
+    QString entryPath;
+    KService::Ptr service;
+
+    bool operator<(const Node &other) const;
+
+    static Node fromService(KService::Ptr);
+    static Node fromServiceGroup(KServiceGroup::Ptr);
+
+private:
+    QString sortKey;
+};
 
 class SalServiceModel : public QAbstractListModel
 {
@@ -60,11 +77,8 @@ private:
     void loadRootEntries();
     void loadServiceGroup(KServiceGroup::Ptr group);
 
-
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
-
 private:
-    QList<KService::Ptr> m_serviceList;
+    QList<Node> m_nodeList;
     QString m_path;
 };
 
