@@ -33,6 +33,21 @@ Item {
 
     property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
 
+    // "highlighted" property
+    // This property is controlled by both the mouse and the keyboard. It cannot
+    // be represented as containsMouse || activeFocus because it must track the
+    // latest event.
+    // For example if mouse is over item A and user presses the right arrow
+    // button to reach item B, then B.highlighted should become true and
+    // A.highlighted should become false, even if the mouse is still over A.
+    property bool highlighted: false
+    onContainsMouseChanged: {
+        highlighted = containsMouse;
+    }
+    onActiveFocusChanged: {
+        highlighted = activeFocus;
+    }
+
     signal clicked
     signal entered
     signal exited
@@ -119,7 +134,7 @@ Item {
         }
         icon: "bookmarks"
 
-        opacity: favoriteMouseArea.containsMouse ? 1 : (containsMouse ? 0.5 : 0)
+        opacity: favoriteMouseArea.containsMouse ? 1 : (main.highlighted ? 0.5 : 0)
         width: 22
         height: width
     }

@@ -49,10 +49,9 @@ FocusScope {
     // Components
     Component {
         id: highlight
-
         PlasmaComponents.Highlight {
-            id: highlighter
             hover: true
+            opacity: gridView.currentItem.highlighted ? 1 : 0
         }
     }
 
@@ -73,7 +72,14 @@ FocusScope {
                 }
             }
 
-            onClicked: indexClicked(gridView.currentIndex)
+            onHighlightedChanged: {
+                if (highlighted) {
+                    gridView.currentIndex = model.index;
+                    forceActiveFocus();
+                }
+            }
+
+            onClicked: indexClicked(model.index)
 
             onFavoriteClicked: {
                 GridView.view.model.triggerFavoriteAction(model);
@@ -94,8 +100,6 @@ FocusScope {
                     // being ellided/truncated. only then should the tooltip be shown.
                     tooltipShowTimer.restart()
                 }
-
-                gridView.currentIndex = index
             }
 
             function resultExited() {
@@ -103,7 +107,6 @@ FocusScope {
                 tooltipShowTimer.running = false
 
                 tooltipDialog.visible = false
-                gridView.currentIndex = -1
             }
 
             Timer {
@@ -197,39 +200,31 @@ FocusScope {
         // Disable the GridView flickable so that it does not interfer with the global flickable
         interactive: false
 
-        currentIndex: -1
-
         cellWidth: resultItemWidth
         cellHeight: resultItemHeight
         //TODO: something sane?
         cacheBuffer: 128 * 10 //10 above, 10 below caching
 
         highlight: highlight
-        highlightFollowsCurrentItem: true
 
         delegate: result
 
-        // Code
-        onActiveFocusChanged: {
-            if (focus && currentIndex == -1 && count > 0) {
-                currentIndex = 0;
-            }
-        }
-
         Keys.onPressed: {
+            // We must handle key presses ourself because we set interactive to false
+            var oldIndex = currentIndex;
             if (event.key == Qt.Key_Left) {
                 moveCurrentIndexLeft();
-                event.accepted = true;
             } else if (event.key == Qt.Key_Right) {
                 moveCurrentIndexRight();
-                event.accepted = true;
             } else if (event.key == Qt.Key_Up) {
                 moveCurrentIndexUp();
-                event.accepted = true;
             } else if (event.key == Qt.Key_Down) {
                 moveCurrentIndexDown();
-                event.accepted = true;
             }
+            // Only accept the event if the index actually moved. Not accepting
+            // it will cause parent items to move the focus to the next ResultsView,
+            // which is what we want
+            event.accepted = currentIndex != oldIndex;
         }
 
         Keys.onReturnPressed: indexClicked(currentIndex)
