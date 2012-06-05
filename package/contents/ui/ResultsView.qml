@@ -75,7 +75,6 @@ FocusScope {
             onHighlightedChanged: {
                 if (highlighted) {
                     gridView.currentIndex = model.index;
-                    forceActiveFocus();
                 }
             }
 
