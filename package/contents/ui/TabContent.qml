@@ -27,6 +27,7 @@ import "KeyboardUtils.js" as KeyboardUtils
 
 FocusScope {
     id: main
+
     property QtObject favoriteModel
     property variant sources
 
@@ -201,6 +202,9 @@ FocusScope {
                 }
             }
             var view = resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+            var previousItem = idx > 0 ? views[idx - 1] : searchField;
+            previousItem.KeyNavigation.down = view;
+            view.KeyNavigation.up = previousItem;
             views.push(view);
 
             lst.push(model);
