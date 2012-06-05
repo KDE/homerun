@@ -107,6 +107,10 @@ Item {
             }
         }
 
+        /**
+         * Use duck-typing to determine if an item is a tab and not a Repeater
+         * or something else.
+         */
         function isTab(tab) {
             return tab && tab["iconSource"] !== undefined;
         }
@@ -121,8 +125,7 @@ Item {
         }
 
         function firstTab() {
-            var idx;
-            for (idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
+            for (var idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
                 var item = filterTabBar.layout.children[idx];
                 if (isTab(item)) {
                     return item;
@@ -131,10 +134,48 @@ Item {
             return null;
         }
 
-        function goToFirstTab() {
-            currentTab = filterTabBar.firstTab();
+        /**
+         * Return a list of all childrens which are actually tabs
+         */
+        function tabList() {
+            var lst = new Array();
+            for (var idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
+                var item = filterTabBar.layout.children[idx];
+                if (isTab(item)) {
+                    lst.push(item);
+                }
+            }
+            return lst;
+        }
+
+        function setCurrentTab(tab) {
+            currentTab = tab;
             // Setting currentTab does not change the tab content, so do it ourselves
             tabGroup.currentTab = currentTab.tab;
+        }
+
+        function goToFirstTab() {
+            setCurrentTab(filterTabBar.firstTab());
+        }
+
+        function goToPreviousTab() {
+            var lst = tabList();
+            for (var idx = 1; idx < lst.length; ++idx) {
+                if (lst[idx] == filterTabBar.currentTab) {
+                    setCurrentTab(lst[idx - 1]);
+                    return;
+                }
+            }
+        }
+
+        function goToNextTab() {
+            var lst = tabList();
+            for (var idx = 0; idx < lst.length - 1; ++idx) {
+                if (lst[idx] == filterTabBar.currentTab) {
+                    setCurrentTab(lst[idx + 1]);
+                    return;
+                }
+            }
         }
     }
 
@@ -156,6 +197,18 @@ Item {
         filterTabBar.goToFirstTab();
         tabContentList.forEach(function(content) {
             content.reset();
+        });
+    }
+
+    Keys.onPressed: {
+        var lst = [
+            [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.goToPreviousTab],
+            [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.goToNextTab],
+        ];
+        event.accepted = lst.some(function(x) {
+            if (event.modifiers == x[0] && event.key == x[1]) {
+                x[2]();
+            }
         });
     }
 }
