@@ -178,6 +178,19 @@ FocusScope {
 
         focus: true
 
+        /*
+        // Debug help
+        LogText {
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            text:
+                    "activeFocus=" + gridView.activeFocus
+                + "\ncurrentIndex=" + gridView.currentIndex
+                + "\ncurrentItem.activeFocus=" + (gridView.currentItem ? gridView.currentItem.activeFocus : "-")
+                + "\ncurrentItem.label=" + (gridView.currentItem ? gridView.currentItem.currentText : "-")
+        }
+        */
+
         // Defining "height" as "contentHeight" would be simpler, but it causes "Binding loop detected" error messages
         height: Math.ceil(count * cellWidth / width) * cellHeight
 
