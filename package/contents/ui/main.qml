@@ -100,6 +100,13 @@ Item {
             }
         }
 
+        Connections {
+            target: tabGroup
+            onCurrentTabChanged: {
+                tabGroup.currentTab.forceActiveFocus();
+            }
+        }
+
         function isTab(tab) {
             return tab && tab["iconSource"] !== undefined;
         }
