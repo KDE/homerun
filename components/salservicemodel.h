@@ -60,9 +60,6 @@ private:
     void loadRootEntries();
     void loadServiceGroup(KServiceGroup::Ptr group);
 
-
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
-
 private:
     QList<KService::Ptr> m_serviceList;
     QString m_path;

@@ -36,10 +36,7 @@ SalServiceModel::SalServiceModel (QObject *parent)
     : QAbstractListModel(parent)
     , m_path("/")
 {
-    kDebug() << "SALSERVICEMODEL INITED";
     setPath("/");
-
-    //////////////////////////////////////////////////////////
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
@@ -94,34 +91,6 @@ bool SalServiceModel::trigger(int row)
     }
 }
 
-QMimeData * SalServiceModel::mimeData(const QModelIndexList &/*indexes*/) const
-{
-//    KUrl::List urls;
-//
-//    foreach (const QModelIndex & index, indexes) {
-//        QString urlString = data(index, CommonModel::Url).toString();
-//
-//        KService::Ptr service = KService::serviceByDesktopPath(urlString);
-//
-//        if (!service) {
-//            service = KService::serviceByDesktopName(urlString);
-//        }
-//
-//        if (service) {
-//            urls << KUrl(service->entryPath());
-//        }
-//    }
-//
-    QMimeData *mimeData = new QMimeData();
-
-//    if (!urls.isEmpty()) {
-//        urls.populateMimeData(mimeData);
-//    }
-//
-    return mimeData;
-
-}
-
 void SalServiceModel::setPath(const QString &path)
 {
     beginResetModel();
@@ -131,7 +100,6 @@ void SalServiceModel::setPath(const QString &path)
     if (path == "/") {
         loadRootEntries();
     } else {
-        kDebug() << "TRYING TO SET PATH TO: " << path;
         QString relPath = path.mid(1) % "/";
         loadServiceGroup(KServiceGroup::group(relPath));
     }
@@ -139,7 +107,6 @@ void SalServiceModel::setPath(const QString &path)
     endResetModel();
     emit countChanged();
     pathChanged(path);
-    kDebug() << "####### SETPATH CALLED (first time is from ctor)";
 }
 
 QString SalServiceModel::path() const
@@ -149,12 +116,6 @@ QString SalServiceModel::path() const
 
 void SalServiceModel::loadRootEntries()
 {
-//    QStringList defaultEnabledEntries;
-//    defaultEnabledEntries << "plasma-sal-contacts.desktop" << "plasma-sal-bookmarks.desktop"
-//    << "plasma-sal-multimedia.desktop" << "plasma-sal-internet.desktop"
-//    << "plasma-sal-graphics.desktop" << "plasma-sal-education.desktop"
-//    << "plasma-sal-games.desktop" << "plasma-sal-office.desktop";
-
     QHash<QString, KServiceGroup::Ptr> groupSet;
     KServiceGroup::Ptr group = KServiceGroup::root();
     KServiceGroup::List list = group->entries();
@@ -171,59 +132,22 @@ void SalServiceModel::loadRootEntries()
         }
     }
 
-        KService::List services = KServiceTypeTrader::self()->query("Plasma/Sal/Menu");
-        if (!services.isEmpty()) {
-            foreach (const KService::Ptr &service, services) {
-                const QUrl url = QUrl(service->property("X-Plasma-Sal-Url", QVariant::String).toString());
-                const QString groupName = url.path().remove(0, 1);
+    KService::List services = KServiceTypeTrader::self()->query("Plasma/Sal/Menu");
+    if (!services.isEmpty()) {
+        foreach (const KService::Ptr &service, services) {
+            const QUrl url = QUrl(service->property("X-Plasma-Sal-Url", QVariant::String).toString());
+            const QString groupName = url.path().remove(0, 1);
 
-                if (url.scheme() != "kservicegroup" || groupSet.contains(groupName)) {
-//                    model->appendRow(
-//                        StandardItemFactory::createItem(
-//                            KIcon(service->icon()),
-//                                                        service->name(),
-//                                                        service->comment(),
-//                                                        url.toString(),
-//                                                        relevance,
-//                                                        CommonModel::NoAction
-//                        )
-//                    );
-                    m_serviceList.append(service);
-                }
+            if (url.scheme() != "kservicegroup" || groupSet.contains(groupName)) {
+                m_serviceList.append(service);
+            }
 
-                if (groupSet.contains(groupName)) {
-                    groupSet.remove(groupName);
-                }
+            if (groupSet.contains(groupName)) {
+                groupSet.remove(groupName);
             }
         }
+    }
 
-        foreach (const KServiceGroup::Ptr group, groupSet) {
-//            if ((model != m_allRootEntriesModel)) {
-//                model->appendRow(
-//                    StandardItemFactory::createItem(
-//                        KIcon(group->icon()),
-//                                                    group->caption(),
-//                                                    group->comment(),
-//                                                    QString("kserviceGroup://root/") + group->relPath(),
-//                                                    0.1,
-//                                                    CommonModel::NoAction
-//                    )
-//                );
-//            } else if (model == m_allRootEntriesModel) {
-//                QStandardItem *item = StandardItemFactory::createItem(
-//                    KIcon(group->icon()),
-//                                                                      group->caption(),
-//                                                                      group->comment(),
-//                                                                      group->storageId(),
-//                                                                      0.1,
-//                                                                      CommonModel::NoAction
-//                );
-//                model->appendRow(item);
-//            }
-        }
-
-//        model->setSortRole(CommonModel::Weight);
-//        model->sort(0, Qt::DescendingOrder);
     sort(-1, Qt::AscendingOrder);
 }
 
@@ -245,16 +169,6 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
                         genericName = service->comment();
                     }
                     m_serviceList.append(service);
-//                    appendRow(
-//                        StandardItemFactory::createItem(
-//                            KIcon(service->icon()),
-//                                                        service->name(),
-//                                                        genericName,
-//                                                        service->entryPath(),
-//                                                        0.5,
-//                                                        CommonModel::AddAction
-//                        )
-//                    );
                 }
 
             } else if (p->isType(KST_KServiceGroup)) {
