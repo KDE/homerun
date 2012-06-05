@@ -47,10 +47,8 @@ public Q_SLOTS:
     void updateGeometry();
 
 protected:
-    virtual void focusInEvent(QFocusEvent *event);
     virtual void focusOutEvent(QFocusEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
-    virtual void closeEvent(QCloseEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
     virtual void drawBackground(QPainter *painter, const QRectF&rect);
 

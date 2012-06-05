@@ -93,31 +93,21 @@ void FullView::setupBackground()
     rootObject()->setProperty("bottomMargin", bottom);
 }
 
-void FullView::focusInEvent(QFocusEvent* event)
-{
-    kDebug() << "FOCUS IN";
-    QDeclarativeView::focusInEvent(event);
-}
-
 void FullView::focusOutEvent(QFocusEvent* event)
 {
-    kDebug() << "FOCUS OUT!!";
     event->accept();
     resetAndHide();
 }
 
 FullView::~FullView()
 {
-    kDebug() << "DTOR HIT";
 }
 
 void FullView::toggle(int screen)
 {
     if (isVisible()) {
-        kDebug() << "HIDING POPUP";
         resetAndHide();
     } else {
-        kDebug() << "SHOWING POPUP";
         KWindowSystem::setState(winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove);
         Plasma::WindowEffects::overrideShadow(winId(), true);
 
@@ -143,11 +133,6 @@ void FullView::keyPressEvent(QKeyEvent *event)
     }
 
     QDeclarativeView::keyPressEvent(event);
-}
-
-void FullView::closeEvent(QCloseEvent *event)
-{
-    kDebug() << "CLOSE EVENT";
 }
 
 void FullView::resizeEvent(QResizeEvent *event)
