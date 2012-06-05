@@ -10,10 +10,6 @@ add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 add_definitions(-std=c++0x)
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
-# services/
-file(GLOB services services/*.desktop)
-install(FILES ${services} DESTINATION ${SERVICES_INSTALL_DIR})
-
 # package/
 install(DIRECTORY package/
         DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/org.kde.sal)
