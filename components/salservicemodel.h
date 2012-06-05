@@ -38,8 +38,13 @@ struct Node
     QString entryPath;
     KService::Ptr service;
 
+    bool operator<(const Node &other) const;
+
     static Node fromService(KService::Ptr);
     static Node fromServiceGroup(KServiceGroup::Ptr);
+
+private:
+    QString sortKey;
 };
 
 class SalServiceModel : public QAbstractListModel

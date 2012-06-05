@@ -38,6 +38,7 @@ Node Node::fromServiceGroup(KServiceGroup::Ptr group)
     node.icon = KIcon(group->icon());
     node.name = group->caption();
     node.entryPath = group->entryPath();
+    node.sortKey = node.name.toLower();
     return node;
 }
 
@@ -47,7 +48,13 @@ Node Node::fromService(KService::Ptr service)
     node.icon = KIcon(service->icon());
     node.name = service->name();
     node.service = service;
+    node.sortKey = node.name.toLower();
     return node;
+}
+
+bool Node::operator<(const Node &other) const
+{
+    return sortKey < other.sortKey;
 }
 
 SalServiceModel::SalServiceModel (QObject *parent)
@@ -153,6 +160,7 @@ void SalServiceModel::loadRootEntries()
             }
         }
     }
+    qSort(m_nodeList);
 }
 
 void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
@@ -184,7 +192,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
             }
         }
     }
-    //sort(0, Qt::AscendingOrder);
+    qSort(m_nodeList);
 }
 
 #include "salservicemodel.moc"
