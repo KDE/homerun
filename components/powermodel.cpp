@@ -113,21 +113,18 @@ bool PowerModel::trigger(int row)
 
     switch (action.type) {
         case Shutdown:
-            kDebug() << "shutting down!";
             KWorkSpace::requestShutDown();
             break;
 
         case Restart:
-            kDebug() << "restarting!";
+            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot, KWorkSpace::ShutdownModeDefault);
             break;
 
         case Suspend:
-            kDebug() << "suspending!";
             suspend("suspendToRam");
             break;
 
         case Hibernate:
-            kDebug() << "hibernating!";
             suspend("suspendToDisk");
             break;
     }
