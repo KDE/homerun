@@ -47,6 +47,7 @@ Node Node::fromService(KService::Ptr service)
     Node node;
     node.icon = KIcon(service->icon());
     node.name = service->name();
+    node.entryPath = service->entryPath();
     node.service = service;
     node.sortKey = node.name.toLower();
     return node;
