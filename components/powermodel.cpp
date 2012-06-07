@@ -55,7 +55,7 @@ PowerModel::PowerModel(QObject *parent)
     PowerAction restart;
     restart.name = i18nc("an action", "Restart");
     restart.type = Restart;
-    restart.iconName = "system-restart";
+    restart.iconName = "system-reboot";
     m_powerList.append(restart);
 
     PowerAction suspend;
@@ -67,7 +67,7 @@ PowerModel::PowerModel(QObject *parent)
     PowerAction hibernate;
     hibernate.name = i18nc("an action", "Hibernate");
     hibernate.type = Hibernate;
-    hibernate.iconName = "system-hibernate";
+    hibernate.iconName = "system-suspend-hibernate";
     m_powerList.append(hibernate);
     emit countChanged();
 }
