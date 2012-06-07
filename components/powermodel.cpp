@@ -69,6 +69,7 @@ PowerModel::PowerModel(QObject *parent)
     hibernate.type = Hibernate;
     hibernate.iconName = "system-hibernate";
     m_powerList.append(hibernate);
+    emit countChanged();
 }
 
 PowerModel::~PowerModel()
