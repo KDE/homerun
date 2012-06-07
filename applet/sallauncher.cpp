@@ -51,6 +51,7 @@ SalLauncher::SalLauncher(QObject * parent, const QVariantList & args)
 void SalLauncher::init()
 {
     QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
 
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("kde");
