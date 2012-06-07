@@ -4,6 +4,7 @@ set(salcomponents_SRCS
     favoritemodel.cpp
     pagemodel.cpp
     placesmodel.cpp
+    powermodel.cpp
     runnerinfoprovider.cpp
     salservicemodel.cpp
     salcomponentsplugin.cpp

@@ -57,6 +57,32 @@ FocusScope {
     }
 
     Component {
+        id: powerModelComponent
+        SalFixes.SortFilterModel {
+            property string name: "Power"
+            filterRegExp: searchField.text
+
+            sourceModel: SalComponents.PowerModel {
+                id: realPowerModel
+            }
+
+            function favoriteAction(obj) {
+                return "";
+            }
+
+            function triggerFavoriteAction(obj) {
+                var sourceRow = mapRowToSource(obj.index);
+                sourceModel.removeAt(sourceRow);
+            }
+
+            function trigger(row) {
+                return sourceModel.trigger(mapRowToSource(row));
+            }
+        }
+    }
+
+
+    Component {
         id: runnerModelComponent
         RunnerModel {
             query: searchField.text
@@ -191,9 +217,12 @@ FocusScope {
                 model = placesModelComponent.createObject(main);
             } else if (modelName == "FavoriteModel") {
                 model = favoriteModelComponent.createObject(main);
+            } else if (modelName == "PowerModel") {
+                model = powerModelComponent.createObject(main);
             } else {
                 model = runnerModelComponent.createObject(main);
             }
+
             if (tokens.length == 2) {
                 if ("arguments" in model) {
                     model.arguments = tokens[1].split(",");

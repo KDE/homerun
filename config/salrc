@@ -64,3 +64,8 @@ name=Contacts
 icon=contacts
 source0=RunnerModel:contacts
 source1=RunnerModel:kopete
+
+[Page4]
+name=Power
+icon=system-shutdown
+source0=PowerModel
