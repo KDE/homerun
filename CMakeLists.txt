@@ -2,8 +2,10 @@ project(sal)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
+# Dependencies
 find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
 include(KDE4Defaults)
+find_package(KDE4Workspace REQUIRED)
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)

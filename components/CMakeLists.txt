@@ -20,6 +20,7 @@ target_link_libraries(salcomponentsplugin
         ${KDE4_PLASMA_LIBS}
         ${KDE4_KIO_LIBS}
         ${KDE4_KFILE_LIBS}
+        ${KDE4WORKSPACE_KWORKSPACE_LIBS}
         )
 
 install(TARGETS salcomponentsplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/components)
