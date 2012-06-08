@@ -217,6 +217,7 @@ FocusScope {
         var lst = new Array();
         var views = new Array();
         for (idx = 0; idx < sources.length; ++idx) {
+            // Create models
             var tokens = sources[idx].split(":");
             var modelName = tokens[0];
             var model;
@@ -239,11 +240,19 @@ FocusScope {
                     console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
                 }
             }
+
+            // Create views
+            var newViews = new Array();
             var view = resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
-            var previousItem = idx > 0 ? views[idx - 1] : searchField;
-            previousItem.KeyNavigation.down = view;
-            view.KeyNavigation.up = previousItem;
-            views.push(view);
+            newViews.push(view);
+
+            // Define KeyNavigation for views
+            newViews.forEach(function(view) {
+                var previousItem = views.length > 0 ? views[views.length - 1] : searchField;
+                previousItem.KeyNavigation.down = view;
+                view.KeyNavigation.up = previousItem;
+                views.push(view);
+            });
 
             lst.push(model);
         }
