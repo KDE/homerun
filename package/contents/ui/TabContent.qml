@@ -170,9 +170,28 @@ FocusScope {
         contentWidth: width
         contentHeight: resultsColumn.height
         clip: true
+        SalComponents.SalRunnerModel {
+            id: salRunnerModel
+        }
         Column {
             id: resultsColumn
             width: parent.width
+            Repeater {
+                id: repeater
+                model: salRunnerModel
+                delegate:
+                    ResultsView {
+                        width: parent.width
+                        model: salRunnerModel.modelForRow(index) // Here "index" is the current row number within the repeater
+                        favoriteModel: main.favoriteModel
+                        onIndexClicked: {
+                            // Here "index" is the row number clicked inside the ResultsView
+                            if (model.trigger(index)) {
+                                resultTriggered();
+                            }
+                        }
+                    }
+            }
         }
     }
 

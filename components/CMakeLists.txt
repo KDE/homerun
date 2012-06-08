@@ -6,6 +6,7 @@ set(salcomponents_SRCS
     placesmodel.cpp
     powermodel.cpp
     runnerinfoprovider.cpp
+    salrunnermodel.cpp
     salservicemodel.cpp
     salcomponentsplugin.cpp
     )
