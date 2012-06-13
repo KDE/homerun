@@ -97,6 +97,33 @@ void FavoriteModelTest::testAdd()
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
 }
 
+void FavoriteModelTest::testAddEmpty()
+{
+    QModelIndex index;
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(""));
+
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+    FavoriteModel model;
+    model.setConfig(config);
+
+    model.append("konsole");
+
+    // Check new favorite is in the model
+    QCOMPARE(model.rowCount(), 1);
+    index = model.index(0, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
+    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+
+    // Check config matches model
+    FavoriteModel model2;
+    model2.setConfig(config);
+    QCOMPARE(model2.rowCount(), 1);
+    index = model2.index(0, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
+    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+
+}
+
 void FavoriteModelTest::testRemove()
 {
     QModelIndex index;

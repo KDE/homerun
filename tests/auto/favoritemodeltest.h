@@ -28,6 +28,7 @@ class FavoriteModelTest : public QObject
 private Q_SLOTS:
     void testLoad();
     void testAdd();
+    void testAddEmpty();
     void testRemove();
 };
 

@@ -87,7 +87,12 @@ void FavoriteModel::append(const QString &serviceId)
         kWarning() << "Could not find a service for" << serviceId;
         return;
     }
-    int rank = m_favoriteList.last().rank + 1;
+    int rank;
+    if (!m_favoriteList.isEmpty()) {
+        rank = m_favoriteList.last().rank + 1;
+    } else {
+        rank = 0;
+    }
     FavoriteInfo info = { rank, service };
 
     int row = m_favoriteList.count();
