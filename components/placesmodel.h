@@ -49,6 +49,7 @@ class PlacesModel : public QSortFilterProxyModel
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
+    Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged)
 
 public:
     enum {
@@ -64,12 +65,16 @@ public:
     QString path() const;
     void setPath(const QString &path);
 
+    QString filter() const;
+    void setFilter(const QString &filter);
+
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 
     void addPlace(const QString &text, const KUrl &url);
 
 Q_SIGNALS:
     void countChanged();
+    void filterChanged();
     void pathChanged(const QString &);
 
 private:
@@ -77,6 +82,7 @@ private:
     ProxyDirModel *m_proxyDirModel;
     KUrl m_rootUrl;
     QString m_rootName;
+    QString m_filter;
 
     void switchToPlacesModel();
     void switchToDirModel();

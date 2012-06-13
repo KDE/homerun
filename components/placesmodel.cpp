@@ -128,6 +128,23 @@ void PlacesModel::setPath(const QString &newPath)
     pathChanged(path());
 }
 
+QString PlacesModel::filter() const
+{
+    return m_filter;
+}
+
+void PlacesModel::setFilter(const QString& filter)
+{
+    if (m_filter == filter) {
+        return;
+    }
+    m_filter = filter;
+    QRegExp rx(filter, Qt::CaseInsensitive, QRegExp::FixedString);
+    setFilterRegExp(rx);
+    filterChanged();
+
+}
+
 void PlacesModel::openDirUrl(const KUrl &url)
 {
     m_proxyDirModel->dirLister()->openUrl(url);
