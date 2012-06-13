@@ -18,6 +18,9 @@ Applied in 4.9
 https://git.reviewboard.kde.org/r/105044/
 Applied in 4.9
 
+### Fix SortFilterModel sorting by default
+Applied in 4.9
+
 ## RunnerModel (kde-runtime)
 ### Do not reset Plasma::RunnerModel when new matches are added
 https://git.reviewboard.kde.org/r/104917/
