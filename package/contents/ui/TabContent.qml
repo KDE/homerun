@@ -115,27 +115,17 @@ FocusScope {
 
     Component {
         id: placesModelComponent
-        SalFixes.SortFilterModel {
+        SalComponents.PlacesModel {
             id: placesFilterModel
             property string name: "Favorite Places"
-            property alias path: realPlacesModel.path
-            filterRegExp: searchField.text
-
-            sourceModel: SalComponents.PlacesModel {
-                id: realPlacesModel
-            }
+            filter: searchField.text
 
             function favoriteAction(obj) {
                 return obj.favoriteAction;
             }
 
             function triggerFavoriteAction(obj) {
-                var sourceRow = mapRowToSource(obj.index);
-                sourceModel.triggerFavoriteActionAt(sourceRow);
-            }
-
-            function trigger(row) {
-                return sourceModel.trigger(mapRowToSource(row));
+                triggerFavoriteActionAt(obj.index);
             }
         }
     }
