@@ -21,10 +21,25 @@
 
 #include <QSortFilterProxyModel>
 
+#include <KDirSortFilterProxyModel>
 #include <KUrl>
 
-class KDirModel;
+class KDirLister;
+class KFileItem;
 class KFilePlacesModel;
+
+/**
+ * Internal
+ */
+class ProxyDirModel : public KDirSortFilterProxyModel
+{
+public:
+    explicit ProxyDirModel(QObject *parent = 0);
+
+    KFileItem itemForIndex(const QModelIndex &index) const;
+
+    KDirLister *dirLister() const;
+};
 
 /**
  * Adapts KFilePlacesModel to make it SAL friendly
@@ -51,13 +66,15 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 
+    void addPlace(const QString &text, const KUrl &url);
+
 Q_SIGNALS:
     void countChanged();
     void pathChanged(const QString &);
 
 private:
     KFilePlacesModel *m_placesModel;
-    KDirModel *m_dirModel;
+    ProxyDirModel *m_proxyDirModel;
     KUrl m_rootUrl;
     QString m_rootName;
 

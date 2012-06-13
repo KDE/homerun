@@ -5,6 +5,7 @@ macro(sal_add_unit_test _test)
     kde4_add_unit_test(${_test} ${_src})
     target_link_libraries(${_test}
         ${KDE4_PLASMA_LIBS}
+        ${KDE4_KFILE_LIBS}
         ${KDE4_KIO_LIBS}
         ${KDE4_KDEUI_LIBS}
         ${KDE4_KDECORE_LIBS}
@@ -28,6 +29,7 @@ sal_add_unit_test(pagemodeltest ${salcomponents_SOURCE_DIR}/pagemodel.cpp)
 
 # X11-dependent tests
 sal_add_unit_test(favoritemodeltest_x11 ${salcomponents_SOURCE_DIR}/favoritemodel.cpp)
+sal_add_unit_test(placesmodeltest_x11 ${salcomponents_SOURCE_DIR}/placesmodel.cpp)
 sal_add_unit_test(runnerinfoprovidertest_x11 ${salcomponents_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
 
 # Definition of the "check" target

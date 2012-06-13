@@ -23,12 +23,29 @@
 #include <KDirModel>
 #include <KFilePlacesModel>
 
+ProxyDirModel::ProxyDirModel(QObject *parent)
+: KDirSortFilterProxyModel(parent)
+{
+    setSourceModel(new KDirModel(this));
+    setSortFoldersFirst(true);
+}
+
+KFileItem ProxyDirModel::itemForIndex(const QModelIndex &index) const
+{
+    const QModelIndex sourceIndex = mapToSource(index);
+    return static_cast<KDirModel *>(sourceModel())->itemForIndex(sourceIndex);
+}
+
+KDirLister *ProxyDirModel::dirLister() const
+{
+    return static_cast<KDirModel *>(sourceModel())->dirLister();
+}
+
 PlacesModel::PlacesModel(QObject *parent)
 : QSortFilterProxyModel(parent)
 , m_placesModel(new KFilePlacesModel(this))
-, m_dirModel(new KDirModel(this))
+, m_proxyDirModel(new ProxyDirModel(this))
 {
-    setDynamicSortFilter(true);
     switchToPlacesModel();
 }
 
@@ -45,7 +62,7 @@ bool PlacesModel::trigger(int row)
         m_rootName = "/" + sourceIndex.data(Qt::DisplayRole).toString();
         openDirUrl(theUrl);
     } else {
-        KFileItem item = m_dirModel->itemForIndex(sourceIndex);
+        KFileItem item = m_proxyDirModel->itemForIndex(sourceIndex);
         if (item.isDir()) {
             openDirUrl(item.url());
         } else {
@@ -65,7 +82,6 @@ int PlacesModel::count() const
 void PlacesModel::switchToPlacesModel()
 {
     setSourceModel(m_placesModel);
-    sort(-1, Qt::AscendingOrder);
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
@@ -76,8 +92,7 @@ void PlacesModel::switchToPlacesModel()
 
 void PlacesModel::switchToDirModel()
 {
-    setSourceModel(m_dirModel);
-    sort(0, Qt::AscendingOrder);
+    setSourceModel(m_proxyDirModel);
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
@@ -91,7 +106,7 @@ QString PlacesModel::path() const
     if (sourceModel() == m_placesModel) {
         return "/";
     }
-    KUrl url = m_dirModel->dirLister()->url();
+    KUrl url = m_proxyDirModel->dirLister()->url();
     url.adjustPath(KUrl::RemoveTrailingSlash);
     QString relativePath = KUrl::relativeUrl(m_rootUrl, url);
     if (relativePath == "./") {
@@ -115,7 +130,7 @@ void PlacesModel::setPath(const QString &newPath)
 
 void PlacesModel::openDirUrl(const KUrl &url)
 {
-    m_dirModel->dirLister()->openUrl(url);
+    m_proxyDirModel->dirLister()->openUrl(url);
     pathChanged(path());
 }
 
@@ -132,7 +147,7 @@ QVariant PlacesModel::data(const QModelIndex& index, int role) const
     if (sourceModel() == m_placesModel) {
         value = m_placesModel->isDevice(sourceIndex) ? "" : "remove";
     } else {
-        KFileItem item = m_dirModel->itemForIndex(sourceIndex);
+        KFileItem item = m_proxyDirModel->itemForIndex(sourceIndex);
         value = item.isDir() ? "add" : "";
     }
     return value;
@@ -145,10 +160,15 @@ void PlacesModel::triggerFavoriteActionAt(int row)
     if (sourceModel() == m_placesModel) {
         m_placesModel->removePlace(sourceIndex);
     } else {
-        KFileItem item = m_dirModel->itemForIndex(sourceIndex);
+        KFileItem item = m_proxyDirModel->itemForIndex(sourceIndex);
         Q_ASSERT(item.isDir());
         m_placesModel->addPlace(item.name(), item.url(), item.iconName());
     }
+}
+
+void PlacesModel::addPlace(const QString& text, const KUrl& url)
+{
+    m_placesModel->addPlace(text, url);
 }
 
 #include "placesmodel.moc"
