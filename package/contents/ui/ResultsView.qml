@@ -181,21 +181,33 @@ FocusScope {
     PlasmaCore.FrameSvgItem {
         id: tooltip
         imagePath: "widgets/tooltip"
-        property Item target: gridView.currentItem
-        x: target ? tooltipX() : 0
-        y: target ? target.y : 0
+        property Item target: (gridView.currentItem && gridView.currentItem.highlighted && gridView.currentItem.truncated) ? gridView.currentItem : null
         width: label.width + margins.left + margins.right
         height: label.height + margins.top + margins.bottom
         
-        opacity: (target && target.highlighted && target.truncated) ? 1 : 0
+        opacity: target ? 1 : 0
+
+        onTargetChanged: {
+            if (target) {
+                // Manually update these properties so that they do not get reset as soon as target becomes null:
+                // we don't want the properties to be updated then because we need to keep the old text and coordinates
+                // while the tooltip is fading out.
+                label.text = target.currentText;
+                x = tooltipX();
+                y = target.y;
+            }
+        }
 
         PlasmaComponents.Label {
             id: label
             x: parent.margins.left
             y: parent.margins.top
-            text: parent.target ? parent.target.currentText : ""
         }
-        
+
+        Behavior on opacity {
+            NumberAnimation { duration: 250; }
+        }
+
         function tooltipX() {
             var left = gridView.mapToItem(main, target.x, 0).x;
             var value = left + (target.width - width) / 2;
