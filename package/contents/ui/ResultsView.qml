@@ -198,7 +198,14 @@ FocusScope {
         
         function tooltipX() {
             var left = gridView.mapToItem(main, target.x, 0).x;
-            return left + (target.width - width) / 2;
+            var value = left + (target.width - width) / 2;
+            if (value < 0) {
+                return 0;
+            }
+            if (value > gridView.width - width) {
+                return gridView.width - width;
+            }
+            return value;
         }
     }
 }
