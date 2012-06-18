@@ -58,6 +58,7 @@ FocusScope {
     Component {
         id: result
         Result {
+            id: main
             currentText: model.label
             currentIcon: model.icon
             showFavoriteIcon: model.favoriteAction != ""
@@ -84,62 +85,10 @@ FocusScope {
                 GridView.view.model.triggerFavoriteAction(model);
                 showFeedback();
             }
-
-            onContainsMouseChanged: {
-                if (containsMouse) {
-                    resultEntered();
-                } else {
-                    resultExited();
-                }
-            }
-
-            function resultEntered() {
-                if (resultLabel.truncated == true) {
-                    // there's not enough room for the result's text to be displayed, so it's
-                    // being ellided/truncated. only then should the tooltip be shown.
-                    tooltipShowTimer.restart()
-                }
-            }
-
-            function resultExited() {
-                tooltipShowTimer.restart()
-                tooltipShowTimer.running = false
-
-                tooltipDialog.visible = false
-            }
-
-            Timer {
-                id: tooltipShowTimer
-
-                interval: 800
-                repeat: false
-
-                onTriggered:   {
-                    var point = tooltipDialog.popupPosition(parent)
-                    tooltipDialog.x = point.x
-                    tooltipDialog.y = point.y
-                    tooltipDialog.visible = true
-                    tooltipText.text = model["label"]
-                }
-            }
         }
     }
 
     // UI
-    PlasmaCore.Dialog {
-        id: tooltipDialog
-
-        Component.onCompleted: {
-            tooltipDialog.setAttribute(Qt.WA_X11NetWmWindowTypeDock, true)
-            tooltipDialog.windowFlags |= Qt.WindowStaysOnTopHint|Qt.X11BypassWindowManagerHint
-        }
-
-        mainItem: Text {
-            id: tooltipText
-            text: "THIS IS A TEST TEXT ITEM"
-        }
-    }
-
     PlasmaComponents.Label {
         id: headerLabel
         anchors {
@@ -227,5 +176,29 @@ FocusScope {
         }
 
         Keys.onReturnPressed: indexClicked(currentIndex)
+    }
+
+    PlasmaCore.FrameSvgItem {
+        id: tooltip
+        imagePath: "widgets/tooltip"
+        property Item target: gridView.currentItem
+        x: target ? tooltipX() : 0
+        y: target ? target.y : 0
+        width: label.width + margins.left + margins.right
+        height: label.height + margins.top + margins.bottom
+        
+        opacity: (target && target.highlighted && target.truncated) ? 1 : 0
+
+        PlasmaComponents.Label {
+            id: label
+            x: parent.margins.left
+            y: parent.margins.top
+            text: parent.target ? parent.target.currentText : ""
+        }
+        
+        function tooltipX() {
+            var left = gridView.mapToItem(main, target.x, 0).x;
+            return left + (target.width - width) / 2;
+        }
     }
 }

@@ -29,7 +29,7 @@ Item {
     property alias currentIcon: resultIcon.icon;
     property alias favoriteIcon: favoriteIcon.icon
     property alias showFavoriteIcon: favoriteIcon.visible
-    property alias resultLabel: resultLabel
+    property alias truncated: resultLabel.truncated
 
     property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
 
