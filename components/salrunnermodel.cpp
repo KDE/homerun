@@ -139,6 +139,14 @@ void SalRunnerSubModel::setMatches(const QList<Plasma::QueryMatch> &matches)
     }
 }
 
+bool SalRunnerSubModel::trigger(int row)
+{
+    if (row >= 0 && row < m_matches.count()) {
+        triggerRequested(m_matches.at(row));
+    }
+    return true;
+}
+
 //--------------------------------------------------------------------
 
 SalRunnerModel::SalRunnerModel(QObject *parent)
@@ -301,6 +309,7 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
             Q_ASSERT(!matches.isEmpty());
             QString name = matches.first().runner()->name();
             SalRunnerSubModel *subModel = new SalRunnerSubModel(it.key(), name, this);
+            connect(subModel, SIGNAL(triggerRequested(Plasma::QueryMatch)), SLOT(trigger(Plasma::QueryMatch)));
             subModel->setMatches(matches);
             m_models.append(subModel);
         }
@@ -314,6 +323,11 @@ void SalRunnerModel::queryHasFinished()
 {
     m_running = false;
     emit runningChanged(false);
+}
+
+void SalRunnerModel::trigger(const Plasma::QueryMatch& match)
+{
+    m_manager->run(match);
 }
 
 #include <salrunnermodel.moc>

@@ -53,8 +53,12 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
+    Q_INVOKABLE bool trigger(int row);
+
 Q_SIGNALS:
     void countChanged();
+
+    void triggerRequested(const Plasma::QueryMatch&);
 
 private:
     QString m_runnerId;
@@ -102,6 +106,7 @@ private Q_SLOTS:
     void startQuery();
     void queryHasFinished();
     void matchesChanged(const QList<Plasma::QueryMatch> &matches);
+    void trigger(const Plasma::QueryMatch&);
 
 private:
     void createManager();
