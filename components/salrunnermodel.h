@@ -23,22 +23,44 @@
 
 // Qt
 #include <QAbstractListModel>
-#include <QStandardItemModel>
 #include <QStringList>
 
 // KDE
+#include <Plasma/QueryMatch>
 
-class StandardItemModel : public QStandardItemModel
+class QTimer;
+
+namespace Plasma {
+class RunnerManager;
+}
+
+class SalRunnerSubModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
-    explicit StandardItemModel(const QString &name, QObject *parent = 0);
+    explicit SalRunnerSubModel(const QString &runnerId, const QString &name, QObject *parent = 0);
 
+    QString runnerId() const { return m_runnerId; }
     QString name() const { return m_name; }
 
+    void setMatches(const QList<Plasma::QueryMatch> &matches);
+
+    int count() const;
+
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+Q_SIGNALS:
+    void countChanged();
+
 private:
+    QString m_runnerId;
     QString m_name;
+
+    QList<Plasma::QueryMatch> m_matches;
 };
 
 /**
@@ -48,6 +70,12 @@ class SalRunnerModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QStringList arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
+
+    /**
+     * @property string set the KRunner query
+     */
+    Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
+
 public:
     explicit SalRunnerModel(QObject *parent = 0);
     ~SalRunnerModel();
@@ -57,15 +85,35 @@ public:
     QStringList arguments() const;
     void setArguments(const QStringList &args);
 
-    int rowCount(const QModelIndex &) const; // reimp
+    int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
+
+    QString currentQuery() const;
+
+public Q_SLOTS:
+    void scheduleQuery(const QString &query);
 
 Q_SIGNALS:
     void argumentsChanged();
+    void queryChanged();
+    void runningChanged(bool);
+
+private Q_SLOTS:
+    void startQuery();
+    void queryHasFinished();
+    void matchesChanged(const QList<Plasma::QueryMatch> &matches);
 
 private:
-    QList<QStandardItemModel *> m_models;
-    QStringList m_arguments;
+    void createManager();
+
+    Plasma::RunnerManager *m_manager;
+    QTimer *m_startQueryTimer;
+    QTimer *m_runningChangedTimeout;
+
+    QList<SalRunnerSubModel *> m_models;
+    QStringList m_pendingRunnersList;
+    bool m_running;
+    QString m_pendingQuery;
 };
 
 #endif /* SALRUNNERMODEL_H */

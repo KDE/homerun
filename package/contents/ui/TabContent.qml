@@ -85,6 +85,7 @@ FocusScope {
     Component {
         id: runnerModelComponent
         SalComponents.SalRunnerModel {
+            query: searchField.text
         }
     }
 
