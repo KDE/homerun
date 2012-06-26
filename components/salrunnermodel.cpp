@@ -289,8 +289,8 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
         }
     }
 
-    // Now matchesForRunner contains only matches for runners which do not have a model yet
-    // Create new models for them
+    // At this point, matchesForRunner contains only matches for runners which
+    // do not have a model yet. Create new models for them.
     if (!matchesForRunner.isEmpty()) {
         beginInsertRows(QModelIndex(), rowCount(), rowCount() + matchesForRunner.size());
         auto it = matchesForRunner.constBegin();
