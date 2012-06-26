@@ -84,9 +84,7 @@ FocusScope {
 
     Component {
         id: runnerModelComponent
-        RunnerModel {
-            query: searchField.text
-            favoriteModel: main.favoriteModel
+        SalComponents.SalRunnerModel {
         }
     }
 
@@ -126,6 +124,25 @@ FocusScope {
 
             function triggerFavoriteAction(obj) {
                 triggerFavoriteActionAt(obj.index);
+            }
+        }
+    }
+
+    Component {
+        id: multiResultsViewComponent
+        Repeater {
+            id: repeater
+            property QtObject favoriteModel
+            delegate: ResultsView {
+                width: parent.width
+                model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
+                favoriteModel: main.favoriteModel
+                onIndexClicked: {
+                    // Here "index" is the row number clicked inside the ResultsView
+                    if (model.trigger(index)) {
+                        resultTriggered();
+                    }
+                }
             }
         }
     }
@@ -176,22 +193,6 @@ FocusScope {
         Column {
             id: resultsColumn
             width: parent.width
-            Repeater {
-                id: repeater
-                model: salRunnerModel
-                delegate:
-                    ResultsView {
-                        width: parent.width
-                        model: salRunnerModel.modelForRow(index) // Here "index" is the current row number within the repeater
-                        favoriteModel: main.favoriteModel
-                        onIndexClicked: {
-                            // Here "index" is the row number clicked inside the ResultsView
-                            if (model.trigger(index)) {
-                                resultTriggered();
-                            }
-                        }
-                    }
-            }
         }
     }
 
@@ -229,8 +230,11 @@ FocusScope {
                 model = favoriteModelComponent.createObject(main);
             } else if (modelName == "PowerModel") {
                 model = powerModelComponent.createObject(main);
-            } else {
+            } else if (modelName == "RunnerModel") {
                 model = runnerModelComponent.createObject(main);
+            } else {
+                console.log("Error: unknown model type: " + modelName);
+                continue;
             }
 
             if (tokens.length == 2) {
@@ -243,8 +247,13 @@ FocusScope {
 
             // Create views
             var newViews = new Array();
-            var view = resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
-            newViews.push(view);
+            if ("modelForRow" in model) {
+                var view = multiResultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+                newViews.push(view);
+            } else {
+                var view = resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+                newViews.push(view);
+            }
 
             // Define KeyNavigation for views
             newViews.forEach(function(view) {
