@@ -23,11 +23,23 @@
 
 // Qt
 #include <QAbstractListModel>
+#include <QStandardItemModel>
 #include <QStringList>
 
 // KDE
 
-class QStandardItemModel;
+class StandardItemModel : public QStandardItemModel
+{
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name CONSTANT)
+public:
+    explicit StandardItemModel(const QString &name, QObject *parent = 0);
+
+    QString name() const { return m_name; }
+
+private:
+    QString m_name;
+};
 
 /**
  *

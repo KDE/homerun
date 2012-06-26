@@ -27,18 +27,15 @@
 // Qt
 #include <QStandardItemModel>
 
-class StandardItemModel : public QStandardItemModel
+StandardItemModel::StandardItemModel(const QString &name, QObject *parent)
+: QStandardItemModel(parent)
+, m_name(name)
 {
-public:
-    explicit StandardItemModel(QObject *parent = 0)
-    : QStandardItemModel(parent)
-    {
-        QHash<int, QByteArray> roles;
-        roles.insert(Qt::DisplayRole, "label");
-        roles.insert(Qt::DecorationRole, "icon");
-        setRoleNames(roles);
-    }
-};
+    QHash<int, QByteArray> roles;
+    roles.insert(Qt::DisplayRole, "label");
+    roles.insert(Qt::DecorationRole, "icon");
+    setRoleNames(roles);
+}
 
 SalRunnerModel::SalRunnerModel(QObject *parent)
 : QAbstractListModel(parent)
@@ -50,14 +47,12 @@ SalRunnerModel::SalRunnerModel(QObject *parent)
     setRoleNames(roles);
 
     StandardItemModel *m;
-    m = new StandardItemModel(this);
-    m->setProperty("name", "A");
+    m = new StandardItemModel("A", this);
     m->appendRow(new QStandardItem("A1"));
     m->appendRow(new QStandardItem("A2"));
     m->appendRow(new QStandardItem("A3"));
     m_models << m;
-    m = new StandardItemModel(this);
-    m->setProperty("name", "B");
+    m = new StandardItemModel("B", this);
     m->appendRow(new QStandardItem("B1"));
     m->appendRow(new QStandardItem("B2"));
     m_models << m;
