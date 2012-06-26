@@ -276,14 +276,15 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
         it.value().append(match);
     }
 
-    // Assign matches to existing models. If there is no match for a model, the model has to be deleted.
-    // Keep track of rows to remove.
-    QList<int> rowsToRemove;
+    // Assign matches to existing models. If there is no match for a model, delete it.
     for (int row = m_models.count() - 1; row >= 0; --row) {
         SalRunnerSubModel *subModel = m_models.at(row);
         QList<Plasma::QueryMatch> matches = matchesForRunner.take(subModel->runnerId());
         if (matches.isEmpty()) {
-            rowsToRemove.append(row);
+            beginRemoveRows(QModelIndex(), row, row);
+            m_models.removeAt(row);
+            delete subModel;
+            endRemoveRows();
         } else {
             subModel->setMatches(matches);
         }
@@ -306,13 +307,6 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
         endInsertRows();
     }
 
-    // Remove rows of empty models. Rows are kept in decreasing orders, so when the Nth one is dropped, the N+1 one is still valid
-    Q_FOREACH(int row, rowsToRemove) {
-        beginRemoveRows(QModelIndex(), row, row);
-        delete m_models.takeAt(row);
-        endRemoveRows();
-    }
-    
     m_runningChangedTimeout->start(3000);
 }
 
