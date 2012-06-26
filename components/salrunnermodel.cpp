@@ -103,4 +103,15 @@ QObject *SalRunnerModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
+QStringList SalRunnerModel::arguments() const
+{
+    return m_arguments;
+}
+
+void SalRunnerModel::setArguments(const QStringList& args)
+{
+    m_arguments = args;
+    argumentsChanged();
+}
+
 #include <salrunnermodel.moc>

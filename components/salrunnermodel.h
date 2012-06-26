@@ -23,6 +23,7 @@
 
 // Qt
 #include <QAbstractListModel>
+#include <QStringList>
 
 // KDE
 
@@ -34,17 +35,25 @@ class QStandardItemModel;
 class SalRunnerModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
 public:
     explicit SalRunnerModel(QObject *parent = 0);
     ~SalRunnerModel();
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
 
+    QStringList arguments() const;
+    void setArguments(const QStringList &args);
+
     int rowCount(const QModelIndex &) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
 
+Q_SIGNALS:
+    void argumentsChanged();
+
 private:
     QList<QStandardItemModel *> m_models;
+    QStringList m_arguments;
 };
 
 #endif /* SALRUNNERMODEL_H */
