@@ -171,7 +171,6 @@ int SalRunnerModel::rowCount(const QModelIndex &parent) const
 
 QVariant SalRunnerModel::data(const QModelIndex &index, int role) const
 {
-    kWarning() << index << role;
     if (index.parent().isValid()) {
         return QVariant();
     }
@@ -247,9 +246,7 @@ void SalRunnerModel::startQuery()
 
 void SalRunnerModel::createManager()
 {
-    kWarning();
     if (!m_manager) {
-        kWarning() << "Creating manager";
         m_manager = new Plasma::RunnerManager(this);
         connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)),
                 this, SLOT(matchesChanged(QList<Plasma::QueryMatch>)));
@@ -267,7 +264,6 @@ void SalRunnerModel::createManager()
 
 void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
 {
-    kWarning() << "matches.count" << matches.count();
     // Group matches by runner
     // We do not use a QMultiHash here because it keeps values in LIFO order, while we want FIFO.
     QHash<QString, QList<Plasma::QueryMatch> > matchesForRunner;
