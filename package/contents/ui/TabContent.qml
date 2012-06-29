@@ -246,23 +246,10 @@ FocusScope {
                 }
             }
 
-            // Create views
-            var newViews = new Array();
-            if ("modelForRow" in model) {
-                var view = multiResultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
-                newViews.push(view);
-            } else {
-                var view = resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
-                newViews.push(view);
-            }
-
-            // Define KeyNavigation for views
-            newViews.forEach(function(view) {
-                var previousItem = views.length > 0 ? views[views.length - 1] : searchField;
-                previousItem.KeyNavigation.down = view;
-                view.KeyNavigation.up = previousItem;
-                views.push(view);
-            });
+            // Create view
+            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
+            var view = component.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+            views.push(view);
 
             lst.push(model);
         }
