@@ -24,21 +24,24 @@
 
 #include <Plasma/QueryMatch>
 
-#include "favoritemodel.h"
+#include "favoriteappsmodel.h"
 #include "pagemodel.h"
 #include "placesmodel.h"
 #include "powermodel.h"
 #include "runnerinfoprovider.h"
+#include "salrunnermodel.h"
 #include "salservicemodel.h"
 
 void SalComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.sal.components"));
-    qmlRegisterType<FavoriteModel>(uri, 0, 1, "FavoriteModel");
+    qmlRegisterType<FavoriteAppsModel>(uri, 0, 1, "FavoriteAppsModel");
+    qmlRegisterType<FavoritePlacesModel>(uri, 0, 1, "FavoritePlacesModel");
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
     qmlRegisterType<PowerModel>(uri, 0, 1, "PowerModel");
     qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
+    qmlRegisterType<SalRunnerModel>(uri, 0, 1, "SalRunnerModel");
     qmlRegisterType<SalServiceModel>(uri, 0, 1, "SalServiceModel");
     qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
     qRegisterMetaType<Plasma::QueryMatch *>("QueryMatch");

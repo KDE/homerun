@@ -23,6 +23,21 @@
 #include <KDirModel>
 #include <KFilePlacesModel>
 
+static KUrl urlFromFavoriteId(const QString &favoriteId)
+{
+    if (!favoriteId.startsWith("place:")) {
+        kWarning() << "Wrong favoriteId" << favoriteId;
+        return QString();
+    }
+    return KUrl(favoriteId.mid(6));
+}
+
+static QString favoriteIdFromUrl(const KUrl &url)
+{
+    return "place:" + url.url();
+}
+
+//- ProxyDirModel ------------------------------------------------------
 ProxyDirModel::ProxyDirModel(QObject *parent)
 : KDirSortFilterProxyModel(parent)
 {
@@ -41,20 +56,100 @@ KDirLister *ProxyDirModel::dirLister() const
     return static_cast<KDirModel *>(sourceModel())->dirLister();
 }
 
+QVariant ProxyDirModel::data(const QModelIndex &index, int role) const
+{
+    if (role != FavoriteIdRole) {
+        return QSortFilterProxyModel::data(index, role);
+    }
+    if (index.row() < 0 || index.row() >= rowCount()) {
+        return QVariant();
+    }
+
+    KFileItem item = itemForIndex(index);
+    if (item.isDir()) {
+        return favoriteIdFromUrl(item.url());
+    } else {
+        return QString();
+    }
+}
+
+//- FavoritePlacesModel ------------------------------------------------
+FavoritePlacesModel::FavoritePlacesModel(QObject *parent)
+: KFilePlacesModel(parent)
+{}
+
+QString FavoritePlacesModel::favoritePrefix() const
+{
+    return "place";
+}
+
+bool FavoritePlacesModel::isFavorite(const QString &favoriteId) const
+{
+    return indexForFavoriteId(favoriteId).isValid();
+}
+
+void FavoritePlacesModel::addFavorite(const QString &favoriteId)
+{
+    KUrl favoriteUrl = urlFromFavoriteId(favoriteId);
+    if (favoriteUrl.isEmpty()) {
+        return;
+    }
+    addPlace(favoriteUrl.fileName(), favoriteUrl);
+}
+
+void FavoritePlacesModel::removeFavorite(const QString &favoriteId)
+{
+    QModelIndex index = indexForFavoriteId(favoriteId);
+    if (!index.isValid()) {
+        kWarning() << "No favorite place for" << favoriteId;
+        return;
+    }
+    removePlace(index);
+}
+
+QModelIndex FavoritePlacesModel::indexForFavoriteId(const QString &favoriteId) const
+{
+    KUrl favoriteUrl = urlFromFavoriteId(favoriteId);
+    if (favoriteUrl.isEmpty()) {
+        return QModelIndex();
+    }
+    for (int row = rowCount() - 1; row >= 0; --row) {
+        QModelIndex idx = index(row, 0);
+        if (url(idx).equals(favoriteUrl, KUrl::CompareWithoutTrailingSlash)) {
+            return idx;
+        }
+    }
+    return QModelIndex();
+}
+
+QVariant FavoritePlacesModel::data(const QModelIndex &index, int role) const
+{
+    if (role != FavoriteIdRole) {
+        return KFilePlacesModel::data(index, role);
+    }
+
+    if (index.row() < 0 || index.row() >= rowCount()) {
+        return QVariant();
+    }
+    return QVariant(favoriteIdFromUrl(url(index)));
+}
+
+//- PlacesModel --------------------------------------------------------
 PlacesModel::PlacesModel(QObject *parent)
 : QSortFilterProxyModel(parent)
-, m_placesModel(new KFilePlacesModel(this))
+, m_rootModel(0)
 , m_proxyDirModel(new ProxyDirModel(this))
 {
-    switchToPlacesModel();
 }
 
 bool PlacesModel::trigger(int row)
 {
+    Q_ASSERT(m_rootModel);
+
     bool close = false;
     QModelIndex sourceIndex = mapToSource(index(row, 0));
-    if (sourceModel() == m_placesModel) {
-        KUrl theUrl = m_placesModel->url(sourceIndex);
+    if (sourceModel() == m_rootModel) {
+        KUrl theUrl = m_rootModel->data(sourceIndex, KFilePlacesModel::UrlRole).value<QUrl>();
         switchToDirModel();
 
         m_rootUrl = theUrl;
@@ -79,31 +174,37 @@ int PlacesModel::count() const
     return c;
 }
 
-void PlacesModel::switchToPlacesModel()
+void PlacesModel::switchToRootModel()
 {
-    setSourceModel(m_placesModel);
+    Q_ASSERT(m_rootModel);
+    setSourceModel(m_rootModel);
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(FavoriteActionRole, "favoriteAction");
+    roles.insert(FavoritePlacesModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 }
 
 void PlacesModel::switchToDirModel()
 {
+    Q_ASSERT(m_rootModel);
     setSourceModel(m_proxyDirModel);
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(FavoriteActionRole, "favoriteAction");
+    roles.insert(ProxyDirModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 }
 
 QString PlacesModel::path() const
 {
-    if (sourceModel() == m_placesModel) {
+    if (!m_rootModel) {
+        return QString();
+    }
+
+    if (sourceModel() == m_rootModel) {
         return "/";
     }
     KUrl url = m_proxyDirModel->dirLister()->url();
@@ -117,8 +218,13 @@ QString PlacesModel::path() const
 
 void PlacesModel::setPath(const QString &newPath)
 {
+    if (!m_rootModel) {
+        kWarning() << "rootModel not set, path value ignored!";
+        return;
+    }
+
     if (newPath == "/") {
-        switchToPlacesModel();
+        switchToRootModel();
     } else {
         KUrl url = m_rootUrl;
         // Ugly: skip the first path token: it is the place name
@@ -151,41 +257,21 @@ void PlacesModel::openDirUrl(const KUrl &url)
     pathChanged(path());
 }
 
-QVariant PlacesModel::data(const QModelIndex& index, int role) const
+QAbstractItemModel *PlacesModel::rootModel() const
 {
-    if (role != FavoriteActionRole) {
-        return QSortFilterProxyModel::data(index, role);
-    }
-    if (index.row() < 0 || index.row() >= rowCount()) {
-        return QVariant();
-    }
-    QModelIndex sourceIndex = mapToSource(index);
-    QString value;
-    if (sourceModel() == m_placesModel) {
-        value = m_placesModel->isDevice(sourceIndex) ? "" : "remove";
-    } else {
-        KFileItem item = m_proxyDirModel->itemForIndex(sourceIndex);
-        value = item.isDir() ? "add" : "";
-    }
-    return value;
+    return m_rootModel;
 }
 
-void PlacesModel::triggerFavoriteActionAt(int row)
+void PlacesModel::setRootModel(QObject *obj)
 {
-    QModelIndex idx = index(row, 0);
-    QModelIndex sourceIndex = mapToSource(idx);
-    if (sourceModel() == m_placesModel) {
-        m_placesModel->removePlace(sourceIndex);
+    if (obj) {
+        m_rootModel = qobject_cast<QAbstractItemModel *>(obj);
+        Q_ASSERT(m_rootModel);
+        switchToRootModel();
     } else {
-        KFileItem item = m_proxyDirModel->itemForIndex(sourceIndex);
-        Q_ASSERT(item.isDir());
-        m_placesModel->addPlace(item.name(), item.url(), item.iconName());
+        m_rootModel = 0;
     }
-}
-
-void PlacesModel::addPlace(const QString& text, const KUrl& url)
-{
-    m_placesModel->addPlace(text, url);
+    rootModelChanged();
 }
 
 #include "placesmodel.moc"

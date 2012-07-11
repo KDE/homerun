@@ -1,11 +1,12 @@
 project(salcomponents)
 
 set(salcomponents_SRCS
-    favoritemodel.cpp
+    favoriteappsmodel.cpp
     pagemodel.cpp
     placesmodel.cpp
     powermodel.cpp
     runnerinfoprovider.cpp
+    salrunnermodel.cpp
     salservicemodel.cpp
     salcomponentsplugin.cpp
     )

@@ -78,6 +78,34 @@ void PlacesModelTest::testProxyDirModelSortOrder()
     }
 }
 
+void PlacesModelTest::testProxyDirModelFavoriteId()
+{
+    KTempDir tempDir("placesmodeltest");
+    QDir dir(tempDir.name());
+    dir.mkdir("adir");
+    touch(dir.absoluteFilePath("afile"));
+
+    ProxyDirModel proxyDirModel;
+
+    QEventLoop loop;
+    connect(proxyDirModel.dirLister(), SIGNAL(completed()), &loop, SLOT(quit()));
+    proxyDirModel.dirLister()->openUrl(dir.absolutePath());
+    loop.exec();
+
+    // Dir
+    {
+        QModelIndex index = proxyDirModel.index(0, 0);
+        QString favoriteId = index.data(ProxyDirModel::FavoriteIdRole).toString();
+        QCOMPARE(favoriteId, QString("place:file://" + dir.absoluteFilePath("adir")));
+    }
+    // File
+    {
+        QModelIndex index = proxyDirModel.index(1, 0);
+        QString favoriteId = index.data(ProxyDirModel::FavoriteIdRole).toString();
+        QCOMPARE(favoriteId, QString());
+    }
+}
+
 void PlacesModelTest::testSortOrder()
 {
     KTempDir tempDir("placesmodeltest");
@@ -92,14 +120,16 @@ void PlacesModelTest::testSortOrder()
         dir.mkdir(name);
     }
 
+    FavoritePlacesModel rootModel;
+    rootModel.addPlace("Root", dir.absolutePath());
+
     PlacesModel model;
-    model.addPlace("Root", dir.absolutePath());
+    model.setRootModel(&rootModel);
     bool foundRoot = false;
     for (int row = 0; row < model.rowCount(); ++row) {
         QModelIndex index = model.index(row, 0);
         QString name = index.data(Qt::DisplayRole).toString();
         if (name == "Root") {
-            kWarning() << "trigger";
             model.trigger(row);
             foundRoot = true;
             break;

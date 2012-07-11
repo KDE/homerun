@@ -35,7 +35,7 @@ FocusScope {
     property string currentText: "";
     property string currentIcon: "";
 
-    property QtObject favoriteModel
+    property variant favoriteModels
 
     property alias model: gridView.model
 
@@ -61,16 +61,12 @@ FocusScope {
             id: main
             currentText: model.label
             currentIcon: model.icon
-            showFavoriteIcon: model.favoriteAction != ""
             favoriteIcon: {
-                switch (GridView.view.model.favoriteAction(model)) {
-                case "add":
-                    return "bookmarks";
-                case "remove":
-                    return "list-remove";
-                default:
+                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
+                if (favoriteModel === null) {
                     return "";
                 }
+                return favoriteModel.isFavorite(model.favoriteId) ? "list-remove" : "bookmarks";
             }
 
             onHighlightedChanged: {
@@ -82,7 +78,12 @@ FocusScope {
             onClicked: indexClicked(model.index)
 
             onFavoriteClicked: {
-                GridView.view.model.triggerFavoriteAction(model);
+                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
+                if (favoriteModel.isFavorite(model.favoriteId)) {
+                    favoriteModel.removeFavorite(model.favoriteId);
+                } else {
+                    favoriteModel.addFavorite(model.favoriteId);
+                }
                 showFeedback();
             }
         }
@@ -218,6 +219,24 @@ FocusScope {
                 return gridView.width - width;
             }
             return value;
+        }
+    }
+
+    // Code
+    function favoriteModelForFavoriteId(favoriteId) {
+        if (favoriteId === undefined || favoriteId === "") {
+            return null;
+        }
+        var lst = favoriteId.split(":");
+        if (lst.length === 0) {
+            return null;
+        }
+        var model = favoriteModels[lst[0]];
+        if (model === undefined) {
+            console.log("favoriteModelForFavoriteId(): No favorite model for favoriteId '" + favoriteId + "'");
+            return null;
+        } else {
+            return model;
         }
     }
 }

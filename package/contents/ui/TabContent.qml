@@ -28,7 +28,7 @@ import "KeyboardUtils.js" as KeyboardUtils
 FocusScope {
     id: main
 
-    property QtObject favoriteModel
+    property variant favoriteModels
     property variant sources
 
     signal resultTriggered
@@ -42,17 +42,6 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
-            function favoriteAction(obj) {
-                return obj.entryPath === undefined ? "" : "add";
-            }
-
-            function triggerFavoriteAction(obj) {
-                if (obj.entryPath === undefined) {
-                    return;
-                }
-                var serviceId = obj.entryPath.replace(/.*\//, ""); // Keep only filename
-                favoriteModel.append(serviceId);
-            }
         }
     }
 
@@ -66,15 +55,6 @@ FocusScope {
                 id: realPowerModel
             }
 
-            function favoriteAction(obj) {
-                return "";
-            }
-
-            function triggerFavoriteAction(obj) {
-                var sourceRow = mapRowToSource(obj.index);
-                sourceModel.removeAt(sourceRow);
-            }
-
             function trigger(row) {
                 return sourceModel.trigger(mapRowToSource(row));
             }
@@ -84,28 +64,18 @@ FocusScope {
 
     Component {
         id: runnerModelComponent
-        RunnerModel {
+        SalComponents.SalRunnerModel {
             query: searchField.text
-            favoriteModel: main.favoriteModel
         }
     }
 
     Component {
-        id: favoriteModelComponent
+        id: favoriteAppsModelComponent
         SalFixes.SortFilterModel {
             property string name: "Favorite Applications"
             filterRegExp: searchField.text
 
-            sourceModel: main.favoriteModel
-
-            function favoriteAction(obj) {
-                return "remove";
-            }
-
-            function triggerFavoriteAction(obj) {
-                var sourceRow = mapRowToSource(obj.index);
-                sourceModel.removeAt(sourceRow);
-            }
+            sourceModel: main.favoriteModels["app"]
 
             function trigger(row) {
                 return sourceModel.trigger(mapRowToSource(row));
@@ -119,13 +89,25 @@ FocusScope {
             id: placesFilterModel
             property string name: "Favorite Places"
             filter: searchField.text
+            rootModel: main.favoriteModels["place"]
+        }
+    }
 
-            function favoriteAction(obj) {
-                return obj.favoriteAction;
-            }
-
-            function triggerFavoriteAction(obj) {
-                triggerFavoriteActionAt(obj.index);
+    Component {
+        id: multiResultsViewComponent
+        Repeater {
+            id: repeater
+            property variant favoriteModels
+            delegate: ResultsView {
+                width: parent.width
+                model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
+                favoriteModels: repeater.favoriteModels
+                onIndexClicked: {
+                    // Here "index" is the row number clicked inside the ResultsView
+                    if (model.trigger(index)) {
+                        resultTriggered();
+                    }
+                }
             }
         }
     }
@@ -170,6 +152,9 @@ FocusScope {
         contentWidth: width
         contentHeight: resultsColumn.height
         clip: true
+        SalComponents.SalRunnerModel {
+            id: salRunnerModel
+        }
         Column {
             id: resultsColumn
             width: parent.width
@@ -198,6 +183,7 @@ FocusScope {
         var lst = new Array();
         var views = new Array();
         for (idx = 0; idx < sources.length; ++idx) {
+            // Create models
             var tokens = sources[idx].split(":");
             var modelName = tokens[0];
             var model;
@@ -205,12 +191,15 @@ FocusScope {
                 model = serviceModelComponent.createObject(main);
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(main);
-            } else if (modelName == "FavoriteModel") {
-                model = favoriteModelComponent.createObject(main);
+            } else if (modelName == "FavoriteAppsModel") {
+                model = favoriteAppsModelComponent.createObject(main);
             } else if (modelName == "PowerModel") {
                 model = powerModelComponent.createObject(main);
-            } else {
+            } else if (modelName == "RunnerModel") {
                 model = runnerModelComponent.createObject(main);
+            } else {
+                console.log("Error: unknown model type: " + modelName);
+                continue;
             }
 
             if (tokens.length == 2) {
@@ -220,10 +209,10 @@ FocusScope {
                     console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
                 }
             }
-            var view = resultsViewComponent.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
-            var previousItem = idx > 0 ? views[idx - 1] : searchField;
-            previousItem.KeyNavigation.down = view;
-            view.KeyNavigation.up = previousItem;
+
+            // Create view
+            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
+            var view = component.createObject(resultsColumn, {"model": model, "favoriteModels": favoriteModels});
             views.push(view);
 
             lst.push(model);

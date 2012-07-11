@@ -16,20 +16,25 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef FAVORITEMODELTEST_H
-#define FAVORITEMODELTEST_H
+#ifndef FAVORITEPLACESMODELTEST_H
+#define FAVORITEPLACESMODELTEST_H
 
+// Local
+
+// Qt
 #include <QObject>
 
-class FavoriteModelTest : public QObject
+// KDE
+
+/**
+ *
+ */
+class FavoritePlacesModelTest : public QObject
 {
     Q_OBJECT
-
 private Q_SLOTS:
-    void testLoad();
-    void testAdd();
-    void testAddEmpty();
-    void testRemove();
+    void initTestCase();
+    void testFavoriteId();
 };
 
-#endif /* FAVORITEMODELTEST_H */
+#endif /* FAVORITEPLACESMODELTEST_H */
