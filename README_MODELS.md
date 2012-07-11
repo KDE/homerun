@@ -9,6 +9,17 @@ Item text
 - mandatory: yes
 Name of the item icon
 
+### string favoriteId
+- mandatory: yes
+Unique Id used to favorite this item. Its value depends on the item type:
+
+- item cannot be favorited: ""
+- item is an application: "app:" + $desktopName.
+  Examples: "app:kde4-dolphin.desktop" or "app:inkscape.desktop".
+  for KDE applications)
+- item is a place: "place:" + $url.
+  Examples: "place:file:///home/jdoe/Documents" or "place:sftp://host.com/dir".
+
 ## Properties
 ### string name
 - access: read-only
@@ -39,14 +50,24 @@ Triggers the action associated with the item at row "row".
 Returns true if the trigger started an action outside of SAL, false if it did
 not (for example because it changed the "path")
 
-### string favoriteAction(ModelData modelData)
-- mandatory: yes
-Indicates what "favorite" action the item represented by "modelData" supports.
-Can return either:
-- "": no action possible
-- "add": item can be "favorited"
-- "remove": item can be "un-favorited"
 
-### void triggerFavoriteAction(ModelData modelData)
+# Features of a SAL-friendly favorite model
+
+## Properties
+### string favoritePrefix
+- access: read-only
 - mandatory: yes
-Triggers the "favorite" action described by the favoriteAction() method.
+
+Returns the favoriteId prefix this model handles. For example, the model storing
+favorite applications returns "app". The model storing favorite places returns
+"place".
+
+## Methods
+### bool isFavorite(string favoriteId) const
+- mandatory: yes
+
+### void addFavorite(string favoriteId)
+- mandatory: yes
+
+### void removeFavorite(string favoriteId)
+- mandatory: yes
