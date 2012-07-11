@@ -61,7 +61,6 @@ FocusScope {
             id: main
             currentText: model.label
             currentIcon: model.icon
-            showFavoriteIcon: model.favoriteId != ""
             favoriteIcon: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
                 if (favoriteModel === null) {
@@ -225,13 +224,16 @@ FocusScope {
 
     // Code
     function favoriteModelForFavoriteId(favoriteId) {
+        if (favoriteId === undefined || favoriteId === "") {
+            return null;
+        }
         var lst = favoriteId.split(":");
         if (lst.length === 0) {
             return null;
         }
         var model = favoriteModels[lst[0]];
         if (model === undefined) {
-            console.log("No favorite model for favoriteId '" + favoriteId + "'");
+            console.log("favoriteModelForFavoriteId(): No favorite model for favoriteId '" + favoriteId + "'");
             return null;
         } else {
             return model;

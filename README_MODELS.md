@@ -10,7 +10,7 @@ Item text
 Name of the item icon
 
 ### string favoriteId
-- mandatory: yes
+- mandatory: no
 Unique Id used to favorite this item. Its value depends on the item type:
 
 - item cannot be favorited: ""
