@@ -56,6 +56,7 @@ class SalServiceModel : public QAbstractListModel
 public:
     enum Roles {
         EntryPathRole = Qt::UserRole + 1,
+        FavoriteIdRole
     };
 
     SalServiceModel (QObject *parent = 0);
