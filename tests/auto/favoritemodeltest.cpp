@@ -44,9 +44,9 @@ void FavoriteModelTest::testLoad()
 {
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-1]\n"
-        "serviceId=konqueror\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
         "[favorites][favorite-2]\n"
-        "serviceId=dolphin\n"
+        "serviceId=kde4-dolphin.desktop\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
@@ -71,16 +71,16 @@ void FavoriteModelTest::testAdd()
     QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-3]\n"
-        "serviceId=konqueror\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
         "[favorites][favorite-8]\n"
-        "serviceId=dolphin\n"
+        "serviceId=kde4-dolphin.desktop\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
     FavoriteModel model;
     model.setConfig(config);
 
-    model.append("konsole");
+    model.addFavorite("app:kde4-konsole.desktop");
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 3);
@@ -106,7 +106,7 @@ void FavoriteModelTest::testAddEmpty()
     FavoriteModel model;
     model.setConfig(config);
 
-    model.append("konsole");
+    model.addFavorite("app:konsole.desktop");
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 1);
@@ -129,11 +129,11 @@ void FavoriteModelTest::testRemove()
     QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-4]\n"
-        "serviceId=konqueror\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
         "[favorites][favorite-8]\n"
-        "serviceId=dolphin\n"
+        "serviceId=kde4-dolphin.desktop\n"
         "[favorites][favorite-9]\n"
-        "serviceId=konsole\n"
+        "serviceId=kde4-konsole.desktop\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
@@ -141,7 +141,7 @@ void FavoriteModelTest::testRemove()
     model.setConfig(config);
 
     // Drop Dolphin row
-    model.removeAt(1);
+    model.removeFavorite("app:kde4-dolphin.desktop");
 
     // Check Dolphin has been removed from model
     QCOMPARE(model.rowCount(), 2);
