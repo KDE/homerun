@@ -38,6 +38,7 @@ SalRunnerSubModel::SalRunnerSubModel(const QString &runnerId, const QString &nam
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(FavoriteIdRole, "favoriteId");
     /*
     roles.insert(Type, "type");
     roles.insert(Relevance, "relevance");
@@ -71,10 +72,17 @@ QVariant SalRunnerSubModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
+    const Plasma::QueryMatch &match = m_matches.at(index.row());
     if (role == Qt::DisplayRole) {
-        return m_matches.at(index.row()).text();
+        return match.text();
     } else if (role == Qt::DecorationRole) {
-        return m_matches.at(index.row()).icon();
+        return match.icon();
+    } else if (role == FavoriteIdRole) {
+        if (match.runner()->id() == "services") {
+            return QVariant("app:" + match.data().toString());
+        } else {
+            return QString();
+        }
     } /*else if (role == Type) {
         return m_matches.at(index.row()).type();
     } else if (role == Relevance) {

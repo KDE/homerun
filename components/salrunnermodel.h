@@ -42,6 +42,10 @@ class SalRunnerSubModel : public QAbstractListModel
 public:
     explicit SalRunnerSubModel(const QString &runnerId, const QString &name, QObject *parent = 0);
 
+    enum {
+        FavoriteIdRole = Qt::UserRole + 1
+    };
+
     QString runnerId() const { return m_runnerId; }
     QString name() const { return m_name; }
 
