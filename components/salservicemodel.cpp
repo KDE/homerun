@@ -104,7 +104,7 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
         if (m_path == "/") {
             return QString();
         } else {
-            return QVariant(QString("app:") + node.entryPath);
+            return QVariant(QString("app:") + node.service->storageId());
         }
     }
 
