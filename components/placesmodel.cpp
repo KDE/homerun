@@ -23,6 +23,20 @@
 #include <KDirModel>
 #include <KFilePlacesModel>
 
+static KUrl urlFromFavoriteId(const QString &favoriteId)
+{
+    if (!favoriteId.startsWith("place:")) {
+        kWarning() << "Wrong favoriteId" << favoriteId;
+        return QString();
+    }
+    return KUrl(favoriteId.mid(6));
+}
+
+static QString favoriteIdFromUrl(const KUrl &url)
+{
+    return "place:" + url.url();
+}
+
 //- ProxyDirModel ------------------------------------------------------
 ProxyDirModel::ProxyDirModel(QObject *parent)
 : KDirSortFilterProxyModel(parent)
@@ -42,16 +56,24 @@ KDirLister *ProxyDirModel::dirLister() const
     return static_cast<KDirModel *>(sourceModel())->dirLister();
 }
 
-//- FavoritePlacesModel ------------------------------------------------
-static KUrl urlFromFavoriteId(const QString &favoriteId)
+QVariant ProxyDirModel::data(const QModelIndex &index, int role) const
 {
-    if (!favoriteId.startsWith("place:")) {
-        kWarning() << "Wrong favoriteId" << favoriteId;
+    if (role != FavoriteIdRole) {
+        return QSortFilterProxyModel::data(index, role);
+    }
+    if (index.row() < 0 || index.row() >= rowCount()) {
+        return QVariant();
+    }
+
+    KFileItem item = itemForIndex(index);
+    if (item.isDir()) {
+        return favoriteIdFromUrl(item.url());
+    } else {
         return QString();
     }
-    return KUrl(favoriteId.mid(6));
 }
 
+//- FavoritePlacesModel ------------------------------------------------
 FavoritePlacesModel::FavoritePlacesModel(QObject *parent)
 : KFilePlacesModel(parent)
 {}
@@ -109,7 +131,7 @@ QVariant FavoritePlacesModel::data(const QModelIndex &index, int role) const
     if (index.row() < 0 || index.row() >= rowCount()) {
         return QVariant();
     }
-    return QVariant("place:" + url(index).url());
+    return QVariant(favoriteIdFromUrl(url(index)));
 }
 
 //- PlacesModel --------------------------------------------------------

@@ -36,9 +36,15 @@ class ProxyDirModel : public KDirSortFilterProxyModel
 public:
     explicit ProxyDirModel(QObject *parent = 0);
 
+    enum {
+        FavoriteIdRole = Qt::UserRole + 1,
+    };
+
     KFileItem itemForIndex(const QModelIndex &index) const;
 
     KDirLister *dirLister() const;
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 };
 
 /**

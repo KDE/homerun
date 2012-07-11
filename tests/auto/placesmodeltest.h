@@ -28,7 +28,10 @@ class PlacesModelTest : public QObject
 private Q_SLOTS:
     void initTestCase();
 
+    // FIXME: Those ProxyDirModel tests should be moved to a ProxyDirModelTest class
     void testProxyDirModelSortOrder();
+    void testProxyDirModelFavoriteId();
+
     void testSortOrder();
 };
 

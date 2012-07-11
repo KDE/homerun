@@ -78,6 +78,34 @@ void PlacesModelTest::testProxyDirModelSortOrder()
     }
 }
 
+void PlacesModelTest::testProxyDirModelFavoriteId()
+{
+    KTempDir tempDir("placesmodeltest");
+    QDir dir(tempDir.name());
+    dir.mkdir("adir");
+    touch(dir.absoluteFilePath("afile"));
+
+    ProxyDirModel proxyDirModel;
+
+    QEventLoop loop;
+    connect(proxyDirModel.dirLister(), SIGNAL(completed()), &loop, SLOT(quit()));
+    proxyDirModel.dirLister()->openUrl(dir.absolutePath());
+    loop.exec();
+
+    // Dir
+    {
+        QModelIndex index = proxyDirModel.index(0, 0);
+        QString favoriteId = index.data(ProxyDirModel::FavoriteIdRole).toString();
+        QCOMPARE(favoriteId, QString("place:file://" + dir.absoluteFilePath("adir")));
+    }
+    // File
+    {
+        QModelIndex index = proxyDirModel.index(1, 0);
+        QString favoriteId = index.data(ProxyDirModel::FavoriteIdRole).toString();
+        QCOMPARE(favoriteId, QString());
+    }
+}
+
 void PlacesModelTest::testSortOrder()
 {
     KTempDir tempDir("placesmodeltest");
