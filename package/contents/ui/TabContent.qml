@@ -28,7 +28,7 @@ import "KeyboardUtils.js" as KeyboardUtils
 FocusScope {
     id: main
 
-    property QtObject favoriteModel
+    property variant favoriteModels
     property variant sources
 
     signal resultTriggered
@@ -42,17 +42,6 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
-            function favoriteAction(obj) {
-                return obj.entryPath === undefined ? "" : "add";
-            }
-
-            function triggerFavoriteAction(obj) {
-                if (obj.entryPath === undefined) {
-                    return;
-                }
-                var serviceId = obj.entryPath.replace(/.*\//, ""); // Keep only filename
-                favoriteModel.append(serviceId);
-            }
         }
     }
 
@@ -64,15 +53,6 @@ FocusScope {
 
             sourceModel: SalComponents.PowerModel {
                 id: realPowerModel
-            }
-
-            function favoriteAction(obj) {
-                return "";
-            }
-
-            function triggerFavoriteAction(obj) {
-                var sourceRow = mapRowToSource(obj.index);
-                sourceModel.removeAt(sourceRow);
             }
 
             function trigger(row) {
@@ -90,21 +70,12 @@ FocusScope {
     }
 
     Component {
-        id: favoriteModelComponent
+        id: favoriteAppsModelComponent
         SalFixes.SortFilterModel {
             property string name: "Favorite Applications"
             filterRegExp: searchField.text
 
-            sourceModel: main.favoriteModel
-
-            function favoriteAction(obj) {
-                return "remove";
-            }
-
-            function triggerFavoriteAction(obj) {
-                var sourceRow = mapRowToSource(obj.index);
-                sourceModel.removeAt(sourceRow);
-            }
+            sourceModel: main.favoriteModels["app"]
 
             function trigger(row) {
                 return sourceModel.trigger(mapRowToSource(row));
@@ -118,14 +89,7 @@ FocusScope {
             id: placesFilterModel
             property string name: "Favorite Places"
             filter: searchField.text
-
-            function favoriteAction(obj) {
-                return obj.favoriteAction;
-            }
-
-            function triggerFavoriteAction(obj) {
-                triggerFavoriteActionAt(obj.index);
-            }
+            rootModel: main.favoriteModels["place"]
         }
     }
 
@@ -133,11 +97,11 @@ FocusScope {
         id: multiResultsViewComponent
         Repeater {
             id: repeater
-            property QtObject favoriteModel
+            property variant favoriteModels
             delegate: ResultsView {
                 width: parent.width
                 model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
-                favoriteModel: main.favoriteModel
+                favoriteModels: repeater.favoriteModels
                 onIndexClicked: {
                     // Here "index" is the row number clicked inside the ResultsView
                     if (model.trigger(index)) {
@@ -227,8 +191,8 @@ FocusScope {
                 model = serviceModelComponent.createObject(main);
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(main);
-            } else if (modelName == "FavoriteModel") {
-                model = favoriteModelComponent.createObject(main);
+            } else if (modelName == "FavoriteAppsModel") {
+                model = favoriteAppsModelComponent.createObject(main);
             } else if (modelName == "PowerModel") {
                 model = powerModelComponent.createObject(main);
             } else if (modelName == "RunnerModel") {
@@ -248,7 +212,7 @@ FocusScope {
 
             // Create view
             var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
-            var view = component.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+            var view = component.createObject(resultsColumn, {"model": model, "favoriteModels": favoriteModels});
             views.push(view);
 
             lst.push(model);

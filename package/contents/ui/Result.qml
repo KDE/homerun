@@ -25,10 +25,9 @@ Item {
     id: main
 
     property int iconWidth: 64
+    property string favoriteIcon
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon;
-    property alias favoriteIcon: favoriteIcon.icon
-    property alias showFavoriteIcon: favoriteIcon.visible
     property alias truncated: resultLabel.truncated
 
     property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
@@ -72,7 +71,7 @@ Item {
     }
 
     function showFeedback() {
-        favoriteFeedbackComponent.createObject(favoriteIcon);
+        favoriteFeedbackComponent.createObject(favoriteIconItem);
     }
 
     Behavior on opacity {
@@ -117,7 +116,7 @@ Item {
     }
 
     QtExtra.QIconItem {
-        id: favoriteIcon
+        id: favoriteIconItem
 
         anchors {
             right: parent.right
@@ -132,7 +131,11 @@ Item {
                 easing.type: Easing.OutQuad
             }
         }
-        icon: "bookmarks"
+        icon: main.favoriteIcon
+
+        // Use "main.favoriteIcon" and not "icon" because right now "icon"
+        // is a non-notifiable property
+        visible: main.favoriteIcon != ""
 
         opacity: favoriteMouseArea.containsMouse ? 1 : (main.highlighted ? 0.5 : 0)
         width: 22
@@ -146,10 +149,10 @@ Item {
     }
 
     MouseArea {
-        // If MouseArea were a child of favoriteIcon it would not work
-        // when favoriteIcon.opacity is 0. That's why it is a sibling.
+        // If MouseArea were a child of favoriteIconItem it would not work
+        // when favoriteIconItem.opacity is 0. That's why it is a sibling.
         id: favoriteMouseArea
-        anchors.fill: favoriteIcon
+        anchors.fill: favoriteIconItem
         hoverEnabled: true
     }
 }

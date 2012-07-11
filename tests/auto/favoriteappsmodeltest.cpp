@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#include "favoritemodeltest.h"
+#include "favoriteappsmodeltest.h"
 
 // Qt
 #include <QIcon>
@@ -27,9 +27,9 @@
 #include <KDebug>
 #include <qtest_kde.h>
 
-#include <favoritemodel.h>
+#include <favoriteappsmodel.h>
 
-QTEST_KDEMAIN(FavoriteModelTest, GUI)
+QTEST_KDEMAIN(FavoriteAppsModelTest, GUI)
 
 static KTemporaryFile *generateTestFile(const QString &content)
 {
@@ -40,17 +40,17 @@ static KTemporaryFile *generateTestFile(const QString &content)
     return file;
 }
 
-void FavoriteModelTest::testLoad()
+void FavoriteAppsModelTest::testLoad()
 {
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-1]\n"
-        "serviceId=konqueror\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
         "[favorites][favorite-2]\n"
-        "serviceId=dolphin\n"
+        "serviceId=kde4-dolphin.desktop\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
-    FavoriteModel model;
+    FavoriteAppsModel model;
     model.setConfig(config);
 
     QCOMPARE(model.rowCount(), 2);
@@ -59,28 +59,30 @@ void FavoriteModelTest::testLoad()
     QModelIndex index = model.index(0, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konqueror"));
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("konqueror"));
+    QCOMPARE(index.data(FavoriteAppsModel::FavoriteIdRole).toString(), QString("app:kde4-konqbrowser.desktop"));
 
     // Test Dolphin row
     index = model.index(1, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Dolphin"));
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("system-file-manager"));
+    QCOMPARE(index.data(FavoriteAppsModel::FavoriteIdRole).toString(), QString("app:kde4-dolphin.desktop"));
 }
 
-void FavoriteModelTest::testAdd()
+void FavoriteAppsModelTest::testAdd()
 {
     QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-3]\n"
-        "serviceId=konqueror\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
         "[favorites][favorite-8]\n"
-        "serviceId=dolphin\n"
+        "serviceId=kde4-dolphin.desktop\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
-    FavoriteModel model;
+    FavoriteAppsModel model;
     model.setConfig(config);
 
-    model.append("konsole");
+    model.addFavorite("app:kde4-konsole.desktop");
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 3);
@@ -89,7 +91,7 @@ void FavoriteModelTest::testAdd()
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
 
     // Check config matches model
-    FavoriteModel model2;
+    FavoriteAppsModel model2;
     model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 3);
     index = model2.index(2, 0);
@@ -97,16 +99,16 @@ void FavoriteModelTest::testAdd()
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
 }
 
-void FavoriteModelTest::testAddEmpty()
+void FavoriteAppsModelTest::testAddEmpty()
 {
     QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(""));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
-    FavoriteModel model;
+    FavoriteAppsModel model;
     model.setConfig(config);
 
-    model.append("konsole");
+    model.addFavorite("app:konsole.desktop");
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 1);
@@ -115,7 +117,7 @@ void FavoriteModelTest::testAddEmpty()
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
 
     // Check config matches model
-    FavoriteModel model2;
+    FavoriteAppsModel model2;
     model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 1);
     index = model2.index(0, 0);
@@ -124,24 +126,24 @@ void FavoriteModelTest::testAddEmpty()
 
 }
 
-void FavoriteModelTest::testRemove()
+void FavoriteAppsModelTest::testRemove()
 {
     QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-4]\n"
-        "serviceId=konqueror\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
         "[favorites][favorite-8]\n"
-        "serviceId=dolphin\n"
+        "serviceId=kde4-dolphin.desktop\n"
         "[favorites][favorite-9]\n"
-        "serviceId=konsole\n"
+        "serviceId=kde4-konsole.desktop\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
-    FavoriteModel model;
+    FavoriteAppsModel model;
     model.setConfig(config);
 
     // Drop Dolphin row
-    model.removeAt(1);
+    model.removeFavorite("app:kde4-dolphin.desktop");
 
     // Check Dolphin has been removed from model
     QCOMPARE(model.rowCount(), 2);
@@ -149,11 +151,11 @@ void FavoriteModelTest::testRemove()
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
 
     // Check config matches model
-    FavoriteModel model2;
+    FavoriteAppsModel model2;
     model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 2);
     index = model2.index(1, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
 }
 
-#include "favoritemodeltest.moc"
+#include "favoriteappsmodeltest.moc"

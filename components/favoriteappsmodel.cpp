@@ -20,7 +20,7 @@
 */
 
 // Own
-#include "favoritemodel.h"
+#include "favoriteappsmodel.h"
 
 // Qt
 
@@ -35,21 +35,32 @@
 #include <Plasma/AbstractRunner>
 #include <Plasma/RunnerManager>
 
-FavoriteModel::FavoriteModel(QObject *parent)
+
+static QString serviceIdFromFavoriteId(const QString &favoriteId)
+{
+    if (!favoriteId.startsWith("app:")) {
+        kWarning() << "Wrong favoriteId" << favoriteId;
+        return QString();
+    }
+    return favoriteId.mid(4);
+}
+
+FavoriteAppsModel::FavoriteAppsModel(QObject *parent)
 : QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
     setConfig(KSharedConfig::openConfig("salrc"));
 }
 
-FavoriteModel::~FavoriteModel()
+FavoriteAppsModel::~FavoriteAppsModel()
 {
 }
 
-void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
+void FavoriteAppsModel::setConfig(const KSharedConfig::Ptr &ptr)
 {
     m_config = ptr;
 
@@ -80,8 +91,12 @@ void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
     countChanged();
 }
 
-void FavoriteModel::append(const QString &serviceId)
+void FavoriteAppsModel::addFavorite(const QString &favoriteId)
 {
+    QString serviceId = serviceIdFromFavoriteId(favoriteId);
+    if (serviceId.isEmpty()) {
+        return;
+    }
     KService::Ptr service = KService::serviceByStorageId(serviceId);
     if (service.isNull()) {
         kWarning() << "Could not find a service for" << serviceId;
@@ -107,10 +122,11 @@ void FavoriteModel::append(const QString &serviceId)
     baseGroup.sync();
 }
 
-void FavoriteModel::removeAt(int row)
+void FavoriteAppsModel::removeFavorite(const QString &favoriteId)
 {
-    if (row < 0 || row >= m_favoriteList.count()) {
-        kWarning() << "Invalid row" << row;
+    int row = rowForFavoriteId(favoriteId);
+    if (row == -1) {
+        kWarning() << "Could not find favorite" << favoriteId;
         return;
     }
     beginRemoveRows(QModelIndex(), row, row);
@@ -124,17 +140,43 @@ void FavoriteModel::removeAt(int row)
     baseGroup.sync();
 }
 
-int FavoriteModel::count() const
+bool FavoriteAppsModel::isFavorite(const QString &favoriteId) const
+{
+    return rowForFavoriteId(favoriteId) != -1;
+}
+
+int FavoriteAppsModel::rowForFavoriteId(const QString& favoriteId) const
+{
+    QString serviceId = serviceIdFromFavoriteId(favoriteId);
+    if (serviceId.isEmpty()) {
+        return -1;
+    }
+
+    for (int row = m_favoriteList.count() - 1; row >= 0; --row) {
+        const FavoriteInfo& info = m_favoriteList.at(row);
+        if (info.service->storageId() == serviceId) {
+            return row;
+        }
+    }
+    return -1;
+}
+
+int FavoriteAppsModel::count() const
 {
     return m_favoriteList.count();
 }
 
-QString FavoriteModel::name() const
+QString FavoriteAppsModel::name() const
 {
     return i18n("Favorite Applications");
 }
 
-int FavoriteModel::rowCount(const QModelIndex &index) const
+QString FavoriteAppsModel::favoritePrefix() const
+{
+    return "app";
+}
+
+int FavoriteAppsModel::rowCount(const QModelIndex &index) const
 {
     if (index.isValid()) {
         return 0;
@@ -142,7 +184,7 @@ int FavoriteModel::rowCount(const QModelIndex &index) const
     return m_favoriteList.count();
 }
 
-QVariant FavoriteModel::data(const QModelIndex &index, int role) const
+QVariant FavoriteAppsModel::data(const QModelIndex &index, int role) const
 {
     KService::Ptr service = m_favoriteList.value(index.row()).service;
     if (service.isNull()) {
@@ -152,13 +194,15 @@ QVariant FavoriteModel::data(const QModelIndex &index, int role) const
         return service->name();
     } else if (role == Qt::DecorationRole) {
         return KIcon(service->icon());
+    } else if (role == FavoriteIdRole) {
+        return QVariant("app:" + service->storageId());
     } else {
         kWarning() << "Unhandled role" << role;
         return QVariant();
     }
 }
 
-bool FavoriteModel::trigger(int row)
+bool FavoriteAppsModel::trigger(int row)
 {
     KService::Ptr service = m_favoriteList.value(row).service;
     if (service.isNull()) {
@@ -168,4 +212,4 @@ bool FavoriteModel::trigger(int row)
     return KRun::run(*service, KUrl::List(), 0);
 }
 
-#include "favoritemodel.moc"
+#include "favoriteappsmodel.moc"

@@ -68,6 +68,7 @@ SalServiceModel::SalServiceModel (QObject *parent)
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
     roles.insert(EntryPathRole, "entryPath");
+    roles.insert(FavoriteIdRole, "favoriteId");
 
     setRoleNames(roles);
 }
@@ -99,6 +100,12 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
             return QVariant();
         }
         return node.entryPath;
+    } else if (role == FavoriteIdRole) {
+        if (m_path == "/") {
+            return QString();
+        } else {
+            return QVariant(QString("app:") + node.service->storageId());
+        }
     }
 
     return QVariant();

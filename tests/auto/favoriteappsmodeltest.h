@@ -16,23 +16,20 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PLACESMODELTEST_H
-#define PLACESMODELTEST_H
+#ifndef FAVORITEAPPSMODELTEST_H
+#define FAVORITEAPPSMODELTEST_H
 
 #include <QObject>
 
-class PlacesModelTest : public QObject
+class FavoriteAppsModelTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    void initTestCase();
-
-    // FIXME: Those ProxyDirModel tests should be moved to a ProxyDirModelTest class
-    void testProxyDirModelSortOrder();
-    void testProxyDirModelFavoriteId();
-
-    void testSortOrder();
+    void testLoad();
+    void testAdd();
+    void testAddEmpty();
+    void testRemove();
 };
 
-#endif /* PLACESMODELTEST_H */
+#endif /* FAVORITEAPPSMODELTEST_H */
