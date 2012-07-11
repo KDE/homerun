@@ -89,6 +89,7 @@ FocusScope {
             id: placesFilterModel
             property string name: "Favorite Places"
             filter: searchField.text
+            rootModel: main.favoriteModels["place"]
         }
     }
 

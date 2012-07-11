@@ -36,6 +36,7 @@ void SalComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.sal.components"));
     qmlRegisterType<FavoriteAppsModel>(uri, 0, 1, "FavoriteAppsModel");
+    qmlRegisterType<FavoritePlacesModel>(uri, 0, 1, "FavoritePlacesModel");
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
     qmlRegisterType<PowerModel>(uri, 0, 1, "PowerModel");

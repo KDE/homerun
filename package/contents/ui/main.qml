@@ -57,9 +57,8 @@ Item {
         id: favoriteAppsModel
     }
 
-    SalComponents.PlacesModel {
+    SalComponents.FavoritePlacesModel {
         id: favoritePlacesModel
-        property string favoritePrefix: "places"
     }
 
     Component {

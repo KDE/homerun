@@ -92,14 +92,16 @@ void PlacesModelTest::testSortOrder()
         dir.mkdir(name);
     }
 
+    FavoritePlacesModel rootModel;
+    rootModel.addPlace("Root", dir.absolutePath());
+
     PlacesModel model;
-    model.rootModel()->addPlace("Root", dir.absolutePath());
+    model.setRootModel(&rootModel);
     bool foundRoot = false;
     for (int row = 0; row < model.rowCount(); ++row) {
         QModelIndex index = model.index(row, 0);
         QString name = index.data(Qt::DisplayRole).toString();
         if (name == "Root") {
-            kWarning() << "trigger";
             model.trigger(row);
             foundRoot = true;
             break;

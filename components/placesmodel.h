@@ -75,6 +75,7 @@ class PlacesModel : public QSortFilterProxyModel
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
     Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(QObject *rootModel READ rootModel WRITE setRootModel NOTIFY rootModelChanged)
 
 public:
     PlacesModel(QObject *parent = 0);
@@ -89,10 +90,12 @@ public:
     void setFilter(const QString &filter);
 
     FavoritePlacesModel *rootModel() const;
+    void setRootModel(QObject *model);
 
 Q_SIGNALS:
     void countChanged();
     void filterChanged();
+    void rootModelChanged();
     void pathChanged(const QString &);
 
 private:
