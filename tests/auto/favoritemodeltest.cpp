@@ -59,11 +59,13 @@ void FavoriteModelTest::testLoad()
     QModelIndex index = model.index(0, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konqueror"));
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("konqueror"));
+    QCOMPARE(index.data(FavoriteModel::FavoriteIdRole).toString(), QString("app:kde4-konqbrowser.desktop"));
 
     // Test Dolphin row
     index = model.index(1, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Dolphin"));
     QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("system-file-manager"));
+    QCOMPARE(index.data(FavoriteModel::FavoriteIdRole).toString(), QString("app:kde4-dolphin.desktop"));
 }
 
 void FavoriteModelTest::testAdd()

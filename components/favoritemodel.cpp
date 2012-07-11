@@ -51,6 +51,7 @@ FavoriteModel::FavoriteModel(QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
     setConfig(KSharedConfig::openConfig("salrc"));
 }
@@ -193,6 +194,8 @@ QVariant FavoriteModel::data(const QModelIndex &index, int role) const
         return service->name();
     } else if (role == Qt::DecorationRole) {
         return KIcon(service->icon());
+    } else if (role == FavoriteIdRole) {
+        return QVariant("app:" + service->storageId());
     } else {
         kWarning() << "Unhandled role" << role;
         return QVariant();

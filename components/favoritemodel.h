@@ -45,6 +45,10 @@ public:
     FavoriteModel(QObject *parent = 0);
     ~FavoriteModel();
 
+    enum {
+        FavoriteIdRole = Qt::UserRole + 1
+    };
+
     int count() const;
     QString name() const;
     QString favoritePrefix() const;
