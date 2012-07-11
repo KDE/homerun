@@ -89,7 +89,11 @@ public:
     QString filter() const;
     void setFilter(const QString &filter);
 
-    FavoritePlacesModel *rootModel() const;
+    QAbstractItemModel *rootModel() const;
+    /**
+     * Defines the root model to use. model must be a QAbstractItemModel and
+     * provide a KFilePlacesModel::UrlRole returning a QUrl.
+     */
     void setRootModel(QObject *model);
 
 Q_SIGNALS:
@@ -99,7 +103,7 @@ Q_SIGNALS:
     void pathChanged(const QString &);
 
 private:
-    FavoritePlacesModel *m_rootModel;
+    QAbstractItemModel *m_rootModel;
     ProxyDirModel *m_proxyDirModel;
     KUrl m_rootUrl;
     QString m_rootName;

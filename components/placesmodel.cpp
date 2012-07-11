@@ -115,7 +115,7 @@ bool PlacesModel::trigger(int row)
     bool close = false;
     QModelIndex sourceIndex = mapToSource(index(row, 0));
     if (sourceModel() == m_rootModel) {
-        KUrl theUrl = m_rootModel->url(sourceIndex);
+        KUrl theUrl = m_rootModel->data(sourceIndex, KFilePlacesModel::UrlRole).value<QUrl>();
         switchToDirModel();
 
         m_rootUrl = theUrl;
@@ -221,7 +221,7 @@ void PlacesModel::openDirUrl(const KUrl &url)
     pathChanged(path());
 }
 
-FavoritePlacesModel *PlacesModel::rootModel() const
+QAbstractItemModel *PlacesModel::rootModel() const
 {
     return m_rootModel;
 }
@@ -229,7 +229,7 @@ FavoritePlacesModel *PlacesModel::rootModel() const
 void PlacesModel::setRootModel(QObject *obj)
 {
     if (obj) {
-        m_rootModel = qobject_cast<FavoritePlacesModel*>(obj);
+        m_rootModel = qobject_cast<QAbstractItemModel *>(obj);
         Q_ASSERT(m_rootModel);
         switchToRootModel();
     } else {
