@@ -22,11 +22,11 @@
 #include <QSortFilterProxyModel>
 
 #include <KDirSortFilterProxyModel>
+#include <KFilePlacesModel>
 #include <KUrl>
 
 class KDirLister;
 class KFileItem;
-class KFilePlacesModel;
 
 /**
  * Internal
@@ -42,7 +42,32 @@ public:
 };
 
 /**
- * Adapts KFilePlacesModel to make it SAL friendly
+ * Adapts KFilePlacesModel to make it usable as a SAL favorite model
+ */
+class FavoritePlacesModel : public KFilePlacesModel
+{
+    Q_OBJECT
+    Q_PROPERTY(QString favoritePrefix READ favoritePrefix CONSTANT)
+
+public:
+    enum {
+        FavoriteIdRole = Qt::UserRole + 1,
+    };
+
+    FavoritePlacesModel(QObject *parent = 0);
+
+    Q_INVOKABLE bool isFavorite(const QString &favoriteId) const;
+    Q_INVOKABLE void addFavorite(const QString &favoriteId);
+    Q_INVOKABLE void removeFavorite(const QString &favoriteId);
+
+    QString favoritePrefix() const;
+
+private:
+    QModelIndex indexForFavoriteId(const QString &favoriteId) const;
+};
+
+/**
+ * A model which can be used to navigate from favorite places
  */
 class PlacesModel : public QSortFilterProxyModel
 {
@@ -52,13 +77,8 @@ class PlacesModel : public QSortFilterProxyModel
     Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged)
 
 public:
-    enum {
-        FavoriteActionRole = Qt::UserRole,
-    };
-
     PlacesModel(QObject *parent = 0);
     Q_INVOKABLE bool trigger(int row);
-    Q_INVOKABLE void triggerFavoriteActionAt(int row);
 
     int count() const;
 
@@ -68,9 +88,7 @@ public:
     QString filter() const;
     void setFilter(const QString &filter);
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
-
-    void addPlace(const QString &text, const KUrl &url);
+    FavoritePlacesModel *rootModel() const;
 
 Q_SIGNALS:
     void countChanged();
@@ -78,13 +96,13 @@ Q_SIGNALS:
     void pathChanged(const QString &);
 
 private:
-    KFilePlacesModel *m_placesModel;
+    FavoritePlacesModel *m_rootModel;
     ProxyDirModel *m_proxyDirModel;
     KUrl m_rootUrl;
     QString m_rootName;
     QString m_filter;
 
-    void switchToPlacesModel();
+    void switchToRootModel();
     void switchToDirModel();
     void openDirUrl(const KUrl &url);
 };

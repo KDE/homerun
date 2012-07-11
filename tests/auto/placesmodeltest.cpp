@@ -93,7 +93,7 @@ void PlacesModelTest::testSortOrder()
     }
 
     PlacesModel model;
-    model.addPlace("Root", dir.absolutePath());
+    model.rootModel()->addPlace("Root", dir.absolutePath());
     bool foundRoot = false;
     for (int row = 0; row < model.rowCount(); ++row) {
         QModelIndex index = model.index(row, 0);
