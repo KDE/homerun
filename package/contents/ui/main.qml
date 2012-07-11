@@ -54,7 +54,7 @@ Item {
     }
 
     SalComponents.FavoriteModel {
-        id: favoriteModel
+        id: favoriteAppsModel
 
         function favoriteAction(obj) {
             return "remove";
@@ -62,6 +62,10 @@ Item {
         function triggerFavoriteAction(obj) {
             removeAt(obj.index);
         }
+    }
+
+    SalComponents.PlacesModel {
+        id: favoritePlacesModel
     }
 
     Component {
@@ -88,8 +92,12 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
+                    var favoriteModels = new Object();
+                    favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
+                    favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
+
                     // This should not be "var tab": we set the "tab" property of the TabButton
-                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModel": favoriteModel});
+                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModels": favoriteModels});
                     var lst = tabContentList;
                     if (lst.length == 0) {
                         tab.forceActiveFocus();

@@ -28,7 +28,7 @@ import "KeyboardUtils.js" as KeyboardUtils
 FocusScope {
     id: main
 
-    property QtObject favoriteModel
+    property variant favoriteModels
     property variant sources
 
     signal resultTriggered
@@ -95,7 +95,7 @@ FocusScope {
             property string name: "Favorite Applications"
             filterRegExp: searchField.text
 
-            sourceModel: main.favoriteModel
+            sourceModel: main.favoriteModels["app"]
 
             function favoriteAction(obj) {
                 return "remove";
@@ -133,11 +133,11 @@ FocusScope {
         id: multiResultsViewComponent
         Repeater {
             id: repeater
-            property QtObject favoriteModel
+            property variant favoriteModels
             delegate: ResultsView {
                 width: parent.width
                 model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
-                favoriteModel: main.favoriteModel
+                favoriteModels: repeater.favoriteModels
                 onIndexClicked: {
                     // Here "index" is the row number clicked inside the ResultsView
                     if (model.trigger(index)) {
@@ -248,7 +248,7 @@ FocusScope {
 
             // Create view
             var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
-            var view = component.createObject(resultsColumn, {"model": model, "favoriteModel": favoriteModel});
+            var view = component.createObject(resultsColumn, {"model": model, "favoriteModels": favoriteModels});
             views.push(view);
 
             lst.push(model);
