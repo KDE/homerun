@@ -55,17 +55,11 @@ Item {
 
     SalComponents.FavoriteModel {
         id: favoriteAppsModel
-
-        function favoriteAction(obj) {
-            return "remove";
-        }
-        function triggerFavoriteAction(obj) {
-            removeAt(obj.index);
-        }
     }
 
     SalComponents.PlacesModel {
         id: favoritePlacesModel
+        property string favoritePrefix: "places"
     }
 
     Component {

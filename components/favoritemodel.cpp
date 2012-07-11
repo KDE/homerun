@@ -35,6 +35,16 @@
 #include <Plasma/AbstractRunner>
 #include <Plasma/RunnerManager>
 
+
+static QString serviceIdFromFavoriteId(const QString &favoriteId)
+{
+    if (!favoriteId.startsWith("app:")) {
+        kWarning() << "Wrong favoriteId" << favoriteId;
+        return QString();
+    }
+    return favoriteId.mid(4);
+}
+
 FavoriteModel::FavoriteModel(QObject *parent)
 : QAbstractListModel(parent)
 {
@@ -80,8 +90,12 @@ void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
     countChanged();
 }
 
-void FavoriteModel::append(const QString &serviceId)
+void FavoriteModel::addFavorite(const QString &favoriteId)
 {
+    QString serviceId = serviceIdFromFavoriteId(favoriteId);
+    if (serviceId.isEmpty()) {
+        return;
+    }
     KService::Ptr service = KService::serviceByStorageId(serviceId);
     if (service.isNull()) {
         kWarning() << "Could not find a service for" << serviceId;
@@ -107,10 +121,11 @@ void FavoriteModel::append(const QString &serviceId)
     baseGroup.sync();
 }
 
-void FavoriteModel::removeAt(int row)
+void FavoriteModel::removeFavorite(const QString &favoriteId)
 {
-    if (row < 0 || row >= m_favoriteList.count()) {
-        kWarning() << "Invalid row" << row;
+    int row = rowForFavoriteId(favoriteId);
+    if (row == -1) {
+        kWarning() << "Could not find favorite" << favoriteId;
         return;
     }
     beginRemoveRows(QModelIndex(), row, row);
@@ -124,6 +139,27 @@ void FavoriteModel::removeAt(int row)
     baseGroup.sync();
 }
 
+bool FavoriteModel::isFavorite(const QString &favoriteId) const
+{
+    return rowForFavoriteId(favoriteId) != -1;
+}
+
+int FavoriteModel::rowForFavoriteId(const QString& favoriteId) const
+{
+    QString serviceId = serviceIdFromFavoriteId(favoriteId);
+    if (serviceId.isEmpty()) {
+        return -1;
+    }
+
+    for (int row = m_favoriteList.count() - 1; row >= 0; --row) {
+        const FavoriteInfo& info = m_favoriteList.at(row);
+        if (info.service->storageId() == serviceId) {
+            return row;
+        }
+    }
+    return -1;
+}
+
 int FavoriteModel::count() const
 {
     return m_favoriteList.count();
@@ -132,6 +168,11 @@ int FavoriteModel::count() const
 QString FavoriteModel::name() const
 {
     return i18n("Favorite Applications");
+}
+
+QString FavoriteModel::favoritePrefix() const
+{
+    return "app";
 }
 
 int FavoriteModel::rowCount(const QModelIndex &index) const

@@ -39,20 +39,24 @@ class FavoriteModel : public QAbstractListModel
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
+    Q_PROPERTY(QString favoritePrefix READ favoritePrefix CONSTANT)
+
 public:
     FavoriteModel(QObject *parent = 0);
     ~FavoriteModel();
 
     int count() const;
     QString name() const;
+    QString favoritePrefix() const;
 
     void setConfig(const KSharedConfig::Ptr &);
 
     int rowCount(const QModelIndex & = QModelIndex()) const;
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const;
 
-    Q_INVOKABLE void append(const QString &serviceId);
-    Q_INVOKABLE void removeAt(int row);
+    Q_INVOKABLE bool isFavorite(const QString &favoriteId) const;
+    Q_INVOKABLE void addFavorite(const QString &favoriteId);
+    Q_INVOKABLE void removeFavorite(const QString &favoriteId);
 
     Q_INVOKABLE bool trigger(int row);
 
@@ -62,6 +66,8 @@ Q_SIGNALS:
 private:
     KSharedConfig::Ptr m_config;
     QList<FavoriteInfo> m_favoriteList;
+
+    int rowForFavoriteId(const QString &favoriteId) const;
 };
 
 #endif // FAVORITEMODEL_H
