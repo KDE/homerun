@@ -62,6 +62,8 @@ public:
 
     QString favoritePrefix() const;
 
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
+
 private:
     QModelIndex indexForFavoriteId(const QString &favoriteId) const;
 };

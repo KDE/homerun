@@ -100,6 +100,18 @@ QModelIndex FavoritePlacesModel::indexForFavoriteId(const QString &favoriteId) c
     return QModelIndex();
 }
 
+QVariant FavoritePlacesModel::data(const QModelIndex &index, int role) const
+{
+    if (role != FavoriteIdRole) {
+        return KFilePlacesModel::data(index, role);
+    }
+
+    if (index.row() < 0 || index.row() >= rowCount()) {
+        return QVariant();
+    }
+    return QVariant("place:" + url(index).url());
+}
+
 //- PlacesModel --------------------------------------------------------
 PlacesModel::PlacesModel(QObject *parent)
 : QSortFilterProxyModel(parent)
