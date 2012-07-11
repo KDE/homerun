@@ -182,6 +182,7 @@ void PlacesModel::switchToRootModel()
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(FavoritePlacesModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 }
 
@@ -193,6 +194,7 @@ void PlacesModel::switchToDirModel()
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(ProxyDirModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 }
 
