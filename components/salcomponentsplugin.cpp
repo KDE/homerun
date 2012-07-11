@@ -24,7 +24,7 @@
 
 #include <Plasma/QueryMatch>
 
-#include "favoritemodel.h"
+#include "favoriteappsmodel.h"
 #include "pagemodel.h"
 #include "placesmodel.h"
 #include "powermodel.h"
@@ -35,7 +35,7 @@
 void SalComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.sal.components"));
-    qmlRegisterType<FavoriteModel>(uri, 0, 1, "FavoriteModel");
+    qmlRegisterType<FavoriteAppsModel>(uri, 0, 1, "FavoriteAppsModel");
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
     qmlRegisterType<PowerModel>(uri, 0, 1, "PowerModel");

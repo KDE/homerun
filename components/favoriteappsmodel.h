@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef FAVORITEMODEL_H
-#define FAVORITEMODEL_H
+#ifndef FAVORITEAPPSMODEL_H
+#define FAVORITEAPPSMODEL_H
 
 #include <QAbstractListModel>
 
@@ -33,7 +33,7 @@ struct FavoriteInfo
     KService::Ptr service;
 };
 
-class FavoriteModel : public QAbstractListModel
+class FavoriteAppsModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
@@ -42,8 +42,8 @@ class FavoriteModel : public QAbstractListModel
     Q_PROPERTY(QString favoritePrefix READ favoritePrefix CONSTANT)
 
 public:
-    FavoriteModel(QObject *parent = 0);
-    ~FavoriteModel();
+    FavoriteAppsModel(QObject *parent = 0);
+    ~FavoriteAppsModel();
 
     enum {
         FavoriteIdRole = Qt::UserRole + 1
@@ -74,4 +74,4 @@ private:
     int rowForFavoriteId(const QString &favoriteId) const;
 };
 
-#endif // FAVORITEMODEL_H
+#endif // FAVORITEAPPSMODEL_H

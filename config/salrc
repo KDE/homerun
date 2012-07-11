@@ -10,7 +10,7 @@ serviceId=dolphin
 [Page0]
 name=Dashboard
 icon=kde
-source-1=FavoriteModel
+source-1=FavoriteAppsModel
 source0=PlacesModel
 source1=RunnerModel:activityrunner,audioplayercontrol,bookmarks,calculator,contacts,converter,datetime,events,installer,kill,kopete,locations,nepomuksearch,places,plasma-desktop,powerdevil,services,sessions,shell,solid,spellchecker,webshortcuts,windowedwidgets,windows,techbase,wikipedia,wikitravel,bing,youtube
 

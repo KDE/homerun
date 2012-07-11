@@ -90,7 +90,7 @@ FocusScope {
     }
 
     Component {
-        id: favoriteModelComponent
+        id: favoriteAppsModelComponent
         SalFixes.SortFilterModel {
             property string name: "Favorite Applications"
             filterRegExp: searchField.text
@@ -227,8 +227,8 @@ FocusScope {
                 model = serviceModelComponent.createObject(main);
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(main);
-            } else if (modelName == "FavoriteModel") {
-                model = favoriteModelComponent.createObject(main);
+            } else if (modelName == "FavoriteAppsModel") {
+                model = favoriteAppsModelComponent.createObject(main);
             } else if (modelName == "PowerModel") {
                 model = powerModelComponent.createObject(main);
             } else if (modelName == "RunnerModel") {

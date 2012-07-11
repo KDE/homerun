@@ -20,7 +20,7 @@
 */
 
 // Own
-#include "favoritemodel.h"
+#include "favoriteappsmodel.h"
 
 // Qt
 
@@ -45,7 +45,7 @@ static QString serviceIdFromFavoriteId(const QString &favoriteId)
     return favoriteId.mid(4);
 }
 
-FavoriteModel::FavoriteModel(QObject *parent)
+FavoriteAppsModel::FavoriteAppsModel(QObject *parent)
 : QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
@@ -56,11 +56,11 @@ FavoriteModel::FavoriteModel(QObject *parent)
     setConfig(KSharedConfig::openConfig("salrc"));
 }
 
-FavoriteModel::~FavoriteModel()
+FavoriteAppsModel::~FavoriteAppsModel()
 {
 }
 
-void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
+void FavoriteAppsModel::setConfig(const KSharedConfig::Ptr &ptr)
 {
     m_config = ptr;
 
@@ -91,7 +91,7 @@ void FavoriteModel::setConfig(const KSharedConfig::Ptr &ptr)
     countChanged();
 }
 
-void FavoriteModel::addFavorite(const QString &favoriteId)
+void FavoriteAppsModel::addFavorite(const QString &favoriteId)
 {
     QString serviceId = serviceIdFromFavoriteId(favoriteId);
     if (serviceId.isEmpty()) {
@@ -122,7 +122,7 @@ void FavoriteModel::addFavorite(const QString &favoriteId)
     baseGroup.sync();
 }
 
-void FavoriteModel::removeFavorite(const QString &favoriteId)
+void FavoriteAppsModel::removeFavorite(const QString &favoriteId)
 {
     int row = rowForFavoriteId(favoriteId);
     if (row == -1) {
@@ -140,12 +140,12 @@ void FavoriteModel::removeFavorite(const QString &favoriteId)
     baseGroup.sync();
 }
 
-bool FavoriteModel::isFavorite(const QString &favoriteId) const
+bool FavoriteAppsModel::isFavorite(const QString &favoriteId) const
 {
     return rowForFavoriteId(favoriteId) != -1;
 }
 
-int FavoriteModel::rowForFavoriteId(const QString& favoriteId) const
+int FavoriteAppsModel::rowForFavoriteId(const QString& favoriteId) const
 {
     QString serviceId = serviceIdFromFavoriteId(favoriteId);
     if (serviceId.isEmpty()) {
@@ -161,22 +161,22 @@ int FavoriteModel::rowForFavoriteId(const QString& favoriteId) const
     return -1;
 }
 
-int FavoriteModel::count() const
+int FavoriteAppsModel::count() const
 {
     return m_favoriteList.count();
 }
 
-QString FavoriteModel::name() const
+QString FavoriteAppsModel::name() const
 {
     return i18n("Favorite Applications");
 }
 
-QString FavoriteModel::favoritePrefix() const
+QString FavoriteAppsModel::favoritePrefix() const
 {
     return "app";
 }
 
-int FavoriteModel::rowCount(const QModelIndex &index) const
+int FavoriteAppsModel::rowCount(const QModelIndex &index) const
 {
     if (index.isValid()) {
         return 0;
@@ -184,7 +184,7 @@ int FavoriteModel::rowCount(const QModelIndex &index) const
     return m_favoriteList.count();
 }
 
-QVariant FavoriteModel::data(const QModelIndex &index, int role) const
+QVariant FavoriteAppsModel::data(const QModelIndex &index, int role) const
 {
     KService::Ptr service = m_favoriteList.value(index.row()).service;
     if (service.isNull()) {
@@ -202,7 +202,7 @@ QVariant FavoriteModel::data(const QModelIndex &index, int role) const
     }
 }
 
-bool FavoriteModel::trigger(int row)
+bool FavoriteAppsModel::trigger(int row)
 {
     KService::Ptr service = m_favoriteList.value(row).service;
     if (service.isNull()) {
@@ -212,4 +212,4 @@ bool FavoriteModel::trigger(int row)
     return KRun::run(*service, KUrl::List(), 0);
 }
 
-#include "favoritemodel.moc"
+#include "favoriteappsmodel.moc"

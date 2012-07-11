@@ -16,12 +16,12 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef FAVORITEMODELTEST_H
-#define FAVORITEMODELTEST_H
+#ifndef FAVORITEAPPSMODELTEST_H
+#define FAVORITEAPPSMODELTEST_H
 
 #include <QObject>
 
-class FavoriteModelTest : public QObject
+class FavoriteAppsModelTest : public QObject
 {
     Q_OBJECT
 
@@ -32,4 +32,4 @@ private Q_SLOTS:
     void testRemove();
 };
 
-#endif /* FAVORITEMODELTEST_H */
+#endif /* FAVORITEAPPSMODELTEST_H */

@@ -53,7 +53,7 @@ Item {
         id: pageModel
     }
 
-    SalComponents.FavoriteModel {
+    SalComponents.FavoriteAppsModel {
         id: favoriteAppsModel
     }
 

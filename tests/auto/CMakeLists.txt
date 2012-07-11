@@ -28,7 +28,7 @@ include_directories(
 sal_add_unit_test(pagemodeltest ${salcomponents_SOURCE_DIR}/pagemodel.cpp)
 
 # X11-dependent tests
-sal_add_unit_test(favoritemodeltest_x11 ${salcomponents_SOURCE_DIR}/favoritemodel.cpp)
+sal_add_unit_test(favoriteappsmodeltest_x11 ${salcomponents_SOURCE_DIR}/favoriteappsmodel.cpp)
 sal_add_unit_test(placesmodeltest_x11 ${salcomponents_SOURCE_DIR}/placesmodel.cpp)
 sal_add_unit_test(runnerinfoprovidertest_x11 ${salcomponents_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
 
