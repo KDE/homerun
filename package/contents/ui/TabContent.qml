@@ -42,17 +42,6 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
-            function favoriteAction(obj) {
-                return obj.entryPath === undefined ? "" : "add";
-            }
-
-            function triggerFavoriteAction(obj) {
-                if (obj.entryPath === undefined) {
-                    return;
-                }
-                var serviceId = obj.entryPath.replace(/.*\//, ""); // Keep only filename
-                favoriteModel.append(serviceId);
-            }
         }
     }
 
@@ -64,15 +53,6 @@ FocusScope {
 
             sourceModel: SalComponents.PowerModel {
                 id: realPowerModel
-            }
-
-            function favoriteAction(obj) {
-                return "";
-            }
-
-            function triggerFavoriteAction(obj) {
-                var sourceRow = mapRowToSource(obj.index);
-                sourceModel.removeAt(sourceRow);
             }
 
             function trigger(row) {
@@ -97,15 +77,6 @@ FocusScope {
 
             sourceModel: main.favoriteModels["app"]
 
-            function favoriteAction(obj) {
-                return "remove";
-            }
-
-            function triggerFavoriteAction(obj) {
-                var sourceRow = mapRowToSource(obj.index);
-                sourceModel.removeAt(sourceRow);
-            }
-
             function trigger(row) {
                 return sourceModel.trigger(mapRowToSource(row));
             }
@@ -118,14 +89,6 @@ FocusScope {
             id: placesFilterModel
             property string name: "Favorite Places"
             filter: searchField.text
-
-            function favoriteAction(obj) {
-                return obj.favoriteAction;
-            }
-
-            function triggerFavoriteAction(obj) {
-                triggerFavoriteActionAt(obj.index);
-            }
         }
     }
 
