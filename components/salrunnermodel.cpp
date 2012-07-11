@@ -78,8 +78,12 @@ QVariant SalRunnerSubModel::data(const QModelIndex &index, int role) const
     } else if (role == Qt::DecorationRole) {
         return match.icon();
     } else if (role == FavoriteIdRole) {
-        if (match.runner()->id() == "services") {
+        QString runnerId = match.runner()->id();
+        if (runnerId == "services") {
             return QVariant("app:" + match.data().toString());
+        } else if (runnerId == "locations") {
+            KUrl url(match.data().toString());
+            return QVariant("place:" + url.url());
         } else {
             return QString();
         }
