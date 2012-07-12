@@ -1,3 +1,6 @@
+[PackageManagement]
+categoryInstaller=muon-discover-category
+
 [favorites][favorite-1]
 serviceId=konqueror
 

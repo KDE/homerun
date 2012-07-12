@@ -36,13 +36,18 @@ FocusScope {
     // Internal
     property variant models: []
 
+    SalComponents.SharedConfig {
+        id: config
+        name: "salrc"
+    }
+
     // Models
     Component {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
-            installer: "muon-discover-category"
+            installer: config.readEntry("PackageManagement", "categoryInstaller")
         }
     }
 
