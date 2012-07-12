@@ -31,20 +31,62 @@
 
 class QTimer;
 
-struct Node
+class SalServiceModel;
+
+class AbstractNode
 {
-    KIcon icon;
-    QString name;
-    QString entryPath;
-    KService::Ptr service;
+public:
+    virtual ~AbstractNode();
 
-    bool operator<(const Node &other) const;
+    virtual bool trigger() = 0;
+    virtual QString favoriteId() const { return QString(); }
 
-    static Node fromService(KService::Ptr);
-    static Node fromServiceGroup(KServiceGroup::Ptr);
+    KIcon icon() const { return m_icon; }
+    QString name() const { return m_name; }
+
+    static bool lessThan(AbstractNode *n1, AbstractNode *n2);
+
+protected:
+    QString m_sortKey;
+    KIcon m_icon;
+    QString m_name;
+};
+
+class GroupNode : public AbstractNode
+{
+public:
+    GroupNode(KServiceGroup::Ptr group, SalServiceModel *model);
+
+    bool trigger(); // reimp
 
 private:
-    QString sortKey;
+    SalServiceModel *m_model;
+    QString m_entryPath;
+};
+
+class AppNode : public AbstractNode
+{
+public:
+    AppNode(KService::Ptr service);
+
+    bool trigger(); // reimp;
+    QString favoriteId() const; // reimp
+
+private:
+    KService::Ptr m_service;
+};
+
+class InstallerNode : public AbstractNode
+{
+public:
+    InstallerNode(KServiceGroup::Ptr group, KService::Ptr installerService);
+
+    bool trigger(); // reimp
+
+private:
+    SalServiceModel *m_model;
+    KServiceGroup::Ptr m_group;
+    KService::Ptr m_service;
 };
 
 class SalServiceModel : public QAbstractListModel
@@ -52,14 +94,15 @@ class SalServiceModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString path WRITE setPath READ path NOTIFY pathChanged)
+    Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
 
 public:
     enum Roles {
-        EntryPathRole = Qt::UserRole + 1,
-        FavoriteIdRole
+        FavoriteIdRole = Qt::UserRole + 1,
     };
 
-    SalServiceModel (QObject *parent = 0);
+    SalServiceModel(QObject *parent = 0);
+    ~SalServiceModel();
 
     int rowCount(const QModelIndex&) const;
     int count() const;
@@ -68,19 +111,24 @@ public:
     void setPath(const QString& path);
     QString path() const;
 
+    void setInstaller(const QString &installer);
+    QString installer() const;
+
     Q_INVOKABLE bool trigger(int row);
 
 Q_SIGNALS:
     void countChanged();
     void pathChanged(const QString&);
+    void installerChanged(const QString &);
 
 private:
     void loadRootEntries();
     void loadServiceGroup(KServiceGroup::Ptr group);
 
 private:
-    QList<Node> m_nodeList;
+    QList<AbstractNode *> m_nodeList;
     QString m_path;
+    QString m_installer;
 };
 
 #endif
