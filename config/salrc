@@ -10,32 +10,26 @@ serviceId=dolphin
 [Page0]
 name=Dashboard
 icon=kde
-source-1=FavoriteAppsModel
-source0=PlacesModel
-source1=RunnerModel:activityrunner,audioplayercontrol,bookmarks,calculator,contacts,converter,datetime,events,installer,kill,kopete,locations,nepomuksearch,places,plasma-desktop,powerdevil,services,sessions,shell,solid,spellchecker,webshortcuts,windowedwidgets,windows,techbase,wikipedia,wikitravel,bing,youtube
+source0=FavoriteAppsModel
+source1=PlacesModel
+source2=RunnerModel
 
 [Page1]
 name=Applications
 icon=applications-other
 source0=ServiceModel
-source1=RunnerModel:services
-source2=RunnerModel:shell
-source3=RunnerModel:windows
+source1=RunnerModel:services,shell,windows
 
 [Page2]
 name=Documents
 icon=folder-documents
 source0=PlacesModel
-source1=RunnerModel:bookmarks
-source2=RunnerModel:youtube
-source3=RunnerModel:bing
-source4=RunnerModel:nepomuksearch
+source1=RunnerModel:bookmarks,nepomuksearch,youtube,bing
 
 [Page3]
 name=Contacts
 icon=contacts
-source0=RunnerModel:contacts
-source1=RunnerModel:kopete
+source0=RunnerModel:contacts,kopete
 
 [Page4]
 name=Power
