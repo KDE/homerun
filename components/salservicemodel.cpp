@@ -25,8 +25,9 @@
 #include <QTimer>
 
 #include <KDebug>
-#include <KService>
+#include <kmacroexpander.h>
 #include <KRun>
+#include <KService>
 #include <KServiceTypeTrader>
 #include <KSycocaEntry>
 
@@ -84,6 +85,28 @@ bool AppNode::trigger()
 QString AppNode::favoriteId() const
 {
     return QString("app:") + m_service->storageId();
+}
+
+//- InstallerNode --------------------------------------------------------------
+InstallerNode::InstallerNode(KServiceGroup::Ptr group, SalServiceModel *model)
+: m_model(model)
+, m_group(group)
+{
+    m_icon = KIcon("muon"); // FIXME: Do not hardcode
+    m_name = i18n("Install More");
+}
+
+bool InstallerNode::trigger()
+{
+    QHash<QString, QString> map;
+    QString category = m_group->entryPath();
+    if (category.endsWith('/')) {
+        category.truncate(category.length() - 1);
+    }
+    map.insert("category", category);
+
+    QString command = KMacroExpander::expandMacros(m_model->m_installerCommand, map);
+    return KRun::run(command, KUrl::List(), 0);
 }
 
 //- SalServiceModel ------------------------------------------------------------
@@ -163,6 +186,20 @@ QString SalServiceModel::path() const
     return m_path;
 }
 
+void SalServiceModel::setInstallerCommand(const QString& command)
+{
+    if (command == m_installerCommand) {
+        return;
+    }
+    m_installerCommand = command;
+    installerCommandChanged(command);
+}
+
+QString SalServiceModel::installerCommand() const
+{
+    return m_installerCommand;
+}
+
 void SalServiceModel::loadRootEntries()
 {
     KServiceGroup::Ptr group = KServiceGroup::root();
@@ -214,6 +251,10 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
         }
     }
     qSort(m_nodeList.begin(), m_nodeList.end(), AbstractNode::lessThan);
+
+    if (!m_installerCommand.isEmpty()) {
+        m_nodeList << new InstallerNode(group, this);
+    }
 }
 
 #include "salservicemodel.moc"
