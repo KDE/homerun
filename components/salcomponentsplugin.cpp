@@ -24,6 +24,7 @@
 
 #include <Plasma/QueryMatch>
 
+#include "sharedconfig.h"
 #include "favoriteappsmodel.h"
 #include "pagemodel.h"
 #include "placesmodel.h"
@@ -41,6 +42,7 @@ void SalComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
     qmlRegisterType<PowerModel>(uri, 0, 1, "PowerModel");
     qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
+    qmlRegisterType<SharedConfig>(uri, 0, 1, "SharedConfig");
     qmlRegisterType<SalRunnerModel>(uri, 0, 1, "SalRunnerModel");
     qmlRegisterType<SalServiceModel>(uri, 0, 1, "SalServiceModel");
     qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
