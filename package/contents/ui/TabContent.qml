@@ -42,7 +42,7 @@ FocusScope {
         SalComponents.SalServiceModel {
             path: "/"
             property string name: "Applications"
-            installerCommand: "muon-discover --category %category"
+            installer: "muon-discover-category"
         }
     }
 

@@ -88,12 +88,12 @@ QString AppNode::favoriteId() const
 }
 
 //- InstallerNode --------------------------------------------------------------
-InstallerNode::InstallerNode(KServiceGroup::Ptr group, SalServiceModel *model)
-: m_model(model)
-, m_group(group)
+InstallerNode::InstallerNode(KServiceGroup::Ptr group, KService::Ptr installerService)
+: m_group(group)
+, m_service(installerService)
 {
-    m_icon = KIcon("muon"); // FIXME: Do not hardcode
-    m_name = i18n("Install More");
+    m_icon = KIcon(m_service->icon());
+    m_name = m_service->name();
 }
 
 bool InstallerNode::trigger()
@@ -105,8 +105,8 @@ bool InstallerNode::trigger()
     }
     map.insert("category", category);
 
-    QString command = KMacroExpander::expandMacros(m_model->m_installerCommand, map);
-    return KRun::run(command, KUrl::List(), 0);
+    QString command = KMacroExpander::expandMacros(m_service->exec(), map, '@');
+    return KRun::run(command, KUrl::List(), 0, m_service->name(), m_service->icon());
 }
 
 //- SalServiceModel ------------------------------------------------------------
@@ -186,18 +186,18 @@ QString SalServiceModel::path() const
     return m_path;
 }
 
-void SalServiceModel::setInstallerCommand(const QString& command)
+void SalServiceModel::setInstaller(const QString& installer)
 {
-    if (command == m_installerCommand) {
+    if (installer == m_installer) {
         return;
     }
-    m_installerCommand = command;
-    installerCommandChanged(command);
+    m_installer = installer;
+    installerChanged(installer);
 }
 
-QString SalServiceModel::installerCommand() const
+QString SalServiceModel::installer() const
 {
-    return m_installerCommand;
+    return m_installer;
 }
 
 void SalServiceModel::loadRootEntries()
@@ -252,8 +252,13 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
     }
     qSort(m_nodeList.begin(), m_nodeList.end(), AbstractNode::lessThan);
 
-    if (!m_installerCommand.isEmpty()) {
-        m_nodeList << new InstallerNode(group, this);
+    if (!m_installer.isEmpty()) {
+        KService::Ptr service = KService::serviceByDesktopName(m_installer);
+        if (service) {
+            m_nodeList << new InstallerNode(group, service);
+        } else {
+            kWarning() << "Could not find service for" << m_installer;
+        }
     }
 }
 

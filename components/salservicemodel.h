@@ -79,13 +79,14 @@ private:
 class InstallerNode : public AbstractNode
 {
 public:
-    InstallerNode(KServiceGroup::Ptr group, SalServiceModel *model);
+    InstallerNode(KServiceGroup::Ptr group, KService::Ptr installerService);
 
     bool trigger(); // reimp
 
 private:
     SalServiceModel *m_model;
     KServiceGroup::Ptr m_group;
+    KService::Ptr m_service;
 };
 
 class SalServiceModel : public QAbstractListModel
@@ -93,7 +94,7 @@ class SalServiceModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString path WRITE setPath READ path NOTIFY pathChanged)
-    Q_PROPERTY(QString installerCommand READ installerCommand WRITE setInstallerCommand NOTIFY installerCommandChanged)
+    Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
 
 public:
     enum Roles {
@@ -110,15 +111,15 @@ public:
     void setPath(const QString& path);
     QString path() const;
 
-    void setInstallerCommand(const QString &command);
-    QString installerCommand() const;
+    void setInstaller(const QString &installer);
+    QString installer() const;
 
     Q_INVOKABLE bool trigger(int row);
 
 Q_SIGNALS:
     void countChanged();
     void pathChanged(const QString&);
-    void installerCommandChanged(const QString &);
+    void installerChanged(const QString &);
 
 private:
     void loadRootEntries();
@@ -127,9 +128,7 @@ private:
 private:
     QList<AbstractNode *> m_nodeList;
     QString m_path;
-    QString m_installerCommand;
-
-    friend class InstallerNode;
+    QString m_installer;
 };
 
 #endif
