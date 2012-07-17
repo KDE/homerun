@@ -19,4 +19,6 @@ target_link_libraries(salfixesplugin
         )
 
 install(TARGETS salfixesplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/fixes)
-install(FILES qmldir DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/fixes)
+install(FILES qmldir
+    Label.qml
+    DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/fixes)

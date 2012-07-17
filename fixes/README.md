@@ -1,6 +1,7 @@
 # Intro
 
-This dir contains patched copies of classes provided by other projects.
+This dir contains patched or backported copies of classes provided by other
+projects.
 
 Those copies are intended to be temporary and should be removed when fixes are
 upstreamed and available on all machines used to test SAL. If a fix cannot be
@@ -29,3 +30,7 @@ Applied in 4.9
 ### Fix behavior of "runners" property
 https://git.reviewboard.kde.org/r/105024/
 Applied in 4.9
+
+## Label.qml (kde-runtime)
+A copy of the 4.9 version. The 4.8 version imports QtQuick 1.0, but we need
+QtQuick 1.1 to be able to use properties like "truncated" or "maximumLineCount".

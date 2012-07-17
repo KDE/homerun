@@ -21,6 +21,8 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
+import org.kde.sal.fixes 0.1 as SalFixes
+
 Item {
     id: main
 
@@ -95,7 +97,7 @@ Item {
         height: iconWidth
     }
 
-    PlasmaComponents.Label {
+    SalFixes.Label {
         id: resultLabel
 
         anchors {
