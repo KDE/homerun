@@ -112,7 +112,9 @@ Item {
         smooth: true
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignHCenter
-//            wrapMode: Text.WordWrap
+        verticalAlignment: Text.AlignTop
+        wrapMode: Text.Wrap
+        maximumLineCount: 2
     }
 
     QtExtra.QIconItem {
