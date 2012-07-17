@@ -136,7 +136,7 @@ Item {
         }
 
         /**
-         * Return a list of all childrens which are actually tabs
+         * Return a list of all children which are actually tabs
          */
         function tabList() {
             var lst = new Array();
