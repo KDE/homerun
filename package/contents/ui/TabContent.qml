@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import Qt 4.7
+import QtQuick 1.1
 import org.kde.sal.components 0.1 as SalComponents
 import org.kde.sal.fixes 0.1 as SalFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
