@@ -179,18 +179,16 @@ FocusScope {
 
     // Scripting
     Component.onCompleted: {
+        models = createModels();
         var views = createResultsViews();
         var widgets = [searchField].concat(views).concat(searchField);
         KeyboardUtils.setTabOrder(widgets);
     }
 
-    function createResultsViews() {
-        var idx;
+    function createModels() {
         var lst = new Array();
-        var views = new Array();
-        for (idx = 0; idx < sources.length; ++idx) {
-            // Create models
-            var tokens = sources[idx].split(":");
+        sources.forEach(function(source) {
+            var tokens = source.split(":");
             var modelName = tokens[0];
             var model;
             if (modelName == "ServiceModel") {
@@ -205,7 +203,7 @@ FocusScope {
                 model = runnerModelComponent.createObject(main);
             } else {
                 console.log("Error: unknown model type: " + modelName);
-                continue;
+                return;
             }
 
             if (tokens.length == 2) {
@@ -215,17 +213,16 @@ FocusScope {
                     console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
                 }
             }
-
-            // Create view
-            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
-            var view = component.createObject(resultsColumn, {"model": model, "favoriteModels": favoriteModels});
-            views.push(view);
-
             lst.push(model);
-        }
-        models = lst;
+        });
+        return lst;
+    }
 
-        return views;
+    function createResultsViews() {
+        return models.map(function(model) {
+            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
+            return component.createObject(resultsColumn, {"model": model, "favoriteModels": favoriteModels});
+        });
     }
 
     function reset() {
