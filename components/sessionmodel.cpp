@@ -42,6 +42,8 @@ SessionModel::SessionModel(QObject *parent)
     roles.insert(Qt::DecorationRole, "icon");
     setRoleNames(roles);
 
+    //FIXME: instead of just hiding these things..it'd be awesome if we could grey them out and/or provide a reason why they're not there.
+    //otherwise the user is hunting for the power buttons and for some reason it isn't where it should be.
     const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
     if (canLogout) {
         SessionAction logout;
@@ -59,11 +61,13 @@ SessionModel::SessionModel(QObject *parent)
         m_sessionList.append(switchUser);
     }
 
-    SessionAction lock;
-    lock.name = i18nc("an action", "Lock");
-    lock.type = Lock;
-    lock.iconName = "system-lock-screen";
-    m_sessionList.append(lock);
+    if (KAuthorized::authorizeKAction("lock_screen")) {
+        SessionAction lock;
+        lock.name = i18nc("an action", "Lock");
+        lock.type = Lock;
+        lock.iconName = "system-lock-screen";
+        m_sessionList.append(lock);
+    }
 
     emit countChanged();
 }
