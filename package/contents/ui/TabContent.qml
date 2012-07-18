@@ -25,16 +25,27 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 
 import "KeyboardUtils.js" as KeyboardUtils
 
-FocusScope {
+Item {
     id: main
 
     property variant favoriteModels
     property variant sources
 
+    property bool searchable: searchModels.length > 0
+    property string searchCriteria
+
     signal resultTriggered
+    signal updateTabOrderRequested
 
     // Internal
-    property variant models: []
+    property variant browseModels: []
+    property variant searchModels: []
+    property Item page
+
+    property bool isSearching: searchCriteria.length == 0
+    onIsSearchingChanged: {
+        createPage(isSearching ? browseModels : searchModels);
+    }
 
     SalComponents.SharedConfig {
         id: config
@@ -53,17 +64,8 @@ FocusScope {
 
     Component {
         id: powerModelComponent
-        SalFixes.SortFilterModel {
+        SalComponents.PowerModel {
             property string name: "Power"
-            filterRegExp: searchField.text
-
-            sourceModel: SalComponents.PowerModel {
-                id: realPowerModel
-            }
-
-            function trigger(row) {
-                return sourceModel.trigger(mapRowToSource(row));
-            }
         }
     }
 
@@ -71,34 +73,19 @@ FocusScope {
     Component {
         id: runnerModelComponent
         SalComponents.SalRunnerModel {
-            query: searchField.text
-        }
-    }
-
-    Component {
-        id: favoriteAppsModelComponent
-        SalFixes.SortFilterModel {
-            property string name: "Favorite Applications"
-            filterRegExp: searchField.text
-
-            sourceModel: main.favoriteModels["app"]
-
-            function trigger(row) {
-                return sourceModel.trigger(mapRowToSource(row));
-            }
+            query: searchCriteria
         }
     }
 
     Component {
         id: placesModelComponent
         SalComponents.PlacesModel {
-            id: placesFilterModel
             property string name: "Favorite Places"
-            filter: searchField.text
             rootModel: main.favoriteModels["place"]
         }
     }
 
+    // UI components
     Component {
         id: multiResultsViewComponent
         Repeater {
@@ -115,10 +102,12 @@ FocusScope {
                     }
                 }
             }
+
+            onItemAdded: updateTabOrderRequested()
+            onItemRemoved: updateTabOrderRequested()
         }
     }
 
-    // UI
     Component {
         id: resultsViewComponent
         ResultsView {
@@ -133,64 +122,53 @@ FocusScope {
         }
     }
 
-    PlasmaComponents.TextField {
-        id: searchField
+    Component {
+        id: pageComponent
 
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-        }
+        Item {
+            property alias viewContainer: column
+            anchors.fill: parent
 
-        focus: true
-        clearButtonShown: true
-    }
+            Flickable {
+                id: flickable
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                    left: parent.left
+                    right: scrollBar.left
+                }
+                contentWidth: width
+                contentHeight: column.height
+                clip: true
+                Column {
+                    id: column
+                    width: parent.width
+                }
+            }
 
-    Flickable {
-        id: resultsFlickable
-        anchors {
-            top: searchField.bottom
-            topMargin: 12
-            bottom: parent.bottom
-            left: parent.left
-            right: scrollBar.left
-        }
-        contentWidth: width
-        contentHeight: resultsColumn.height
-        clip: true
-        SalComponents.SalRunnerModel {
-            id: salRunnerModel
-        }
-        Column {
-            id: resultsColumn
-            width: parent.width
-        }
-    }
-
-    PlasmaComponents.ScrollBar {
-        id: scrollBar
-        flickableItem: resultsFlickable
-        anchors {
-            right: parent.right
-            top: searchField.bottom
-            bottom: parent.bottom
+            PlasmaComponents.ScrollBar {
+                id: scrollBar
+                flickableItem: flickable
+                anchors {
+                    right: parent.right
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+            }
         }
     }
 
     // Scripting
     Component.onCompleted: {
-        var views = createResultsViews();
-        var widgets = [searchField].concat(views).concat(searchField);
-        KeyboardUtils.setTabOrder(widgets);
+        createModels();
+        createPage(browseModels);
     }
 
-    function createResultsViews() {
-        var idx;
-        var lst = new Array();
-        var views = new Array();
-        for (idx = 0; idx < sources.length; ++idx) {
-            // Create models
-            var tokens = sources[idx].split(":");
+    function createModels() {
+        var searchLst = new Array();
+        var browseLst = new Array();
+        sources.forEach(function(source) {
+            var tokens = source.split(":");
             var modelName = tokens[0];
             var model;
             if (modelName == "ServiceModel") {
@@ -198,15 +176,17 @@ FocusScope {
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(main);
             } else if (modelName == "FavoriteAppsModel") {
-                model = favoriteAppsModelComponent.createObject(main);
+                model = main.favoriteModels["app"];
             } else if (modelName == "PowerModel") {
                 model = powerModelComponent.createObject(main);
             } else if (modelName == "RunnerModel") {
                 model = runnerModelComponent.createObject(main);
             } else {
                 console.log("Error: unknown model type: " + modelName);
-                continue;
+                return;
             }
+            var isSearchModel = modelName == "RunnerModel"; // FIXME
+            model.objectName = source;
 
             if (tokens.length == 2) {
                 if ("arguments" in model) {
@@ -215,22 +195,34 @@ FocusScope {
                     console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
                 }
             }
+            if (isSearchModel) {
+                searchLst.push(model);
+            } else {
+                browseLst.push(model);
+            }
+        });
+        // We can't mutate arrays which are defined outside of a JS function,
+        // so we replace them instead
+        searchModels = searchLst;
+        browseModels = browseLst;
+    }
 
-            // Create view
-            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
-            var view = component.createObject(resultsColumn, {"model": model, "favoriteModels": favoriteModels});
-            views.push(view);
-
-            lst.push(model);
+    function createPage(models) {
+        if (page) {
+            page.destroy();
         }
-        models = lst;
+        page = pageComponent.createObject(main);
+        models.forEach(function(model) {
+            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
+            component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
+        });
 
-        return views;
+        updateTabOrderRequested();
     }
 
     function reset() {
-        searchField.text = "";
-        models.forEach(function(model) {
+        searchCriteria = "";
+        browseModels.forEach(function(model) {
             if ("path" in model) {
                 model.path = "/";
             }

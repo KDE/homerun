@@ -30,3 +30,20 @@ function setTabOrder(lst) {
         }
     }
 }
+
+/**
+ * Return a list of all children of item (including item itself) which have the
+ * boolean property "tabMe" set to true
+ */
+function findTabMeChildren(item) {
+    var lst = new Array();
+    if (item.tabMe === true) {
+        lst.push(item);
+    } else {
+        for (var idx = 0; idx < item.children.length; ++idx) {
+            var childLst = findTabMeChildren(item.children[idx]);
+            lst = lst.concat(childLst);
+        };
+    }
+    return lst;
+}

@@ -22,6 +22,9 @@ import QtQuick 1.1
 import org.kde.sal.components 0.1 as SalComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.qtextracomponents 0.1 as QtExtra
+
+import "KeyboardUtils.js" as KeyboardUtils
 
 Item {
     id: main
@@ -34,39 +37,35 @@ Item {
     property real bottomMargin: 12
 
     property variant tabContentList: []
+    property alias currentTabContent: tabGroup.currentTab
 
-    PlasmaComponents.ToolButton {
-        anchors {
-            right: main.right
-            top: main.top
-            rightMargin: main.rightMargin
-            topMargin: main.topMargin
-        }
-
-        visible: embedded
-
-        iconSource: "window-close"
-        onClicked: closeRequested()
-    }
-
+    // Models
     SalComponents.PageModel {
         id: pageModel
     }
 
     SalComponents.FavoriteAppsModel {
         id: favoriteAppsModel
+        property string name: "Favorite Applications"
     }
 
     SalComponents.FavoritePlacesModel {
         id: favoritePlacesModel
     }
 
+    // UI
     Component {
         id: tabContent
         TabContent {
+            id: tabContentMain
             // FIXME: If SAL is a containment mode, onResultTriggered should
             // call reset() instead of emitting closeRequested()
             onResultTriggered: closeRequested()
+            onUpdateTabOrderRequested: {
+                if (currentTabContent == tabContentMain) {
+                    updateTabOrder();
+                }
+            }
         }
     }
 
@@ -76,7 +75,8 @@ Item {
         anchors {
             top: parent.top
             topMargin: main.topMargin
-            horizontalCenter: parent.horizontalCenter
+            left: parent.left
+            leftMargin: main.leftMargin
         }
 
         Repeater {
@@ -92,19 +92,9 @@ Item {
                     // This should not be "var tab": we set the "tab" property of the TabButton
                     tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModels": favoriteModels});
                     var lst = tabContentList;
-                    if (lst.length == 0) {
-                        tab.forceActiveFocus();
-                    }
                     lst.push(tab);
                     tabContentList = lst;
                 }
-            }
-        }
-
-        Connections {
-            target: tabGroup
-            onCurrentTabChanged: {
-                tabGroup.currentTab.forceActiveFocus();
             }
         }
 
@@ -187,18 +177,96 @@ Item {
             bottom: parent.bottom
             left: parent.left
             right: parent.right
-            topMargin: 12
+            topMargin: 4
             bottomMargin: main.bottomMargin
             leftMargin: main.leftMargin
             rightMargin: main.rightMargin
         }
     }
 
+    // Search area
+    QtExtra.QIconItem {
+        anchors {
+            right: searchField.left
+            rightMargin: 6
+            verticalCenter: searchField.verticalCenter
+        }
+        width: 22
+        height: width
+        icon: "edit-find"
+        visible: searchField.visible
+    }
+
+    PlasmaComponents.TextField {
+        id: searchField
+
+        anchors {
+            right: parent.right
+            rightMargin: parent.rightMargin
+            top: filterTabBar.top
+            bottom: filterTabBar.bottom
+        }
+
+        width: parent.width / 4
+        visible: currentTabContent.searchable
+
+        clearButtonShown: true
+        placeholderText: "Search..."
+
+        // Keep text in sync with currentTabContent.searchCriteria
+        onTextChanged: currentTabContent.searchCriteria = text
+        Connections {
+            target: main
+            onCurrentTabContentChanged: searchField.text = currentTabContent.searchCriteria
+        }
+    }
+
+    PlasmaCore.SvgItem {
+        id: hline
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: filterTabBar.bottom
+            topMargin: 2
+        }
+        height: 3
+        svg: PlasmaCore.Svg {
+            imagePath: "widgets/line"
+        }
+        elementId: "horizontal-line"
+    }
+
+    Connections {
+        target: main
+        onCurrentTabContentChanged: {
+            updateTabOrder();
+            var firstView = searchField.KeyNavigation.tab;
+            if (firstView) {
+                firstView.forceActiveFocus();
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        updateTabOrder();
+    }
+
+    // Code
     function reset() {
         filterTabBar.goToFirstTab();
         tabContentList.forEach(function(content) {
             content.reset();
         });
+        searchField.text = "";
+    }
+
+    function updateTabOrder() {
+        if (currentTabContent) {
+            var lst = KeyboardUtils.findTabMeChildren(currentTabContent);
+            lst.unshift(searchField);
+            lst.push(searchField);
+            KeyboardUtils.setTabOrder(lst);
+        }
     }
 
     Keys.onPressed: {
