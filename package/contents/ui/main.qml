@@ -35,20 +35,7 @@ Item {
 
     property variant tabContentList: []
 
-    PlasmaComponents.ToolButton {
-        anchors {
-            right: main.right
-            top: main.top
-            rightMargin: main.rightMargin
-            topMargin: main.topMargin
-        }
-
-        visible: embedded
-
-        iconSource: "window-close"
-        onClicked: closeRequested()
-    }
-
+    // Models
     SalComponents.PageModel {
         id: pageModel
     }
@@ -62,6 +49,7 @@ Item {
         id: favoritePlacesModel
     }
 
+    // UI
     Component {
         id: tabContent
         TabContent {
@@ -195,6 +183,21 @@ Item {
         }
     }
 
+    PlasmaComponents.ToolButton {
+        anchors {
+            right: main.right
+            top: main.top
+            rightMargin: main.rightMargin
+            topMargin: main.topMargin
+        }
+
+        visible: embedded
+
+        iconSource: "window-close"
+        onClicked: closeRequested()
+    }
+
+    // Code
     function reset() {
         filterTabBar.goToFirstTab();
         tabContentList.forEach(function(content) {
