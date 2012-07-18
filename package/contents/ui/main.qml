@@ -22,6 +22,7 @@ import QtQuick 1.1
 import org.kde.sal.components 0.1 as SalComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.qtextracomponents 0.1 as QtExtra
 
 Item {
     id: main
@@ -34,6 +35,7 @@ Item {
     property real bottomMargin: 12
 
     property variant tabContentList: []
+    property alias currentTabContent: tabGroup.currentTab
 
     // Models
     SalComponents.PageModel {
@@ -65,7 +67,8 @@ Item {
         anchors {
             top: parent.top
             topMargin: main.topMargin
-            horizontalCenter: parent.horizontalCenter
+            left: parent.left
+            leftMargin: main.leftMargin
         }
 
         Repeater {
@@ -176,26 +179,66 @@ Item {
             bottom: parent.bottom
             left: parent.left
             right: parent.right
-            topMargin: 12
+            topMargin: 4
             bottomMargin: main.bottomMargin
             leftMargin: main.leftMargin
             rightMargin: main.rightMargin
         }
     }
 
-    PlasmaComponents.ToolButton {
+    // Search area
+    QtExtra.QIconItem {
         anchors {
-            right: main.right
-            top: main.top
-            rightMargin: main.rightMargin
-            topMargin: main.topMargin
+            right: searchField.left
+            rightMargin: 6
+            verticalCenter: searchField.verticalCenter
+        }
+        width: 22
+        height: width
+        icon: "edit-find"
+        visible: searchField.visible
+    }
+
+    PlasmaComponents.TextField {
+        id: searchField
+
+        anchors {
+            right: parent.right
+            rightMargin: parent.rightMargin
+            top: filterTabBar.top
+            bottom: filterTabBar.bottom
         }
 
-        visible: embedded
+        focus: true
+        width: parent.width / 4
+        visible: currentTabContent.searchable
 
-        iconSource: "window-close"
-        onClicked: closeRequested()
+        clearButtonShown: true
+        placeholderText: "Search..."
+
+        // Keep text in sync with currentTabContent.searchCriteria
+        onTextChanged: currentTabContent.searchCriteria = text
+        Connections {
+            target: main
+            onCurrentTabContentChanged: searchField.text = currentTabContent.searchCriteria
+        }
     }
+
+    PlasmaCore.SvgItem {
+        id: hline
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: filterTabBar.bottom
+            topMargin: 2
+        }
+        height: 3
+        svg: PlasmaCore.Svg {
+            imagePath: "widgets/line"
+        }
+        elementId: "horizontal-line"
+    }
+
 
     // Code
     function reset() {

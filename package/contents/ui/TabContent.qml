@@ -31,12 +31,20 @@ FocusScope {
     property variant favoriteModels
     property variant sources
 
+    property bool searchable: searchModels.length > 0
+    property string searchCriteria
+
     signal resultTriggered
 
     // Internal
     property variant browseModels: []
     property variant searchModels: []
     property Item page
+
+    property bool isSearching: searchCriteria.length == 0
+    onIsSearchingChanged: {
+        createPage(isSearching ? browseModels : searchModels);
+    }
 
     SalComponents.SharedConfig {
         id: config
@@ -64,7 +72,7 @@ FocusScope {
     Component {
         id: runnerModelComponent
         SalComponents.SalRunnerModel {
-            query: searchField.text
+            query: searchCriteria
         }
     }
 
@@ -147,34 +155,9 @@ FocusScope {
     }
 
     // UI
-    PlasmaComponents.TextField {
-        id: searchField
-
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-        }
-
-        focus: true
-        clearButtonShown: true
-
-        property bool isEmpty: text.length == 0
-
-        onIsEmptyChanged: {
-            createPage(isEmpty ? browseModels : searchModels);
-        }
-    }
-
     Item {
         id: pageContainer
-        anchors {
-            top: searchField.bottom
-            topMargin: 12
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
+        anchors.fill: parent
     }
 
     // Scripting
