@@ -71,17 +71,8 @@ Item {
 
     Component {
         id: sessionModelComponent
-        SalFixes.SortFilterModel {
+        SalComponents.SessionModel {
             property string name: "Session"
-            filterRegExp: searchField.text
-
-            sourceModel: SalComponents.SessionModel {
-                id: realSessionModel
-            }
-
-            function trigger(row) {
-                return sourceModel.trigger(mapRowToSource(row));
-            }
         }
     }
 
