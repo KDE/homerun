@@ -246,6 +246,7 @@ Item {
         tabContentList.forEach(function(content) {
             content.reset();
         });
+        searchField.text = "";
     }
 
     Keys.onPressed: {
