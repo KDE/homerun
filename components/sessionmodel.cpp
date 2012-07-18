@@ -42,11 +42,14 @@ SessionModel::SessionModel(QObject *parent)
     roles.insert(Qt::DecorationRole, "icon");
     setRoleNames(roles);
 
-    SessionAction logout;
-    logout.name = i18nc("an action", "Logout");
-    logout.type = Logout;
-    logout.iconName = "system-log-out";
-    m_sessionList.append(logout);
+    const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
+    if (canLogout) {
+        SessionAction logout;
+        logout.name = i18nc("an action", "Logout");
+        logout.type = Logout;
+        logout.iconName = "system-log-out";
+        m_sessionList.append(logout);
+    }
 
     if (KDisplayManager().isSwitchable() && KAuthorized::authorize(QLatin1String("switch_user"))) {
         SessionAction switchUser;
