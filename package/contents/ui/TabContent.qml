@@ -154,12 +154,6 @@ FocusScope {
         }
     }
 
-    // UI
-    Item {
-        id: pageContainer
-        anchors.fill: parent
-    }
-
     // Scripting
     Component.onCompleted: {
         createModels();
@@ -213,7 +207,7 @@ FocusScope {
         if (page) {
             page.destroy();
         }
-        page = pageComponent.createObject(pageContainer);
+        page = pageComponent.createObject(main);
         var views = models.map(function(model) {
             var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
             return component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
