@@ -38,3 +38,4 @@ source0=RunnerModel:contacts,kopete
 name=Power
 icon=system-shutdown
 source0=PowerModel
+source1=SessionModel

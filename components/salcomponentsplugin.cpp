@@ -32,6 +32,7 @@
 #include "runnerinfoprovider.h"
 #include "salrunnermodel.h"
 #include "salservicemodel.h"
+#include "sessionmodel.h"
 
 void SalComponentsPlugin::registerTypes(const char *uri)
 {
@@ -41,6 +42,7 @@ void SalComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
     qmlRegisterType<PowerModel>(uri, 0, 1, "PowerModel");
+    qmlRegisterType<SessionModel>(uri, 0, 1, "SessionModel");
     qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
     qmlRegisterType<SharedConfig>(uri, 0, 1, "SharedConfig");
     qmlRegisterType<SalRunnerModel>(uri, 0, 1, "SalRunnerModel");

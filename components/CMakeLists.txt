@@ -10,6 +10,7 @@ set(salcomponents_SRCS
     salrunnermodel.cpp
     salservicemodel.cpp
     salcomponentsplugin.cpp
+    sessionmodel.cpp
     )
 
 qt4_automoc(${salcomponents_SRCS})

@@ -69,6 +69,21 @@ Item {
         }
     }
 
+    Component {
+        id: sessionModelComponent
+        SalFixes.SortFilterModel {
+            property string name: "Session"
+            filterRegExp: searchField.text
+
+            sourceModel: SalComponents.SessionModel {
+                id: realSessionModel
+            }
+
+            function trigger(row) {
+                return sourceModel.trigger(mapRowToSource(row));
+            }
+        }
+    }
 
     Component {
         id: runnerModelComponent
@@ -179,6 +194,8 @@ Item {
                 model = main.favoriteModels["app"];
             } else if (modelName == "PowerModel") {
                 model = powerModelComponent.createObject(main);
+            } else if (modelName == "SessionModel") {
+                model = sessionModelComponent.createObject(main);
             } else if (modelName == "RunnerModel") {
                 model = runnerModelComponent.createObject(main);
             } else {
