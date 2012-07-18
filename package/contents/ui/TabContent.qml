@@ -55,16 +55,8 @@ FocusScope {
 
     Component {
         id: powerModelComponent
-        SalFixes.SortFilterModel {
+        SalComponents.PowerModel {
             property string name: "Power"
-
-            sourceModel: SalComponents.PowerModel {
-                id: realPowerModel
-            }
-
-            function trigger(row) {
-                return sourceModel.trigger(mapRowToSource(row));
-            }
         }
     }
 
@@ -77,22 +69,8 @@ FocusScope {
     }
 
     Component {
-        id: favoriteAppsModelComponent
-        SalFixes.SortFilterModel {
-            property string name: "Favorite Applications"
-
-            sourceModel: main.favoriteModels["app"]
-
-            function trigger(row) {
-                return sourceModel.trigger(mapRowToSource(row));
-            }
-        }
-    }
-
-    Component {
         id: placesModelComponent
         SalComponents.PlacesModel {
-            id: placesFilterModel
             property string name: "Favorite Places"
             rootModel: main.favoriteModels["place"]
         }
@@ -217,7 +195,7 @@ FocusScope {
             } else if (modelName == "PlacesModel") {
                 model = placesModelComponent.createObject(main);
             } else if (modelName == "FavoriteAppsModel") {
-                model = favoriteAppsModelComponent.createObject(main);
+                model = main.favoriteModels["app"];
             } else if (modelName == "PowerModel") {
                 model = powerModelComponent.createObject(main);
             } else if (modelName == "RunnerModel") {
