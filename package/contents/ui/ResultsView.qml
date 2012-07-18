@@ -28,6 +28,8 @@ FocusScope {
 
     signal indexClicked(int index)
 
+    property bool tabMe: gridView.count > 0
+
     //FIXME: figure out sizing properly..
     property int resultItemHeight: 128
     property int resultItemWidth: 128
@@ -131,7 +133,7 @@ FocusScope {
         focus: true
 
         /*
-        // Debug help
+        // Focus debug help
         LogText {
             anchors.right: parent.right
             anchors.bottom: parent.bottom

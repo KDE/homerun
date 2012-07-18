@@ -25,7 +25,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 
 import "KeyboardUtils.js" as KeyboardUtils
 
-FocusScope {
+Item {
     id: main
 
     property variant favoriteModels
@@ -35,6 +35,7 @@ FocusScope {
     property string searchCriteria
 
     signal resultTriggered
+    signal updateTabOrderRequested
 
     // Internal
     property variant browseModels: []
@@ -101,6 +102,9 @@ FocusScope {
                     }
                 }
             }
+
+            onItemAdded: updateTabOrderRequested()
+            onItemRemoved: updateTabOrderRequested()
         }
     }
 
@@ -208,12 +212,12 @@ FocusScope {
             page.destroy();
         }
         page = pageComponent.createObject(main);
-        var views = models.map(function(model) {
+        models.forEach(function(model) {
             var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
-            return component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
+            component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
         });
 
-        KeyboardUtils.setTabOrder(views);
+        updateTabOrderRequested();
     }
 
     function reset() {

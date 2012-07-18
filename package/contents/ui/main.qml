@@ -24,6 +24,8 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
+import "KeyboardUtils.js" as KeyboardUtils
+
 Item {
     id: main
     signal closeRequested
@@ -55,9 +57,15 @@ Item {
     Component {
         id: tabContent
         TabContent {
+            id: tabContentMain
             // FIXME: If SAL is a containment mode, onResultTriggered should
             // call reset() instead of emitting closeRequested()
             onResultTriggered: closeRequested()
+            onUpdateTabOrderRequested: {
+                if (currentTabContent == tabContentMain) {
+                    updateTabOrder();
+                }
+            }
         }
     }
 
@@ -84,19 +92,9 @@ Item {
                     // This should not be "var tab": we set the "tab" property of the TabButton
                     tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModels": favoriteModels});
                     var lst = tabContentList;
-                    if (lst.length == 0) {
-                        tab.forceActiveFocus();
-                    }
                     lst.push(tab);
                     tabContentList = lst;
                 }
-            }
-        }
-
-        Connections {
-            target: tabGroup
-            onCurrentTabChanged: {
-                tabGroup.currentTab.forceActiveFocus();
             }
         }
 
@@ -209,7 +207,6 @@ Item {
             bottom: filterTabBar.bottom
         }
 
-        focus: true
         width: parent.width / 4
         visible: currentTabContent.searchable
 
@@ -239,6 +236,20 @@ Item {
         elementId: "horizontal-line"
     }
 
+    Connections {
+        target: main
+        onCurrentTabContentChanged: {
+            updateTabOrder();
+            var firstView = searchField.KeyNavigation.tab;
+            if (firstView) {
+                firstView.forceActiveFocus();
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        updateTabOrder();
+    }
 
     // Code
     function reset() {
@@ -247,6 +258,15 @@ Item {
             content.reset();
         });
         searchField.text = "";
+    }
+
+    function updateTabOrder() {
+        if (currentTabContent) {
+            var lst = KeyboardUtils.findTabMeChildren(currentTabContent);
+            lst.unshift(searchField);
+            lst.push(searchField);
+            KeyboardUtils.setTabOrder(lst);
+        }
     }
 
     Keys.onPressed: {
