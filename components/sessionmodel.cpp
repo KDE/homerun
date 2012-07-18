@@ -27,9 +27,11 @@
 #include <QDBusPendingCall>
 
 // KDE
+#include <KAuthorized>
 #include <KDebug>
 #include <KIcon>
 #include <KLocale>
+#include <kworkspace/kdisplaymanager.h>
 #include <kworkspace/kworkspace.h>
 
 SessionModel::SessionModel(QObject *parent)
@@ -46,11 +48,13 @@ SessionModel::SessionModel(QObject *parent)
     logout.iconName = "system-log-out";
     m_sessionList.append(logout);
 
-    SessionAction switchUser;
-    switchUser.name = i18nc("an action", "Switch User");
-    switchUser.type = SwitchUser;
-    switchUser.iconName = "system-switch-user";
-    m_sessionList.append(switchUser);
+    if (KDisplayManager().isSwitchable() && KAuthorized::authorize(QLatin1String("switch_user"))) {
+        SessionAction switchUser;
+        switchUser.name = i18nc("an action", "Switch User");
+        switchUser.type = SwitchUser;
+        switchUser.iconName = "system-switch-user";
+        m_sessionList.append(switchUser);
+    }
 
     SessionAction lock;
     lock.name = i18nc("an action", "Lock");
