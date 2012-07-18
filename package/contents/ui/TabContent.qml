@@ -219,12 +219,11 @@ FocusScope {
             return component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
         });
 
-        var widgets = [searchField].concat(views).concat(searchField);
-        KeyboardUtils.setTabOrder(widgets);
+        KeyboardUtils.setTabOrder(views);
     }
 
     function reset() {
-        searchField.text = "";
+        searchCriteria = "";
         browseModels.forEach(function(model) {
             if ("path" in model) {
                 model.path = "/";
