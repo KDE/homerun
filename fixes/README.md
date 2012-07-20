@@ -15,6 +15,8 @@ moved to the components/ dir.
 https://git.reviewboard.kde.org/r/105042/
 Applied in 4.9
 
+### Notify about changes in filterRegExp
+
 ### New methods: mapRowFromSource, mapRowToSource
 https://git.reviewboard.kde.org/r/105044/
 Applied in 4.9
