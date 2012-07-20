@@ -17,6 +17,7 @@
  *****************************************************************************/
 
 import QtQuick 1.1
+import org.kde.sal.fixes 0.1 as SalFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -39,13 +40,17 @@ FocusScope {
 
     property variant favoriteModels
 
-    property alias model: gridView.model
+    property alias model: proxyModel.sourceModel
 
     property string path: model.path ? model.path : "/"
     onPathChanged: pathModel.update(path)
 
     PathModel {
         id: pathModel
+    }
+
+    SalFixes.SortFilterModel {
+        id: proxyModel
     }
 
     // Components
@@ -77,7 +82,7 @@ FocusScope {
                 }
             }
 
-            onClicked: indexClicked(model.index)
+            onClicked: emitIndexClicked(model.index)
 
             onFavoriteClicked: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
@@ -97,10 +102,19 @@ FocusScope {
         anchors {
             top: parent.top
             left: parent.left
-            right: parent.right
         }
         text: model.name
-        width: parent.width
+    }
+
+    PlasmaComponents.Label {
+        id: typeAheadLabel
+        anchors {
+            bottom: headerLabel.bottom
+            left: headerLabel.right
+            leftMargin: 6
+        }
+        text: proxyModel.filterRegExp + "|"
+        opacity: proxyModel.filterRegExp == "" ? 0 : 0.6
     }
 
     Row {
@@ -130,6 +144,7 @@ FocusScope {
             right: parent.right
         }
 
+        model: proxyModel
         focus: true
 
         /*
@@ -172,13 +187,31 @@ FocusScope {
             } else if (event.key == Qt.Key_Down) {
                 moveCurrentIndexDown();
             }
-            // Only accept the event if the index actually moved. Not accepting
-            // it will cause parent items to move the focus to the next ResultsView,
-            // which is what we want
-            event.accepted = currentIndex != oldIndex;
+            if (currentIndex != oldIndex) {
+                // Only accept the event if the index actually moved. Not accepting
+                // it will cause parent items to move the focus to the next ResultsView,
+                // which is what we want
+                event.accepted = true;
+                return;
+            }
+
+            switch (event.key) {
+            case Qt.Key_Backspace:
+                proxyModel.filterRegExp = proxyModel.filterRegExp.slice(0, -1);
+                event.accepted = true;
+                break;
+            case Qt.Key_Tab:
+                break;
+            default:
+                if (event.text != "") {
+                    proxyModel.filterRegExp += event.text;
+                    event.accepted = true;
+                }
+                break;
+            }
         }
 
-        Keys.onReturnPressed: indexClicked(currentIndex)
+        Keys.onReturnPressed: emitIndexClicked(currentIndex)
     }
 
     PlasmaCore.FrameSvgItem {
@@ -240,5 +273,11 @@ FocusScope {
         } else {
             return model;
         }
+    }
+
+    function emitIndexClicked(index) {
+        var sourceIndex = proxyModel.mapRowToSource(index);
+        proxyModel.filterRegExp = "";
+        indexClicked(sourceIndex);
     }
 }

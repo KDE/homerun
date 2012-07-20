@@ -112,7 +112,6 @@ Item {
         id: resultsViewComponent
         ResultsView {
             width: parent.width
-            visible: model.count > 0
 
             onIndexClicked: {
                 if (model.trigger(index)) {
