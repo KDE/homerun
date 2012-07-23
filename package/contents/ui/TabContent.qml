@@ -22,6 +22,7 @@ import org.kde.sal.components 0.1 as SalComponents
 import org.kde.sal.fixes 0.1 as SalFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.qtextracomponents 0.1 as QtExtra
 
 import "KeyboardUtils.js" as KeyboardUtils
 
@@ -41,6 +42,8 @@ Item {
     property variant browseModels: []
     property variant searchModels: []
     property Item page
+
+    property string typeAhead
 
     property bool isSearching: searchCriteria.length == 0
     onIsSearchingChanged: {
@@ -100,8 +103,10 @@ Item {
             delegate: ResultsView {
                 width: parent.width
                 model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
+                typeAhead: main.typeAhead
                 favoriteModels: repeater.favoriteModels
                 onIndexClicked: {
+                    main.typeAhead = "";
                     // Here "index" is the row number clicked inside the ResultsView
                     if (model.trigger(index)) {
                         resultTriggered();
@@ -118,8 +123,10 @@ Item {
         id: resultsViewComponent
         ResultsView {
             width: parent.width
+            typeAhead: main.typeAhead
 
             onIndexClicked: {
+                main.typeAhead = "";
                 if (model.trigger(index)) {
                     resultTriggered();
                 }
@@ -163,10 +170,39 @@ Item {
         }
     }
 
+    // Ui
+    PlasmaComponents.Label {
+        id: typeAheadLabel
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: parent.top
+        }
+        text: typeAhead + "|"
+        font.pointSize: 14
+        opacity: typeAhead == "" ? 0 : 0.4
+    }
+
     // Scripting
     Component.onCompleted: {
         createModels();
         createPage(browseModels);
+    }
+
+    Keys.onPressed: {
+        switch (event.key) {
+        case Qt.Key_Backspace:
+            typeAhead = typeAhead.slice(0, -1);
+            event.accepted = true;
+            break;
+        case Qt.Key_Tab:
+            break;
+        default:
+            if (event.text != "") {
+                typeAhead += event.text;
+                event.accepted = true;
+            }
+            break;
+        }
     }
 
     function createModels() {

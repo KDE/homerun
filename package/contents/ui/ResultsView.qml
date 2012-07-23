@@ -41,6 +41,7 @@ FocusScope {
     property variant favoriteModels
 
     property alias model: proxyModel.sourceModel
+    property alias typeAhead: proxyModel.filterRegExp
 
     property string path: model.path ? model.path : "/"
     onPathChanged: pathModel.update(path)
@@ -104,17 +105,6 @@ FocusScope {
             left: parent.left
         }
         text: model.name
-    }
-
-    PlasmaComponents.Label {
-        id: typeAheadLabel
-        anchors {
-            bottom: headerLabel.bottom
-            left: headerLabel.right
-            leftMargin: 6
-        }
-        text: proxyModel.filterRegExp + "|"
-        opacity: proxyModel.filterRegExp == "" ? 0 : 0.6
     }
 
     Row {
@@ -192,22 +182,6 @@ FocusScope {
                 // it will cause parent items to move the focus to the next ResultsView,
                 // which is what we want
                 event.accepted = true;
-                return;
-            }
-
-            switch (event.key) {
-            case Qt.Key_Backspace:
-                proxyModel.filterRegExp = proxyModel.filterRegExp.slice(0, -1);
-                event.accepted = true;
-                break;
-            case Qt.Key_Tab:
-                break;
-            default:
-                if (event.text != "") {
-                    proxyModel.filterRegExp += event.text;
-                    event.accepted = true;
-                }
-                break;
             }
         }
 
@@ -277,7 +251,6 @@ FocusScope {
 
     function emitIndexClicked(index) {
         var sourceIndex = proxyModel.mapRowToSource(index);
-        proxyModel.filterRegExp = "";
         indexClicked(sourceIndex);
     }
 }
