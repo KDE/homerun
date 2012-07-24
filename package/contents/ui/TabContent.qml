@@ -62,6 +62,10 @@ Item {
             path: "/"
             property string name: "Applications"
             installer: config.readEntry("PackageManagement", "categoryInstaller")
+
+            onOpenSourceRequested: {
+                openSource(source);
+            }
         }
     }
 

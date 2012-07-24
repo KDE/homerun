@@ -95,6 +95,7 @@ class SalServiceModel : public QAbstractListModel
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString path WRITE setPath READ path NOTIFY pathChanged)
     Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
+    Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
 
 public:
     enum Roles {
@@ -114,12 +115,17 @@ public:
     void setInstaller(const QString &installer);
     QString installer() const;
 
+    void setArguments(const QString &arguments);
+    QString arguments() const;
+
     Q_INVOKABLE bool trigger(int row);
 
 Q_SIGNALS:
     void countChanged();
     void pathChanged(const QString&);
     void installerChanged(const QString &);
+    void argumentsChanged(const QString &);
+    void openSourceRequested(const QString &source);
 
 private:
     void loadRootEntries();
@@ -129,6 +135,7 @@ private:
     QList<AbstractNode *> m_nodeList;
     QString m_path;
     QString m_installer;
+    QString m_arguments;
 };
 
 #endif

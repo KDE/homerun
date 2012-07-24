@@ -18,12 +18,16 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "salservicemodel.h"
+// Local
+#include <salservicemodel.h>
+#include <sourcearguments.h>
 
+// Qt
 #include <QIcon>
 #include <QAction>
 #include <QTimer>
 
+// KDE
 #include <KDebug>
 #include <kmacroexpander.h>
 #include <KRun>
@@ -57,13 +61,9 @@ GroupNode::GroupNode(KServiceGroup::Ptr group, SalServiceModel *model)
 
 bool GroupNode::trigger()
 {
-    /*
-    // We are at root level, we want to descend into the selection, not execute
-    QString salUrl = service->property("X-Plasma-Sal-Url").toString();
-    // salUrl is of the form "kservicegroup://root/Something/". We want the "/Something" part.
-    setPath("/" % salUrl.section('/', 2, -1, QString::SectionSkipEmpty));
-    */
-    m_model->setPath("/" % m_entryPath.left(m_entryPath.length() - 1));
+    QString path = "/" % m_entryPath.left(m_entryPath.length() - 1);
+    QString source = "ServiceModel:path=" % SourceArguments::escapeValue(path);
+    QMetaObject::invokeMethod(m_model, "openSourceRequested", Q_ARG(QString, source));
     return false;
 }
 
@@ -260,6 +260,25 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
             kWarning() << "Could not find service for" << m_installer;
         }
     }
+}
+
+QString SalServiceModel::arguments() const
+{
+    return m_arguments;
+}
+
+void SalServiceModel::setArguments(const QString& arguments)
+{
+    if (m_arguments == arguments) {
+        return;
+    }
+
+    SourceArguments::Hash args = SourceArguments::parse(arguments);
+    QString path = args.value("path");
+    setPath(path);
+
+    m_arguments = arguments;
+    argumentsChanged(m_arguments);
 }
 
 #include "salservicemodel.moc"
