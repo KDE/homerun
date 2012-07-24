@@ -148,33 +148,33 @@ PlacesModel::PlacesModel(QObject *parent)
 
 static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
 {
-    return QString("open PlacesModel:rootUrl=%1,rootName=%2,url=%3")
+    return QString("PlacesModel:rootUrl=%1,rootName=%2,url=%3")
         .arg(SourceArguments::escapeValue(rootUrl.url()))
         .arg(SourceArguments::escapeValue(rootName))
         .arg(SourceArguments::escapeValue(url.url()));
 }
 
-QString PlacesModel::trigger(int row)
+bool PlacesModel::trigger(int row)
 {
     Q_ASSERT(m_rootModel);
 
-    QString output;
+    bool closed = false;
     QModelIndex sourceIndex = mapToSource(index(row, 0));
     if (sourceModel() == m_rootModel) {
         KUrl theUrl = m_rootModel->data(sourceIndex, KFilePlacesModel::UrlRole).value<QUrl>();
         theUrl.adjustPath(KUrl::AddTrailingSlash);
         QString rootName = sourceIndex.data(Qt::DisplayRole).toString();
-        output = sourceString(theUrl, rootName, theUrl);
+        openSourceRequested(sourceString(theUrl, rootName, theUrl));
     } else {
         KFileItem item = m_proxyDirModel->itemForIndex(sourceIndex);
         if (item.isDir()) {
-            output = sourceString(m_rootUrl, m_rootName, item.url());
+            openSourceRequested(sourceString(m_rootUrl, m_rootName, item.url()));
         } else {
             item.run();
-            output = "started";
+            closed = true;
         }
     }
-    return output;
+    return closed;
 }
 
 int PlacesModel::count() const

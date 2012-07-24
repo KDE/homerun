@@ -88,7 +88,7 @@ class PlacesModel : public QSortFilterProxyModel
 
 public:
     PlacesModel(QObject *parent = 0);
-    Q_INVOKABLE QString trigger(int row);
+    Q_INVOKABLE bool trigger(int row);
 
     int count() const;
 
@@ -114,6 +114,7 @@ Q_SIGNALS:
     void rootModelChanged();
     void pathChanged(const QString &);
     void argumentsChanged(const QString &);
+    void openSourceRequested(const QString &source);
 
 private:
     QAbstractItemModel *m_rootModel;

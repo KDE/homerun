@@ -91,6 +91,10 @@ Item {
         SalComponents.PlacesModel {
             property string name: "Favorite Places"
             rootModel: main.favoriteModels["place"]
+
+            onOpenSourceRequested: {
+                openSource(source);
+            }
         }
     }
 
@@ -184,23 +188,16 @@ Item {
 
     function handleTriggerResult(result) {
         main.typeAhead = "";
-        if (result === true) {
-            console.log("WARNING: Handling deprecated boolean output of model.trigger()");
+        if (result) {
             startedApplication();
             return;
         }
-        if (result === "started") {
-            startedApplication();
-            return;
-        }
-        if (result.slice(0, 5) === "open ") {
-            var source = result.slice(5);
-            var out = createModelForSource(source);
-            var models = [out[0]];
-            createPage(models);
-            return;
-        }
-        console.log("WARNING: Don't know how to handle result string: " + result);
+    }
+
+    function openSource(source) {
+        var out = createModelForSource(source);
+        var models = [out[0]];
+        createPage(models);
     }
 
     Keys.onPressed: {

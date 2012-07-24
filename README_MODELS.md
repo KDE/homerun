@@ -44,12 +44,19 @@ Used for models which can be navigated through. Should start with "/".
 Define optional model arguments.
 
 ## Methods
-### string trigger(int row)
+### bool trigger(int row)
 - mandatory: yes
-- Description: Triggers the action associated with the item at row "row". Depending on
-  the action triggered, this method should return one of the following strings:
-    - "started": The model started an application. SAL should close itself.
-    - "open $source": The model wants SAL to open the source $source.
+Triggers the action associated with the item at row "row".
+Returns true if the trigger started an action outside of SAL, false if it did
+not. Returning false can happen if the action failed or if it was handled in
+another way, for example because the model emitted openSourceRequested().
+
+## Signals
+## openSourceRequested(QString source)
+- mandatory: no
+Emitted by a model when it wants another source to be opened by the view. This
+is used for example to open a browsable model in a subdir.
+
 
 
 # Features of a SAL-friendly favorite model
