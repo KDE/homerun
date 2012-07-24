@@ -84,15 +84,19 @@ class PlacesModel : public QSortFilterProxyModel
     Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
     Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY(QObject *rootModel READ rootModel WRITE setRootModel NOTIFY rootModelChanged)
+    Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
 
 public:
     PlacesModel(QObject *parent = 0);
-    Q_INVOKABLE bool trigger(int row);
+    Q_INVOKABLE QString trigger(int row);
 
     int count() const;
 
     QString path() const;
     void setPath(const QString &path);
+
+    QString arguments() const;
+    void setArguments(const QString &arguments);
 
     QString filter() const;
     void setFilter(const QString &filter);
@@ -109,6 +113,7 @@ Q_SIGNALS:
     void filterChanged();
     void rootModelChanged();
     void pathChanged(const QString &);
+    void argumentsChanged(const QString &);
 
 private:
     QAbstractItemModel *m_rootModel;
@@ -116,6 +121,7 @@ private:
     KUrl m_rootUrl;
     QString m_rootName;
     QString m_filter;
+    QString m_arguments;
 
     void switchToRootModel();
     void switchToDirModel();

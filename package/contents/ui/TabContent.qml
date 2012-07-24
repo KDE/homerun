@@ -35,7 +35,7 @@ Item {
     property bool searchable: searchModels.length > 0
     property string searchCriteria
 
-    signal resultTriggered
+    signal startedApplication
     signal updateTabOrderRequested
 
     // Internal
@@ -106,11 +106,8 @@ Item {
                 typeAhead: main.typeAhead
                 favoriteModels: repeater.favoriteModels
                 onIndexClicked: {
-                    main.typeAhead = "";
                     // Here "index" is the row number clicked inside the ResultsView
-                    if (model.trigger(index)) {
-                        resultTriggered();
-                    }
+                    handleTriggerResult(model.trigger(index));
                 }
             }
 
@@ -126,10 +123,7 @@ Item {
             typeAhead: main.typeAhead
 
             onIndexClicked: {
-                main.typeAhead = "";
-                if (model.trigger(index)) {
-                    resultTriggered();
-                }
+                handleTriggerResult(model.trigger(index));
             }
         }
     }
@@ -188,6 +182,27 @@ Item {
         createPage(browseModels);
     }
 
+    function handleTriggerResult(result) {
+        main.typeAhead = "";
+        if (result === true) {
+            console.log("WARNING: Handling deprecated boolean output of model.trigger()");
+            startedApplication();
+            return;
+        }
+        if (result === "started") {
+            startedApplication();
+            return;
+        }
+        if (result.slice(0, 5) === "open ") {
+            var source = result.slice(5);
+            var out = createModelForSource(source);
+            var models = [out[0]];
+            createPage(models);
+            return;
+        }
+        console.log("WARNING: Don't know how to handle result string: " + result);
+    }
+
     Keys.onPressed: {
         switch (event.key) {
         case Qt.Key_Backspace:
@@ -209,35 +224,9 @@ Item {
         var searchLst = new Array();
         var browseLst = new Array();
         sources.forEach(function(source) {
-            var tokens = source.split(":");
-            var modelName = tokens[0];
-            var model;
-            if (modelName == "ServiceModel") {
-                model = serviceModelComponent.createObject(main);
-            } else if (modelName == "PlacesModel") {
-                model = placesModelComponent.createObject(main);
-            } else if (modelName == "FavoriteAppsModel") {
-                model = main.favoriteModels["app"];
-            } else if (modelName == "PowerModel") {
-                model = powerModelComponent.createObject(main);
-            } else if (modelName == "SessionModel") {
-                model = sessionModelComponent.createObject(main);
-            } else if (modelName == "RunnerModel") {
-                model = runnerModelComponent.createObject(main);
-            } else {
-                console.log("Error: unknown model type: " + modelName);
-                return;
-            }
-            var isSearchModel = modelName == "RunnerModel"; // FIXME
-            model.objectName = source;
-
-            if (tokens.length == 2) {
-                if ("arguments" in model) {
-                    model.arguments = tokens[1].split(",");
-                } else {
-                    console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
-                }
-            }
+            var out = createModelForSource(source);
+            var model = out[0];
+            var isSearchModel = out[1];
             if (isSearchModel) {
                 searchLst.push(model);
             } else {
@@ -248,6 +237,46 @@ Item {
         // so we replace them instead
         searchModels = searchLst;
         browseModels = browseLst;
+    }
+
+    function createModelForSource(source) {
+        var idx = source.indexOf(":");
+        var modelName;
+        var modelArgs;
+        if (idx > 0) {
+            modelName = source.slice(0, idx);
+            modelArgs = source.slice(idx + 1);
+        } else {
+            modelName = source;
+        }
+        var model;
+        if (modelName == "ServiceModel") {
+            model = serviceModelComponent.createObject(main);
+        } else if (modelName == "PlacesModel") {
+            model = placesModelComponent.createObject(main);
+        } else if (modelName == "FavoriteAppsModel") {
+            model = main.favoriteModels["app"];
+        } else if (modelName == "PowerModel") {
+            model = powerModelComponent.createObject(main);
+        } else if (modelName == "SessionModel") {
+            model = sessionModelComponent.createObject(main);
+        } else if (modelName == "RunnerModel") {
+            model = runnerModelComponent.createObject(main);
+        } else {
+            console.log("Error: unknown model type: " + modelName);
+            return;
+        }
+        var isSearchModel = modelName == "RunnerModel"; // FIXME
+        model.objectName = source;
+
+        if (modelArgs) {
+            if ("arguments" in model) {
+                model.arguments = modelArgs;
+            } else {
+                console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
+            }
+        }
+        return [model, isSearchModel];
     }
 
     function createPage(models) {

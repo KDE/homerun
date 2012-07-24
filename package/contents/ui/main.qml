@@ -58,9 +58,7 @@ Item {
         id: tabContent
         TabContent {
             id: tabContentMain
-            // FIXME: If SAL is a containment mode, onResultTriggered should
-            // call reset() instead of emitting closeRequested()
-            onResultTriggered: closeRequested()
+            onStartedApplication: embedded ? closeRequested() : reset()
             onUpdateTabOrderRequested: {
                 if (currentTabContent == tabContentMain) {
                     updateTabOrder();

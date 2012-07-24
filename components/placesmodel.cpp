@@ -37,6 +37,65 @@ static QString favoriteIdFromUrl(const KUrl &url)
     return "place:" + url.url();
 }
 
+//- Argument parsing -----------------------------------------------------------
+namespace SourceArguments
+{
+
+#define ARG_SEPARATOR ','
+#define ARG_SEPARATOR_STR ","
+typedef QHash<QString, QString> Hash;
+
+QString escapeValue(const QString &src)
+{
+    QString dst = src;
+    dst.replace('\\', "\\\\"); // must be done first
+    dst.replace(ARG_SEPARATOR, "\\" ARG_SEPARATOR_STR);
+    return dst;
+}
+
+static QStringList split(const QString &src)
+{
+    bool escaped = false;
+    QStringList lst;
+    QString token;
+    auto it = src.constBegin(), end = src.constEnd();
+    for (; it != end; ++it) {
+        const QChar ch = *it;
+        if (escaped) {
+            escaped = false;
+        } else if (ch == '\\') {
+            escaped = true;
+            continue;
+        } else if (ch == ARG_SEPARATOR) {
+            lst.append(token);
+            token.clear();
+            continue;
+        }
+        token.append(ch);
+    }
+    lst.append(token);
+    return lst;
+}
+
+Hash parse(const QString &str)
+{
+    QStringList tokens = split(str);
+    Hash args;
+    Q_FOREACH(const QString &token, tokens) {
+        int idx = token.indexOf('=');
+        if (idx == -1) {
+            kWarning() << "Invalid argument" << token;
+            continue;
+        }
+        QString key = token.left(idx);
+        QString value = token.mid(idx + 1);
+        args.insert(key, value);
+    }
+    return args;
+}
+
+} // namespace
+
 //- ProxyDirModel ------------------------------------------------------
 ProxyDirModel::ProxyDirModel(QObject *parent)
 : KDirSortFilterProxyModel(parent)
@@ -142,30 +201,35 @@ PlacesModel::PlacesModel(QObject *parent)
 {
 }
 
-bool PlacesModel::trigger(int row)
+static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
+{
+    return QString("open PlacesModel:rootUrl=%1,rootName=%2,url=%3")
+        .arg(SourceArguments::escapeValue(rootUrl.url()))
+        .arg(SourceArguments::escapeValue(rootName))
+        .arg(SourceArguments::escapeValue(url.url()));
+}
+
+QString PlacesModel::trigger(int row)
 {
     Q_ASSERT(m_rootModel);
 
-    bool close = false;
+    QString output;
     QModelIndex sourceIndex = mapToSource(index(row, 0));
     if (sourceModel() == m_rootModel) {
         KUrl theUrl = m_rootModel->data(sourceIndex, KFilePlacesModel::UrlRole).value<QUrl>();
-        switchToDirModel();
-
-        m_rootUrl = theUrl;
-        m_rootUrl.adjustPath(KUrl::AddTrailingSlash);
-        m_rootName = "/" + sourceIndex.data(Qt::DisplayRole).toString();
-        openDirUrl(theUrl);
+        theUrl.adjustPath(KUrl::AddTrailingSlash);
+        QString rootName = sourceIndex.data(Qt::DisplayRole).toString();
+        output = sourceString(theUrl, rootName, theUrl);
     } else {
         KFileItem item = m_proxyDirModel->itemForIndex(sourceIndex);
         if (item.isDir()) {
-            openDirUrl(item.url());
+            output = sourceString(m_rootUrl, m_rootName, item.url());
         } else {
             item.run();
-            close = true;
+            output = "started";
         }
     }
-    return close;
+    return output;
 }
 
 int PlacesModel::count() const
@@ -211,9 +275,9 @@ QString PlacesModel::path() const
     url.adjustPath(KUrl::RemoveTrailingSlash);
     QString relativePath = KUrl::relativeUrl(m_rootUrl, url);
     if (relativePath == "./") {
-        return m_rootName;
+        return '/' + m_rootName;
     }
-    return QString("%1/%2").arg(m_rootName).arg(relativePath);
+    return QString("/%1/%2").arg(m_rootName).arg(relativePath);
 }
 
 void PlacesModel::setPath(const QString &newPath)
@@ -232,6 +296,52 @@ void PlacesModel::setPath(const QString &newPath)
         openDirUrl(url);
     }
     pathChanged(path());
+}
+
+
+QString PlacesModel::arguments() const
+{
+    return m_arguments;
+}
+
+void PlacesModel::setArguments(const QString &str)
+{
+    if (m_arguments == str) {
+        return;
+    }
+
+    SourceArguments::Hash args = SourceArguments::parse(str);
+    KUrl rootUrl = args.value("rootUrl");
+    QString rootName = args.value("rootName");
+    KUrl url = args.value("url");
+
+    if (!rootUrl.isValid()) {
+        // No rootUrl, going back to place list
+        switchToRootModel();
+
+        m_arguments = str;
+        argumentsChanged(str);
+        return;
+    }
+
+    // Opening a root
+    if (rootName.isEmpty()) {
+        kWarning() << "Invalid name passed as 'rootName' argument in" << str;
+    }
+    if (!url.isValid()) {
+        kWarning() << "Invalid url passed as 'url' argument in" << str;
+        return;
+    }
+
+    if (sourceModel() == m_rootModel) {
+        switchToDirModel();
+    }
+    m_rootUrl = rootUrl;
+    m_rootName = rootName;
+    openDirUrl(url);
+
+    m_arguments = str;
+    argumentsChanged(str);
 }
 
 QString PlacesModel::filter() const
