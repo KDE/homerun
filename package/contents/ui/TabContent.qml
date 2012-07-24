@@ -26,6 +26,8 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 
 import "KeyboardUtils.js" as KeyboardUtils
 
+import "TabContentInternal.js" as TabContentInternal
+
 Item {
     id: main
 
@@ -119,8 +121,10 @@ Item {
                 }
             }
 
+            /*
             onItemAdded: updateTabOrderRequested()
             onItemRemoved: updateTabOrderRequested()
+            */
         }
     }
 
@@ -169,10 +173,41 @@ Item {
                     bottom: parent.bottom
                 }
             }
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 200
+                }
+            }
         }
     }
 
     // Ui
+    PlasmaComponents.ToolButton {
+        id: backButton
+        anchors {
+            left: parent.left
+            top: parent.top
+        }
+        iconSource: "go-previous"
+        onClicked: {
+            TabContentInternal.goBack();
+        }
+        z: 1000 // FIXME: Ugly
+    }
+    PlasmaComponents.ToolButton {
+        id: forwardButton
+        anchors {
+            left: backButton.right
+            top: parent.top
+        }
+        iconSource: "go-next"
+        onClicked: {
+            TabContentInternal.goForward();
+        }
+        z: 1000 // FIXME: Ugly
+    }
+
     PlasmaComponents.Label {
         id: typeAheadLabel
         anchors {
@@ -281,16 +316,15 @@ Item {
     }
 
     function createPage(models) {
-        if (page) {
-            page.destroy();
-        }
-        page = pageComponent.createObject(main);
+        var page = pageComponent.createObject(main);
         models.forEach(function(model) {
             var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
             component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
         });
 
-        updateTabOrderRequested();
+        TabContentInternal.addPage(page);
+        TabContentInternal.goTo(TabContentInternal.pages.length - 1);
+        //updateTabOrderRequested();
     }
 
     function reset() {
