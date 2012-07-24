@@ -18,6 +18,10 @@
  */
 #include "placesmodel.h"
 
+// Local
+#include <sourcearguments.h>
+
+// KDE
 #include <KDebug>
 #include <KDirLister>
 #include <KDirModel>
@@ -36,65 +40,6 @@ static QString favoriteIdFromUrl(const KUrl &url)
 {
     return "place:" + url.url();
 }
-
-//- Argument parsing -----------------------------------------------------------
-namespace SourceArguments
-{
-
-#define ARG_SEPARATOR ','
-#define ARG_SEPARATOR_STR ","
-typedef QHash<QString, QString> Hash;
-
-QString escapeValue(const QString &src)
-{
-    QString dst = src;
-    dst.replace('\\', "\\\\"); // must be done first
-    dst.replace(ARG_SEPARATOR, "\\" ARG_SEPARATOR_STR);
-    return dst;
-}
-
-static QStringList split(const QString &src)
-{
-    bool escaped = false;
-    QStringList lst;
-    QString token;
-    auto it = src.constBegin(), end = src.constEnd();
-    for (; it != end; ++it) {
-        const QChar ch = *it;
-        if (escaped) {
-            escaped = false;
-        } else if (ch == '\\') {
-            escaped = true;
-            continue;
-        } else if (ch == ARG_SEPARATOR) {
-            lst.append(token);
-            token.clear();
-            continue;
-        }
-        token.append(ch);
-    }
-    lst.append(token);
-    return lst;
-}
-
-Hash parse(const QString &str)
-{
-    QStringList tokens = split(str);
-    Hash args;
-    Q_FOREACH(const QString &token, tokens) {
-        int idx = token.indexOf('=');
-        if (idx == -1) {
-            kWarning() << "Invalid argument" << token;
-            continue;
-        }
-        QString key = token.left(idx);
-        QString value = token.mid(idx + 1);
-        args.insert(key, value);
-    }
-    return args;
-}
-
-} // namespace
 
 //- ProxyDirModel ------------------------------------------------------
 ProxyDirModel::ProxyDirModel(QObject *parent)
