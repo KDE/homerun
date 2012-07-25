@@ -136,7 +136,7 @@ private:
     QString m_installer;
     QString m_arguments;
 
-    void setPath(const QString &path);
+    void load(const QString &entryPath);
 };
 
 #endif

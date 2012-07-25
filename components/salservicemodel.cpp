@@ -62,8 +62,7 @@ GroupNode::GroupNode(KServiceGroup::Ptr group, SalServiceModel *model)
 
 bool GroupNode::trigger()
 {
-    QString path = "/" % m_entryPath.left(m_entryPath.length() - 1);
-    QString source = "ServiceModel:path=" % SourceArguments::escapeValue(path);
+    QString source = "ServiceModel:entryPath=" % SourceArguments::escapeValue(m_entryPath);
     QMetaObject::invokeMethod(m_model, "openSourceRequested", Q_ARG(QString, source));
     return false;
 }
@@ -115,7 +114,7 @@ SalServiceModel::SalServiceModel (QObject *parent)
 : QAbstractListModel(parent)
 , m_pathModel(new PathModel(this))
 {
-    setPath("/");
+    load(QString());
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
@@ -163,20 +162,19 @@ bool SalServiceModel::trigger(int row)
     return m_nodeList.at(row)->trigger();
 }
 
-void SalServiceModel::setPath(const QString &path)
+void SalServiceModel::load(const QString &entryPath)
 {
     m_pathModel->clear();
     beginResetModel();
     qDeleteAll(m_nodeList);
     m_nodeList.clear();
 
-    if (path == "/") {
+    if (entryPath.isEmpty()) {
         loadRootEntries();
     } else {
-        QString relPath = path.mid(1) % "/";
-        KServiceGroup::Ptr group = KServiceGroup::group(relPath);
+        KServiceGroup::Ptr group = KServiceGroup::group(entryPath);
         loadServiceGroup(group);
-        QString source = "ServiceModel:path=" % SourceArguments::escapeValue(path);
+        QString source = "ServiceModel:entryPath=" % SourceArguments::escapeValue(entryPath);
         m_pathModel->addPath(group->caption(), source);
     }
 
@@ -273,8 +271,7 @@ void SalServiceModel::setArguments(const QString& arguments)
     }
 
     SourceArguments::Hash args = SourceArguments::parse(arguments);
-    QString path = args.value("path");
-    setPath(path);
+    load(args.value("entryPath"));
 
     m_arguments = arguments;
     argumentsChanged(m_arguments);
