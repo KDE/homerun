@@ -29,6 +29,7 @@
 #include <KServiceGroup>
 #include <KUrl>
 
+class PathModel;
 class QTimer;
 
 class SalServiceModel;
@@ -93,7 +94,7 @@ class SalServiceModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(QString path WRITE setPath READ path NOTIFY pathChanged)
+    Q_PROPERTY(QObject* pathModel READ pathModel CONSTANT)
     Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
     Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
 
@@ -109,20 +110,18 @@ public:
     int count() const;
     QVariant data(const QModelIndex&, int) const;
 
-    void setPath(const QString& path);
-    QString path() const;
-
     void setInstaller(const QString &installer);
     QString installer() const;
 
     void setArguments(const QString &arguments);
     QString arguments() const;
 
+    PathModel *pathModel() const;
+
     Q_INVOKABLE bool trigger(int row);
 
 Q_SIGNALS:
     void countChanged();
-    void pathChanged(const QString&);
     void installerChanged(const QString &);
     void argumentsChanged(const QString &);
     void openSourceRequested(const QString &source);
@@ -132,10 +131,12 @@ private:
     void loadServiceGroup(KServiceGroup::Ptr group);
 
 private:
+    PathModel *m_pathModel;
     QList<AbstractNode *> m_nodeList;
-    QString m_path;
     QString m_installer;
     QString m_arguments;
+
+    void setPath(const QString &path);
 };
 
 #endif

@@ -19,6 +19,7 @@
 */
 
 // Local
+#include <pathmodel.h>
 #include <salservicemodel.h>
 #include <sourcearguments.h>
 
@@ -111,8 +112,8 @@ bool InstallerNode::trigger()
 
 //- SalServiceModel ------------------------------------------------------------
 SalServiceModel::SalServiceModel (QObject *parent)
-    : QAbstractListModel(parent)
-    , m_path("/")
+: QAbstractListModel(parent)
+, m_pathModel(new PathModel(this))
 {
     setPath("/");
 
@@ -164,8 +165,8 @@ bool SalServiceModel::trigger(int row)
 
 void SalServiceModel::setPath(const QString &path)
 {
+    m_pathModel->clear();
     beginResetModel();
-    m_path = path;
     qDeleteAll(m_nodeList);
     m_nodeList.clear();
 
@@ -173,17 +174,15 @@ void SalServiceModel::setPath(const QString &path)
         loadRootEntries();
     } else {
         QString relPath = path.mid(1) % "/";
-        loadServiceGroup(KServiceGroup::group(relPath));
+        KServiceGroup::Ptr group = KServiceGroup::group(relPath);
+        loadServiceGroup(group);
+        QString source = "ServiceModel:path=" % SourceArguments::escapeValue(path);
+        m_pathModel->addPath(group->caption(), source);
     }
 
     endResetModel();
-    emit countChanged();
-    pathChanged(path);
-}
 
-QString SalServiceModel::path() const
-{
-    return m_path;
+    emit countChanged();
 }
 
 void SalServiceModel::setInstaller(const QString& installer)
@@ -279,6 +278,11 @@ void SalServiceModel::setArguments(const QString& arguments)
 
     m_arguments = arguments;
     argumentsChanged(m_arguments);
+}
+
+PathModel *SalServiceModel::pathModel() const
+{
+    return m_pathModel;
 }
 
 #include "salservicemodel.moc"

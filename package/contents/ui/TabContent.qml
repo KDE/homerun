@@ -78,7 +78,6 @@ Item {
     Component {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
-            path: "/"
             property string name: "Applications"
             installer: config.readEntry("PackageManagement", "categoryInstaller")
 
