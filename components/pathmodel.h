@@ -32,6 +32,7 @@
 class PathModel : public QStandardItemModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
     explicit PathModel(QObject *parent = 0);
     ~PathModel();
@@ -41,6 +42,11 @@ public:
     };
 
     void addPath(const QString &label, const QString &source);
+
+    int count() const;
+
+Q_SIGNALS:
+    void countChanged();
 };
 
 #endif /* PATHMODEL_H */

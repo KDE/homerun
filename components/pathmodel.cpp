@@ -32,6 +32,9 @@ PathModel::PathModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(SourceRole, "source");
     setRoleNames(roles);
+    connect(this, SIGNAL(modelReset()), SIGNAL(countChanged()));
+    connect(this, SIGNAL(rowsInserted(QModelIndex, int, int)), SIGNAL(countChanged()));
+    connect(this, SIGNAL(rowsRemoved(QModelIndex, int, int)), SIGNAL(countChanged()));
 }
 
 PathModel::~PathModel()
@@ -43,6 +46,11 @@ void PathModel::addPath(const QString &label, const QString &source)
     QStandardItem *item = new QStandardItem(label);
     item->setData(source, SourceRole);
     appendRow(item);
+}
+
+int PathModel::count() const
+{
+    return rowCount();
 }
 
 #include <pathmodel.moc>
