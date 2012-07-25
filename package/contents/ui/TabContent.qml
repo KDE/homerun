@@ -31,17 +31,30 @@ import "TabContentInternal.js" as TabContentInternal
 Item {
     id: main
 
+    //- Public ----------------------------------------------------
+    // Defined by outside world
     property variant favoriteModels
     property variant sources
     property string typeAhead
-
-    property bool searchable: searchModels.length > 0
     property string searchCriteria
+
+    // Exposed by ourself
+    property bool searchable: searchModels.length > 0
+    property bool canGoBack: false
+    property bool canGoForward: false
 
     signal startedApplication
     signal updateTabOrderRequested
 
-    // Internal
+    function goBack() {
+        TabContentInternal.goBack();
+    }
+
+    function goForward() {
+        TabContentInternal.goForward();
+    }
+
+    //- Private ---------------------------------------------------
     property variant browseModels: []
     property variant searchModels: []
 
@@ -185,31 +198,6 @@ Item {
     }
 
     // Ui
-    PlasmaComponents.ToolButton {
-        id: backButton
-        anchors {
-            left: parent.left
-            top: parent.top
-        }
-        iconSource: "go-previous"
-        onClicked: {
-            TabContentInternal.goBack();
-        }
-        z: 1000 // FIXME: Ugly
-    }
-    PlasmaComponents.ToolButton {
-        id: forwardButton
-        anchors {
-            left: backButton.right
-            top: parent.top
-        }
-        iconSource: "go-next"
-        onClicked: {
-            TabContentInternal.goForward();
-        }
-        z: 1000 // FIXME: Ugly
-    }
-
     PlasmaComponents.Label {
         id: typeAheadLabel
         anchors {

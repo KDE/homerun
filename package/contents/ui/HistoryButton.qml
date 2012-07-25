@@ -16,40 +16,11 @@
  *   Free Software Foundation, Inc.,
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-var pages = new Array();
-var currentIndex = -1;
 
-function addPage(page) {
-    if (currentIndex > -1) {
-        // Remove pages after currentIndex
-        var lst = pages.splice(currentIndex + 1);
-        lst.forEach(function(x) { x.destroy(); });
-    }
-    pages.push(page);
-}
+import QtQuick 1.1
+import org.kde.plasma.components 0.1 as PlasmaComponents
 
-function goTo(index) {
-    if (currentIndex != -1) {
-        pages[currentIndex].opacity = 0;
-    }
-    currentIndex = index;
-    pages[index].opacity = 1;
-    _updateCanGoBackForward();
-}
-
-function goBack() {
-    if (currentIndex > 0) {
-        goTo(currentIndex - 1);
-    }
-}
-
-function goForward() {
-    if (currentIndex < pages.length - 1) {
-        goTo(currentIndex + 1);
-    }
-}
-
-function _updateCanGoBackForward() {
-    canGoBack = currentIndex > 0;
-    canGoForward = currentIndex < pages.length - 1;
+PlasmaComponents.Button {
+    width: 36
+    height: width
 }
