@@ -3,6 +3,7 @@ project(salcomponents)
 set(salcomponents_SRCS
     favoriteappsmodel.cpp
     pagemodel.cpp
+    pathmodel.cpp
     placesmodel.cpp
     powermodel.cpp
     runnerinfoprovider.cpp

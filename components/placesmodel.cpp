@@ -19,6 +19,7 @@
 #include "placesmodel.h"
 
 // Local
+#include <pathmodel.h>
 #include <sourcearguments.h>
 
 // KDE
@@ -143,6 +144,7 @@ PlacesModel::PlacesModel(QObject *parent)
 : QSortFilterProxyModel(parent)
 , m_rootModel(0)
 , m_proxyDirModel(new ProxyDirModel(this))
+, m_pathModel(new PathModel(this))
 {
 }
 
@@ -193,6 +195,7 @@ void PlacesModel::switchToRootModel()
     roles.insert(Qt::DecorationRole, "icon");
     roles.insert(FavoritePlacesModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
+    m_pathModel->clear();
 }
 
 void PlacesModel::switchToDirModel()
@@ -207,42 +210,10 @@ void PlacesModel::switchToDirModel()
     setRoleNames(roles);
 }
 
-QString PlacesModel::path() const
+QAbstractItemModel *PlacesModel::pathModel() const
 {
-    if (!m_rootModel) {
-        return QString();
-    }
-
-    if (sourceModel() == m_rootModel) {
-        return "/";
-    }
-    KUrl url = m_proxyDirModel->dirLister()->url();
-    url.adjustPath(KUrl::RemoveTrailingSlash);
-    QString relativePath = KUrl::relativeUrl(m_rootUrl, url);
-    if (relativePath == "./") {
-        return '/' + m_rootName;
-    }
-    return QString("/%1/%2").arg(m_rootName).arg(relativePath);
+    return m_pathModel;
 }
-
-void PlacesModel::setPath(const QString &newPath)
-{
-    if (!m_rootModel) {
-        kWarning() << "rootModel not set, path value ignored!";
-        return;
-    }
-
-    if (newPath == "/") {
-        switchToRootModel();
-    } else {
-        KUrl url = m_rootUrl;
-        // Ugly: skip the first path token: it is the place name
-        url.addPath(newPath.section('/', 2));
-        openDirUrl(url);
-    }
-    pathChanged(path());
-}
-
 
 QString PlacesModel::arguments() const
 {
@@ -306,10 +277,25 @@ void PlacesModel::setFilter(const QString& filter)
 
 }
 
-void PlacesModel::openDirUrl(const KUrl &url)
+void PlacesModel::openDirUrl(const KUrl &_url)
 {
+    KUrl url = _url;
+    url.adjustPath(KUrl::RemoveTrailingSlash);
     m_proxyDirModel->dirLister()->openUrl(url);
-    pathChanged(path());
+
+    // Update m_pathModel
+    m_pathModel->clear();
+    m_pathModel->addPath(m_rootName, sourceString(m_rootUrl, m_rootName, m_rootUrl));
+
+    QString relativePath = KUrl::relativeUrl(m_rootUrl, url);
+    if (relativePath == "./") {
+        return;
+    }
+    url = m_rootUrl;
+    Q_FOREACH(const QString &token, relativePath.split('/')) {
+        url.addPath(token);
+        m_pathModel->addPath(token, sourceString(m_rootUrl, m_rootName, url));
+    }
 }
 
 QAbstractItemModel *PlacesModel::rootModel() const

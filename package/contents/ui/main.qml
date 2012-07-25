@@ -67,43 +67,14 @@ Item {
         }
     }
 
-    HistoryButton {
-        id: backButton
-        anchors {
-            top: parent.top
-            topMargin: main.topMargin
-            left: parent.left
-            leftMargin: parent.leftMargin
-        }
-        height: filterTabBar.height
-        width: height
-        iconSource: "go-previous"
-        enabled: currentTabContent.canGoBack
-        onClicked: currentTabContent.goBack()
-    }
-
-    HistoryButton {
-        id: forwardButton
-        anchors {
-            top: parent.top
-            topMargin: main.topMargin
-            left: backButton.right
-        }
-        height: filterTabBar.height
-        width: height
-        iconSource: "go-next"
-        enabled: currentTabContent.canGoForward
-        onClicked: currentTabContent.goForward()
-    }
-
     PlasmaComponents.TabBar {
         id: filterTabBar
 
         anchors {
             top: parent.top
             topMargin: main.topMargin
-            left: forwardButton.right
-            leftMargin: 12
+            left: parent.left
+            leftMargin: parent.leftMargin
         }
 
         Repeater {

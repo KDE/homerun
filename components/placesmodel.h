@@ -28,6 +28,8 @@
 class KDirLister;
 class KFileItem;
 
+class PathModel;
+
 /**
  * Internal
  */
@@ -81,19 +83,16 @@ class PlacesModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(QString path READ path WRITE setPath NOTIFY pathChanged)
     Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged)
     Q_PROPERTY(QObject *rootModel READ rootModel WRITE setRootModel NOTIFY rootModelChanged)
     Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
+    Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
 
 public:
     PlacesModel(QObject *parent = 0);
     Q_INVOKABLE bool trigger(int row);
 
     int count() const;
-
-    QString path() const;
-    void setPath(const QString &path);
 
     QString arguments() const;
     void setArguments(const QString &arguments);
@@ -108,17 +107,19 @@ public:
      */
     void setRootModel(QObject *model);
 
+    QAbstractItemModel *pathModel() const;
+
 Q_SIGNALS:
     void countChanged();
     void filterChanged();
     void rootModelChanged();
-    void pathChanged(const QString &);
     void argumentsChanged(const QString &);
     void openSourceRequested(const QString &source);
 
 private:
     QAbstractItemModel *m_rootModel;
     ProxyDirModel *m_proxyDirModel;
+    PathModel *m_pathModel;
     KUrl m_rootUrl;
     QString m_rootName;
     QString m_filter;

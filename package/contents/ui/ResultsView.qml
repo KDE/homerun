@@ -28,9 +28,11 @@ FocusScope {
     //- Public --------------------------------------------------
     property variant favoriteModels
 
+    property bool showHeader: true
     property alias model: proxyModel.sourceModel
     property alias typeAhead: proxyModel.filterRegExp
     property bool tabMe: gridView.count > 0
+    property alias pathModel: pathModel
 
     signal indexClicked(int index)
 
@@ -103,31 +105,13 @@ FocusScope {
             left: parent.left
         }
         text: model.name
-    }
-
-    Row {
-        id: breadCrumbRow
-        anchors {
-            top: headerLabel.bottom
-            left: parent.left
-            right: parent.right
-        }
-        visible: main.path != "/"
-        spacing: 6
-
-        Repeater {
-            model: pathModel
-            delegate: PlasmaComponents.ToolButton {
-                text: model.text
-                onClicked: main.model.path = model.path
-            }
-        }
+        visible: showHeader
     }
 
     GridView {
         id: gridView
         anchors {
-            top: breadCrumbRow.bottom
+            top: showHeader ? headerLabel.bottom : parent.top
             left: parent.left
             right: parent.right
         }

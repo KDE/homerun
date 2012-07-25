@@ -34,6 +34,7 @@ function goTo(index) {
     }
     currentIndex = index;
     pages[index].opacity = 1;
+    currentPage = pages[index];
     _updateCanGoBackForward();
 }
 

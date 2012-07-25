@@ -60,6 +60,8 @@ Item {
 
     property bool componentCompleted: false
 
+    property Item currentPage
+
     property bool isSearching: searchCriteria.length == 0
     onIsSearchingChanged: {
         if (componentCompleted) {
@@ -161,6 +163,7 @@ Item {
         Item {
             property alias viewContainer: column
             anchors.fill: parent
+            property Item firstView
 
             Flickable {
                 id: flickable
@@ -209,6 +212,54 @@ Item {
         opacity: typeAhead == "" ? 0 : 0.4
     }
 
+    Row {
+        id: headerRow
+        visible: canGoBack
+        height: backButton.height
+
+        anchors {
+            left: parent.left
+            top: parent.top
+            right: parent.right
+        }
+
+        HistoryButton {
+            id: backButton
+            iconSource: "go-previous"
+            onClicked: goBack()
+        }
+
+        HistoryButton {
+            iconSource: "go-next"
+            enabled: canGoForward
+            onClicked: goForward()
+        }
+
+        Item {
+            width: 12
+            height: parent.height
+        }
+
+        Repeater {
+            model: (currentPage.firstView && currentPage.firstView.model.pathModel) ? currentPage.firstView.model.pathModel : null
+            delegate: PlasmaComponents.Button {
+                height: headerRow.height
+                text: model.label
+                onClicked: openSource(model.source)
+            }
+        }
+    }
+
+    Item {
+        id: pageContainer
+        anchors {
+            left: parent.left
+            top: headerRow.visible ? headerRow.bottom : parent.top
+            right: parent.right
+            bottom: parent.bottom
+        }
+    }
+
     // Scripting
     Component.onCompleted: {
         createModels();
@@ -227,7 +278,7 @@ Item {
     function openSource(source) {
         var out = createModelForSource(source);
         var models = [out[0]];
-        createPage(models);
+        createPage(models, { "showHeader": false });
     }
 
     Keys.onPressed: {
@@ -306,11 +357,22 @@ Item {
         return [model, isSearchModel];
     }
 
-    function createPage(models) {
-        var page = pageComponent.createObject(main);
+    function createPage(models, viewExtraArgs /*= {}*/) {
+        var page = pageComponent.createObject(pageContainer);
         models.forEach(function(model) {
             var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
-            component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
+            var viewArgs = {};
+            viewArgs["model"] = model;
+            viewArgs["favoriteModels"] = favoriteModels;
+            if (viewExtraArgs !== undefined) {
+                for (var key in viewExtraArgs) {
+                    viewArgs[key] = viewExtraArgs[key];
+                }
+            }
+            var view = component.createObject(page.viewContainer, viewArgs);
+            if (page.firstView === null) {
+                page.firstView = view;
+            }
         });
 
         TabContentInternal.addPage(page);
