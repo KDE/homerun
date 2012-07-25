@@ -45,10 +45,13 @@ Item {
     property variant browseModels: []
     property variant searchModels: []
 
+    property bool componentCompleted: false
 
     property bool isSearching: searchCriteria.length == 0
     onIsSearchingChanged: {
-        createPage(isSearching ? browseModels : searchModels);
+        if (componentCompleted) {
+            createPage(isSearching ? browseModels : searchModels);
+        }
     }
 
     SalComponents.SharedConfig {
@@ -222,6 +225,7 @@ Item {
     Component.onCompleted: {
         createModels();
         createPage(browseModels);
+        componentCompleted = true;
     }
 
     function handleTriggerResult(result) {
