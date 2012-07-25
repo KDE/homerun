@@ -25,23 +25,21 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 FocusScope {
     id: main
 
-    height: childrenRect.height
-
-    signal indexClicked(int index)
-
-    property bool tabMe: gridView.count > 0
-
-    //FIXME: figure out sizing properly..
-    property int resultItemHeight: 128
-    property int resultItemWidth: 128
-
-    property string currentText: "";
-    property string currentIcon: "";
-
+    //- Public --------------------------------------------------
     property variant favoriteModels
 
     property alias model: proxyModel.sourceModel
     property alias typeAhead: proxyModel.filterRegExp
+    property bool tabMe: gridView.count > 0
+
+    signal indexClicked(int index)
+
+    //- Private -------------------------------------------------
+    height: childrenRect.height
+
+    //FIXME: figure out sizing properly..
+    property int resultItemHeight: 128
+    property int resultItemWidth: 128
 
     property string path: model.path ? model.path : "/"
     onPathChanged: pathModel.update(path)
