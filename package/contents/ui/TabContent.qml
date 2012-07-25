@@ -33,6 +33,7 @@ Item {
 
     property variant favoriteModels
     property variant sources
+    property string typeAhead
 
     property bool searchable: searchModels.length > 0
     property string searchCriteria
@@ -43,9 +44,7 @@ Item {
     // Internal
     property variant browseModels: []
     property variant searchModels: []
-    property Item page
 
-    property string typeAhead
 
     property bool isSearching: searchCriteria.length == 0
     onIsSearchingChanged: {
