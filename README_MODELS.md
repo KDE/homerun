@@ -33,10 +33,11 @@ view associated with the model.
 Returns current number of rows. Most often it will simply return
 rowCount(QModelIndex()).
 
-### string path
-- access: read-write
+### PathModel path
+- access: read-only
 - mandatory: no
-Used for models which can be navigated through. Should start with "/".
+Used for models which can be navigated through. Returns a PathModel instance
+representing the position inside the model.
 
 ### array(string) arguments
 - access: read-write
