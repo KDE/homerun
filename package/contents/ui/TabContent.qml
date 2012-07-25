@@ -211,10 +211,10 @@ Item {
         opacity: typeAhead == "" ? 0 : 0.4
     }
 
-    Row {
+    Item {
         id: headerRow
         visible: canGoBack
-        height: backButton.height
+        height: 32
 
         anchors {
             left: parent.left
@@ -222,29 +222,45 @@ Item {
             right: parent.right
         }
 
-        HistoryButton {
+        PlasmaComponents.ToolButton {
             id: backButton
+            width: height
+            height: parent.height
+
             iconSource: "go-previous"
             onClicked: goBack()
         }
 
-        HistoryButton {
-            iconSource: "go-next"
+        PlasmaComponents.ToolButton {
+            id: forwardButton
+            anchors {
+                left: backButton.right
+            }
+            width: height
+            height: parent.height
             enabled: canGoForward
+
+            iconSource: "go-next"
             onClicked: goForward()
         }
 
-        Item {
-            width: 12
+        Row {
+            id: breadcrumbRow
+            anchors {
+                left: forwardButton.right
+                leftMargin: 12
+            }
             height: parent.height
-        }
-
-        Repeater {
-            model: (currentPage.firstView && currentPage.firstView.model.pathModel) ? currentPage.firstView.model.pathModel : null
-            delegate: PlasmaComponents.Button {
-                height: headerRow.height
-                text: model.label
-                onClicked: openSource(model.source)
+            Repeater {
+                id: repeater
+                model: (currentPage.firstView && currentPage.firstView.model.pathModel) ? currentPage.firstView.model.pathModel : null
+                delegate: BreadcrumbButton {
+                    height: breadcrumbRow.height
+                    isFirst: model.index == 0
+                    isCurrent: model.index == repeater.model.count - 1
+                    text: model.label
+                    onClicked: openSource(model.source)
+                }
             }
         }
     }
