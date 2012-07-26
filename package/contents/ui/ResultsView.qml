@@ -22,6 +22,8 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
+import "KeyboardUtils.js" as KeyboardUtils
+
 FocusScope {
     id: main
 
@@ -211,6 +213,26 @@ FocusScope {
     }
 
     // Code
+    KeyNavigation.backtab: {
+        var lst = KeyboardUtils.findTabMeChildren(main.parent);
+        for(var idx = 1; idx < lst.length; ++idx) {
+            if (lst[idx] == main) {
+                return lst[idx - 1];
+            }
+        }
+        return null;
+    }
+
+    KeyNavigation.tab: {
+        var lst = KeyboardUtils.findTabMeChildren(main.parent);
+        for(var idx = 0; idx < lst.length - 1; ++idx) {
+            if (lst[idx] == main) {
+                return lst[idx + 1];
+            }
+        }
+        return null;
+    }
+
     function favoriteModelForFavoriteId(favoriteId) {
         if (favoriteId === undefined || favoriteId === "") {
             return null;

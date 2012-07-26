@@ -59,11 +59,6 @@ Item {
         TabContent {
             id: tabContentMain
             onStartedApplication: embedded ? closeRequested() : reset()
-            onUpdateTabOrderRequested: {
-                if (currentTabContent == tabContentMain) {
-                    updateTabOrder();
-                }
-            }
         }
     }
 
@@ -193,10 +188,13 @@ Item {
         placeholderText: "Search..."
 
         property bool searching: text.length > 0
+
+        KeyNavigation.tab: content
+        KeyNavigation.backtab: content
     }
 
     // Main content
-    Item {
+    FocusScope {
         id: content
         anchors {
             top: filterTabBar.bottom
@@ -213,6 +211,7 @@ Item {
             id: tabGroup
             anchors.fill: parent
             opacity: searchField.searching ? 0 : 1
+            focus: !searchField.searching
         }
 
         TabContent {
@@ -222,23 +221,30 @@ Item {
             sources: ["RunnerModel"]
             favoriteModels: createFavoriteModelsObject();
             searchCriteria: searchField.text
+            focus: searchField.searching
         }
+        KeyNavigation.tab: searchField
+        KeyNavigation.backtab: searchField
     }
 
     // Code
     Connections {
         target: main
         onCurrentTabContentChanged: {
-            updateTabOrder();
-            var firstView = searchField.KeyNavigation.tab;
-            if (firstView) {
-                firstView.forceActiveFocus();
-            }
+            focusFirstView();
         }
     }
 
-    Component.onCompleted: {
-        updateTabOrder();
+    function focusFirstView() {
+        var page = currentTabContent.currentPage;
+        if (!page) {
+            return;
+        }
+        var firstView = page.getFirstView();
+        if (!firstView) {
+            return;
+        }
+        firstView.forceActiveFocus();
     }
 
     function createFavoriteModelsObject() {
@@ -259,15 +265,6 @@ Item {
             content.reset();
         });
         searchField.text = "";
-    }
-
-    function updateTabOrder() {
-        if (currentTabContent) {
-            var lst = KeyboardUtils.findTabMeChildren(currentTabContent);
-            lst.unshift(searchField);
-            lst.push(searchField);
-            KeyboardUtils.setTabOrder(lst);
-        }
     }
 
     Keys.onPressed: {

@@ -41,6 +41,7 @@ Item {
     // Exposed by ourself
     property bool canGoBack: false
     property bool canGoForward: false
+    property Item currentPage
 
     signal startedApplication
     signal updateTabOrderRequested
@@ -54,8 +55,6 @@ Item {
     }
 
     //- Private ---------------------------------------------------
-    property Item currentPage
-
     SalComponents.SharedConfig {
         id: config
         name: "salrc"
@@ -149,7 +148,11 @@ Item {
         Item {
             property alias viewContainer: column
             anchors.fill: parent
-            property Item firstView
+
+            function getFirstView() {
+                var lst = KeyboardUtils.findTabMeChildren(this);
+                return lst.length > 0 ? lst[0] : null;
+            }
 
             Flickable {
                 id: flickable
@@ -377,14 +380,14 @@ Item {
                 }
             }
             var view = component.createObject(page.viewContainer, viewArgs);
-            if (page.firstView === null) {
-                page.firstView = view;
-            }
         });
 
         TabContentInternal.addPage(page);
         TabContentInternal.goTo(TabContentInternal.pages.length - 1);
-        //updateTabOrderRequested();
+        var view = page.getFirstView();
+        if (view) {
+            view.forceActiveFocus();
+        }
     }
 
     function reset() {
