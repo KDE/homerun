@@ -29,7 +29,11 @@ FocusScope {
     property variant favoriteModels
 
     property bool showHeader: true
-    property alias model: proxyModel.sourceModel
+    /* We intentionally do not use an alias for "model" here. With an alias,
+     * headerLabel cannot access model.name of sub models returned by
+     * SalRunnerModel.
+     */
+    property QtObject model
     property alias typeAhead: proxyModel.filterRegExp
     property bool tabMe: gridView.count > 0
 
@@ -44,6 +48,7 @@ FocusScope {
 
     SalFixes.SortFilterModel {
         id: proxyModel
+        sourceModel: main.model
     }
 
     // Components
