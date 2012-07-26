@@ -314,6 +314,7 @@ Item {
             event.accepted = true;
             break;
         case Qt.Key_Tab:
+        case Qt.Key_Escape:
             break;
         default:
             if (event.text != "") {
