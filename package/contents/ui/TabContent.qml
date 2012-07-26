@@ -234,6 +234,7 @@ Item {
             width: height
             height: headerRow.maxHeight
 
+            flat: false
             iconSource: "go-previous"
             onClicked: goBack()
         }
@@ -247,6 +248,7 @@ Item {
             height: headerRow.maxHeight
             enabled: canGoForward
 
+            flat: false
             iconSource: "go-next"
             onClicked: goForward()
         }
@@ -261,10 +263,12 @@ Item {
             Repeater {
                 id: repeater
                 model: (currentPage.firstView && currentPage.firstView.model.pathModel) ? currentPage.firstView.model.pathModel : null
-                delegate: BreadcrumbButton {
+                delegate: PlasmaComponents.ToolButton {
                     height: breadcrumbRow.height
-                    isFirst: model.index == 0
-                    isCurrent: model.index == repeater.model.count - 1
+
+                    flat: false
+                    checked: model.index == repeater.model.count - 1
+                    enabled: !checked
                     text: model.label
                     onClicked: openSource(model.source)
                 }
@@ -280,6 +284,7 @@ Item {
             right: parent.right
             bottom: parent.bottom
         }
+
         PlasmaCore.SvgItem {
             id: hline
             anchors {
