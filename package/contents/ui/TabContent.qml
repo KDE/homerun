@@ -265,11 +265,26 @@ Item {
         }
     }
 
+    PlasmaCore.SvgItem {
+        id: hline
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: headerRow.visible ? headerRow.bottom : parent.top
+            topMargin: 2
+        }
+        height: 3
+        svg: PlasmaCore.Svg {
+            imagePath: "widgets/line"
+        }
+        elementId: "horizontal-line"
+    }
+
     Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: headerRow.visible ? headerRow.bottom : parent.top
+            top: hline.bottom
             right: parent.right
             bottom: parent.bottom
         }

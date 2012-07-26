@@ -219,21 +219,6 @@ Item {
         }
     }
 
-    PlasmaCore.SvgItem {
-        id: hline
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: filterTabBar.bottom
-            topMargin: 2
-        }
-        height: 3
-        svg: PlasmaCore.Svg {
-            imagePath: "widgets/line"
-        }
-        elementId: "horizontal-line"
-    }
-
     Connections {
         target: main
         onCurrentTabContentChanged: {
