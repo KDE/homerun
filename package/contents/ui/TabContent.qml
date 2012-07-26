@@ -56,8 +56,6 @@ Item {
     //- Private ---------------------------------------------------
     property variant browseModels: []
 
-    property bool componentCompleted: false
-
     property Item currentPage
 
     SalComponents.SharedConfig {
@@ -296,7 +294,6 @@ Item {
     Component.onCompleted: {
         createModels();
         createPage(browseModels);
-        componentCompleted = true;
     }
 
     function handleTriggerResult(result) {
@@ -308,8 +305,7 @@ Item {
     }
 
     function openSource(source) {
-        var out = createModelForSource(source);
-        var models = [out[0]];
+        var models = [createModelForSource(source)];
         createPage(models, { "showHeader": false });
     }
 
@@ -333,8 +329,7 @@ Item {
     function createModels() {
         var browseLst = new Array();
         sources.forEach(function(source) {
-            var out = createModelForSource(source);
-            var model = out[0];
+            var model = createModelForSource(source);
             browseLst.push(model);
         });
         // We can't mutate arrays which are defined outside of a JS function,
@@ -369,7 +364,6 @@ Item {
             console.log("Error: unknown model type: " + modelName);
             return;
         }
-        var isSearchModel = modelName == "RunnerModel"; // FIXME
         model.objectName = source;
 
         if (modelArgs) {
@@ -379,7 +373,7 @@ Item {
                 console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
             }
         }
-        return [model, isSearchModel];
+        return model;
     }
 
     function createPage(models, viewExtraArgs /*= {}*/) {
