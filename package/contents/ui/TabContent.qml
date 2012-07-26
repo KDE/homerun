@@ -54,8 +54,6 @@ Item {
     }
 
     //- Private ---------------------------------------------------
-    property variant browseModels: []
-
     property Item currentPage
 
     SalComponents.SharedConfig {
@@ -292,8 +290,8 @@ Item {
 
     // Scripting
     Component.onCompleted: {
-        createModels();
-        createPage(browseModels);
+        var lst = sources.map(createModelForSource);
+        createPage(lst);
     }
 
     function handleTriggerResult(result) {
@@ -324,17 +322,6 @@ Item {
             }
             break;
         }
-    }
-
-    function createModels() {
-        var browseLst = new Array();
-        sources.forEach(function(source) {
-            var model = createModelForSource(source);
-            browseLst.push(model);
-        });
-        // We can't mutate arrays which are defined outside of a JS function,
-        // so we replace them instead
-        browseModels = browseLst;
     }
 
     function createModelForSource(source) {
@@ -400,11 +387,6 @@ Item {
     }
 
     function reset() {
-        searchCriteria = "";
-        browseModels.forEach(function(model) {
-            if ("path" in model) {
-                model.path = "/";
-            }
-        });
+        TabContentInternal.goTo(0);
     }
 }
