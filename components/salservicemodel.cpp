@@ -18,12 +18,17 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "salservicemodel.h"
+// Local
+#include <pathmodel.h>
+#include <salservicemodel.h>
+#include <sourcearguments.h>
 
+// Qt
 #include <QIcon>
 #include <QAction>
 #include <QTimer>
 
+// KDE
 #include <KDebug>
 #include <kmacroexpander.h>
 #include <KRun>
@@ -57,13 +62,8 @@ GroupNode::GroupNode(KServiceGroup::Ptr group, SalServiceModel *model)
 
 bool GroupNode::trigger()
 {
-    /*
-    // We are at root level, we want to descend into the selection, not execute
-    QString salUrl = service->property("X-Plasma-Sal-Url").toString();
-    // salUrl is of the form "kservicegroup://root/Something/". We want the "/Something" part.
-    setPath("/" % salUrl.section('/', 2, -1, QString::SectionSkipEmpty));
-    */
-    m_model->setPath("/" % m_entryPath.left(m_entryPath.length() - 1));
+    QString source = "ServiceModel:entryPath=" % SourceArguments::escapeValue(m_entryPath);
+    QMetaObject::invokeMethod(m_model, "openSourceRequested", Q_ARG(QString, source));
     return false;
 }
 
@@ -111,10 +111,10 @@ bool InstallerNode::trigger()
 
 //- SalServiceModel ------------------------------------------------------------
 SalServiceModel::SalServiceModel (QObject *parent)
-    : QAbstractListModel(parent)
-    , m_path("/")
+: QAbstractListModel(parent)
+, m_pathModel(new PathModel(this))
 {
-    setPath("/");
+    load(QString());
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
@@ -162,28 +162,25 @@ bool SalServiceModel::trigger(int row)
     return m_nodeList.at(row)->trigger();
 }
 
-void SalServiceModel::setPath(const QString &path)
+void SalServiceModel::load(const QString &entryPath)
 {
+    m_pathModel->clear();
     beginResetModel();
-    m_path = path;
     qDeleteAll(m_nodeList);
     m_nodeList.clear();
 
-    if (path == "/") {
+    if (entryPath.isEmpty()) {
         loadRootEntries();
     } else {
-        QString relPath = path.mid(1) % "/";
-        loadServiceGroup(KServiceGroup::group(relPath));
+        KServiceGroup::Ptr group = KServiceGroup::group(entryPath);
+        loadServiceGroup(group);
+        QString source = "ServiceModel:entryPath=" % SourceArguments::escapeValue(entryPath);
+        m_pathModel->addPath(group->caption(), source);
     }
 
     endResetModel();
-    emit countChanged();
-    pathChanged(path);
-}
 
-QString SalServiceModel::path() const
-{
-    return m_path;
+    emit countChanged();
 }
 
 void SalServiceModel::setInstaller(const QString& installer)
@@ -260,6 +257,29 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
             kWarning() << "Could not find service for" << m_installer;
         }
     }
+}
+
+QString SalServiceModel::arguments() const
+{
+    return m_arguments;
+}
+
+void SalServiceModel::setArguments(const QString& arguments)
+{
+    if (m_arguments == arguments) {
+        return;
+    }
+
+    SourceArguments::Hash args = SourceArguments::parse(arguments);
+    load(args.value("entryPath"));
+
+    m_arguments = arguments;
+    argumentsChanged(m_arguments);
+}
+
+PathModel *SalServiceModel::pathModel() const
+{
+    return m_pathModel;
 }
 
 #include "salservicemodel.moc"

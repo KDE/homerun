@@ -3,6 +3,7 @@ project(salcomponents)
 set(salcomponents_SRCS
     favoriteappsmodel.cpp
     pagemodel.cpp
+    pathmodel.cpp
     placesmodel.cpp
     powermodel.cpp
     runnerinfoprovider.cpp
@@ -11,6 +12,7 @@ set(salcomponents_SRCS
     salservicemodel.cpp
     salcomponentsplugin.cpp
     sessionmodel.cpp
+    sourcearguments.cpp
     )
 
 qt4_automoc(${salcomponents_SRCS})

@@ -26,30 +26,35 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 
 import "KeyboardUtils.js" as KeyboardUtils
 
+import "TabContentInternal.js" as TabContentInternal
+
 Item {
     id: main
 
+    //- Public ----------------------------------------------------
+    // Defined by outside world
     property variant favoriteModels
     property variant sources
-
-    property bool searchable: searchModels.length > 0
+    property string typeAhead
     property string searchCriteria
 
-    signal resultTriggered
+    // Exposed by ourself
+    property bool canGoBack: false
+    property bool canGoForward: false
+    property Item currentPage
+
+    signal startedApplication
     signal updateTabOrderRequested
 
-    // Internal
-    property variant browseModels: []
-    property variant searchModels: []
-    property Item page
-
-    property string typeAhead
-
-    property bool isSearching: searchCriteria.length == 0
-    onIsSearchingChanged: {
-        createPage(isSearching ? browseModels : searchModels);
+    function goBack() {
+        TabContentInternal.goBack();
     }
 
+    function goForward() {
+        TabContentInternal.goForward();
+    }
+
+    //- Private ---------------------------------------------------
     SalComponents.SharedConfig {
         id: config
         name: "salrc"
@@ -59,9 +64,12 @@ Item {
     Component {
         id: serviceModelComponent
         SalComponents.SalServiceModel {
-            path: "/"
             property string name: "Applications"
             installer: config.readEntry("PackageManagement", "categoryInstaller")
+
+            onOpenSourceRequested: {
+                openSource(source);
+            }
         }
     }
 
@@ -91,6 +99,10 @@ Item {
         SalComponents.PlacesModel {
             property string name: "Favorite Places"
             rootModel: main.favoriteModels["place"]
+
+            onOpenSourceRequested: {
+                openSource(source);
+            }
         }
     }
 
@@ -106,16 +118,15 @@ Item {
                 typeAhead: main.typeAhead
                 favoriteModels: repeater.favoriteModels
                 onIndexClicked: {
-                    main.typeAhead = "";
                     // Here "index" is the row number clicked inside the ResultsView
-                    if (model.trigger(index)) {
-                        resultTriggered();
-                    }
+                    handleTriggerResult(model.trigger(index));
                 }
             }
 
+            /*
             onItemAdded: updateTabOrderRequested()
             onItemRemoved: updateTabOrderRequested()
+            */
         }
     }
 
@@ -126,10 +137,7 @@ Item {
             typeAhead: main.typeAhead
 
             onIndexClicked: {
-                main.typeAhead = "";
-                if (model.trigger(index)) {
-                    resultTriggered();
-                }
+                handleTriggerResult(model.trigger(index));
             }
         }
     }
@@ -140,6 +148,14 @@ Item {
         Item {
             property alias viewContainer: column
             anchors.fill: parent
+
+            // Defined for pages with a single view on a browsable model
+            property QtObject pathModel
+
+            function getFirstView() {
+                var lst = KeyboardUtils.findTabMeChildren(this);
+                return lst.length > 0 ? lst[0] : null;
+            }
 
             Flickable {
                 id: flickable
@@ -167,6 +183,12 @@ Item {
                     bottom: parent.bottom
                 }
             }
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 200
+                }
+            }
         }
     }
 
@@ -182,10 +204,113 @@ Item {
         opacity: typeAhead == "" ? 0 : 0.4
     }
 
+    Item {
+        id: headerRow
+        property int maxHeight: 32
+        height: canGoBack ? maxHeight : 0
+        Behavior on height {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+        }
+        clip: true
+
+        anchors {
+            left: parent.left
+            top: parent.top
+            right: parent.right
+        }
+
+        PlasmaComponents.ToolButton {
+            id: backButton
+            width: height
+            height: headerRow.maxHeight
+
+            flat: false
+            iconSource: "go-previous"
+            onClicked: goBack()
+        }
+
+        PlasmaComponents.ToolButton {
+            id: forwardButton
+            anchors {
+                left: backButton.right
+            }
+            width: height
+            height: headerRow.maxHeight
+            enabled: canGoForward
+
+            flat: false
+            iconSource: "go-next"
+            onClicked: goForward()
+        }
+
+        Row {
+            id: breadcrumbRow
+            anchors {
+                left: forwardButton.right
+                leftMargin: 12
+            }
+            height: headerRow.maxHeight
+            Repeater {
+                model: currentPage.pathModel
+                delegate: PlasmaComponents.ToolButton {
+                    height: breadcrumbRow.height
+
+                    flat: false
+                    checked: model.index == currentPage.pathModel.count - 1
+                    enabled: !checked
+                    text: model.label
+                    onClicked: openSource(model.source)
+                }
+            }
+        }
+    }
+
+    Item {
+        id: pageContainer
+        anchors {
+            left: parent.left
+            top: headerRow.bottom
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        PlasmaCore.SvgItem {
+            id: hline
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+            height: naturalSize.height
+            z: 1000
+            svg: PlasmaCore.Svg {
+                imagePath: "widgets/scrollwidget"
+            }
+            elementId: "border-top"
+        }
+    }
+
     // Scripting
     Component.onCompleted: {
-        createModels();
-        createPage(browseModels);
+        var lst = sources.map(createModelForSource);
+        createPage(lst);
+    }
+
+    function handleTriggerResult(result) {
+        main.typeAhead = "";
+        if (result) {
+            startedApplication();
+            return;
+        }
+    }
+
+    function openSource(source) {
+        var models = [createModelForSource(source)];
+        var page = createPage(models, { "showHeader": false });
+        page.pathModel = models[0].pathModel;
     }
 
     Keys.onPressed: {
@@ -195,6 +320,7 @@ Item {
             event.accepted = true;
             break;
         case Qt.Key_Tab:
+        case Qt.Key_Escape:
             break;
         default:
             if (event.text != "") {
@@ -205,70 +331,75 @@ Item {
         }
     }
 
-    function createModels() {
-        var searchLst = new Array();
-        var browseLst = new Array();
-        sources.forEach(function(source) {
-            var tokens = source.split(":");
-            var modelName = tokens[0];
-            var model;
-            if (modelName == "ServiceModel") {
-                model = serviceModelComponent.createObject(main);
-            } else if (modelName == "PlacesModel") {
-                model = placesModelComponent.createObject(main);
-            } else if (modelName == "FavoriteAppsModel") {
-                model = main.favoriteModels["app"];
-            } else if (modelName == "PowerModel") {
-                model = powerModelComponent.createObject(main);
-            } else if (modelName == "SessionModel") {
-                model = sessionModelComponent.createObject(main);
-            } else if (modelName == "RunnerModel") {
-                model = runnerModelComponent.createObject(main);
-            } else {
-                console.log("Error: unknown model type: " + modelName);
-                return;
-            }
-            var isSearchModel = modelName == "RunnerModel"; // FIXME
-            model.objectName = source;
+    function createModelForSource(source) {
+        var idx = source.indexOf(":");
+        var modelName;
+        var modelArgs;
+        if (idx > 0) {
+            modelName = source.slice(0, idx);
+            modelArgs = source.slice(idx + 1);
+        } else {
+            modelName = source;
+        }
+        var model;
+        if (modelName == "ServiceModel") {
+            model = serviceModelComponent.createObject(main);
+        } else if (modelName == "PlacesModel") {
+            model = placesModelComponent.createObject(main);
+        } else if (modelName == "FavoriteAppsModel") {
+            model = main.favoriteModels["app"];
+        } else if (modelName == "PowerModel") {
+            model = powerModelComponent.createObject(main);
+        } else if (modelName == "SessionModel") {
+            model = sessionModelComponent.createObject(main);
+        } else if (modelName == "RunnerModel") {
+            model = runnerModelComponent.createObject(main);
+        } else {
+            console.log("Error: unknown model type: " + modelName);
+            return;
+        }
+        model.objectName = source;
 
-            if (tokens.length == 2) {
-                if ("arguments" in model) {
-                    model.arguments = tokens[1].split(",");
-                } else {
-                    console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
-                }
-            }
-            if (isSearchModel) {
-                searchLst.push(model);
+        if (modelArgs) {
+            if ("arguments" in model) {
+                model.arguments = modelArgs;
             } else {
-                browseLst.push(model);
+                console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
             }
-        });
-        // We can't mutate arrays which are defined outside of a JS function,
-        // so we replace them instead
-        searchModels = searchLst;
-        browseModels = browseLst;
+        }
+        return model;
     }
 
-    function createPage(models) {
-        if (page) {
-            page.destroy();
-        }
-        page = pageComponent.createObject(main);
+    function createPage(models, viewExtraArgs /*= {}*/) {
+        var page = pageComponent.createObject(pageContainer);
+        var firstView = null;
         models.forEach(function(model) {
-            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
-            component.createObject(page.viewContainer, {"model": model, "favoriteModels": favoriteModels});
+            var isMultiViewModel = "modelForRow" in model;
+            var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
+            var viewArgs = {};
+            viewArgs["model"] = model;
+            viewArgs["favoriteModels"] = favoriteModels;
+            if (viewExtraArgs !== undefined) {
+                for (var key in viewExtraArgs) {
+                    viewArgs[key] = viewExtraArgs[key];
+                }
+            }
+            var obj = component.createObject(page.viewContainer, viewArgs);
+            if (!isMultiViewModel && firstView === null) {
+                // Check isMultiViewModel because in that case obj is not a ResultsView
+                firstView = obj;
+            }
         });
 
-        updateTabOrderRequested();
+        TabContentInternal.addPage(page);
+        TabContentInternal.goTo(TabContentInternal.pages.length - 1);
+        if (firstView) {
+            firstView.forceActiveFocus();
+        }
+        return page;
     }
 
     function reset() {
-        searchCriteria = "";
-        browseModels.forEach(function(model) {
-            if ("path" in model) {
-                model.path = "/";
-            }
-        });
+        TabContentInternal.goTo(0);
     }
 }

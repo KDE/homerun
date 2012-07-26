@@ -16,22 +16,37 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import QtQuick 1.1
+#ifndef PATHMODEL_H
+#define PATHMODEL_H
 
-ListModel {
-    id: main
-    function update(path) {
-        main.clear();
-        var tokens = path.split("/");
-        var tokenPath = "/";
-        for (var idx = 0; idx < tokens.length; ++idx) {
-            var token = tokens[idx];
-            if (idx > 1) {
-                tokenPath += "/";
-            }
-            tokenPath += token;
-            var text = token == "" ? "/" : token;
-            main.append({"text": text, "path": tokenPath});
-        }
-    }
-}
+// Local
+
+// Qt
+#include <QStandardItemModel>
+
+// KDE
+
+/**
+ * Represents the path in a browsable SAL model
+ */
+class PathModel : public QStandardItemModel
+{
+    Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+public:
+    explicit PathModel(QObject *parent = 0);
+    ~PathModel();
+
+    enum {
+        SourceRole = Qt::UserRole + 1,
+    };
+
+    void addPath(const QString &label, const QString &source);
+
+    int count() const;
+
+Q_SIGNALS:
+    void countChanged();
+};
+
+#endif /* PATHMODEL_H */

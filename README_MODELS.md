@@ -33,10 +33,11 @@ view associated with the model.
 Returns current number of rows. Most often it will simply return
 rowCount(QModelIndex()).
 
-### string path
-- access: read-write
+### PathModel path
+- access: read-only
 - mandatory: no
-Used for models which can be navigated through. Should start with "/".
+Used for models which can be navigated through. Returns a PathModel instance
+representing the position inside the model.
 
 ### array(string) arguments
 - access: read-write
@@ -48,7 +49,15 @@ Define optional model arguments.
 - mandatory: yes
 Triggers the action associated with the item at row "row".
 Returns true if the trigger started an action outside of SAL, false if it did
-not (for example because it changed the "path")
+not. Returning false can happen if the action failed or if it was handled in
+another way, for example because the model emitted openSourceRequested().
+
+## Signals
+## openSourceRequested(QString source)
+- mandatory: no
+Emitted by a model when it wants another source to be opened by the view. This
+is used for example to open a browsable model in a subdir.
+
 
 
 # Features of a SAL-friendly favorite model

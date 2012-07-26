@@ -108,6 +108,7 @@ void PlacesModelTest::testProxyDirModelFavoriteId()
 
 void PlacesModelTest::testSortOrder()
 {
+    // Create sandbox
     KTempDir tempDir("placesmodeltest");
     QDir dir(tempDir.name());
     QStringList dirNames = QStringList() << "aaa" << "Abc" << "Hello";
@@ -120,24 +121,14 @@ void PlacesModelTest::testSortOrder()
         dir.mkdir(name);
     }
 
+    // Point a PlacesModel to the sandbox
     FavoritePlacesModel rootModel;
-    rootModel.addPlace("Root", dir.absolutePath());
-
     PlacesModel model;
     model.setRootModel(&rootModel);
-    bool foundRoot = false;
-    for (int row = 0; row < model.rowCount(); ++row) {
-        QModelIndex index = model.index(row, 0);
-        QString name = index.data(Qt::DisplayRole).toString();
-        if (name == "Root") {
-            model.trigger(row);
-            foundRoot = true;
-            break;
-        }
-    }
-    QVERIFY2(foundRoot, "Could not find \"Root\" place entry");
+    model.setArguments("rootUrl=file:///,rootName=Root,url=file://" + dir.absolutePath());
     QTest::qWait(5000);
 
+    // Check model content
     QStringList expected = dirNames + fileNames;
     QCOMPARE(model.rowCount(), expected.length());
     for (int row = 0; row < model.rowCount(); ++row) {

@@ -58,14 +58,7 @@ Item {
         id: tabContent
         TabContent {
             id: tabContentMain
-            // FIXME: If SAL is a containment mode, onResultTriggered should
-            // call reset() instead of emitting closeRequested()
-            onResultTriggered: closeRequested()
-            onUpdateTabOrderRequested: {
-                if (currentTabContent == tabContentMain) {
-                    updateTabOrder();
-                }
-            }
+            onStartedApplication: embedded ? closeRequested() : reset()
         }
     }
 
@@ -76,7 +69,7 @@ Item {
             top: parent.top
             topMargin: main.topMargin
             left: parent.left
-            leftMargin: main.leftMargin
+            leftMargin: parent.leftMargin
         }
 
         Repeater {
@@ -85,12 +78,8 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
-                    var favoriteModels = new Object();
-                    favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
-                    favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
-
-                    // This should not be "var tab": we set the "tab" property of the TabButton
-                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModels": favoriteModels});
+                    // "tab" is a property of TabButton, that is why it is not declared with "var"
+                    tab = createTabContent(tabGroup, model.sources);
                     var lst = tabContentList;
                     lst.push(tab);
                     tabContentList = lst;
@@ -170,20 +159,6 @@ Item {
         }
     }
 
-    PlasmaComponents.TabGroup {
-        id: tabGroup
-        anchors {
-            top: filterTabBar.bottom
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-            topMargin: 4
-            bottomMargin: main.bottomMargin
-            leftMargin: main.leftMargin
-            rightMargin: main.rightMargin
-        }
-    }
-
     // Search area
     QtExtra.QIconItem {
         anchors {
@@ -208,65 +183,88 @@ Item {
         }
 
         width: parent.width / 4
-        visible: currentTabContent.searchable
 
         clearButtonShown: true
         placeholderText: "Search..."
 
-        // Keep text in sync with currentTabContent.searchCriteria
-        onTextChanged: currentTabContent.searchCriteria = text
-        Connections {
-            target: main
-            onCurrentTabContentChanged: searchField.text = currentTabContent.searchCriteria
-        }
+        property bool searching: text.length > 0
+
+        KeyNavigation.tab: content
+        KeyNavigation.backtab: content
     }
 
-    PlasmaCore.SvgItem {
-        id: hline
+    // Main content
+    FocusScope {
+        id: content
         anchors {
+            top: filterTabBar.bottom
+            bottom: parent.bottom
             left: parent.left
             right: parent.right
-            top: filterTabBar.bottom
-            topMargin: 2
+            topMargin: 4
+            bottomMargin: main.bottomMargin
+            leftMargin: main.leftMargin
+            rightMargin: main.rightMargin
         }
-        height: 3
-        svg: PlasmaCore.Svg {
-            imagePath: "widgets/line"
-        }
-        elementId: "horizontal-line"
-    }
 
-    Connections {
-        target: main
-        onCurrentTabContentChanged: {
-            updateTabOrder();
-            var firstView = searchField.KeyNavigation.tab;
-            if (firstView) {
-                firstView.forceActiveFocus();
-            }
+        PlasmaComponents.TabGroup {
+            id: tabGroup
+            anchors.fill: parent
+            opacity: searchField.searching ? 0 : 1
+            focus: !searchField.searching
         }
-    }
 
-    Component.onCompleted: {
-        updateTabOrder();
+        TabContent {
+            id: searchTabContent
+            anchors.fill: parent
+            opacity: searchField.searching ? 1 : 0
+            sources: ["RunnerModel"]
+            favoriteModels: createFavoriteModelsObject();
+            searchCriteria: searchField.text
+            focus: searchField.searching
+        }
+        KeyNavigation.tab: searchField
+        KeyNavigation.backtab: searchField
     }
 
     // Code
+    Connections {
+        target: main
+        onCurrentTabContentChanged: {
+            focusFirstView();
+        }
+    }
+
+    function focusFirstView() {
+        var page = currentTabContent.currentPage;
+        if (!page) {
+            return;
+        }
+        var firstView = page.getFirstView();
+        if (!firstView) {
+            return;
+        }
+        firstView.forceActiveFocus();
+    }
+
+    function createFavoriteModelsObject() {
+        var favoriteModels = new Object();
+        favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
+        favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
+        return favoriteModels;
+    }
+
+    function createTabContent(parent, sources) {
+        var favoriteModels = createFavoriteModelsObject();
+        return tabContent.createObject(parent, {"sources": sources, "favoriteModels": favoriteModels});
+    }
+
     function reset() {
         filterTabBar.goToFirstTab();
         tabContentList.forEach(function(content) {
             content.reset();
         });
         searchField.text = "";
-    }
-
-    function updateTabOrder() {
-        if (currentTabContent) {
-            var lst = KeyboardUtils.findTabMeChildren(currentTabContent);
-            lst.unshift(searchField);
-            lst.push(searchField);
-            KeyboardUtils.setTabOrder(lst);
-        }
     }
 
     Keys.onPressed: {

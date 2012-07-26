@@ -22,36 +22,35 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
+import "KeyboardUtils.js" as KeyboardUtils
+
 FocusScope {
     id: main
 
-    height: childrenRect.height
+    //- Public --------------------------------------------------
+    property variant favoriteModels
+
+    property bool showHeader: true
+    /* We intentionally do not use an alias for "model" here. With an alias,
+     * headerLabel cannot access model.name of sub models returned by
+     * SalRunnerModel.
+     */
+    property QtObject model
+    property alias typeAhead: proxyModel.filterRegExp
+    property bool tabMe: gridView.count > 0
 
     signal indexClicked(int index)
 
-    property bool tabMe: gridView.count > 0
+    //- Private -------------------------------------------------
+    height: childrenRect.height
 
     //FIXME: figure out sizing properly..
     property int resultItemHeight: 128
     property int resultItemWidth: 128
 
-    property string currentText: "";
-    property string currentIcon: "";
-
-    property variant favoriteModels
-
-    property alias model: proxyModel.sourceModel
-    property alias typeAhead: proxyModel.filterRegExp
-
-    property string path: model.path ? model.path : "/"
-    onPathChanged: pathModel.update(path)
-
-    PathModel {
-        id: pathModel
-    }
-
     SalFixes.SortFilterModel {
         id: proxyModel
+        sourceModel: main.model
     }
 
     // Components
@@ -105,31 +104,13 @@ FocusScope {
             left: parent.left
         }
         text: model.name
-    }
-
-    Row {
-        id: breadCrumbRow
-        anchors {
-            top: headerLabel.bottom
-            left: parent.left
-            right: parent.right
-        }
-        visible: main.path != "/"
-        spacing: 6
-
-        Repeater {
-            model: pathModel
-            delegate: PlasmaComponents.ToolButton {
-                text: model.text
-                onClicked: main.model.path = model.path
-            }
-        }
+        visible: showHeader
     }
 
     GridView {
         id: gridView
         anchors {
-            top: breadCrumbRow.bottom
+            top: showHeader ? headerLabel.bottom : parent.top
             left: parent.left
             right: parent.right
         }
@@ -232,6 +213,26 @@ FocusScope {
     }
 
     // Code
+    KeyNavigation.backtab: {
+        var lst = KeyboardUtils.findTabMeChildren(main.parent);
+        for(var idx = 1; idx < lst.length; ++idx) {
+            if (lst[idx] == main) {
+                return lst[idx - 1];
+            }
+        }
+        return null;
+    }
+
+    KeyNavigation.tab: {
+        var lst = KeyboardUtils.findTabMeChildren(main.parent);
+        for(var idx = 0; idx < lst.length - 1; ++idx) {
+            if (lst[idx] == main) {
+                return lst[idx + 1];
+            }
+        }
+        return null;
+    }
+
     function favoriteModelForFavoriteId(favoriteId) {
         if (favoriteId === undefined || favoriteId === "") {
             return null;
