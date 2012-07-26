@@ -213,8 +213,15 @@ Item {
 
     Item {
         id: headerRow
-        visible: canGoBack
-        height: 32
+        property int maxHeight: 32
+        height: canGoBack ? maxHeight : 0
+        Behavior on height {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+        }
+        clip: true
 
         anchors {
             left: parent.left
@@ -225,7 +232,7 @@ Item {
         PlasmaComponents.ToolButton {
             id: backButton
             width: height
-            height: parent.height
+            height: headerRow.maxHeight
 
             iconSource: "go-previous"
             onClicked: goBack()
@@ -237,7 +244,7 @@ Item {
                 left: backButton.right
             }
             width: height
-            height: parent.height
+            height: headerRow.maxHeight
             enabled: canGoForward
 
             iconSource: "go-next"
@@ -250,7 +257,7 @@ Item {
                 left: forwardButton.right
                 leftMargin: 12
             }
-            height: parent.height
+            height: headerRow.maxHeight
             Repeater {
                 id: repeater
                 model: (currentPage.firstView && currentPage.firstView.model.pathModel) ? currentPage.firstView.model.pathModel : null
@@ -265,28 +272,27 @@ Item {
         }
     }
 
-    PlasmaCore.SvgItem {
-        id: hline
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: headerRow.visible ? headerRow.bottom : parent.top
-            topMargin: 2
-        }
-        height: 3
-        svg: PlasmaCore.Svg {
-            imagePath: "widgets/line"
-        }
-        elementId: "horizontal-line"
-    }
-
     Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: hline.bottom
+            top: headerRow.bottom
             right: parent.right
             bottom: parent.bottom
+        }
+        PlasmaCore.SvgItem {
+            id: hline
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+            height: naturalSize.height
+            z: 1000
+            svg: PlasmaCore.Svg {
+                imagePath: "widgets/scrollwidget"
+            }
+            elementId: "border-top"
         }
     }
 
