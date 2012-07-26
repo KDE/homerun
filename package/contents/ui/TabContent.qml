@@ -39,7 +39,6 @@ Item {
     property string searchCriteria
 
     // Exposed by ourself
-    property bool searchable: searchModels.length > 0
     property bool canGoBack: false
     property bool canGoForward: false
 
@@ -56,18 +55,10 @@ Item {
 
     //- Private ---------------------------------------------------
     property variant browseModels: []
-    property variant searchModels: []
 
     property bool componentCompleted: false
 
     property Item currentPage
-
-    property bool isSearching: searchCriteria.length == 0
-    onIsSearchingChanged: {
-        if (componentCompleted) {
-            createPage(isSearching ? browseModels : searchModels);
-        }
-    }
 
     SalComponents.SharedConfig {
         id: config
@@ -340,21 +331,14 @@ Item {
     }
 
     function createModels() {
-        var searchLst = new Array();
         var browseLst = new Array();
         sources.forEach(function(source) {
             var out = createModelForSource(source);
             var model = out[0];
-            var isSearchModel = out[1];
-            if (isSearchModel) {
-                searchLst.push(model);
-            } else {
-                browseLst.push(model);
-            }
+            browseLst.push(model);
         });
         // We can't mutate arrays which are defined outside of a JS function,
         // so we replace them instead
-        searchModels = searchLst;
         browseModels = browseLst;
     }
 

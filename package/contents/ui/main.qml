@@ -83,12 +83,8 @@ Item {
                 text: model.name
                 iconSource: model.iconName
                 Component.onCompleted: {
-                    var favoriteModels = new Object();
-                    favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
-                    favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
-
-                    // This should not be "var tab": we set the "tab" property of the TabButton
-                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModels": favoriteModels});
+                    // "tab" is a property of TabButton, that is why it is not declared with "var"
+                    tab = createTabContent(tabGroup, model.sources);
                     var lst = tabContentList;
                     lst.push(tab);
                     tabContentList = lst;
@@ -168,20 +164,6 @@ Item {
         }
     }
 
-    PlasmaComponents.TabGroup {
-        id: tabGroup
-        anchors {
-            top: filterTabBar.bottom
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-            topMargin: 4
-            bottomMargin: main.bottomMargin
-            leftMargin: main.leftMargin
-            rightMargin: main.rightMargin
-        }
-    }
-
     // Search area
     QtExtra.QIconItem {
         anchors {
@@ -206,19 +188,44 @@ Item {
         }
 
         width: parent.width / 4
-        visible: currentTabContent.searchable
 
         clearButtonShown: true
         placeholderText: "Search..."
 
-        // Keep text in sync with currentTabContent.searchCriteria
-        onTextChanged: currentTabContent.searchCriteria = text
-        Connections {
-            target: main
-            onCurrentTabContentChanged: searchField.text = currentTabContent.searchCriteria
+        property bool searching: text.length > 0
+    }
+
+    // Main content
+    Item {
+        id: content
+        anchors {
+            top: filterTabBar.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+            topMargin: 4
+            bottomMargin: main.bottomMargin
+            leftMargin: main.leftMargin
+            rightMargin: main.rightMargin
+        }
+
+        PlasmaComponents.TabGroup {
+            id: tabGroup
+            anchors.fill: parent
+            opacity: searchField.searching ? 0 : 1
+        }
+
+        TabContent {
+            id: searchTabContent
+            anchors.fill: parent
+            opacity: searchField.searching ? 1 : 0
+            sources: ["RunnerModel"]
+            favoriteModels: createFavoriteModelsObject();
+            searchCriteria: searchField.text
         }
     }
 
+    // Code
     Connections {
         target: main
         onCurrentTabContentChanged: {
@@ -234,7 +241,18 @@ Item {
         updateTabOrder();
     }
 
-    // Code
+    function createFavoriteModelsObject() {
+        var favoriteModels = new Object();
+        favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
+        favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
+        return favoriteModels;
+    }
+
+    function createTabContent(parent, sources) {
+        var favoriteModels = createFavoriteModelsObject();
+        return tabContent.createObject(parent, {"sources": sources, "favoriteModels": favoriteModels});
+    }
+
     function reset() {
         filterTabBar.goToFirstTab();
         tabContentList.forEach(function(content) {
