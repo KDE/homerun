@@ -372,8 +372,10 @@ Item {
 
     function createPage(models, viewExtraArgs /*= {}*/) {
         var page = pageComponent.createObject(pageContainer);
+        var firstView = null;
         models.forEach(function(model) {
-            var component = "modelForRow" in model ? multiResultsViewComponent : resultsViewComponent;
+            var isMultiViewModel = "modelForRow" in model;
+            var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
             var viewArgs = {};
             viewArgs["model"] = model;
             viewArgs["favoriteModels"] = favoriteModels;
@@ -382,14 +384,17 @@ Item {
                     viewArgs[key] = viewExtraArgs[key];
                 }
             }
-            var view = component.createObject(page.viewContainer, viewArgs);
+            var obj = component.createObject(page.viewContainer, viewArgs);
+            if (!isMultiViewModel && firstView === null) {
+                // Check isMultiViewModel because in that case obj is not a ResultsView
+                firstView = obj;
+            }
         });
 
         TabContentInternal.addPage(page);
         TabContentInternal.goTo(TabContentInternal.pages.length - 1);
-        var view = page.getFirstView();
-        if (view) {
-            view.forceActiveFocus();
+        if (firstView) {
+            firstView.forceActiveFocus();
         }
         return page;
     }
