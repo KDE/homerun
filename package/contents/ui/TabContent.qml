@@ -149,6 +149,9 @@ Item {
             property alias viewContainer: column
             anchors.fill: parent
 
+            // Defined for pages with a single view on a browsable model
+            property QtObject pathModel
+
             function getFirstView() {
                 var lst = KeyboardUtils.findTabMeChildren(this);
                 return lst.length > 0 ? lst[0] : null;
@@ -251,13 +254,12 @@ Item {
             }
             height: headerRow.maxHeight
             Repeater {
-                id: repeater
-                model: (currentPage.firstView && currentPage.firstView.model.pathModel) ? currentPage.firstView.model.pathModel : null
+                model: currentPage.pathModel
                 delegate: PlasmaComponents.ToolButton {
                     height: breadcrumbRow.height
 
                     flat: false
-                    checked: model.index == repeater.model.count - 1
+                    checked: model.index == currentPage.pathModel.count - 1
                     enabled: !checked
                     text: model.label
                     onClicked: openSource(model.source)
@@ -307,7 +309,8 @@ Item {
 
     function openSource(source) {
         var models = [createModelForSource(source)];
-        createPage(models, { "showHeader": false });
+        var page = createPage(models, { "showHeader": false });
+        page.pathModel = models[0].pathModel;
     }
 
     Keys.onPressed: {
@@ -388,6 +391,7 @@ Item {
         if (view) {
             view.forceActiveFocus();
         }
+        return page;
     }
 
     function reset() {
