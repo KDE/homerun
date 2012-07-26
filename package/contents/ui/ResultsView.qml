@@ -32,7 +32,6 @@ FocusScope {
     property alias model: proxyModel.sourceModel
     property alias typeAhead: proxyModel.filterRegExp
     property bool tabMe: gridView.count > 0
-    property alias pathModel: pathModel
 
     signal indexClicked(int index)
 
@@ -42,13 +41,6 @@ FocusScope {
     //FIXME: figure out sizing properly..
     property int resultItemHeight: 128
     property int resultItemWidth: 128
-
-    property string path: model.path ? model.path : "/"
-    onPathChanged: pathModel.update(path)
-
-    PathModel {
-        id: pathModel
-    }
 
     SalFixes.SortFilterModel {
         id: proxyModel
