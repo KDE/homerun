@@ -26,13 +26,15 @@ import org.kde.sal.fixes 0.1 as SalFixes
 Item {
     id: main
 
+    //- Public ----------------------------------------------------------------
+    // Set by others
     property int iconWidth: 64
     property string favoriteIcon
     property alias currentText: resultLabel.text
-    property alias currentIcon: resultIcon.icon;
-    property alias truncated: resultLabel.truncated
+    property alias currentIcon: resultIcon.icon
 
-    property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
+    // Exposed by us
+    property alias truncated: resultLabel.truncated
 
     // "highlighted" property
     // This property is controlled by both the mouse and the keyboard. It cannot
@@ -42,6 +44,12 @@ Item {
     // button to reach item B, then B.highlighted should become true and
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
+
+    signal clicked
+    signal favoriteClicked
+
+    //- Private ---------------------------------------------------------------
+    property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
     onContainsMouseChanged: {
         highlighted = containsMouse;
     }
@@ -49,10 +57,6 @@ Item {
         highlighted = activeFocus;
     }
 
-    signal clicked
-    signal entered
-    signal exited
-    signal favoriteClicked
 
     width: iconWidth * 2
     //FIXME also hardcoded. probably use a text metric
