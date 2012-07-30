@@ -57,10 +57,8 @@ Item {
         highlighted = activeFocus;
     }
 
-
-    width: iconWidth * 2
-    //FIXME also hardcoded. probably use a text metric
-    height: iconWidth + resultLabel.paintedHeight * 2
+    property int padding: 5
+    height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
 
     opacity: 0
 
@@ -91,7 +89,7 @@ Item {
         id: resultIcon
 
         anchors {
-            topMargin: 5
+            topMargin: main.padding
             top: parent.top
             left: parent.left
             right: parent.right
@@ -105,13 +103,12 @@ Item {
         id: resultLabel
 
         anchors {
-            bottomMargin: 6
+            bottomMargin: main.padding
             top: resultIcon.bottom
-            bottom: parent.bottom
             left: parent.left
             right: parent.right
-            rightMargin: 5
-            leftMargin: 5
+            rightMargin: main.padding
+            leftMargin: main.padding
         }
 
         clip: true
@@ -129,8 +126,8 @@ Item {
         anchors {
             right: parent.right
             top: parent.top
-            rightMargin: 4
-            topMargin: anchors.rightMargin
+            rightMargin: padding
+            topMargin: padding
         }
 
         Behavior on opacity {

@@ -45,8 +45,9 @@ FocusScope {
     height: childrenRect.height
 
     //FIXME: figure out sizing properly..
-    property int resultItemHeight: 128
+    property int iconWidth: 64
     property int resultItemWidth: 128
+    property int resultItemHeight: iconWidth + 3 * theme.defaultFont.mSize.height
 
     SalFixes.SortFilterModel {
         id: proxyModel
@@ -65,7 +66,10 @@ FocusScope {
     Component {
         id: result
         Result {
-            id: main
+            id: resultMain
+            iconWidth: main.iconWidth
+            width: main.resultItemWidth
+
             currentText: model.label
             currentIcon: model.icon
             favoriteIcon: {
