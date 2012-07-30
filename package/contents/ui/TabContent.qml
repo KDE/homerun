@@ -193,17 +193,6 @@ Item {
     }
 
     // Ui
-    PlasmaComponents.Label {
-        id: typeAheadLabel
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: parent.top
-        }
-        text: typeAhead + "|"
-        font.pointSize: 14
-        opacity: typeAhead == "" ? 0 : 0.4
-    }
-
     Item {
         id: headerRow
         property int maxHeight: 32
@@ -269,10 +258,42 @@ Item {
     }
 
     Item {
+        id: filterRow
+        anchors {
+            top: headerRow.bottom
+            left: parent.left
+            right: parent.right
+        }
+
+        property int maxHeight: typeAheadLabel.height
+        height: typeAhead == "" ? 0 : maxHeight
+        Behavior on height {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+        }
+        clip: true
+
+        PlasmaComponents.Label {
+            id: typeAheadLabel
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: parent.top
+            }
+            text: typeAhead + "|"
+            font.pointSize: theme.defaultFont.pointSize * 1.4
+            opacity: 0.4
+        }
+    }
+
+
+    Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: headerRow.bottom
+            top: filterRow.bottom
+            topMargin: filterRow.height > 0 ? 12 : 0
             right: parent.right
             bottom: parent.bottom
         }
