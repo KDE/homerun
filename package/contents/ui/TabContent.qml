@@ -105,7 +105,7 @@ Item {
             id: repeater
             property variant favoriteModels
             delegate: ResultsView {
-                width: parent.width
+                width: repeater.parent.width
                 model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
                 typeAhead: main.typeAhead
                 favoriteModels: repeater.favoriteModels
