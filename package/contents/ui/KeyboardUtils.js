@@ -47,3 +47,17 @@ function findTabMeChildren(item) {
     }
     return lst;
 }
+
+/**
+ * Look for a callback to call for a key event.
+ * Marks the event as accepted if a callback was found.
+ * @param lst: a list of the form: [ [modifier, key, callback], [modifier, key, callback]... ]
+ * @param event: the key event.
+ */
+function processShortcutList(lst, event) {
+    event.accepted = lst.some(function(x) {
+        if (event.modifiers == x[0] && event.key == x[1]) {
+            x[2]();
+        }
+    });
+}

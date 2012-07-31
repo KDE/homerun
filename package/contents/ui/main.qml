@@ -271,11 +271,8 @@ Item {
         var lst = [
             [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.goToPreviousTab],
             [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.goToNextTab],
+            [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
         ];
-        event.accepted = lst.some(function(x) {
-            if (event.modifiers == x[0] && event.key == x[1]) {
-                x[2]();
-            }
-        });
+        KeyboardUtils.processShortcutList(lst, event);
     }
 }
