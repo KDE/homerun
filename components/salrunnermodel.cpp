@@ -209,6 +209,10 @@ QVariant SalRunnerModel::data(const QModelIndex &index, int role) const
 
 QObject *SalRunnerModel::modelForRow(int row) const
 {
+    if (row < 0 || row >= m_models.count()) {
+        kWarning() << "No model for row" << row << "!";
+        return 0;
+    }
     return m_models.value(row);
 }
 
@@ -313,7 +317,7 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
     // At this point, matchesForRunner contains only matches for runners which
     // do not have a model yet. Create new models for them.
     if (!matchesForRunner.isEmpty()) {
-        beginInsertRows(QModelIndex(), rowCount(), rowCount() + matchesForRunner.size());
+        beginInsertRows(QModelIndex(), rowCount(), rowCount() + matchesForRunner.size() - 1);
         auto it = matchesForRunner.constBegin();
         auto end = matchesForRunner.constEnd();
         for (; it != end; ++it) {
