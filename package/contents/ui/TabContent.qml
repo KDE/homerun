@@ -46,14 +46,6 @@ Item {
     signal startedApplication
     signal updateTabOrderRequested
 
-    function goBack() {
-        TabContentInternal.goBack();
-    }
-
-    function goForward() {
-        TabContentInternal.goForward();
-    }
-
     //- Private ---------------------------------------------------
     SalComponents.SharedConfig {
         id: config
@@ -243,9 +235,11 @@ Item {
             }
             height: headerRow.maxHeight
             Repeater {
+                id: breadcrumbRepeater
                 model: currentPage.pathModel
                 delegate: PlasmaComponents.ToolButton {
                     height: breadcrumbRow.height
+                    property string source: model.source
 
                     flat: false
                     checked: model.index == currentPage.pathModel.count - 1
@@ -320,6 +314,27 @@ Item {
         createPage(lst);
     }
 
+    function goBack() {
+        TabContentInternal.goBack();
+    }
+
+    function goForward() {
+        TabContentInternal.goForward();
+    }
+
+    function goUp() {
+        var count = breadcrumbRepeater.count;
+        var source;
+        if (count >= 2) {
+            // count - 1 is the breadcrumb for the current content
+            // count - 2 is the breadcrumb for the content up
+            source = breadcrumbRepeater.itemAt(count - 2).source;
+        }
+        if (source !== null) {
+            openSource(source);
+        }
+    }
+
     function handleTriggerResult(result) {
         main.typeAhead = "";
         if (result) {
@@ -335,15 +350,30 @@ Item {
     }
 
     Keys.onPressed: {
+        if (event.modifiers == Qt.NoModifier || event.modifiers == Qt.ShiftModifier) {
+            handleTypeAheadKeyEvent(event);
+        }
+        KeyboardUtils.processShortcutList([
+            [Qt.AltModifier, Qt.Key_Left, goBack],
+            [Qt.AltModifier, Qt.Key_Right, goForward],
+            [Qt.AltModifier, Qt.Key_Up, goUp],
+            ], event);
+    }
+
+    function handleTypeAheadKeyEvent(event) {
         switch (event.key) {
+
+        case Qt.Key_Tab:
+        case Qt.Key_Escape:
+            // Keys we don't want to handle as type-ahead
+            return;
         case Qt.Key_Backspace:
+            // Erase last char
             typeAhead = typeAhead.slice(0, -1);
             event.accepted = true;
             break;
-        case Qt.Key_Tab:
-        case Qt.Key_Escape:
-            break;
         default:
+            // Add the char to typeAhead
             if (event.text != "") {
                 typeAhead += event.text;
                 event.accepted = true;

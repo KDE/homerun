@@ -151,22 +151,24 @@ FocusScope {
         delegate: result
 
         Keys.onPressed: {
-            // We must handle key presses ourself because we set interactive to false
-            var oldIndex = currentIndex;
-            if (event.key == Qt.Key_Left) {
-                moveCurrentIndexLeft();
-            } else if (event.key == Qt.Key_Right) {
-                moveCurrentIndexRight();
-            } else if (event.key == Qt.Key_Up) {
-                moveCurrentIndexUp();
-            } else if (event.key == Qt.Key_Down) {
-                moveCurrentIndexDown();
-            }
-            if (currentIndex != oldIndex) {
-                // Only accept the event if the index actually moved. Not accepting
-                // it will cause parent items to move the focus to the next ResultsView,
-                // which is what we want
-                event.accepted = true;
+            // We must handle arrow key navigation ourself because 'interactive' is false
+            if (event.modifiers == Qt.NoModifier) {
+                var oldIndex = currentIndex;
+                if (event.key == Qt.Key_Left) {
+                    moveCurrentIndexLeft();
+                } else if (event.key == Qt.Key_Right) {
+                    moveCurrentIndexRight();
+                } else if (event.key == Qt.Key_Up) {
+                    moveCurrentIndexUp();
+                } else if (event.key == Qt.Key_Down) {
+                    moveCurrentIndexDown();
+                }
+                if (currentIndex != oldIndex) {
+                    // Only accept the event if the index actually moved. Not accepting
+                    // it will cause parent items to move the focus to the next ResultsView,
+                    // which is what we want
+                    event.accepted = true;
+                }
             }
         }
 
