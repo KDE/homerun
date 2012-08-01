@@ -44,6 +44,13 @@ rowCount(QModelIndex()).
 Used for models which can be navigated through. Returns a PathModel instance
 representing the position inside the model.
 
+### bool running
+- access: read-only
+- mandatory: no
+
+Set to true to indicate the model is busy filling itself. SAL will show a busy
+indicator as long as this property is true.
+
 ### array(string) arguments
 - access: read-write
 - mandatory: no
