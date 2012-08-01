@@ -37,6 +37,7 @@ FocusScope {
      */
     property QtObject model
     property alias typeAhead: proxyModel.filterRegExp
+    property alias count: gridView.count
     property bool tabMe: gridView.count > 0
 
     signal indexClicked(int index)

@@ -125,11 +125,40 @@ Item {
     Component {
         id: resultsViewComponent
         ResultsView {
+            id: view
             width: parent.width
             typeAhead: main.typeAhead
 
             onIndexClicked: {
                 handleTriggerResult(model.trigger(index));
+            }
+
+            onCountChanged: {
+                function focusFirstNotEmpty(lst, begin, end) {
+                    for(var idx = begin; idx < end; ++idx) {
+                        if (lst[idx].count > 0) {
+                            lst[idx].forceActiveFocus();
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                if (count == 0 && activeFocus) {
+                    // When we had activeFocus but our count comes to 0 (for example because of filtering)
+                    // try to put focus on another view. Look first for views after us. Then look at views
+                    // before us.
+                    var lst = KeyboardUtils.findTabMeChildren(view.parent);
+                    var idx = lst.indexOf(view);
+                    if (idx == -1) {
+                        console.log("ERROR: Cannot find current view in tabMeChildren");
+                        return;
+                    }
+                    if (focusFirstNotEmpty(lst, idx + 1, lst.length)) {
+                        return;
+                    }
+                    focusFirstNotEmpty(lst, 0, idx);
+                }
             }
         }
     }
