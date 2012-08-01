@@ -341,7 +341,7 @@ Item {
     onActiveFocusChanged: {
         if (activeFocus) {
             var item = KeyboardUtils.findFirstTabMeChildren(main);
-            if (item !== null) [
+            if (item !== null) {
                 item.forceActiveFocus();
             }
         }
