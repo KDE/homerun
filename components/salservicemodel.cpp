@@ -218,6 +218,26 @@ void SalServiceModel::loadRootEntries()
 
 void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
 {
+    doLoadServiceGroup(group);
+
+    qSort(m_nodeList.begin(), m_nodeList.end(), AbstractNode::lessThan);
+
+    if (!m_installer.isEmpty()) {
+        KService::Ptr service = KService::serviceByDesktopName(m_installer);
+        if (service) {
+            m_nodeList << new InstallerNode(group, service);
+        } else {
+            kWarning() << "Could not find service for" << m_installer;
+        }
+    }
+}
+
+void SalServiceModel::doLoadServiceGroup(KServiceGroup::Ptr group)
+{
+    /* This method is separate from loadServiceGroup so that
+     * - only one installer node is added at the end
+     * - sorting is done only once
+     */
     if (!group || !group->isValid()) {
         return;
     }
@@ -243,18 +263,8 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
             const KServiceGroup::Ptr subGroup = KServiceGroup::Ptr::staticCast(p);
 
             if (!subGroup->noDisplay() && subGroup->childCount() > 0) {
-                loadServiceGroup(subGroup);
+                doLoadServiceGroup(subGroup);
             }
-        }
-    }
-    qSort(m_nodeList.begin(), m_nodeList.end(), AbstractNode::lessThan);
-
-    if (!m_installer.isEmpty()) {
-        KService::Ptr service = KService::serviceByDesktopName(m_installer);
-        if (service) {
-            m_nodeList << new InstallerNode(group, service);
-        } else {
-            kWarning() << "Could not find service for" << m_installer;
         }
     }
 }

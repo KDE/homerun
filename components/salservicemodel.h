@@ -129,6 +129,7 @@ Q_SIGNALS:
 private:
     void loadRootEntries();
     void loadServiceGroup(KServiceGroup::Ptr group);
+    void doLoadServiceGroup(KServiceGroup::Ptr group);
 
 private:
     PathModel *m_pathModel;
