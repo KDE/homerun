@@ -84,6 +84,8 @@ class SalRunnerModel : public QAbstractListModel
      */
     Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
 
+    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+
 public:
     explicit SalRunnerModel(QObject *parent = 0);
     ~SalRunnerModel();
@@ -95,6 +97,8 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
+
+    bool running() const;
 
     QString currentQuery() const;
 

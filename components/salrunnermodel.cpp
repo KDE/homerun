@@ -207,6 +207,11 @@ QVariant SalRunnerModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool SalRunnerModel::running() const
+{
+    return m_running;
+}
+
 QObject *SalRunnerModel::modelForRow(int row) const
 {
     if (row < 0 || row >= m_models.count()) {
