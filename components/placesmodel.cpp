@@ -146,6 +146,8 @@ PlacesModel::PlacesModel(QObject *parent)
 , m_proxyDirModel(new ProxyDirModel(this))
 , m_pathModel(new PathModel(this))
 {
+    connect(m_proxyDirModel->dirLister(), SIGNAL(started(KUrl)), SLOT(emitRunningChanged()));
+    connect(m_proxyDirModel->dirLister(), SIGNAL(completed()), SLOT(emitRunningChanged()));
 }
 
 static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
@@ -313,6 +315,23 @@ void PlacesModel::setRootModel(QObject *obj)
         m_rootModel = 0;
     }
     rootModelChanged();
+}
+
+bool PlacesModel::running() const
+{
+    if (sourceModel() == m_rootModel) {
+        return false;
+    } else {
+        return !m_proxyDirModel->dirLister()->isFinished();
+    }
+}
+
+void PlacesModel::emitRunningChanged()
+{
+    if (sourceModel() == m_rootModel) {
+        return;
+    }
+    runningChanged(running());
 }
 
 #include "placesmodel.moc"

@@ -87,6 +87,7 @@ class PlacesModel : public QSortFilterProxyModel
     Q_PROPERTY(QObject *rootModel READ rootModel WRITE setRootModel NOTIFY rootModelChanged)
     Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
     Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
+    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
 
 public:
     PlacesModel(QObject *parent = 0);
@@ -109,12 +110,18 @@ public:
 
     QAbstractItemModel *pathModel() const;
 
+    bool running() const;
+
 Q_SIGNALS:
     void countChanged();
     void filterChanged();
     void rootModelChanged();
+    void runningChanged(bool);
     void argumentsChanged(const QString &);
     void openSourceRequested(const QString &source);
+
+private Q_SLOTS:
+    void emitRunningChanged();
 
 private:
     QAbstractItemModel *m_rootModel;
