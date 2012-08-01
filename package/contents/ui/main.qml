@@ -194,7 +194,7 @@ Item {
     }
 
     // Main content
-    FocusScope {
+    Item {
         id: content
         anchors {
             top: filterTabBar.bottom
@@ -211,7 +211,6 @@ Item {
             id: tabGroup
             anchors.fill: parent
             opacity: searchField.searching ? 0 : 1
-            focus: !searchField.searching
         }
 
         TabContent {
@@ -221,10 +220,21 @@ Item {
             sources: ["RunnerModel"]
             favoriteModels: createFavoriteModelsObject();
             searchCriteria: searchField.text
-            focus: searchField.searching
         }
+
         KeyNavigation.tab: searchField
         KeyNavigation.backtab: searchField
+
+        onActiveFocusChanged: {
+            if (!activeFocus) {
+                return;
+            }
+            if (searchField.searching) {
+                searchTabContent.forceActiveFocus();
+            } else {
+                currentTabContent.forceActiveFocus();
+            }
+        }
     }
 
     // Code

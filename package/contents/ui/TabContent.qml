@@ -338,6 +338,15 @@ Item {
         createPage(lst);
     }
 
+    onActiveFocusChanged: {
+        if (activeFocus) {
+            var lst = KeyboardUtils.findTabMeChildren(main);
+            if (lst.length > 0) {
+                lst[0].forceActiveFocus();
+            }
+        }
+    }
+
     function goBack() {
         TabContentInternal.goBack();
     }
