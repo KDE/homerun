@@ -213,6 +213,7 @@ Item {
                 for (var idx = 0; idx < models.length; ++idx) {
                     modelConnectionComponent.createObject(pageMain, {"target": models[idx]});
                 }
+                pageMain.updateRunning();
             }
         }
     }
