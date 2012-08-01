@@ -340,9 +340,9 @@ Item {
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            var lst = KeyboardUtils.findTabMeChildren(main);
-            if (lst.length > 0) {
-                lst[0].forceActiveFocus();
+            var item = KeyboardUtils.findFirstTabMeChildren(main);
+            if (item !== null) [
+                item.forceActiveFocus();
             }
         }
     }

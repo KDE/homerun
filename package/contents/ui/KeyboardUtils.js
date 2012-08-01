@@ -48,6 +48,19 @@ function findTabMeChildren(item) {
     return lst;
 }
 
+function findFirstTabMeChildren(item) {
+    if (item.tabMe === true) {
+        return item;
+    }
+    for (var idx = 0; idx < item.children.length; ++idx) {
+        var child = findFirstTabMeChildren(item.children[idx]);
+        if (child !== null) {
+            return child;
+        }
+    }
+    return null;
+}
+
 /**
  * Look for a callback to call for a key event.
  * Marks the event as accepted if a callback was found.
