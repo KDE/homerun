@@ -114,11 +114,6 @@ Item {
                     handleTriggerResult(model.trigger(index));
                 }
             }
-
-            /*
-            onItemAdded: updateTabOrderRequested()
-            onItemRemoved: updateTabOrderRequested()
-            */
         }
     }
 
