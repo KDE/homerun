@@ -162,15 +162,38 @@ Item {
         id: pageComponent
 
         Item {
+            id: pageMain
             property alias viewContainer: column
             anchors.fill: parent
 
             // Defined for pages with a single view on a browsable model
             property QtObject pathModel
 
+            property list<QtObject> models
+
             function getFirstView() {
                 var lst = KeyboardUtils.findTabMeChildren(this);
                 return lst.length > 0 ? lst[0] : null;
+            }
+
+            function updateRunning() {
+                for (var idx = 0; idx < models.length; ++idx) {
+                    if (models[idx].running) {
+                        busyIndicator.running = true;
+                        return;
+                    }
+                }
+                busyIndicator.running = false;
+            }
+
+            PlasmaComponents.BusyIndicator {
+                id: busyIndicator
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                }
+                y: 12
+
+                opacity: running ? 0.5 : 0
             }
 
             Flickable {
@@ -203,6 +226,20 @@ Item {
             Behavior on opacity {
                 NumberAnimation {
                     duration: 200
+                }
+            }
+
+            Component {
+                id: modelConnectionComponent
+                Connections {
+                    ignoreUnknownSignals: true
+                    onRunningChanged: pageMain.updateRunning()
+                }
+            }
+
+            Component.onCompleted: {
+                for (var idx = 0; idx < models.length; ++idx) {
+                    modelConnectionComponent.createObject(pageMain, {"target": models[idx]});
                 }
             }
         }
@@ -455,7 +492,7 @@ Item {
     }
 
     function createPage(models, viewExtraArgs /*= {}*/) {
-        var page = pageComponent.createObject(pageContainer);
+        var page = pageComponent.createObject(pageContainer, {"models": models});
         var firstView = null;
         models.forEach(function(model) {
             var isMultiViewModel = "modelForRow" in model;
