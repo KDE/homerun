@@ -1,4 +1,4 @@
-# Features of a SAL-friendly model
+# Features of a Home Run-friendly model
 
 ## Roles
 ### string label
@@ -48,8 +48,8 @@ representing the position inside the model.
 - access: read-only
 - mandatory: no
 
-Set to true to indicate the model is busy filling itself. SAL will show a busy
-indicator as long as this property is true.
+Set to true to indicate the model is busy filling itself. Home Run will show a
+busy indicator as long as this property is true.
 
 ### array(string) arguments
 - access: read-write
@@ -61,9 +61,9 @@ Define optional model arguments.
 - mandatory: yes
 
 Triggers the action associated with the item at row "row".
-Returns true if the trigger started an action outside of SAL, false if it did
-not. Returning false can happen if the action failed or if it was handled in
-another way, for example because the model emitted openSourceRequested().
+Returns true if the trigger started an action outside of Home Run, false if it
+did not. Returning false can happen if the action failed or if it was handled
+in another way, for example because the model emitted openSourceRequested().
 
 ## Signals
 ## openSourceRequested(QString source)
@@ -74,7 +74,7 @@ is used for example to open a browsable model in a subdir.
 
 
 
-# Features of a SAL-friendly favorite model
+# Features of a Home Run-friendly favorite model
 
 ## Properties
 ### string favoritePrefix
