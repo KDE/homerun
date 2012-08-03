@@ -18,7 +18,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "salcomponentsplugin.h"
+#include "componentsplugin.h"
 
 #include <QtDeclarative/qdeclarative.h>
 
@@ -30,13 +30,13 @@
 #include "placesmodel.h"
 #include "powermodel.h"
 #include "runnerinfoprovider.h"
-#include "salrunnermodel.h"
-#include "salservicemodel.h"
+#include "runnermodel.h"
+#include "servicemodel.h"
 #include "sessionmodel.h"
 
-void SalComponentsPlugin::registerTypes(const char *uri)
+void ComponentsPlugin::registerTypes(const char *uri)
 {
-    Q_ASSERT(uri == QLatin1String("org.kde.sal.components"));
+    Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
     qmlRegisterType<FavoriteAppsModel>(uri, 0, 1, "FavoriteAppsModel");
     qmlRegisterType<FavoritePlacesModel>(uri, 0, 1, "FavoritePlacesModel");
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
@@ -45,11 +45,11 @@ void SalComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<SessionModel>(uri, 0, 1, "SessionModel");
     qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
     qmlRegisterType<SharedConfig>(uri, 0, 1, "SharedConfig");
-    qmlRegisterType<SalRunnerModel>(uri, 0, 1, "SalRunnerModel");
-    qmlRegisterType<SalServiceModel>(uri, 0, 1, "SalServiceModel");
+    qmlRegisterType<RunnerModel>(uri, 0, 1, "RunnerModel");
+    qmlRegisterType<ServiceModel>(uri, 0, 1, "ServiceModel");
     qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
     qRegisterMetaType<Plasma::QueryMatch *>("QueryMatch");
 }
 
-#include "salcomponentsplugin.moc"
+#include "componentsplugin.moc"
 

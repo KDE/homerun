@@ -1,6 +1,5 @@
 /*
- *   Copyright 2011 by Marco Martin <mart@kde.org>
- *   Copyright 2011 by Aaron Seigo <aseigo@kde.org>
+ *   Copyright 2012 Aurélien Gâteau <agateau@kde.org>
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2, or
@@ -17,13 +16,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef SALCOMPONENTSPLUGIN_H
-#define SALCOMPONENTSPLUGIN_H
+#ifndef FIXESPLUGIN_H
+#define FIXESPLUGIN_H
 
 #include <QDeclarativeExtensionPlugin>
 
 
-class SalComponentsPlugin : public QDeclarativeExtensionPlugin
+class FixesPlugin : public QDeclarativeExtensionPlugin
 {
     Q_OBJECT
 
@@ -31,6 +30,6 @@ public:
     void registerTypes(const char *uri);
 };
 
-Q_EXPORT_PLUGIN2(salcomponentsplugin, SalComponentsPlugin)
+Q_EXPORT_PLUGIN2(fixesplugin, FixesPlugin)
 
 #endif

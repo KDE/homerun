@@ -1,6 +1,7 @@
-// SAL: This is a copy of Label.qml from KDE/4.9. We need it because we rely on
-// properties like "truncated" or "maximumLineCount" which were introduced in
-// QtQuick 1.1, but Label.qml form KDE/4.8 only imports QtQuick 1.0.
+// Homerun: This is a copy of Label.qml from KDE/4.9. We need it because we
+// rely on properties like "truncated" or "maximumLineCount" which were
+// introduced in QtQuick 1.1, but Label.qml form KDE/4.8 only imports QtQuick
+// 1.0.
 /*
 *   Copyright (C) 2011 by Marco Martin <mart@kde.org>
 *

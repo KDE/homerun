@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef SALSERVICEMODEL_H
-#define SALSERVICEMODEL_H
+#ifndef SERVICEMODEL_H
+#define SERVICEMODEL_H
 
 #include <QAbstractListModel>
 #include <QStringList>
@@ -32,7 +32,7 @@
 class PathModel;
 class QTimer;
 
-class SalServiceModel;
+class ServiceModel;
 
 class AbstractNode
 {
@@ -56,12 +56,12 @@ protected:
 class GroupNode : public AbstractNode
 {
 public:
-    GroupNode(KServiceGroup::Ptr group, SalServiceModel *model);
+    GroupNode(KServiceGroup::Ptr group, ServiceModel *model);
 
     bool trigger(); // reimp
 
 private:
-    SalServiceModel *m_model;
+    ServiceModel *m_model;
     QString m_entryPath;
 };
 
@@ -85,12 +85,12 @@ public:
     bool trigger(); // reimp
 
 private:
-    SalServiceModel *m_model;
+    ServiceModel *m_model;
     KServiceGroup::Ptr m_group;
     KService::Ptr m_service;
 };
 
-class SalServiceModel : public QAbstractListModel
+class ServiceModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
@@ -103,8 +103,8 @@ public:
         FavoriteIdRole = Qt::UserRole + 1,
     };
 
-    SalServiceModel(QObject *parent = 0);
-    ~SalServiceModel();
+    ServiceModel(QObject *parent = 0);
+    ~ServiceModel();
 
     int rowCount(const QModelIndex&) const;
     int count() const;

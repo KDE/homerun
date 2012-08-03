@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef SALRUNNERMODEL_H
-#define SALRUNNERMODEL_H
+#ifndef RUNNERMODEL_H
+#define RUNNERMODEL_H
 
 // Local
 
@@ -34,13 +34,13 @@ namespace Plasma {
 class RunnerManager;
 }
 
-class SalRunnerSubModel : public QAbstractListModel
+class RunnerSubModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
-    explicit SalRunnerSubModel(const QString &runnerId, const QString &name, QObject *parent = 0);
+    explicit RunnerSubModel(const QString &runnerId, const QString &name, QObject *parent = 0);
 
     enum {
         FavoriteIdRole = Qt::UserRole + 1
@@ -74,7 +74,7 @@ private:
 /**
  *
  */
-class SalRunnerModel : public QAbstractListModel
+class RunnerModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QStringList arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
@@ -87,8 +87,8 @@ class SalRunnerModel : public QAbstractListModel
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
 
 public:
-    explicit SalRunnerModel(QObject *parent = 0);
-    ~SalRunnerModel();
+    explicit RunnerModel(QObject *parent = 0);
+    ~RunnerModel();
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
 
@@ -123,10 +123,10 @@ private:
     QTimer *m_startQueryTimer;
     QTimer *m_runningChangedTimeout;
 
-    QList<SalRunnerSubModel *> m_models;
+    QList<RunnerSubModel *> m_models;
     QStringList m_pendingRunnersList;
     bool m_running;
     QString m_pendingQuery;
 };
 
-#endif /* SALRUNNERMODEL_H */
+#endif /* RUNNERMODEL_H */

@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#include "sallauncher.h"
+#include "homerunlauncher.h"
 #include <QtCore/QSizeF>
 #include <QtGui/QPainter>
 #include <QtGui/QDesktopWidget>
@@ -40,7 +40,7 @@
 #include <KToolInvocation>
 #include <KRun>
 
-SalLauncher::SalLauncher(QObject * parent, const QVariantList & args)
+HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
     : Plasma::Applet(parent, args),
       m_icon(0)
 {
@@ -48,7 +48,7 @@ SalLauncher::SalLauncher(QObject * parent, const QVariantList & args)
 //    resize(contentSizeHint());
 }
 
-void SalLauncher::init()
+void HomerunLauncher::init()
 {
     QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -56,35 +56,35 @@ void SalLauncher::init()
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("kde");
 
-    connect(m_icon, SIGNAL(clicked()), SLOT(toggleSalViewer()));
-    connect(this, SIGNAL(activate()), SLOT(toggleSalViewer()));
+    connect(m_icon, SIGNAL(clicked()), SLOT(toggle()));
+    connect(this, SIGNAL(activate()), SLOT(toggle()));
 
     layout->addItem(m_icon);
 
     //oddly doesn't work?
-    //KToolInvocation::startServiceByDesktopPath("salviewer.desktop", QStringList(), &error);
+    //KToolInvocation::startServiceByDesktopPath("homerunviewer.desktop", QStringList(), &error);
     //kDebug() << "ERROR?: " << error;
     checkAndLaunch();
 }
 
-void SalLauncher::checkAndLaunch()
+void HomerunLauncher::checkAndLaunch()
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.salViewer")) {
-        kDebug() << "Service not registered, launching salviewer";
-        KRun::runCommand("salviewer", 0);
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.homerunViewer")) {
+        kDebug() << "Service not registered, launching homerunviewer";
+        KRun::runCommand("homerunviewer", 0);
     }
 }
 
-void SalLauncher::toggleSalViewer()
+void HomerunLauncher::toggle()
 {
     kDebug() << "ICON CLICKED!";
     checkAndLaunch();
 
     QDBusConnection bus = QDBusConnection::sessionBus();
 
-    QDBusInterface interface("org.kde.salViewer", "/SalViewer", "org.kde.salViewer", bus);
+    QDBusInterface interface("org.kde.homerunViewer", "/HomerunViewer", "org.kde.homerunViewer", bus);
 
     interface.asyncCall("toggle", containment()->screen());
 }
 
-#include "sallauncher.moc"
+#include "homerunlauncher.moc"

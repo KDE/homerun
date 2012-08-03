@@ -1,7 +1,6 @@
 /*
- *   Copyright 2008 Ryan P. Bitanga <ryan.bitanga@gmail.com>
- *   Copyright 2009 Marco Martin <notmart@gmail.com>
- *
+ *   Copyright 2011 by Marco Martin <mart@kde.org>
+ *   Copyright 2011 by Aaron Seigo <aseigo@kde.org>
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2, or
@@ -10,7 +9,7 @@
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details
+ *   GNU Library General Public License for more details
  *
  *   You should have received a copy of the GNU Library General Public
  *   License along with this program; if not, write to the
@@ -18,38 +17,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef KRUNNERCONFIG_H
-#define KRUNNERCONFIG_H
+#ifndef COMPONENTSPLUGIN_H
+#define COMPONENTSPLUGIN_H
 
-#include <KPluginSelector>
+#include <QDeclarativeExtensionPlugin>
 
 
-
-class KPluginSelector;
-
-namespace Plasma {
-    class RunnerManager;
-}
-
-class RunnersConfig : public KPluginSelector
+class ComponentsPlugin : public QDeclarativeExtensionPlugin
 {
-Q_OBJECT
-    public:
-        RunnersConfig(Plasma::RunnerManager *manager, QWidget *parent = 0);
-        ~RunnersConfig();
+    Q_OBJECT
 
-    public slots:
-        void accept();
-
-    private slots:
-        void updateRunner(const QByteArray& runnerName);
-
-    private:
-        void init();
-
-        KPluginSelector *m_sel;
-        Plasma::RunnerManager *m_manager;
+public:
+    void registerTypes(const char *uri);
 };
 
-#endif
+Q_EXPORT_PLUGIN2(componentsplugin, ComponentsPlugin)
 
+#endif

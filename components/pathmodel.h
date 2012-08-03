@@ -27,7 +27,7 @@
 // KDE
 
 /**
- * Represents the path in a browsable SAL model
+ * Represents the path in a browsable Homerun model
  */
 class PathModel : public QStandardItemModel
 {

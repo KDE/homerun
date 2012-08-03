@@ -17,7 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 // Self
-#include <salrunnermodel.h>
+#include <runnermodel.h>
 
 // Local
 
@@ -30,7 +30,7 @@
 #include <QStandardItemModel>
 #include <QTimer>
 
-SalRunnerSubModel::SalRunnerSubModel(const QString &runnerId, const QString &name, QObject *parent)
+RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, QObject *parent)
 : QAbstractListModel(parent)
 , m_runnerId(runnerId)
 , m_name(name)
@@ -53,17 +53,17 @@ SalRunnerSubModel::SalRunnerSubModel(const QString &runnerId, const QString &nam
     setRoleNames(roles);
 }
 
-int SalRunnerSubModel::count() const
+int RunnerSubModel::count() const
 {
     return m_matches.count();
 }
 
-int SalRunnerSubModel::rowCount(const QModelIndex& parent) const
+int RunnerSubModel::rowCount(const QModelIndex& parent) const
 {
     return parent.isValid() ? 0 : m_matches.count();
 }
 
-QVariant SalRunnerSubModel::data(const QModelIndex &index, int role) const
+QVariant RunnerSubModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.parent().isValid() ||
         index.column() > 0 || index.row() < 0 || index.row() >= m_matches.count()) {
@@ -116,7 +116,7 @@ QVariant SalRunnerSubModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void SalRunnerSubModel::setMatches(const QList<Plasma::QueryMatch> &matches)
+void RunnerSubModel::setMatches(const QList<Plasma::QueryMatch> &matches)
 {
     //kDebug() << "got matches:" << matches.count();
     bool fullReset = false;
@@ -151,7 +151,7 @@ void SalRunnerSubModel::setMatches(const QList<Plasma::QueryMatch> &matches)
     }
 }
 
-bool SalRunnerSubModel::trigger(int row)
+bool RunnerSubModel::trigger(int row)
 {
     if (row >= 0 && row < m_matches.count()) {
         triggerRequested(m_matches.at(row));
@@ -161,7 +161,7 @@ bool SalRunnerSubModel::trigger(int row)
 
 //--------------------------------------------------------------------
 
-SalRunnerModel::SalRunnerModel(QObject *parent)
+RunnerModel::RunnerModel(QObject *parent)
 : QAbstractListModel(parent)
 , m_manager(0)
 , m_startQueryTimer(new QTimer(this))
@@ -177,11 +177,11 @@ SalRunnerModel::SalRunnerModel(QObject *parent)
     connect(m_runningChangedTimeout, SIGNAL(timeout()), this, SLOT(queryHasFinished()));
 }
 
-SalRunnerModel::~SalRunnerModel()
+RunnerModel::~RunnerModel()
 {
 }
 
-int SalRunnerModel::rowCount(const QModelIndex &parent) const
+int RunnerModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) {
         return 0;
@@ -189,13 +189,13 @@ int SalRunnerModel::rowCount(const QModelIndex &parent) const
     return m_models.count();
 }
 
-QVariant SalRunnerModel::data(const QModelIndex &index, int role) const
+QVariant RunnerModel::data(const QModelIndex &index, int role) const
 {
     if (index.parent().isValid()) {
         return QVariant();
     }
 
-    SalRunnerSubModel *model = m_models.value(index.row());
+    RunnerSubModel *model = m_models.value(index.row());
     if (!model) {
         return QVariant();
     }
@@ -207,12 +207,12 @@ QVariant SalRunnerModel::data(const QModelIndex &index, int role) const
     }
 }
 
-bool SalRunnerModel::running() const
+bool RunnerModel::running() const
 {
     return m_running;
 }
 
-QObject *SalRunnerModel::modelForRow(int row) const
+QObject *RunnerModel::modelForRow(int row) const
 {
     if (row < 0 || row >= m_models.count()) {
         kWarning() << "No model for row" << row << "!";
@@ -221,12 +221,12 @@ QObject *SalRunnerModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
-QStringList SalRunnerModel::arguments() const
+QStringList RunnerModel::arguments() const
 {
     return m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
 }
 
-void SalRunnerModel::setArguments(const QStringList& args)
+void RunnerModel::setArguments(const QStringList& args)
 {
     QSet<QString> argsSet = args.toSet();
     if (arguments().toSet() == argsSet) {
@@ -243,18 +243,18 @@ void SalRunnerModel::setArguments(const QStringList& args)
     emit argumentsChanged();
 }
 
-QString SalRunnerModel::currentQuery() const
+QString RunnerModel::currentQuery() const
 {
     return m_manager ? m_manager->query() : QString();
 }
 
-void SalRunnerModel::scheduleQuery(const QString &query)
+void RunnerModel::scheduleQuery(const QString &query)
 {
     m_pendingQuery = query;
     m_startQueryTimer->start();
 }
 
-void SalRunnerModel::startQuery()
+void RunnerModel::startQuery()
 {
     if (!m_manager && m_pendingQuery.isEmpty()) {
         // avoid creating a manager just so we can run nothing
@@ -273,7 +273,7 @@ void SalRunnerModel::startQuery()
  //   }
 }
 
-void SalRunnerModel::createManager()
+void RunnerModel::createManager()
 {
     if (!m_manager) {
         m_manager = new Plasma::RunnerManager(this);
@@ -291,7 +291,7 @@ void SalRunnerModel::createManager()
     }
 }
 
-void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
+void RunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
 {
     // Group matches by runner
     // We do not use a QMultiHash here because it keeps values in LIFO order, while we want FIFO.
@@ -307,7 +307,7 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
 
     // Assign matches to existing models. If there is no match for a model, delete it.
     for (int row = m_models.count() - 1; row >= 0; --row) {
-        SalRunnerSubModel *subModel = m_models.at(row);
+        RunnerSubModel *subModel = m_models.at(row);
         QList<Plasma::QueryMatch> matches = matchesForRunner.take(subModel->runnerId());
         if (matches.isEmpty()) {
             beginRemoveRows(QModelIndex(), row, row);
@@ -329,7 +329,7 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
             QList<Plasma::QueryMatch> matches = it.value();
             Q_ASSERT(!matches.isEmpty());
             QString name = matches.first().runner()->name();
-            SalRunnerSubModel *subModel = new SalRunnerSubModel(it.key(), name, this);
+            RunnerSubModel *subModel = new RunnerSubModel(it.key(), name, this);
             connect(subModel, SIGNAL(triggerRequested(Plasma::QueryMatch)), SLOT(trigger(Plasma::QueryMatch)));
             subModel->setMatches(matches);
             m_models.append(subModel);
@@ -340,15 +340,15 @@ void SalRunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
     m_runningChangedTimeout->start(3000);
 }
 
-void SalRunnerModel::queryHasFinished()
+void RunnerModel::queryHasFinished()
 {
     m_running = false;
     emit runningChanged(false);
 }
 
-void SalRunnerModel::trigger(const Plasma::QueryMatch& match)
+void RunnerModel::trigger(const Plasma::QueryMatch& match)
 {
     m_manager->run(match);
 }
 
-#include <salrunnermodel.moc>
+#include <runnermodel.moc>

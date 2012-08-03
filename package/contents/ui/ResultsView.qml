@@ -17,7 +17,7 @@
  *****************************************************************************/
 
 import QtQuick 1.1
-import org.kde.sal.fixes 0.1 as SalFixes
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -33,7 +33,7 @@ FocusScope {
     property bool showHeader: true
     /* We intentionally do not use an alias for "model" here. With an alias,
      * headerLabel cannot access model.name of sub models returned by
-     * SalRunnerModel.
+     * RunnerModel.
      */
     property QtObject model
     property alias typeAhead: proxyModel.filterRegExp
@@ -50,7 +50,7 @@ FocusScope {
     property int resultItemWidth: 128
     property int resultItemHeight: iconWidth + 3 * theme.defaultFont.mSize.height
 
-    SalFixes.SortFilterModel {
+    HomerunFixes.SortFilterModel {
         id: proxyModel
         sourceModel: main.model
     }

@@ -20,7 +20,7 @@
 
 // Local
 #include <pathmodel.h>
-#include <salservicemodel.h>
+#include <servicemodel.h>
 #include <sourcearguments.h>
 
 // Qt
@@ -51,7 +51,7 @@ bool AbstractNode::lessThan(AbstractNode *n1, AbstractNode *n2)
 }
 
 //- GroupNode ------------------------------------------------------------------
-GroupNode::GroupNode(KServiceGroup::Ptr group, SalServiceModel *model)
+GroupNode::GroupNode(KServiceGroup::Ptr group, ServiceModel *model)
 : m_model(model)
 {
     m_icon = KIcon(group->icon());
@@ -109,8 +109,8 @@ bool InstallerNode::trigger()
     return KRun::run(command, KUrl::List(), 0, m_service->name(), m_service->icon());
 }
 
-//- SalServiceModel ------------------------------------------------------------
-SalServiceModel::SalServiceModel (QObject *parent)
+//- ServiceModel ------------------------------------------------------------
+ServiceModel::ServiceModel (QObject *parent)
 : QAbstractListModel(parent)
 , m_pathModel(new PathModel(this))
 {
@@ -124,22 +124,22 @@ SalServiceModel::SalServiceModel (QObject *parent)
     setRoleNames(roles);
 }
 
-SalServiceModel::~SalServiceModel()
+ServiceModel::~ServiceModel()
 {
     qDeleteAll(m_nodeList);
 }
 
-int SalServiceModel::rowCount(const QModelIndex& index) const
+int ServiceModel::rowCount(const QModelIndex& index) const
 {
     return index.isValid() ? 0 : m_nodeList.count();
 }
 
-int SalServiceModel::count() const
+int ServiceModel::count() const
 {
     return m_nodeList.count();
 }
 
-QVariant SalServiceModel::data(const QModelIndex &index, int role) const
+QVariant ServiceModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.row() >= m_nodeList.count()) {
         return QVariant();
@@ -157,12 +157,12 @@ QVariant SalServiceModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool SalServiceModel::trigger(int row)
+bool ServiceModel::trigger(int row)
 {
     return m_nodeList.at(row)->trigger();
 }
 
-void SalServiceModel::load(const QString &entryPath)
+void ServiceModel::load(const QString &entryPath)
 {
     m_pathModel->clear();
     beginResetModel();
@@ -183,7 +183,7 @@ void SalServiceModel::load(const QString &entryPath)
     emit countChanged();
 }
 
-void SalServiceModel::setInstaller(const QString& installer)
+void ServiceModel::setInstaller(const QString& installer)
 {
     if (installer == m_installer) {
         return;
@@ -192,12 +192,12 @@ void SalServiceModel::setInstaller(const QString& installer)
     installerChanged(installer);
 }
 
-QString SalServiceModel::installer() const
+QString ServiceModel::installer() const
 {
     return m_installer;
 }
 
-void SalServiceModel::loadRootEntries()
+void ServiceModel::loadRootEntries()
 {
     KServiceGroup::Ptr group = KServiceGroup::root();
     KServiceGroup::List list = group->entries(false /* sorted: set to false as it does not seem to work */);
@@ -216,7 +216,7 @@ void SalServiceModel::loadRootEntries()
     qSort(m_nodeList.begin(), m_nodeList.end(), AbstractNode::lessThan);
 }
 
-void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
+void ServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
 {
     doLoadServiceGroup(group);
 
@@ -232,7 +232,7 @@ void SalServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
     }
 }
 
-void SalServiceModel::doLoadServiceGroup(KServiceGroup::Ptr group)
+void ServiceModel::doLoadServiceGroup(KServiceGroup::Ptr group)
 {
     /* This method is separate from loadServiceGroup so that
      * - only one installer node is added at the end
@@ -269,12 +269,12 @@ void SalServiceModel::doLoadServiceGroup(KServiceGroup::Ptr group)
     }
 }
 
-QString SalServiceModel::arguments() const
+QString ServiceModel::arguments() const
 {
     return m_arguments;
 }
 
-void SalServiceModel::setArguments(const QString& arguments)
+void ServiceModel::setArguments(const QString& arguments)
 {
     if (m_arguments == arguments) {
         return;
@@ -287,9 +287,9 @@ void SalServiceModel::setArguments(const QString& arguments)
     argumentsChanged(m_arguments);
 }
 
-PathModel *SalServiceModel::pathModel() const
+PathModel *ServiceModel::pathModel() const
 {
     return m_pathModel;
 }
 
-#include "salservicemodel.moc"
+#include "servicemodel.moc"

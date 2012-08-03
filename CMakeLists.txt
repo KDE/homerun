@@ -1,4 +1,4 @@
-project(sal)
+project(homerun)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
@@ -14,12 +14,12 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
 # package/
 install(DIRECTORY package/
-        DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/org.kde.sal)
+        DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/org.kde.homerun)
 
-install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-applet-sal.desktop)
+install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-applet-homerun.desktop)
 
 # config/
-install(FILES config/salrc DESTINATION ${CONFIG_INSTALL_DIR})
+install(FILES config/homerunrc DESTINATION ${CONFIG_INSTALL_DIR})
 
 add_subdirectory(applet)
 add_subdirectory(shell)

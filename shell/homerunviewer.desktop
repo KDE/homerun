@@ -4,8 +4,8 @@ Icon=kde
 X-KDE-ServiceTypes=
 X-DBUS-StartupType=Unique
 X-KDE-StartupNotify=false
-Exec=salviewer
+Exec=homerunviewer
 
-Name=Search and Launch application
+Name=KDE Homerun application
 
-Comment=Displays Search and Launch in a popup
+Comment=Displays KDE Homerun in a popup

@@ -28,7 +28,7 @@
 
 #include "fullview.h"
 
-#include "salvieweradaptor.h"
+#include "homerunvieweradaptor.h"
 
 #include <QDesktopWidget>
 #include <QKeyEvent>
@@ -47,10 +47,10 @@ FullView::FullView()
 : QDeclarativeView()
 , m_backgroundSvg(new Plasma::FrameSvg(this))
 {
-    new SalViewerAdaptor(this);
+    new HomerunViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.registerObject("/SalViewer", this);
-    dbus.registerService("org.kde.salViewer");
+    dbus.registerObject("/HomerunViewer", this);
+    dbus.registerService("org.kde.homerunViewer");
 
     KDeclarative kdeclarative;
     kdeclarative.setDeclarativeEngine(engine());
@@ -69,7 +69,7 @@ FullView::FullView()
     viewport()->setAutoFillBackground(false);
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
 
-    KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.sal/contents/ui/main.qml");
+    KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.homerun/contents/ui/main.qml");
     setSource(source);
 
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));

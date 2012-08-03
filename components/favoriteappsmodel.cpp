@@ -53,7 +53,7 @@ FavoriteAppsModel::FavoriteAppsModel(QObject *parent)
     roles.insert(Qt::DecorationRole, "icon");
     roles.insert(FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
-    setConfig(KSharedConfig::openConfig("salrc"));
+    setConfig(KSharedConfig::openConfig("homerunrc"));
 }
 
 FavoriteAppsModel::~FavoriteAppsModel()

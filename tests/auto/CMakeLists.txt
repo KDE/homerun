@@ -1,4 +1,4 @@
-macro(sal_add_unit_test _test)
+macro(homerun_add_unit_test _test)
     string(REGEX REPLACE "_x11$" "" _cpp "${_test}") # ${cpp} is ${_test} without the "_x11" prefix, if present
     set(_src ${_cpp}.cpp ${ARGN})
     qt4_automoc(${_src})
@@ -13,10 +13,10 @@ macro(sal_add_unit_test _test)
         ${QT_QTCORE_LIBRARY}
         ${QT_QTGUI_LIBRARY}
         )
-endmacro(sal_add_unit_test)
+endmacro(homerun_add_unit_test)
 
 include_directories(
-    ${salcomponents_SOURCE_DIR}
+    ${components_SOURCE_DIR}
     )
 
 # Tests which depend on X11 cannot be run on headless builders. If X11 is not
@@ -25,21 +25,21 @@ include_directories(
 # tests, binaries of X11-dependent tests must be suffixed with "_x11".
 
 # X11-independent tests
-sal_add_unit_test(pagemodeltest ${salcomponents_SOURCE_DIR}/pagemodel.cpp)
+homerun_add_unit_test(pagemodeltest ${components_SOURCE_DIR}/pagemodel.cpp)
 
 # X11-dependent tests
-sal_add_unit_test(favoriteappsmodeltest_x11 ${salcomponents_SOURCE_DIR}/favoriteappsmodel.cpp)
-sal_add_unit_test(favoriteplacesmodeltest_x11
-    ${salcomponents_SOURCE_DIR}/placesmodel.cpp
-    ${salcomponents_SOURCE_DIR}/pathmodel.cpp
-    ${salcomponents_SOURCE_DIR}/sourcearguments.cpp
+homerun_add_unit_test(favoriteappsmodeltest_x11 ${components_SOURCE_DIR}/favoriteappsmodel.cpp)
+homerun_add_unit_test(favoriteplacesmodeltest_x11
+    ${components_SOURCE_DIR}/placesmodel.cpp
+    ${components_SOURCE_DIR}/pathmodel.cpp
+    ${components_SOURCE_DIR}/sourcearguments.cpp
     )
-sal_add_unit_test(placesmodeltest_x11
-    ${salcomponents_SOURCE_DIR}/placesmodel.cpp
-    ${salcomponents_SOURCE_DIR}/pathmodel.cpp
-    ${salcomponents_SOURCE_DIR}/sourcearguments.cpp
+homerun_add_unit_test(placesmodeltest_x11
+    ${components_SOURCE_DIR}/placesmodel.cpp
+    ${components_SOURCE_DIR}/pathmodel.cpp
+    ${components_SOURCE_DIR}/sourcearguments.cpp
     )
-sal_add_unit_test(runnerinfoprovidertest_x11 ${salcomponents_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
+homerun_add_unit_test(runnerinfoprovidertest_x11 ${components_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
 
 # Definition of the "check" target
 set(_check_command ${CMAKE_CTEST_COMMAND} --verbose)

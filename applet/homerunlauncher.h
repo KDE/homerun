@@ -17,8 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#ifndef SALLAUNCHER_H
-#define SALLAUNCHER_H
+#ifndef HOMERUNLAUNCHER_H
+#define HOMERUNLAUNCHER_H
 
 #include <QtCore/QBasicTimer>
 #include <QtCore/QTime>
@@ -40,21 +40,21 @@ namespace Plasma {
 class QGraphicsSceneMouseEvent;
 class QSizeF;
 
-class SalLauncher : public Plasma::Applet
+class HomerunLauncher : public Plasma::Applet
 {
     Q_OBJECT
 public:
-    SalLauncher(QObject * parent, const QVariantList & args);
+    HomerunLauncher(QObject * parent, const QVariantList & args);
 
     void init();
 
 private Q_SLOTS:
-    void toggleSalViewer();
+    void toggle();
     void checkAndLaunch();
 
 private:
     Plasma::IconWidget *m_icon;
 };
 
-K_EXPORT_PLASMA_APPLET (sallauncher, SalLauncher)
+K_EXPORT_PLASMA_APPLET (homerunlauncher, HomerunLauncher)
 #endif

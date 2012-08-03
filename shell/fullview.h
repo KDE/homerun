@@ -36,7 +36,7 @@ class FrameSvg;
 class FullView : public QDeclarativeView
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.kde.salViewer")
+    Q_CLASSINFO("D-Bus Interface", "org.kde.homerunViewer")
 
 public:
     FullView();

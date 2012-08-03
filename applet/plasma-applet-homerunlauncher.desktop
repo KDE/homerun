@@ -1,17 +1,17 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Sal Launcher
+Name=KDE Homerun Launcher
 
-Comment=A launcher to display Search & Launch fullscreen
+Comment=An application launcher
 
 Type=Service
 ServiceTypes=Plasma/Applet
 Icon=kde
 
-X-KDE-Library=plasma_applet_sallauncher
+X-KDE-Library=plasma_applet_homerunlauncher
 X-KDE-PluginInfo-Author=Shaun M. Reich
 X-KDE-PluginInfo-Email=shaun.reich@blue-systems.com
-X-KDE-PluginInfo-Name=sallauncher
+X-KDE-PluginInfo-Name=homerunlauncher
 X-KDE-PluginInfo-Version=1.0
 X-KDE-PluginInfo-Website=
 X-KDE-PluginInfo-Category=

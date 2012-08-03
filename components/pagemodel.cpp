@@ -68,7 +68,7 @@ PageModel::PageModel(QObject *parent)
     roles.insert(SourcesRole, "sources");
 
     setRoleNames(roles);
-    setConfig(KSharedConfig::openConfig("salrc"));
+    setConfig(KSharedConfig::openConfig("homerunrc"));
 }
 
 PageModel::~PageModel()
