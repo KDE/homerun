@@ -28,7 +28,7 @@
 
 #include "fullview.h"
 
-#include "salvieweradaptor.h"
+#include "homerunvieweradaptor.h"
 
 #include <QDesktopWidget>
 #include <QKeyEvent>
@@ -47,10 +47,10 @@ FullView::FullView()
 : QDeclarativeView()
 , m_backgroundSvg(new Plasma::FrameSvg(this))
 {
-    new SalViewerAdaptor(this);
+    new HomeRunViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.registerObject("/SalViewer", this);
-    dbus.registerService("org.kde.salViewer");
+    dbus.registerObject("/HomeRunViewer", this);
+    dbus.registerService("org.kde.homeRunViewer");
 
     KDeclarative kdeclarative;
     kdeclarative.setDeclarativeEngine(engine());

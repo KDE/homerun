@@ -27,10 +27,10 @@
 int main(int argc, char *argv[])
 {
     KAboutData aboutData(
-        "salviewer",                  // appName
-        0,                            // catalogName
-        ki18n("Search and Launch"),   // programName
-        "0.0.0");                     // version
+        "homerunviewer",       // appName
+        0,                     // catalogName
+        ki18n("KDE Home Run"), // programName
+        "0.0.0");              // version
     aboutData.setLicense(KAboutData::License_GPL);
     aboutData.setCopyrightStatement(ki18n("(C) 2012 Blue Systems"));
 

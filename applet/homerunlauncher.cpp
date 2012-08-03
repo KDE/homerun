@@ -62,16 +62,16 @@ void HomeRunLauncher::init()
     layout->addItem(m_icon);
 
     //oddly doesn't work?
-    //KToolInvocation::startServiceByDesktopPath("salviewer.desktop", QStringList(), &error);
+    //KToolInvocation::startServiceByDesktopPath("homerunviewer.desktop", QStringList(), &error);
     //kDebug() << "ERROR?: " << error;
     checkAndLaunch();
 }
 
 void HomeRunLauncher::checkAndLaunch()
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.salViewer")) {
-        kDebug() << "Service not registered, launching salviewer";
-        KRun::runCommand("salviewer", 0);
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.homeRunViewer")) {
+        kDebug() << "Service not registered, launching homerunviewer";
+        KRun::runCommand("homerunviewer", 0);
     }
 }
 
@@ -82,7 +82,7 @@ void HomeRunLauncher::toggle()
 
     QDBusConnection bus = QDBusConnection::sessionBus();
 
-    QDBusInterface interface("org.kde.salViewer", "/SalViewer", "org.kde.salViewer", bus);
+    QDBusInterface interface("org.kde.homeRunViewer", "/HomeRunViewer", "org.kde.homeRunViewer", bus);
 
     interface.asyncCall("toggle", containment()->screen());
 }
