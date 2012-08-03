@@ -18,7 +18,7 @@
  */
 
 import QtQuick 1.1
-import org.kde.sal.components 0.1 as SalComponents
+import org.kde.homerun.components 0.1 as HomeRunComponents
 import org.kde.sal.fixes 0.1 as SalFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
@@ -47,7 +47,7 @@ Item {
     signal updateTabOrderRequested
 
     //- Private ---------------------------------------------------
-    SalComponents.SharedConfig {
+    HomeRunComponents.SharedConfig {
         id: config
         name: "salrc"
     }
@@ -55,7 +55,7 @@ Item {
     // Models
     Component {
         id: serviceModelComponent
-        SalComponents.SalServiceModel {
+        HomeRunComponents.ServiceModel {
             property string name: "Applications"
             installer: config.readEntry("PackageManagement", "categoryInstaller")
 
@@ -67,28 +67,28 @@ Item {
 
     Component {
         id: powerModelComponent
-        SalComponents.PowerModel {
+        HomeRunComponents.PowerModel {
             property string name: "Power"
         }
     }
 
     Component {
         id: sessionModelComponent
-        SalComponents.SessionModel {
+        HomeRunComponents.SessionModel {
             property string name: "Session"
         }
     }
 
     Component {
         id: runnerModelComponent
-        SalComponents.SalRunnerModel {
+        HomeRunComponents.RunnerModel {
             query: searchCriteria
         }
     }
 
     Component {
         id: placesModelComponent
-        SalComponents.PlacesModel {
+        HomeRunComponents.PlacesModel {
             property string name: "Favorite Places"
             rootModel: main.favoriteModels["place"]
 

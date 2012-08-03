@@ -1,25 +1,25 @@
-project(salcomponents)
+project(components)
 
-set(salcomponents_SRCS
+set(components_SRCS
+    componentsplugin.cpp
     favoriteappsmodel.cpp
     pagemodel.cpp
     pathmodel.cpp
     placesmodel.cpp
     powermodel.cpp
     runnerinfoprovider.cpp
-    sharedconfig.cpp
-    salrunnermodel.cpp
-    salservicemodel.cpp
-    salcomponentsplugin.cpp
+    runnermodel.cpp
+    servicemodel.cpp
     sessionmodel.cpp
+    sharedconfig.cpp
     sourcearguments.cpp
     )
 
-qt4_automoc(${salcomponents_SRCS})
+qt4_automoc(${components_SRCS})
 
-kde4_add_library(salcomponentsplugin SHARED ${salcomponents_SRCS})
+kde4_add_library(componentsplugin SHARED ${components_SRCS})
 
-target_link_libraries(salcomponentsplugin
+target_link_libraries(componentsplugin
         ${QT_QTCORE_LIBRARY}
         ${QT_QTDECLARATIVE_LIBRARY}
         ${KDE4_PLASMA_LIBS}
@@ -28,5 +28,5 @@ target_link_libraries(salcomponentsplugin
         ${KDE4WORKSPACE_KWORKSPACE_LIBS}
         )
 
-install(TARGETS salcomponentsplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/components)
-install(FILES qmldir DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/components)
+install(TARGETS componentsplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/components)
+install(FILES qmldir DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/components)

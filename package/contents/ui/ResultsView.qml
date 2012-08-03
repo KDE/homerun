@@ -33,7 +33,7 @@ FocusScope {
     property bool showHeader: true
     /* We intentionally do not use an alias for "model" here. With an alias,
      * headerLabel cannot access model.name of sub models returned by
-     * SalRunnerModel.
+     * RunnerModel.
      */
     property QtObject model
     property alias typeAhead: proxyModel.filterRegExp

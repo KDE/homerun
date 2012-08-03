@@ -26,7 +26,7 @@
 class Page;
 
 /**
- * A PageModel loads the definition of SAL pages from a configuration file
+ * A PageModel loads the definition of Home Run pages from a configuration file
  */
 class PageModel : public QAbstractListModel
 {

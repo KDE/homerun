@@ -29,7 +29,7 @@
 // KDE
 
 /**
- * Set of methods to serialize/deserialize arguments for SAL sources
+ * Set of methods to serialize/deserialize arguments for Home Run sources
  *
  * Given the arguments:
  * - key1: value1

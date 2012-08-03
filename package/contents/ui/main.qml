@@ -19,7 +19,7 @@
  */
 
 import QtQuick 1.1
-import org.kde.sal.components 0.1 as SalComponents
+import org.kde.homerun.components 0.1 as HomeRunComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -40,16 +40,16 @@ Item {
     property alias currentTabContent: tabGroup.currentTab
 
     // Models
-    SalComponents.PageModel {
+    HomeRunComponents.PageModel {
         id: pageModel
     }
 
-    SalComponents.FavoriteAppsModel {
+    HomeRunComponents.FavoriteAppsModel {
         id: favoriteAppsModel
         property string name: "Favorite Applications"
     }
 
-    SalComponents.FavoritePlacesModel {
+    HomeRunComponents.FavoritePlacesModel {
         id: favoritePlacesModel
     }
 
