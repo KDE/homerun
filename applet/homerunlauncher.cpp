@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#include "sallauncher.h"
+#include "homerunlauncher.h"
 #include <QtCore/QSizeF>
 #include <QtGui/QPainter>
 #include <QtGui/QDesktopWidget>
@@ -40,7 +40,7 @@
 #include <KToolInvocation>
 #include <KRun>
 
-SalLauncher::SalLauncher(QObject * parent, const QVariantList & args)
+HomeRunLauncher::HomeRunLauncher(QObject * parent, const QVariantList & args)
     : Plasma::Applet(parent, args),
       m_icon(0)
 {
@@ -48,7 +48,7 @@ SalLauncher::SalLauncher(QObject * parent, const QVariantList & args)
 //    resize(contentSizeHint());
 }
 
-void SalLauncher::init()
+void HomeRunLauncher::init()
 {
     QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -56,8 +56,8 @@ void SalLauncher::init()
     m_icon = new Plasma::IconWidget(this);
     m_icon->setIcon("kde");
 
-    connect(m_icon, SIGNAL(clicked()), SLOT(toggleSalViewer()));
-    connect(this, SIGNAL(activate()), SLOT(toggleSalViewer()));
+    connect(m_icon, SIGNAL(clicked()), SLOT(toggle()));
+    connect(this, SIGNAL(activate()), SLOT(toggle()));
 
     layout->addItem(m_icon);
 
@@ -67,7 +67,7 @@ void SalLauncher::init()
     checkAndLaunch();
 }
 
-void SalLauncher::checkAndLaunch()
+void HomeRunLauncher::checkAndLaunch()
 {
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.salViewer")) {
         kDebug() << "Service not registered, launching salviewer";
@@ -75,7 +75,7 @@ void SalLauncher::checkAndLaunch()
     }
 }
 
-void SalLauncher::toggleSalViewer()
+void HomeRunLauncher::toggle()
 {
     kDebug() << "ICON CLICKED!";
     checkAndLaunch();
@@ -87,4 +87,4 @@ void SalLauncher::toggleSalViewer()
     interface.asyncCall("toggle", containment()->screen());
 }
 
-#include "sallauncher.moc"
+#include "homerunlauncher.moc"
