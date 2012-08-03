@@ -1,4 +1,4 @@
-# Features of a Home Run-friendly model
+# Features of a Homerun-friendly model
 
 ## Roles
 ### string label
@@ -48,7 +48,7 @@ representing the position inside the model.
 - access: read-only
 - mandatory: no
 
-Set to true to indicate the model is busy filling itself. Home Run will show a
+Set to true to indicate the model is busy filling itself. Homerun will show a
 busy indicator as long as this property is true.
 
 ### array(string) arguments
@@ -61,7 +61,7 @@ Define optional model arguments.
 - mandatory: yes
 
 Triggers the action associated with the item at row "row".
-Returns true if the trigger started an action outside of Home Run, false if it
+Returns true if the trigger started an action outside of Homerun, false if it
 did not. Returning false can happen if the action failed or if it was handled
 in another way, for example because the model emitted openSourceRequested().
 
@@ -74,7 +74,7 @@ is used for example to open a browsable model in a subdir.
 
 
 
-# Features of a Home Run-friendly favorite model
+# Features of a Homerun-friendly favorite model
 
 ## Properties
 ### string favoritePrefix

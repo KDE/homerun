@@ -50,7 +50,7 @@ public:
 };
 
 /**
- * Adapts KFilePlacesModel to make it usable as a Home Run favorite model
+ * Adapts KFilePlacesModel to make it usable as a Homerun favorite model
  */
 class FavoritePlacesModel : public KFilePlacesModel
 {

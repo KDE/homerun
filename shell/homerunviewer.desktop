@@ -6,6 +6,6 @@ X-DBUS-StartupType=Unique
 X-KDE-StartupNotify=false
 Exec=homerunviewer
 
-Name=KDE Home Run application
+Name=KDE Homerun application
 
-Comment=Displays KDE Home Run in a popup
+Comment=Displays KDE Homerun in a popup
