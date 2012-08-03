@@ -19,5 +19,5 @@ install more applications from this category. To do so you need to:
     Type=Application
     NoDisplay=true
 
-2. In "salrc", "PackageManagement" group, set the "categoryInstaller" to the
+2. In "homerunrc", "PackageManagement" group, set the "categoryInstaller" to the
    name of your .desktop file (without the .desktop extension)

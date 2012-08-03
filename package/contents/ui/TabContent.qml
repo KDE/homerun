@@ -49,7 +49,7 @@ Item {
     //- Private ---------------------------------------------------
     HomeRunComponents.SharedConfig {
         id: config
-        name: "salrc"
+        name: "homerunrc"
     }
 
     // Models

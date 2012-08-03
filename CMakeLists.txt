@@ -19,7 +19,7 @@ install(DIRECTORY package/
 install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-applet-sal.desktop)
 
 # config/
-install(FILES config/salrc DESTINATION ${CONFIG_INSTALL_DIR})
+install(FILES config/homerunrc DESTINATION ${CONFIG_INSTALL_DIR})
 
 add_subdirectory(applet)
 add_subdirectory(shell)
