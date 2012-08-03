@@ -21,7 +21,7 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
-import org.kde.sal.fixes 0.1 as SalFixes
+import org.kde.homerun.fixes 0.1 as HomeRunFixes
 
 Item {
     id: main
@@ -99,7 +99,7 @@ Item {
         height: iconWidth
     }
 
-    SalFixes.Label {
+    HomeRunFixes.Label {
         id: resultLabel
 
         anchors {

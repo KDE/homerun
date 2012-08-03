@@ -17,7 +17,7 @@
  *****************************************************************************/
 
 import QtQuick 1.1
-import org.kde.sal.fixes 0.1 as SalFixes
+import org.kde.homerun.fixes 0.1 as HomeRunFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -50,7 +50,7 @@ FocusScope {
     property int resultItemWidth: 128
     property int resultItemHeight: iconWidth + 3 * theme.defaultFont.mSize.height
 
-    SalFixes.SortFilterModel {
+    HomeRunFixes.SortFilterModel {
         id: proxyModel
         sourceModel: main.model
     }

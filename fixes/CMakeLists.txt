@@ -1,16 +1,16 @@
-project(salfixes)
+project(fixes)
 
-set(salfixes_SRCS
+set(fixes_SRCS
     datamodel.cpp
+    fixesplugin.cpp
     runnermodel.cpp
-    salfixesplugin.cpp
     )
 
-qt4_automoc(${salfixes_SRCS})
+qt4_automoc(${fixes_SRCS})
 
-kde4_add_library(salfixesplugin SHARED ${salfixes_SRCS})
+kde4_add_library(fixesplugin SHARED ${fixes_SRCS})
 
-target_link_libraries(salfixesplugin
+target_link_libraries(fixesplugin
         ${QT_QTCORE_LIBRARY}
         ${QT_QTDECLARATIVE_LIBRARY}
         ${KDE4_PLASMA_LIBS}
@@ -18,7 +18,7 @@ target_link_libraries(salfixesplugin
         ${KDE4_KFILE_LIBS}
         )
 
-install(TARGETS salfixesplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/fixes)
+install(TARGETS fixesplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/fixes)
 install(FILES qmldir
     Label.qml
-    DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/sal/fixes)
+    DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/fixes)
