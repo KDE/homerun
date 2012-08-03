@@ -69,7 +69,7 @@ FullView::FullView()
     viewport()->setAutoFillBackground(false);
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
 
-    KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.sal/contents/ui/main.qml");
+    KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.homerun/contents/ui/main.qml");
     setSource(source);
 
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
