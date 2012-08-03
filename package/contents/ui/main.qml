@@ -19,7 +19,7 @@
  */
 
 import QtQuick 1.1
-import org.kde.homerun.components 0.1 as HomeRunComponents
+import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -40,16 +40,16 @@ Item {
     property alias currentTabContent: tabGroup.currentTab
 
     // Models
-    HomeRunComponents.PageModel {
+    HomerunComponents.PageModel {
         id: pageModel
     }
 
-    HomeRunComponents.FavoriteAppsModel {
+    HomerunComponents.FavoriteAppsModel {
         id: favoriteAppsModel
         property string name: "Favorite Applications"
     }
 
-    HomeRunComponents.FavoritePlacesModel {
+    HomerunComponents.FavoritePlacesModel {
         id: favoritePlacesModel
     }
 

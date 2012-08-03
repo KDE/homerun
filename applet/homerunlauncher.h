@@ -40,11 +40,11 @@ namespace Plasma {
 class QGraphicsSceneMouseEvent;
 class QSizeF;
 
-class HomeRunLauncher : public Plasma::Applet
+class HomerunLauncher : public Plasma::Applet
 {
     Q_OBJECT
 public:
-    HomeRunLauncher(QObject * parent, const QVariantList & args);
+    HomerunLauncher(QObject * parent, const QVariantList & args);
 
     void init();
 
@@ -56,5 +56,5 @@ private:
     Plasma::IconWidget *m_icon;
 };
 
-K_EXPORT_PLASMA_APPLET (homerunlauncher, HomeRunLauncher)
+K_EXPORT_PLASMA_APPLET (homerunlauncher, HomerunLauncher)
 #endif

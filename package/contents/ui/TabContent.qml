@@ -18,8 +18,8 @@
  */
 
 import QtQuick 1.1
-import org.kde.homerun.components 0.1 as HomeRunComponents
-import org.kde.homerun.fixes 0.1 as HomeRunFixes
+import org.kde.homerun.components 0.1 as HomerunComponents
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -47,7 +47,7 @@ Item {
     signal updateTabOrderRequested
 
     //- Private ---------------------------------------------------
-    HomeRunComponents.SharedConfig {
+    HomerunComponents.SharedConfig {
         id: config
         name: "homerunrc"
     }
@@ -55,7 +55,7 @@ Item {
     // Models
     Component {
         id: serviceModelComponent
-        HomeRunComponents.ServiceModel {
+        HomerunComponents.ServiceModel {
             property string name: "Applications"
             installer: config.readEntry("PackageManagement", "categoryInstaller")
 
@@ -67,28 +67,28 @@ Item {
 
     Component {
         id: powerModelComponent
-        HomeRunComponents.PowerModel {
+        HomerunComponents.PowerModel {
             property string name: "Power"
         }
     }
 
     Component {
         id: sessionModelComponent
-        HomeRunComponents.SessionModel {
+        HomerunComponents.SessionModel {
             property string name: "Session"
         }
     }
 
     Component {
         id: runnerModelComponent
-        HomeRunComponents.RunnerModel {
+        HomerunComponents.RunnerModel {
             query: searchCriteria
         }
     }
 
     Component {
         id: placesModelComponent
-        HomeRunComponents.PlacesModel {
+        HomerunComponents.PlacesModel {
             property string name: "Favorite Places"
             rootModel: main.favoriteModels["place"]
 

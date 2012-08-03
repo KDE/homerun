@@ -40,7 +40,7 @@
 #include <KToolInvocation>
 #include <KRun>
 
-HomeRunLauncher::HomeRunLauncher(QObject * parent, const QVariantList & args)
+HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
     : Plasma::Applet(parent, args),
       m_icon(0)
 {
@@ -48,7 +48,7 @@ HomeRunLauncher::HomeRunLauncher(QObject * parent, const QVariantList & args)
 //    resize(contentSizeHint());
 }
 
-void HomeRunLauncher::init()
+void HomerunLauncher::init()
 {
     QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -67,22 +67,22 @@ void HomeRunLauncher::init()
     checkAndLaunch();
 }
 
-void HomeRunLauncher::checkAndLaunch()
+void HomerunLauncher::checkAndLaunch()
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.homeRunViewer")) {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.homerunViewer")) {
         kDebug() << "Service not registered, launching homerunviewer";
         KRun::runCommand("homerunviewer", 0);
     }
 }
 
-void HomeRunLauncher::toggle()
+void HomerunLauncher::toggle()
 {
     kDebug() << "ICON CLICKED!";
     checkAndLaunch();
 
     QDBusConnection bus = QDBusConnection::sessionBus();
 
-    QDBusInterface interface("org.kde.homeRunViewer", "/HomeRunViewer", "org.kde.homeRunViewer", bus);
+    QDBusInterface interface("org.kde.homerunViewer", "/HomerunViewer", "org.kde.homerunViewer", bus);
 
     interface.asyncCall("toggle", containment()->screen());
 }

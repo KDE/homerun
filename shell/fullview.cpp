@@ -47,10 +47,10 @@ FullView::FullView()
 : QDeclarativeView()
 , m_backgroundSvg(new Plasma::FrameSvg(this))
 {
-    new HomeRunViewerAdaptor(this);
+    new HomerunViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.registerObject("/HomeRunViewer", this);
-    dbus.registerService("org.kde.homeRunViewer");
+    dbus.registerObject("/HomerunViewer", this);
+    dbus.registerService("org.kde.homerunViewer");
 
     KDeclarative kdeclarative;
     kdeclarative.setDeclarativeEngine(engine());
