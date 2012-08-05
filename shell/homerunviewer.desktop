@@ -7,5 +7,15 @@ X-KDE-StartupNotify=false
 Exec=homerunviewer
 
 Name=KDE Homerun application
+Name[nl]=Toepassing KDE Homerun
+Name[pt]=Aplicação Homerun do KDE
+Name[sk]=Aplikácia KDE Homerun
+Name[uk]=Програма KDE Homerun
+Name[x-test]=xxKDE Homerun applicationxx
 
 Comment=Displays KDE Homerun in a popup
+Comment[nl]=Toont KDE Homerun in een pop-up
+Comment[pt]=Mostra o Homerun do KDE numa janela
+Comment[sk]=Zobrazí KDE Homerun v popupe
+Comment[uk]=Показує контекстну панель KDE Homerun
+Comment[x-test]=xxDisplays KDE Homerun in a popupxx

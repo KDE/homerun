@@ -1,8 +1,18 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=KDE Homerun Launcher
+Name[nl]=Programmastarter van KDE Homerun
+Name[pt]=Lançador Homerun para o KDE
+Name[sk]=Spúšťač KDE Homerun
+Name[uk]=Засіб запуску KDE Homerun
+Name[x-test]=xxKDE Homerun Launcherxx
 
 Comment=An application launcher
+Comment[nl]=Een programmastarter
+Comment[pt]=Um lançador de aplicações
+Comment[sk]=Spúšťač aplikácií
+Comment[uk]=Засіб для запуску програм
+Comment[x-test]=xxAn application launcherxx
 
 Type=Service
 ServiceTypes=Plasma/Applet

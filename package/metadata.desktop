@@ -1,7 +1,17 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=KDE Homerun
+Name[nl]=KDE Homerun
+Name[pt]=Homerun do KDE
+Name[sk]=KDE Homerun
+Name[uk]=KDE Homerun
+Name[x-test]=xxKDE Homerunxx
 Comment=An application launcher
+Comment[nl]=Een programmastarter
+Comment[pt]=Um lançador de aplicações
+Comment[sk]=Spúšťač aplikácií
+Comment[uk]=Засіб для запуску програм
+Comment[x-test]=xxAn application launcherxx
 
 Icon=preferences-desktop-notification
 Type=Service
