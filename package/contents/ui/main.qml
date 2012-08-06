@@ -46,7 +46,6 @@ Item {
 
     HomerunComponents.FavoriteAppsModel {
         id: favoriteAppsModel
-        property string name: "Favorite Applications"
     }
 
     HomerunComponents.FavoritePlacesModel {

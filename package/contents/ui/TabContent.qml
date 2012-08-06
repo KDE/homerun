@@ -67,14 +67,12 @@ Item {
     Component {
         id: powerModelComponent
         HomerunComponents.PowerModel {
-            property string name: "Power"
         }
     }
 
     Component {
         id: sessionModelComponent
         HomerunComponents.SessionModel {
-            property string name: "Session"
         }
     }
 
