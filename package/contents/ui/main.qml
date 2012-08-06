@@ -184,7 +184,7 @@ Item {
         width: parent.width / 4
 
         clearButtonShown: true
-        placeholderText: "Search..."
+        placeholderText: i18nc("Placeholder text in search field", "Search...")
 
         property bool searching: text.length > 0
 
