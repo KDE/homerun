@@ -1,15 +1,21 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=KDE Homerun
+Name[fr]=Homerun pour KDE
 Name[nl]=KDE Homerun
 Name[pt]=Homerun do KDE
+Name[pt_BR]=Homerun do KDE
 Name[sk]=KDE Homerun
+Name[sv]=KDE Homerun
 Name[uk]=KDE Homerun
 Name[x-test]=xxKDE Homerunxx
 Comment=An application launcher
+Comment[fr]=Un lanceur d'applications
 Comment[nl]=Een programmastarter
 Comment[pt]=Um lançador de aplicações
+Comment[pt_BR]=Um lançador de aplicativos
 Comment[sk]=Spúšťač aplikácií
+Comment[sv]=Ett startprogram
 Comment[uk]=Засіб для запуску програм
 Comment[x-test]=xxAn application launcherxx
 
