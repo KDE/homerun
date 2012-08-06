@@ -97,6 +97,7 @@ class ServiceModel : public QAbstractListModel
     Q_PROPERTY(QObject* pathModel READ pathModel CONSTANT)
     Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
     Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
+    Q_PROPERTY(QString name READ name CONSTANT)
 
 public:
     enum Roles {
@@ -119,6 +120,8 @@ public:
     PathModel *pathModel() const;
 
     Q_INVOKABLE bool trigger(int row);
+
+    QString name() const;
 
 Q_SIGNALS:
     void countChanged();

@@ -56,7 +56,6 @@ Item {
     Component {
         id: serviceModelComponent
         HomerunComponents.ServiceModel {
-            property string name: "Applications"
             installer: config.readEntry("PackageManagement", "categoryInstaller")
 
             onOpenSourceRequested: {
@@ -68,14 +67,12 @@ Item {
     Component {
         id: powerModelComponent
         HomerunComponents.PowerModel {
-            property string name: "Power"
         }
     }
 
     Component {
         id: sessionModelComponent
         HomerunComponents.SessionModel {
-            property string name: "Session"
         }
     }
 
@@ -89,7 +86,6 @@ Item {
     Component {
         id: placesModelComponent
         HomerunComponents.PlacesModel {
-            property string name: "Favorite Places"
             rootModel: main.favoriteModels["place"]
 
             onOpenSourceRequested: {

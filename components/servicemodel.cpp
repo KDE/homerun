@@ -30,6 +30,7 @@
 
 // KDE
 #include <KDebug>
+#include <KLocale>
 #include <kmacroexpander.h>
 #include <KRun>
 #include <KService>
@@ -290,6 +291,11 @@ void ServiceModel::setArguments(const QString& arguments)
 PathModel *ServiceModel::pathModel() const
 {
     return m_pathModel;
+}
+
+QString ServiceModel::name() const
+{
+    return i18n("Applications");
 }
 
 #include "servicemodel.moc"

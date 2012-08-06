@@ -27,10 +27,14 @@
 int main(int argc, char *argv[])
 {
     KAboutData aboutData(
-        "homerunviewer",      // appName
-        0,                    // catalogName
-        ki18n("KDE Homerun"), // programName
-        "0.0.0");             // version
+        // appName
+        "homerunviewer",
+        // catalogName: we use the same catalog as the one loaded when homerun is used as a containment
+        "plasma_applet_org.kde.homerun",
+        // programName
+        ki18n("KDE Homerun"),
+        // version
+        "0.0.0");
     aboutData.setLicense(KAboutData::License_GPL);
     aboutData.setCopyrightStatement(ki18n("(C) 2012 Blue Systems"));
 

@@ -27,6 +27,7 @@
 #include <KDirLister>
 #include <KDirModel>
 #include <KFilePlacesModel>
+#include <KLocale>
 
 static KUrl urlFromFavoriteId(const QString &favoriteId)
 {
@@ -332,6 +333,11 @@ void PlacesModel::emitRunningChanged()
         return;
     }
     runningChanged(running());
+}
+
+QString PlacesModel::name() const
+{
+    return i18n("Favorite Places");
 }
 
 #include "placesmodel.moc"

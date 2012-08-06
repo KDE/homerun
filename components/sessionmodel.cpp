@@ -83,7 +83,7 @@ int SessionModel::count() const
 
 QString SessionModel::name() const
 {
-    return i18n("SessionModel");
+    return i18n("Session");
 }
 
 int SessionModel::rowCount(const QModelIndex &index) const

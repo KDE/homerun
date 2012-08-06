@@ -45,6 +45,7 @@ HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
       m_icon(0)
 {
     setHasConfigurationInterface(true);
+    KGlobal::locale()->insertCatalog("plasma_applet_org.kde.homerun");
 //    resize(contentSizeHint());
 }
 

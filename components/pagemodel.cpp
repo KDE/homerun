@@ -18,8 +18,10 @@
  */
 #include "pagemodel.h"
 
+// KDE
 #include <KConfigGroup>
 #include <KDebug>
+#include <KLocale>
 
 class Page
 {
@@ -31,7 +33,9 @@ public:
     static Page *createFromGroup(const KConfigGroup &group)
     {
         // Read all mandatory keys first
-        QString name = group.readEntry("name");
+
+        // (read "name" as QByteArray because i18n() wants a char* as argument)
+        QString name = i18n(group.readEntry("name", QByteArray()));
         if (name.isEmpty()) {
             kWarning() << "Missing 'name' key in page group" << group.name();
             return 0;
