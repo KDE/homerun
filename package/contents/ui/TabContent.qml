@@ -207,14 +207,6 @@ Item {
                 }
             }
 
-            Component {
-                id: queryBindingComponent
-                Binding {
-                    property: "query"
-                    value: searchField.text
-                }
-            }
-
             Component.onCompleted: {
                 for (var idx = 0; idx < models.length; ++idx) {
                     var model = models[idx];
@@ -222,7 +214,6 @@ Item {
 
                     if ("query" in model) {
                         hasSearchModel = true;
-                        queryBindingComponent.createObject(pageMain, {"target": model});
                     }
                 }
                 pageMain.updateRunning();
@@ -231,48 +222,6 @@ Item {
     }
 
     // Ui
-    Item {
-        id: searchRow
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-        }
-        height: currentPage.hasSearchModel ? (searchField.height + 4) : 0
-        clip: true
-
-        QtExtra.QIconItem {
-            anchors {
-                right: searchField.left
-                rightMargin: 6
-                verticalCenter: searchField.verticalCenter
-            }
-            width: 22
-            height: width
-            icon: "edit-find"
-        }
-
-        PlasmaComponents.TextField {
-            id: searchField
-
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: parent.top
-            }
-
-            width: parent.width / 4
-
-            clearButtonShown: true
-            placeholderText: i18nc("Placeholder text in search field", "Search...")
-            focus: true
-
-            /*
-            KeyNavigation.tab: content
-            KeyNavigation.backtab: content
-            */
-        }
-    }
-
     Item {
         // navRow = back|previous + breadcrumbs
         id: navRow
@@ -288,7 +237,7 @@ Item {
 
         anchors {
             left: parent.left
-            top: searchRow.bottom
+            top: parent.top
             right: parent.right
         }
 
@@ -418,15 +367,10 @@ Item {
     onActiveFocusChanged: {
         if (activeFocus) {
             console.log("TabContent.onActiveFocusChanged");
-            if (currentPage.hasSearchModel) {
-                console.log("- focusing searchField");
-                searchField.forceActiveFocus();
-            } else {
-                var item = KeyboardUtils.findFirstTabMeChildren(main);
-                console.log("- focusing item " + item);
-                if (item !== null) {
-                    item.forceActiveFocus();
-                }
+            var item = KeyboardUtils.findFirstTabMeChildren(main);
+            console.log("- focusing item " + item);
+            if (item !== null) {
+                item.forceActiveFocus();
             }
         }
     }

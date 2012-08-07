@@ -67,7 +67,8 @@ Item {
         anchors {
             top: parent.top
             topMargin: main.topMargin
-            horizontalCenter: parent.horizontalCenter
+            left: parent.left
+            leftMargin: parent.leftMargin
         }
 
         Repeater {
@@ -75,9 +76,14 @@ Item {
             PlasmaComponents.TabButton {
                 text: model.name
                 iconSource: model.iconName
+                property string searchPlaceholder: model.searchPlaceholder
+
                 Component.onCompleted: {
+                    var favoriteModels = createFavoriteModelsObject();
+
                     // "tab" is a property of TabButton, that is why it is not declared with "var"
-                    tab = createTabContent(tabGroup, model.sources);
+                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModels": favoriteModels});
+
                     var lst = tabContentList;
                     lst.push(tab);
                     tabContentList = lst;
@@ -157,6 +163,41 @@ Item {
         }
     }
 
+    // Search area
+    QtExtra.QIconItem {
+        anchors {
+            right: searchField.left
+            rightMargin: 6
+            verticalCenter: searchField.verticalCenter
+        }
+        width: 22
+        height: width
+        icon: searchField.visible ? filterTabBar.currentTab.iconSource : ""
+        visible: searchField.visible
+    }
+
+    PlasmaComponents.TextField {
+        id: searchField
+
+        anchors {
+            right: parent.right
+            rightMargin: parent.rightMargin
+            top: filterTabBar.top
+            bottom: filterTabBar.bottom
+        }
+
+        visible: currentTabContent.currentPage.hasSearchModel
+        width: parent.width / 4
+
+        clearButtonShown: true
+        placeholderText: filterTabBar.currentTab.searchPlaceholder
+
+        KeyNavigation.tab: content
+        KeyNavigation.backtab: content
+
+        onTextChanged: currentTabContent.searchCriteria = text;
+    }
+
     // Main content
     Item {
         id: content
@@ -176,30 +217,9 @@ Item {
             anchors.fill: parent
         }
 
-        /*
-        TabContent {
-            id: searchTabContent
-            anchors.fill: parent
-            opacity: searchField.searching ? 1 : 0
-            sources: ["RunnerModel"]
-            favoriteModels: createFavoriteModelsObject();
-            searchCriteria: searchField.text
-        }
-
         KeyNavigation.tab: searchField
         KeyNavigation.backtab: searchField
 
-        onActiveFocusChanged: {
-            if (!activeFocus) {
-                return;
-            }
-            if (searchField.searching) {
-                searchTabContent.forceActiveFocus();
-            } else {
-                currentTabContent.forceActiveFocus();
-            }
-        }
-        */
         onActiveFocusChanged: {
             if (activeFocus) {
                 currentTabContent.forceActiveFocus();
@@ -211,9 +231,8 @@ Item {
     Connections {
         target: main
         onCurrentTabContentChanged: {
-            console.log("main.onCurrentTabContentChanged");
+            searchField.text = currentTabContent.searchCriteria;
             currentTabContent.forceActiveFocus();
-            //focusFirstView();
         }
     }
 
@@ -236,22 +255,19 @@ Item {
         return favoriteModels;
     }
 
-    function createTabContent(parent, sources) {
-        var favoriteModels = createFavoriteModelsObject();
-        return tabContent.createObject(parent, {"sources": sources, "favoriteModels": favoriteModels});
-    }
-
     function reset() {
         filterTabBar.goToFirstTab();
         tabContentList.forEach(function(content) {
             content.reset();
         });
+        searchField.text = "";
     }
 
     Keys.onPressed: {
         var lst = [
             [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.goToPreviousTab],
             [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.goToNextTab],
+            [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
         ];
         KeyboardUtils.processShortcutList(lst, event);
     }
