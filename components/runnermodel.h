@@ -77,7 +77,7 @@ private:
 class RunnerModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
+    Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
 
     /**
      * @property string set the KRunner query
@@ -92,8 +92,8 @@ public:
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
 
-    QStringList arguments() const;
-    void setArguments(const QStringList &args);
+    QString arguments() const;
+    void setArguments(const QString &args);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp

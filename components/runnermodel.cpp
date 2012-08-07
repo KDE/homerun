@@ -118,7 +118,6 @@ QVariant RunnerSubModel::data(const QModelIndex &index, int role) const
 
 void RunnerSubModel::setMatches(const QList<Plasma::QueryMatch> &matches)
 {
-    //kDebug() << "got matches:" << matches.count();
     bool fullReset = false;
     int oldCount = m_matches.count();
     int newCount = matches.count();
@@ -221,15 +220,18 @@ QObject *RunnerModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
-QStringList RunnerModel::arguments() const
+QString RunnerModel::arguments() const
 {
-    return m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
+    QStringList lst = m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
+    return lst.join(",");
 }
 
-void RunnerModel::setArguments(const QStringList& args)
+void RunnerModel::setArguments(const QString& argString)
 {
-    QSet<QString> argsSet = args.toSet();
-    if (arguments().toSet() == argsSet) {
+    QStringList args = argString.split(',');
+    QStringList existingArgs = m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
+
+    if (existingArgs.toSet() == args.toSet()) {
         return;
     }
     if (m_manager) {
@@ -261,16 +263,17 @@ void RunnerModel::startQuery()
         return;
     }
 
-    //kDebug() << "booooooo yah!!!!!!!!!!!!!" << query;
     createManager();
-
-//    if (m_pendingQuery != m_manager->query()) {
-        //kDebug() << "running query" << query;
-        m_manager->launchQuery(m_pendingQuery);
-        emit queryChanged();
-        m_running = true;
-        emit runningChanged(true);
- //   }
+    /* DEBUG
+    kWarning() << "Start query" << m_pendingQuery << "on runners:";
+    Q_FOREACH(Plasma::AbstractRunner *runner, m_manager->runners()) {
+        kWarning() << "-" << runner->name();
+    }
+    */
+    m_manager->launchQuery(m_pendingQuery);
+    emit queryChanged();
+    m_running = true;
+    emit runningChanged(true);
 }
 
 void RunnerModel::createManager()
