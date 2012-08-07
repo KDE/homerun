@@ -67,8 +67,7 @@ Item {
         anchors {
             top: parent.top
             topMargin: main.topMargin
-            left: parent.left
-            leftMargin: parent.leftMargin
+            horizontalCenter: parent.horizontalCenter
         }
 
         Repeater {
@@ -158,40 +157,6 @@ Item {
         }
     }
 
-    // Search area
-    QtExtra.QIconItem {
-        anchors {
-            right: searchField.left
-            rightMargin: 6
-            verticalCenter: searchField.verticalCenter
-        }
-        width: 22
-        height: width
-        icon: "edit-find"
-        visible: searchField.visible
-    }
-
-    PlasmaComponents.TextField {
-        id: searchField
-
-        anchors {
-            right: parent.right
-            rightMargin: parent.rightMargin
-            top: filterTabBar.top
-            bottom: filterTabBar.bottom
-        }
-
-        width: parent.width / 4
-
-        clearButtonShown: true
-        placeholderText: i18nc("Placeholder text in search field", "Search...")
-
-        property bool searching: text.length > 0
-
-        KeyNavigation.tab: content
-        KeyNavigation.backtab: content
-    }
-
     // Main content
     Item {
         id: content
@@ -209,9 +174,9 @@ Item {
         PlasmaComponents.TabGroup {
             id: tabGroup
             anchors.fill: parent
-            opacity: searchField.searching ? 0 : 1
         }
 
+        /*
         TabContent {
             id: searchTabContent
             anchors.fill: parent
@@ -234,13 +199,21 @@ Item {
                 currentTabContent.forceActiveFocus();
             }
         }
+        */
+        onActiveFocusChanged: {
+            if (activeFocus) {
+                currentTabContent.forceActiveFocus();
+            }
+        }
     }
 
     // Code
     Connections {
         target: main
         onCurrentTabContentChanged: {
-            focusFirstView();
+            console.log("main.onCurrentTabContentChanged");
+            currentTabContent.forceActiveFocus();
+            //focusFirstView();
         }
     }
 
@@ -273,14 +246,12 @@ Item {
         tabContentList.forEach(function(content) {
             content.reset();
         });
-        searchField.text = "";
     }
 
     Keys.onPressed: {
         var lst = [
             [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.goToPreviousTab],
             [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.goToNextTab],
-            [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
         ];
         KeyboardUtils.processShortcutList(lst, event);
     }

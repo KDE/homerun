@@ -131,6 +131,8 @@ Item {
 
         Item {
             id: pageMain
+            property bool hasSearchModel: false
+
             property alias viewContainer: column
             anchors.fill: parent
 
@@ -198,16 +200,30 @@ Item {
             }
 
             Component {
-                id: modelConnectionComponent
+                id: runningConnectionComponent
                 Connections {
                     ignoreUnknownSignals: true
                     onRunningChanged: pageMain.updateRunning()
                 }
             }
 
+            Component {
+                id: queryBindingComponent
+                Binding {
+                    property: "query"
+                    value: searchField.text
+                }
+            }
+
             Component.onCompleted: {
                 for (var idx = 0; idx < models.length; ++idx) {
-                    modelConnectionComponent.createObject(pageMain, {"target": models[idx]});
+                    var model = models[idx];
+                    runningConnectionComponent.createObject(pageMain, {"target": model});
+
+                    if ("query" in model) {
+                        hasSearchModel = true;
+                        queryBindingComponent.createObject(pageMain, {"target": model});
+                    }
                 }
                 pageMain.updateRunning();
             }
@@ -216,7 +232,50 @@ Item {
 
     // Ui
     Item {
-        id: headerRow
+        id: searchRow
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        height: currentPage.hasSearchModel ? (searchField.height + 4) : 0
+        clip: true
+
+        QtExtra.QIconItem {
+            anchors {
+                right: searchField.left
+                rightMargin: 6
+                verticalCenter: searchField.verticalCenter
+            }
+            width: 22
+            height: width
+            icon: "edit-find"
+        }
+
+        PlasmaComponents.TextField {
+            id: searchField
+
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: parent.top
+            }
+
+            width: parent.width / 4
+
+            clearButtonShown: true
+            placeholderText: i18nc("Placeholder text in search field", "Search...")
+            focus: true
+
+            /*
+            KeyNavigation.tab: content
+            KeyNavigation.backtab: content
+            */
+        }
+    }
+
+    Item {
+        // navRow = back|previous + breadcrumbs
+        id: navRow
         property int maxHeight: 32
         height: canGoBack ? maxHeight : 0
         Behavior on height {
@@ -229,14 +288,14 @@ Item {
 
         anchors {
             left: parent.left
-            top: parent.top
+            top: searchRow.bottom
             right: parent.right
         }
 
         PlasmaComponents.ToolButton {
             id: backButton
             width: height
-            height: headerRow.maxHeight
+            height: navRow.maxHeight
 
             flat: false
             iconSource: "go-previous"
@@ -249,7 +308,7 @@ Item {
                 left: backButton.right
             }
             width: height
-            height: headerRow.maxHeight
+            height: navRow.maxHeight
             enabled: canGoForward
 
             flat: false
@@ -263,7 +322,7 @@ Item {
                 left: forwardButton.right
                 leftMargin: 12
             }
-            height: headerRow.maxHeight
+            height: navRow.maxHeight
             Repeater {
                 id: breadcrumbRepeater
                 model: currentPage.pathModel
@@ -281,45 +340,14 @@ Item {
         }
     }
 
-    Item {
-        id: filterRow
-        anchors {
-            top: headerRow.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        property int maxHeight: typeAheadLabel.height
-        height: typeAhead == "" ? 0 : maxHeight
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-        clip: true
-
-        PlasmaComponents.Label {
-            id: typeAheadLabel
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: parent.top
-            }
-            text: typeAhead + "|"
-            font.pointSize: theme.defaultFont.pointSize * 1.4
-            opacity: 0.4
-        }
-    }
-
 
     Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: filterRow.bottom
-            topMargin: filterRow.height > 0 ? 12 : 0
+            top: navRow.bottom
             right: parent.right
-            bottom: parent.bottom
+            bottom: filterRow.top
         }
 
         PlasmaCore.SvgItem {
@@ -338,6 +366,49 @@ Item {
         }
     }
 
+    Item {
+        id: filterRow
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+
+        property int maxHeight: typeAheadLabel.height + filterLine.height
+        height: typeAhead == "" ? 0 : maxHeight
+        Behavior on height {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+        }
+        clip: true
+
+        PlasmaCore.SvgItem {
+            id: filterLine
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+            height: naturalSize.height
+            svg: PlasmaCore.Svg {
+                imagePath: "widgets/scrollwidget"
+            }
+            elementId: "border-bottom"
+        }
+
+        PlasmaComponents.Label {
+            id: typeAheadLabel
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: filterLine.bottom
+            }
+            text: typeAhead + "|"
+            font.pointSize: theme.defaultFont.pointSize * 1.4
+        }
+    }
+
     // Scripting
     Component.onCompleted: {
         var lst = sources.map(createModelForSource);
@@ -346,9 +417,16 @@ Item {
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            var item = KeyboardUtils.findFirstTabMeChildren(main);
-            if (item !== null) {
-                item.forceActiveFocus();
+            console.log("TabContent.onActiveFocusChanged");
+            if (currentPage.hasSearchModel) {
+                console.log("- focusing searchField");
+                searchField.forceActiveFocus();
+            } else {
+                var item = KeyboardUtils.findFirstTabMeChildren(main);
+                console.log("- focusing item " + item);
+                if (item !== null) {
+                    item.forceActiveFocus();
+                }
             }
         }
     }
