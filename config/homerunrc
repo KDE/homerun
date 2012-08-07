@@ -13,26 +13,27 @@ serviceId=dolphin
 [Page0]
 name=Home
 icon=go-home
+query=Search...
 source0=FavoriteAppsModel
 source1=PlacesModel
+source2=RunnerModel
 
 [Page1]
 name=Applications
+query=Search for applications...
 icon=applications-other
 source0=ServiceModel
+source1=RunnerModel:services,shell
 
 [Page2]
 name=Documents
+query=Search for documents...
 icon=folder-documents
 source0=PlacesModel
+source1=RunnerModel:bookmarks,nepomuksearch,youtube,bing
 
 [Page3]
 name=Power
 icon=system-shutdown
 source0=PowerModel
 source1=SessionModel
-
-[Page4]
-name=Search
-icon=edit-find
-source0=RunnerModel

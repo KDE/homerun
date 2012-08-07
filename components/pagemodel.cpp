@@ -28,6 +28,7 @@ class Page
 public:
     QString m_name;
     QString m_iconName;
+    QString m_searchPlaceholder;
     QStringList m_sources;
 
     static Page *createFromGroup(const KConfigGroup &group)
@@ -58,6 +59,12 @@ public:
         page->m_name = name;
         page->m_sources = sources;
         page->m_iconName = group.readEntry("icon");
+        // We use "query" because it is automatically extracted as a
+        // translatable string by l10n-kde4/scripts/createdesktopcontext.pl
+        QByteArray placeHolder = group.readEntry("query", QByteArray());
+        if (!placeHolder.isEmpty()) {
+            page->m_searchPlaceholder = i18n(placeHolder);
+        }
         return page;
     }
 };
@@ -70,6 +77,7 @@ PageModel::PageModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "name");
     roles.insert(IconNameRole, "iconName");
     roles.insert(SourcesRole, "sources");
+    roles.insert(SearchPlaceholderRole, "searchPlaceholder");
 
     setRoleNames(roles);
     setConfig(KSharedConfig::openConfig("homerunrc"));
@@ -127,6 +135,8 @@ QVariant PageModel::data(const QModelIndex &index, int role) const
         return page->m_iconName;
     case SourcesRole:
         return page->m_sources;
+    case SearchPlaceholderRole:
+        return page->m_searchPlaceholder;
     default:
         kWarning() << "Unhandled role" << role;
         return QVariant();
