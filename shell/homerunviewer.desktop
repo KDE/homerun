@@ -7,7 +7,9 @@ X-KDE-StartupNotify=false
 Exec=homerunviewer
 
 Name=KDE Homerun application
+Name[da]=KDE Homerun-program
 Name[fr]=Application Homerun pour KDE
+Name[hu]=KDE Homerun alkalmazás
 Name[nl]=Toepassing KDE Homerun
 Name[pt]=Aplicação Homerun do KDE
 Name[pt_BR]=Aplicativo Homerun do KDE
@@ -17,7 +19,9 @@ Name[uk]=Програма KDE Homerun
 Name[x-test]=xxKDE Homerun applicationxx
 
 Comment=Displays KDE Homerun in a popup
+Comment[da]=Viser KDE Homerun i en pop-op
 Comment[fr]=Affiche Homerun pour KDE dans une fenêtre qui apparaît
+Comment[hu]=Megjeleníti a KDE Homerunt felugró ablakban
 Comment[nl]=Toont KDE Homerun in een pop-up
 Comment[pt]=Mostra o Homerun do KDE numa janela
 Comment[pt_BR]=Exibe o Homerun do KDE em um menu de contexto
