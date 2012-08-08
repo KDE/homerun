@@ -19,6 +19,9 @@ target_link_libraries(fixesplugin
         )
 
 install(TARGETS fixesplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/fixes)
-install(FILES qmldir
-    Label.qml
-    DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/fixes)
+install(DIRECTORY qml/
+    DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/fixes
+    PATTERN "*.qml"
+    PATTERN "qmldir"
+    PATTERN "*.js"
+    )
