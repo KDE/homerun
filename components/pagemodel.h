@@ -36,6 +36,7 @@ public:
     enum {
         IconNameRole = Qt::UserRole + 1,
         SourcesRole,
+        SearchSourcesRole,
         SearchPlaceholderRole,
     };
 

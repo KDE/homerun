@@ -23,6 +23,22 @@
 #include <KDebug>
 #include <KLocale>
 
+/**
+ * Return values for all keys of a group which start with @p prefix
+ */
+static QStringList readSources(const KConfigGroup &group, const QString &prefix)
+{
+    QStringList lst;
+    QMap<QString, QString> map = group.entryMap();
+    auto it = map.constBegin(), end = map.constEnd();
+    for (; it != end; ++it) {
+        if (it.key().startsWith(prefix)) {
+            lst << it.value();
+        }
+    }
+    return lst;
+}
+
 class Page
 {
 public:
@@ -30,6 +46,7 @@ public:
     QString m_iconName;
     QString m_searchPlaceholder;
     QStringList m_sources;
+    QStringList m_searchSources;
 
     static Page *createFromGroup(const KConfigGroup &group)
     {
@@ -41,14 +58,7 @@ public:
             kWarning() << "Missing 'name' key in page group" << group.name();
             return 0;
         }
-        QStringList sources;
-        QMap<QString, QString> map = group.entryMap();
-        auto it = map.constBegin(), end = map.constEnd();
-        for (; it != end; ++it) {
-            if (it.key().startsWith("source")) {
-                sources << it.value();
-            }
-        }
+        QStringList sources = readSources(group, "source");
         if (sources.isEmpty()) {
             kWarning() << "No source defined in page group" << group.name();
             return 0;
@@ -58,6 +68,7 @@ public:
         Page *page = new Page;
         page->m_name = name;
         page->m_sources = sources;
+        page->m_searchSources = readSources(group, "searchSource");
         page->m_iconName = group.readEntry("icon");
         // We use "query" because it is automatically extracted as a
         // translatable string by l10n-kde4/scripts/createdesktopcontext.pl
@@ -77,6 +88,7 @@ PageModel::PageModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "name");
     roles.insert(IconNameRole, "iconName");
     roles.insert(SourcesRole, "sources");
+    roles.insert(SearchSourcesRole, "searchSources");
     roles.insert(SearchPlaceholderRole, "searchPlaceholder");
 
     setRoleNames(roles);
@@ -135,6 +147,8 @@ QVariant PageModel::data(const QModelIndex &index, int role) const
         return page->m_iconName;
     case SourcesRole:
         return page->m_sources;
+    case SearchSourcesRole:
+        return page->m_searchSources;
     case SearchPlaceholderRole:
         return page->m_searchPlaceholder;
     default:
