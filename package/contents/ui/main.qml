@@ -58,6 +58,7 @@ Item {
         TabContent {
             id: tabContentMain
             onStartedApplication: embedded ? closeRequested() : reset()
+            onSetSearchFieldRequested: searchField.text = text
         }
     }
 
@@ -82,7 +83,12 @@ Item {
                     var favoriteModels = createFavoriteModelsObject();
 
                     // "tab" is a property of TabButton, that is why it is not declared with "var"
-                    tab = tabContent.createObject(tabGroup, {"sources": model.sources, "favoriteModels": favoriteModels});
+                    // FIXME
+                    tab = tabContent.createObject(tabGroup, {
+                        "sources": model.sources,
+                        "searchSources": ["RunnerModel"],
+                        "favoriteModels": favoriteModels,
+                    });
 
                     var lst = tabContentList;
                     lst.push(tab);
@@ -186,7 +192,7 @@ Item {
             bottom: filterTabBar.bottom
         }
 
-        visible: currentTabContent.currentPage.hasSearchModel
+        visible: currentTabContent.searchSources.length > 0
         width: parent.width / 4
 
         clearButtonShown: true

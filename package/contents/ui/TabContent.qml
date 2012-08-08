@@ -35,6 +35,7 @@ Item {
     // Defined by outside world
     property variant favoriteModels
     property variant sources
+    property variant searchSources
     property string typeAhead
     property string searchCriteria
 
@@ -45,8 +46,14 @@ Item {
 
     signal startedApplication
     signal updateTabOrderRequested
+    signal setSearchFieldRequested(string text)
 
     //- Private ---------------------------------------------------
+    property Item searchPage
+
+    // Used to restore content of search field when bringing back the searchPage from history
+    property string lastSearchCriteria
+
     HomerunComponents.SharedConfig {
         id: config
         name: "homerunrc"
@@ -131,8 +138,6 @@ Item {
 
         Item {
             id: pageMain
-            property bool hasSearchModel: false
-
             property alias viewContainer: column
             anchors.fill: parent
 
@@ -211,10 +216,6 @@ Item {
                 for (var idx = 0; idx < models.length; ++idx) {
                     var model = models[idx];
                     runningConnectionComponent.createObject(pageMain, {"target": model});
-
-                    if ("query" in model) {
-                        hasSearchModel = true;
-                    }
                 }
                 pageMain.updateRunning();
             }
@@ -361,17 +362,45 @@ Item {
     // Scripting
     Component.onCompleted: {
         var lst = sources.map(createModelForSource);
-        createPage(lst);
+        var page = createPage(lst);
+        TabContentInternal.addPage(page);
+        TabContentInternal.goToLastPage();
     }
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            console.log("TabContent.onActiveFocusChanged");
             var item = KeyboardUtils.findFirstTabMeChildren(main);
-            console.log("- focusing item " + item);
             if (item !== null) {
                 item.forceActiveFocus();
             }
+        }
+    }
+
+    onSearchCriteriaChanged: {
+        if (searchCriteria.length > 0) {
+            // User typed a new search
+            if (searchPage) {
+                if (currentPage !== searchPage) {
+                    TabContentInternal.goToPage(searchPage);
+                }
+            } else {
+                var lst = searchSources.map(createModelForSource);
+                searchPage = createPage(lst);
+                TabContentInternal.addPage(searchPage);
+                TabContentInternal.goToLastPage();
+            }
+            lastSearchCriteria = searchCriteria;
+        } else {
+            if (currentPage === searchPage) {
+                // User cleared search field himself
+                goBack();
+            }
+        }
+    }
+
+    onCurrentPageChanged: {
+        if (currentPage !== searchPage && searchCriteria.length > 0) {
+            setSearchFieldRequested("");
         }
     }
 
@@ -381,6 +410,10 @@ Item {
 
     function goForward() {
         TabContentInternal.goForward();
+        if (currentPage === searchPage) {
+            // Restore search query
+            setSearchFieldRequested(lastSearchCriteria);
+        }
     }
 
     function goUp() {
@@ -408,6 +441,8 @@ Item {
         var models = [createModelForSource(source)];
         var page = createPage(models, { "showHeader": false });
         page.pathModel = models[0].pathModel;
+        TabContentInternal.addPage(page);
+        TabContentInternal.goToLastPage();
     }
 
     Keys.onPressed: {
@@ -501,10 +536,9 @@ Item {
                 // Check isMultiViewModel because in that case obj is not a ResultsView
                 firstView = obj;
             }
+            page.objectName += model.objectName + ",";
         });
 
-        TabContentInternal.addPage(page);
-        TabContentInternal.goTo(TabContentInternal.pages.length - 1);
         if (firstView) {
             firstView.forceActiveFocus();
         }

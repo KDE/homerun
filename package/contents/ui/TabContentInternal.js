@@ -19,6 +19,14 @@
 var pages = new Array();
 var currentIndex = -1;
 
+function dumpPages() {
+    console.log("### History stack ###");
+    pages.forEach(function(page, index) {
+        var prefix = index == currentIndex ? "> " : "- ";
+        console.log(prefix + page.objectName);
+    });
+}
+
 function addPage(page) {
     if (currentIndex > -1) {
         // Remove pages after currentIndex
@@ -26,6 +34,17 @@ function addPage(page) {
         lst.forEach(function(x) { x.destroy(); });
     }
     pages.push(page);
+}
+
+function goToPage(wantedPage) {
+    var idx = pages.indexOf(wantedPage);
+    if (idx != -1) {
+        goTo(idx);
+    }
+}
+
+function goToLastPage() {
+    goTo(pages.length - 1);
 }
 
 function goTo(index) {
@@ -36,6 +55,8 @@ function goTo(index) {
     pages[index].opacity = 1;
     currentPage = pages[index];
     _updateCanGoBackForward();
+
+    //dumpPages();
 }
 
 function goBack() {
