@@ -86,7 +86,7 @@ Item {
                     // FIXME
                     tab = tabContent.createObject(tabGroup, {
                         "sources": model.sources,
-                        "searchSources": ["RunnerModel"],
+                        "searchSources": model.searchSources,
                         "favoriteModels": favoriteModels,
                     });
 
