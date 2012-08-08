@@ -150,6 +150,11 @@ QVariant ServiceModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
         return node->name();
     } else if (role == Qt::DecorationRole) {
+        // at least show the oxygen question-mark, otherwise it looks weird blank.
+        if (node->icon().name() == "") {
+            return KIcon("unknown");
+        }
+
         return node->icon();
     } else if (role == FavoriteIdRole) {
         return node->favoriteId();
