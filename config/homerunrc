@@ -11,8 +11,8 @@ serviceId=kmail2
 serviceId=dolphin
 
 [Page0]
-name=Dashboard
-icon=kde
+name=Home
+icon=go-home
 source0=FavoriteAppsModel
 source1=PlacesModel
 source2=RunnerModel
