@@ -58,6 +58,7 @@ Item {
         TabContent {
             id: tabContentMain
             onStartedApplication: embedded ? closeRequested() : reset()
+            onSetSearchFieldRequested: searchField.text = text
         }
     }
 
@@ -76,9 +77,19 @@ Item {
             PlasmaComponents.TabButton {
                 text: model.name
                 iconSource: model.iconName
+                property string searchPlaceholder: model.searchPlaceholder
+
                 Component.onCompleted: {
+                    var favoriteModels = createFavoriteModelsObject();
+
                     // "tab" is a property of TabButton, that is why it is not declared with "var"
-                    tab = createTabContent(tabGroup, model.sources);
+                    // FIXME
+                    tab = tabContent.createObject(tabGroup, {
+                        "sources": model.sources,
+                        "searchSources": model.searchSources,
+                        "favoriteModels": favoriteModels,
+                    });
+
                     var lst = tabContentList;
                     lst.push(tab);
                     tabContentList = lst;
@@ -167,7 +178,7 @@ Item {
         }
         width: 22
         height: width
-        icon: "edit-find"
+        icon: searchField.visible ? filterTabBar.currentTab.iconSource : ""
         visible: searchField.visible
     }
 
@@ -181,15 +192,16 @@ Item {
             bottom: filterTabBar.bottom
         }
 
+        visible: currentTabContent.searchSources.length > 0
         width: parent.width / 4
 
         clearButtonShown: true
-        placeholderText: i18nc("Placeholder text in search field", "Search...")
-
-        property bool searching: text.length > 0
+        placeholderText: filterTabBar.currentTab.searchPlaceholder
 
         KeyNavigation.tab: content
         KeyNavigation.backtab: content
+
+        onTextChanged: currentTabContent.searchCriteria = text;
     }
 
     // Main content
@@ -209,28 +221,13 @@ Item {
         PlasmaComponents.TabGroup {
             id: tabGroup
             anchors.fill: parent
-            opacity: searchField.searching ? 0 : 1
-        }
-
-        TabContent {
-            id: searchTabContent
-            anchors.fill: parent
-            opacity: searchField.searching ? 1 : 0
-            sources: ["RunnerModel"]
-            favoriteModels: createFavoriteModelsObject();
-            searchCriteria: searchField.text
         }
 
         KeyNavigation.tab: searchField
         KeyNavigation.backtab: searchField
 
         onActiveFocusChanged: {
-            if (!activeFocus) {
-                return;
-            }
-            if (searchField.searching) {
-                searchTabContent.forceActiveFocus();
-            } else {
+            if (activeFocus) {
                 currentTabContent.forceActiveFocus();
             }
         }
@@ -240,7 +237,8 @@ Item {
     Connections {
         target: main
         onCurrentTabContentChanged: {
-            focusFirstView();
+            searchField.text = currentTabContent.searchCriteria;
+            currentTabContent.forceActiveFocus();
         }
     }
 
@@ -261,11 +259,6 @@ Item {
         favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
         favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
         return favoriteModels;
-    }
-
-    function createTabContent(parent, sources) {
-        var favoriteModels = createFavoriteModelsObject();
-        return tabContent.createObject(parent, {"sources": sources, "favoriteModels": favoriteModels});
     }
 
     function reset() {

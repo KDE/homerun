@@ -35,6 +35,7 @@ Item {
     // Defined by outside world
     property variant favoriteModels
     property variant sources
+    property variant searchSources
     property string typeAhead
     property string searchCriteria
 
@@ -45,8 +46,14 @@ Item {
 
     signal startedApplication
     signal updateTabOrderRequested
+    signal setSearchFieldRequested(string text)
 
     //- Private ---------------------------------------------------
+    property Item searchPage
+
+    // Used to restore content of search field when bringing back the searchPage from history
+    property string lastSearchCriteria
+
     HomerunComponents.SharedConfig {
         id: config
         name: "homerunrc"
@@ -198,7 +205,7 @@ Item {
             }
 
             Component {
-                id: modelConnectionComponent
+                id: runningConnectionComponent
                 Connections {
                     ignoreUnknownSignals: true
                     onRunningChanged: pageMain.updateRunning()
@@ -207,7 +214,8 @@ Item {
 
             Component.onCompleted: {
                 for (var idx = 0; idx < models.length; ++idx) {
-                    modelConnectionComponent.createObject(pageMain, {"target": models[idx]});
+                    var model = models[idx];
+                    runningConnectionComponent.createObject(pageMain, {"target": model});
                 }
                 pageMain.updateRunning();
             }
@@ -216,7 +224,8 @@ Item {
 
     // Ui
     Item {
-        id: headerRow
+        // navRow = back|previous + breadcrumbs
+        id: navRow
         property int maxHeight: 32
         height: canGoBack ? maxHeight : 0
         Behavior on height {
@@ -236,7 +245,7 @@ Item {
         PlasmaComponents.ToolButton {
             id: backButton
             width: height
-            height: headerRow.maxHeight
+            height: navRow.maxHeight
 
             flat: false
             iconSource: "go-previous"
@@ -249,7 +258,7 @@ Item {
                 left: backButton.right
             }
             width: height
-            height: headerRow.maxHeight
+            height: navRow.maxHeight
             enabled: canGoForward
 
             flat: false
@@ -263,7 +272,7 @@ Item {
                 left: forwardButton.right
                 leftMargin: 12
             }
-            height: headerRow.maxHeight
+            height: navRow.maxHeight
             Repeater {
                 id: breadcrumbRepeater
                 model: currentPage.pathModel
@@ -281,45 +290,14 @@ Item {
         }
     }
 
-    Item {
-        id: filterRow
-        anchors {
-            top: headerRow.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        property int maxHeight: typeAheadLabel.height
-        height: typeAhead == "" ? 0 : maxHeight
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-        clip: true
-
-        PlasmaComponents.Label {
-            id: typeAheadLabel
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: parent.top
-            }
-            text: typeAhead + "|"
-            font.pointSize: theme.defaultFont.pointSize * 1.4
-            opacity: 0.4
-        }
-    }
-
 
     Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: filterRow.bottom
-            topMargin: filterRow.height > 0 ? 12 : 0
+            top: navRow.bottom
             right: parent.right
-            bottom: parent.bottom
+            bottom: filterRow.top
         }
 
         PlasmaCore.SvgItem {
@@ -338,10 +316,55 @@ Item {
         }
     }
 
+    Item {
+        id: filterRow
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+
+        property int maxHeight: typeAheadLabel.height + filterLine.height
+        height: typeAhead == "" ? 0 : maxHeight
+        Behavior on height {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+        }
+        clip: true
+
+        PlasmaCore.SvgItem {
+            id: filterLine
+            anchors {
+                left: parent.left
+                right: parent.right
+                top: parent.top
+            }
+            height: naturalSize.height
+            svg: PlasmaCore.Svg {
+                imagePath: "widgets/scrollwidget"
+            }
+            elementId: "border-bottom"
+        }
+
+        PlasmaComponents.Label {
+            id: typeAheadLabel
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: filterLine.bottom
+            }
+            text: typeAhead + "|"
+            font.pointSize: theme.defaultFont.pointSize * 1.4
+        }
+    }
+
     // Scripting
     Component.onCompleted: {
         var lst = sources.map(createModelForSource);
-        createPage(lst);
+        var page = createPage(lst);
+        TabContentInternal.addPage(page);
+        TabContentInternal.goToLastPage();
     }
 
     onActiveFocusChanged: {
@@ -353,12 +376,44 @@ Item {
         }
     }
 
+    onSearchCriteriaChanged: {
+        if (searchCriteria.length > 0) {
+            // User typed a new search
+            if (searchPage) {
+                if (currentPage !== searchPage) {
+                    TabContentInternal.goToPage(searchPage);
+                }
+            } else {
+                var lst = searchSources.map(createModelForSource);
+                searchPage = createPage(lst);
+                TabContentInternal.addPage(searchPage);
+                TabContentInternal.goToLastPage();
+            }
+            lastSearchCriteria = searchCriteria;
+        } else {
+            if (currentPage === searchPage) {
+                // User cleared search field himself
+                goBack();
+            }
+        }
+    }
+
+    onCurrentPageChanged: {
+        if (currentPage !== searchPage && searchCriteria.length > 0) {
+            setSearchFieldRequested("");
+        }
+    }
+
     function goBack() {
         TabContentInternal.goBack();
     }
 
     function goForward() {
         TabContentInternal.goForward();
+        if (currentPage === searchPage) {
+            // Restore search query
+            setSearchFieldRequested(lastSearchCriteria);
+        }
     }
 
     function goUp() {
@@ -386,6 +441,8 @@ Item {
         var models = [createModelForSource(source)];
         var page = createPage(models, { "showHeader": false });
         page.pathModel = models[0].pathModel;
+        TabContentInternal.addPage(page);
+        TabContentInternal.goToLastPage();
     }
 
     Keys.onPressed: {
@@ -479,10 +536,9 @@ Item {
                 // Check isMultiViewModel because in that case obj is not a ResultsView
                 firstView = obj;
             }
+            page.objectName += model.objectName + ",";
         });
 
-        TabContentInternal.addPage(page);
-        TabContentInternal.goTo(TabContentInternal.pages.length - 1);
         if (firstView) {
             firstView.forceActiveFocus();
         }

@@ -78,6 +78,7 @@ void PageModelTest::testLoadKeys_data()
     QTest::addColumn<QString>("name");
     QTest::addColumn<QString>("iconName");
     QTest::addColumn<QStringList>("sources");
+    QTest::addColumn<QStringList>("searchSources");
 
     QTest::newRow("name+icon")
         <<  "[Page0]\n"
@@ -86,7 +87,8 @@ void PageModelTest::testLoadKeys_data()
             "source0=foo\n"
         << "page0"
         << "icon0"
-        << (QStringList() << "foo");
+        << (QStringList() << "foo")
+        << QStringList();
 
     QTest::newRow("name-only")
         <<  "[Page0]\n"
@@ -94,16 +96,20 @@ void PageModelTest::testLoadKeys_data()
             "source0=foo\n"
         << "page0"
         << QString()
-        << (QStringList() << "foo");
+        << (QStringList() << "foo")
+        << QStringList();
 
     QTest::newRow("multi-sources")
         <<  "[Page0]\n"
             "name=page0\n"
             "source0=foo\n"
             "source1=bar\n"
+            "searchSource0=baz\n"
+            "searchSource1=boom\n"
         << "page0"
         << QString()
-        << (QStringList() << "foo" << "bar");
+        << (QStringList() << "foo" << "bar")
+        << (QStringList() << "baz" << "boom");
 }
 
 void PageModelTest::testLoadKeys()
@@ -112,6 +118,7 @@ void PageModelTest::testLoadKeys()
     QFETCH(QString, name);
     QFETCH(QString, iconName);
     QFETCH(QStringList, sources);
+    QFETCH(QStringList, searchSources);
 
     // Create config file
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
@@ -127,6 +134,7 @@ void PageModelTest::testLoadKeys()
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
     QCOMPARE(index.data(PageModel::IconNameRole).toString(), iconName);
     QCOMPARE(index.data(PageModel::SourcesRole).toStringList(), sources);
+    QCOMPARE(index.data(PageModel::SearchSourcesRole).toStringList(), searchSources);
 }
 
 #include "pagemodeltest.moc"
