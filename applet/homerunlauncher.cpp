@@ -55,7 +55,7 @@ void HomerunLauncher::init()
     layout->setContentsMargins(0, 0, 0, 0);
 
     m_icon = new Plasma::IconWidget(this);
-    m_icon->setIcon("kde");
+    m_icon->setIcon("homerun");
 
     connect(m_icon, SIGNAL(clicked()), SLOT(toggle()));
     connect(this, SIGNAL(activate()), SLOT(toggle()));
