@@ -80,11 +80,7 @@ FullView::FullView()
 
 void FullView::setupBackground()
 {
-    if (Plasma::WindowEffects::isEffectAvailable(Plasma::WindowEffects::BlurBehind)) {
-        m_backgroundSvg->setImagePath("translucent/dialogs/background");
-    } else {
-        m_backgroundSvg->setImagePath("dialogs/background");
-    }
+    m_backgroundSvg->setImagePath("dialogs/background");
     qreal left, top, bottom, right;
     m_backgroundSvg->getMargins(left, top, bottom, right);
     rootObject()->setProperty("leftMargin", left);
@@ -154,7 +150,12 @@ void FullView::updateGeometry()
 
 void FullView::drawBackground(QPainter *painter, const QRectF &/*rect*/)
 {
+    // We use the opaque background and paint it slightly translucent instead
+    // of using the translucent background because with a lot of themes, text
+    // is not readable on translucent backgrounds.
+    painter->setOpacity(0.6);
     m_backgroundSvg->paintFrame(painter);
+    painter->setOpacity(1);
 }
 
 #include "fullview.moc"
