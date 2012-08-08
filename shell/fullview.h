@@ -43,6 +43,12 @@ public:
     ~FullView();
 
 public Q_SLOTS:
+    /**
+     * If the view is not visible, show it in @p screen. If @p screen is -1
+     * the used screen will be the one that contains the mouse
+     * 
+     * If it is visible, then hide the view.
+     */
     void toggle(int screen);
     void updateGeometry();
 

@@ -42,8 +42,6 @@ int main(int argc, char *argv[])
     aboutData.addAuthor(ki18n("Aurélien Gâteau"), ki18n("Developer"), "agateau@kde.org");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KCmdLineOptions options;
-    KCmdLineArgs::addCmdLineOptions(options);
 
     if (!KUniqueApplication::start()) {
         kError() << "Already running.";
@@ -52,6 +50,7 @@ int main(int argc, char *argv[])
 
     KUniqueApplication app;
     FullView view;
+    view.toggle(-1);
     app.setQuitOnLastWindowClosed(false);
     return app.exec();
 }

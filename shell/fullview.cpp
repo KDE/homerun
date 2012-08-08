@@ -112,6 +112,9 @@ void FullView::toggle(int screen)
         Plasma::WindowEffects::overrideShadow(winId(), true);
 
         QDesktopWidget w;
+        if(screen < 0) {
+            screen = w.screenNumber(QCursor::pos());
+        }
         const QRect rect = w.availableGeometry(screen);
         setGeometry(rect);
         show();
