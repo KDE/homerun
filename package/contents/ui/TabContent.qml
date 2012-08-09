@@ -297,14 +297,42 @@ Item {
         }
     }
 
+    Item {
+        id: filterRow
+        anchors {
+            top: navRow.bottom
+            left: parent.left
+            right: parent.right
+        }
+
+        property int maxHeight: typeAheadLabel.height
+        height: typeAhead == "" ? 0 : maxHeight
+        Behavior on height {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+        }
+        clip: true
+
+        PlasmaComponents.Label {
+            id: typeAheadLabel
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: parent.top
+            }
+            text: typeAhead + "|"
+            font.pointSize: theme.defaultFont.pointSize * 1.4
+        }
+    }
 
     Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: navRow.bottom
+            top: filterRow.bottom
             right: parent.right
-            bottom: filterRow.top
+            bottom: parent.bottom
         }
 
         PlasmaCore.SvgItem {
@@ -320,49 +348,6 @@ Item {
                 imagePath: "widgets/scrollwidget"
             }
             elementId: "border-top"
-        }
-    }
-
-    Item {
-        id: filterRow
-        anchors {
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        property int maxHeight: typeAheadLabel.height + filterLine.height
-        height: typeAhead == "" ? 0 : maxHeight
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-        clip: true
-
-        PlasmaCore.SvgItem {
-            id: filterLine
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-            }
-            height: naturalSize.height
-            svg: PlasmaCore.Svg {
-                imagePath: "widgets/scrollwidget"
-            }
-            elementId: "border-bottom"
-        }
-
-        PlasmaComponents.Label {
-            id: typeAheadLabel
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: filterLine.bottom
-            }
-            text: typeAhead + "|"
-            font.pointSize: theme.defaultFont.pointSize * 1.4
         }
     }
 
