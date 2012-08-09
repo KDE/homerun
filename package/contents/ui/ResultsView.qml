@@ -104,12 +104,28 @@ FocusScope {
     // UI
     PlasmaComponents.Label {
         id: headerLabel
-        anchors {
-            top: parent.top
-            left: parent.left
-        }
-        text: model.name
+
+        width: parent.width
+        height: theme.defaultFont.mSize.height * 2.8
+
         visible: showHeader
+        opacity: 0.6
+
+        text: model.name
+        font {
+            pointSize: theme.defaultFont.pointSize * 1.4
+        }
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+
+        PlasmaCore.SvgItem {
+            width: parent.width
+            height: naturalSize.height
+            svg: PlasmaCore.Svg {
+                imagePath: "widgets/line"
+            }
+            elementId: "horizontal-line"
+        }
     }
 
     GridView {
