@@ -55,7 +55,7 @@ bool AbstractNode::lessThan(AbstractNode *n1, AbstractNode *n2)
 GroupNode::GroupNode(KServiceGroup::Ptr group, ServiceModel *model)
 : m_model(model)
 {
-    m_icon = KIcon(group->icon());
+    m_icon = group->icon();
     m_name = group->caption();
     m_entryPath = group->entryPath();
     m_sortKey = m_name.toLower();
@@ -72,7 +72,7 @@ bool GroupNode::trigger()
 AppNode::AppNode(KService::Ptr service)
 : m_service(service)
 {
-    m_icon = KIcon(service->icon());
+    m_icon = service->icon();
     m_name = service->name();
     m_service = service;
     m_sortKey = m_name.toLower();
@@ -93,7 +93,7 @@ InstallerNode::InstallerNode(KServiceGroup::Ptr group, KService::Ptr installerSe
 : m_group(group)
 , m_service(installerService)
 {
-    m_icon = KIcon(m_service->icon());
+    m_icon = m_service->icon();
     m_name = m_service->name();
 }
 
@@ -151,11 +151,7 @@ QVariant ServiceModel::data(const QModelIndex &index, int role) const
         return node->name();
     } else if (role == Qt::DecorationRole) {
         // at least show the oxygen question-mark, otherwise it looks weird blank.
-        if (node->icon().name().isEmpty()) {
-            return KIcon("unknown");
-        }
-
-        return node->icon();
+        return node->icon().isEmpty() ? QLatin1String("unknown") : node->icon();
     } else if (role == FavoriteIdRole) {
         return node->favoriteId();
     }

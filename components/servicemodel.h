@@ -42,14 +42,14 @@ public:
     virtual bool trigger() = 0;
     virtual QString favoriteId() const { return QString(); }
 
-    KIcon icon() const { return m_icon; }
+    QString icon() const { return m_icon; }
     QString name() const { return m_name; }
 
     static bool lessThan(AbstractNode *n1, AbstractNode *n2);
 
 protected:
     QString m_sortKey;
-    KIcon m_icon;
+    QString m_icon;
     QString m_name;
 };
 
