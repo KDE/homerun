@@ -23,6 +23,8 @@ name=Applications
 query=Search for applications...
 icon=applications-other
 source0=ServiceModel
+# For a grouped list of all apps
+#source0=GroupedServiceModel
 searchSource0=RunnerModel:services,shell
 
 [Page2]

@@ -72,6 +72,13 @@ Item {
     }
 
     Component {
+        id: groupedServiceModelComponent
+        HomerunComponents.GroupedServiceModel {
+            installer: config.readEntry("PackageManagement", "categoryInstaller")
+        }
+    }
+
+    Component {
         id: powerModelComponent
         HomerunComponents.PowerModel {
         }
@@ -491,6 +498,8 @@ Item {
         var model;
         if (modelName == "ServiceModel") {
             model = serviceModelComponent.createObject(main);
+        } else if (modelName == "GroupedServiceModel") {
+            model = groupedServiceModelComponent.createObject(main);
         } else if (modelName == "PlacesModel") {
             model = placesModelComponent.createObject(main);
         } else if (modelName == "FavoriteAppsModel") {

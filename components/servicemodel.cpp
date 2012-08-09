@@ -300,7 +300,12 @@ PathModel *ServiceModel::pathModel() const
 
 QString ServiceModel::name() const
 {
-    return i18n("Applications");
+    if (m_pathModel->count() > 0) {
+        QModelIndex index = m_pathModel->index(m_pathModel->count() - 1, 0);
+        return index.data().toString();
+    } else {
+        return i18n("Applications");
+    }
 }
 
 #include "servicemodel.moc"

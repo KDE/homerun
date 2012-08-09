@@ -3,6 +3,7 @@ project(components)
 set(components_SRCS
     componentsplugin.cpp
     favoriteappsmodel.cpp
+    groupedservicemodel.cpp
     pagemodel.cpp
     pathmodel.cpp
     placesmodel.cpp

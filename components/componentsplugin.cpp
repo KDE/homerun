@@ -26,6 +26,7 @@
 
 #include "sharedconfig.h"
 #include "favoriteappsmodel.h"
+#include "groupedservicemodel.h"
 #include "pagemodel.h"
 #include "placesmodel.h"
 #include "powermodel.h"
@@ -39,6 +40,7 @@ void ComponentsPlugin::registerTypes(const char *uri)
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
     qmlRegisterType<FavoriteAppsModel>(uri, 0, 1, "FavoriteAppsModel");
     qmlRegisterType<FavoritePlacesModel>(uri, 0, 1, "FavoritePlacesModel");
+    qmlRegisterType<GroupedServiceModel>(uri, 0, 1, "GroupedServiceModel");
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
     qmlRegisterType<PowerModel>(uri, 0, 1, "PowerModel");
