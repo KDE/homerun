@@ -51,7 +51,7 @@ void GroupedServiceModel::loadRootEntries()
     KServiceGroup::Ptr group = KServiceGroup::root();
     KServiceGroup::List list = group->entries(false /* sorted: set to false as it does not seem to work */);
 
-    QMap<QString, ServiceModel *> models;
+    QMap<QString, KServiceGroup::Ptr> groupMap;
     for( KServiceGroup::List::ConstIterator it = list.constBegin(); it != list.constEnd(); it++) {
         const KSycocaEntry::Ptr p = (*it);
 
@@ -59,14 +59,25 @@ void GroupedServiceModel::loadRootEntries()
             KServiceGroup::Ptr subGroup = KServiceGroup::Ptr::staticCast(p);
 
             if (!subGroup->noDisplay() && subGroup->childCount() > 0) {
-                ServiceModel *model = createServiceModel(subGroup);
-                models.insert(model->name().toLower(), model);
+                groupMap.insert(subGroup->caption().toLower(), subGroup);
             }
         }
     }
-    beginInsertRows(QModelIndex(), 0, models.count() - 1);
-    m_models = models.values();
+    m_pendingGroupList = groupMap.values();
+    QMetaObject::invokeMethod(this, "loadNextGroup", Qt::QueuedConnection);
+}
+
+void GroupedServiceModel::loadNextGroup()
+{
+    if (m_pendingGroupList.isEmpty()) {
+        return;
+    }
+    KServiceGroup::Ptr group = m_pendingGroupList.takeFirst();
+    ServiceModel *model = createServiceModel(group);
+    beginInsertRows(QModelIndex(), m_models.count(), m_models.count());
+    m_models << model;
     endInsertRows();
+    QMetaObject::invokeMethod(this, "loadNextGroup", Qt::QueuedConnection);
 }
 
 int GroupedServiceModel::rowCount(const QModelIndex &parent) const

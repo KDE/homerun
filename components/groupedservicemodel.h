@@ -53,8 +53,10 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void loadRootEntries();
+    void loadNextGroup();
 
 private:
+    QList<KServiceGroup::Ptr> m_pendingGroupList;
     QList<ServiceModel *> m_models;
     QString m_installer;
 
