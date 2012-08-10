@@ -30,7 +30,7 @@ import "KeyboardUtils.js" as KeyboardUtils
 Item {
     id: main
     signal closeRequested
-
+    property QtObject configureAction
     property bool embedded: false
     property real leftMargin: 12
     property real topMargin: 12
@@ -51,6 +51,12 @@ Item {
 
     HomerunComponents.FavoritePlacesModel {
         id: favoritePlacesModel
+    }
+
+    Component.onCompleted: {
+        //enable right click configure
+        configureAction = plasmoid.action("configure")
+        configureAction.enabled = true
     }
 
     // UI
