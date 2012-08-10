@@ -32,7 +32,7 @@ name=Documents
 query=Search for documents...
 icon=folder-documents
 source0=PlacesModel
-searchSource0=RunnerModel:bookmarks,recentdocuments,nepomuksearch,youtube,bing
+searchSource0=RunnerModel:bookmarks,recentdocuments,nepomuksearch,youtube
 
 [Page3]
 name=Power
