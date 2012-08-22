@@ -49,8 +49,10 @@ int main(int argc, char *argv[])
     }
 
     KUniqueApplication app;
+    app.disableSessionManagement();
+    app.setQuitOnLastWindowClosed(false);
+
     FullView view;
     view.toggle(-1);
-    app.setQuitOnLastWindowClosed(false);
     return app.exec();
 }
