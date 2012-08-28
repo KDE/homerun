@@ -37,7 +37,7 @@ view associated with the model.
 Returns current number of rows. Most often it will simply return
 rowCount(QModelIndex()).
 
-### PathModel path
+### PathModel pathModel
 - access: read-only
 - mandatory: no
 
