@@ -36,7 +36,6 @@ FocusScope {
      * RunnerModel.
      */
     property QtObject model
-    property alias typeAhead: proxyModel.filterRegExp
     property alias count: gridView.count
     property bool tabMe: gridView.count > 0
 
@@ -49,11 +48,6 @@ FocusScope {
     property int iconWidth: 64
     property int resultItemWidth: 128
     property int resultItemHeight: iconWidth + 3 * theme.defaultFont.mSize.height
-
-    HomerunFixes.SortFilterModel {
-        id: proxyModel
-        sourceModel: main.model
-    }
 
     // Components
     Component {
@@ -136,7 +130,7 @@ FocusScope {
             right: parent.right
         }
 
-        model: proxyModel
+        model: main.model
         focus: true
 
         /*
@@ -302,7 +296,6 @@ FocusScope {
     }
 
     function emitIndexClicked(index) {
-        var sourceIndex = proxyModel.mapRowToSource(index);
-        indexClicked(sourceIndex);
+        indexClicked(index);
     }
 }

@@ -263,18 +263,18 @@ void PlacesModel::setArguments(const QString &str)
     argumentsChanged(str);
 }
 
-QString PlacesModel::filter() const
+QString PlacesModel::query() const
 {
-    return m_filter;
+    return m_query;
 }
 
-void PlacesModel::setFilter(const QString& filter)
+void PlacesModel::setQuery(const QString& query)
 {
-    if (m_filter == filter) {
+    if (m_query == query) {
         return;
     }
-    m_filter = filter;
-    QRegExp rx(filter, Qt::CaseInsensitive, QRegExp::FixedString);
+    m_query = query;
+    QRegExp rx(query, Qt::CaseInsensitive, QRegExp::FixedString);
     setFilterRegExp(rx);
     filterChanged();
 

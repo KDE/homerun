@@ -36,7 +36,6 @@ Item {
     property variant favoriteModels
     property variant sources
     property variant searchSources
-    property string typeAhead
     property string searchCriteria
 
     // Exposed by ourself
@@ -49,11 +48,6 @@ Item {
     signal setSearchFieldRequested(string text)
 
     //- Private ---------------------------------------------------
-    property Item searchPage
-
-    // Used to restore content of search field when bringing back the searchPage from history
-    property string lastSearchCriteria
-
     HomerunComponents.SharedConfig {
         id: config
         name: "homerunrc"
@@ -93,7 +87,6 @@ Item {
     Component {
         id: runnerModelComponent
         HomerunComponents.RunnerModel {
-            query: searchCriteria
         }
     }
 
@@ -108,6 +101,32 @@ Item {
         }
     }
 
+    // Filter components
+    Component {
+        id: genericFilterComponent
+        HomerunFixes.SortFilterModel {
+            filterRegExp: main.searchCriteria
+            property string name: sourceModel ? sourceModel.name : ""
+            property int count: sourceModel ? sourceModel.count : 0
+
+            property bool running: "running" in sourceModel ? sourceModel.running : false
+            property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
+
+            function trigger(index) {
+                var sourceIndex = mapRowToSource(index);
+                sourceModel.trigger(sourceIndex);
+            }
+        }
+    }
+
+    Component {
+        id: queryBindingComponent
+        Binding {
+            property: "query"
+            value: main.searchCriteria
+        }
+    }
+
     // UI components
     Component {
         id: multiResultsViewComponent
@@ -117,7 +136,6 @@ Item {
             delegate: ResultsView {
                 width: repeater.parent.width
                 model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
-                typeAhead: main.typeAhead
                 favoriteModels: repeater.favoriteModels
                 onIndexClicked: {
                     // Here "index" is the row number clicked inside the ResultsView
@@ -132,8 +150,6 @@ Item {
         ResultsView {
             id: view
             width: parent.width
-            typeAhead: main.typeAhead
-
             onIndexClicked: {
                 handleTriggerResult(model.trigger(index));
             }
@@ -145,7 +161,10 @@ Item {
 
         Item {
             id: pageMain
+            property string searchCriteria
+
             property alias viewContainer: column
+
             anchors.fill: parent
 
             // Defined for pages with a single view on a browsable model
@@ -298,39 +317,10 @@ Item {
     }
 
     Item {
-        id: filterRow
-        anchors {
-            top: navRow.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        property int maxHeight: typeAheadLabel.height
-        height: typeAhead == "" ? 0 : maxHeight
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-        clip: true
-
-        PlasmaComponents.Label {
-            id: typeAheadLabel
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: parent.top
-            }
-            text: typeAhead + "|"
-            font.pointSize: theme.defaultFont.pointSize * 1.4
-        }
-    }
-
-    Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: filterRow.bottom
+            top: navRow.bottom
             right: parent.right
             bottom: parent.bottom
         }
@@ -353,7 +343,8 @@ Item {
 
     // Scripting
     Component.onCompleted: {
-        var lst = sources.map(createModelForSource);
+        var allSources = sources.concat(searchSources);
+        var lst = allSources.map(createModelForSource);
         var page = createPage(lst);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
@@ -369,31 +360,11 @@ Item {
     }
 
     onSearchCriteriaChanged: {
-        if (searchCriteria.length > 0) {
-            // User typed a new search
-            if (searchPage) {
-                if (currentPage !== searchPage) {
-                    TabContentInternal.goToPage(searchPage);
-                }
-            } else {
-                var lst = searchSources.map(createModelForSource);
-                searchPage = createPage(lst);
-                TabContentInternal.addPage(searchPage);
-                TabContentInternal.goToLastPage();
-            }
-            lastSearchCriteria = searchCriteria;
-        } else {
-            if (currentPage === searchPage) {
-                // User cleared search field himself
-                goBack();
-            }
-        }
+        currentPage.searchCriteria = searchCriteria;
     }
 
     onCurrentPageChanged: {
-        if (currentPage !== searchPage && searchCriteria.length > 0) {
-            setSearchFieldRequested("");
-        }
+        setSearchFieldRequested(currentPage.searchCriteria);
     }
 
     function goBack() {
@@ -402,10 +373,6 @@ Item {
 
     function goForward() {
         TabContentInternal.goForward();
-        if (currentPage === searchPage) {
-            // Restore search query
-            setSearchFieldRequested(lastSearchCriteria);
-        }
     }
 
     function goUp() {
@@ -422,7 +389,6 @@ Item {
     }
 
     function handleTriggerResult(result) {
-        main.typeAhead = "";
         if (result) {
             startedApplication();
             return;
@@ -438,36 +404,11 @@ Item {
     }
 
     Keys.onPressed: {
-        if (event.modifiers == Qt.NoModifier || event.modifiers == Qt.ShiftModifier) {
-            handleTypeAheadKeyEvent(event);
-        }
         KeyboardUtils.processShortcutList([
             [Qt.AltModifier, Qt.Key_Left, goBack],
             [Qt.AltModifier, Qt.Key_Right, goForward],
             [Qt.AltModifier, Qt.Key_Up, goUp],
             ], event);
-    }
-
-    function handleTypeAheadKeyEvent(event) {
-        switch (event.key) {
-
-        case Qt.Key_Tab:
-        case Qt.Key_Escape:
-            // Keys we don't want to handle as type-ahead
-            return;
-        case Qt.Key_Backspace:
-            // Erase last char
-            typeAhead = typeAhead.slice(0, -1);
-            event.accepted = true;
-            break;
-        default:
-            // Add the char to typeAhead
-            if (event.text != "") {
-                typeAhead += event.text;
-                event.accepted = true;
-            }
-            break;
-        }
     }
 
     function createModelForSource(source) {
@@ -507,6 +448,14 @@ Item {
             } else {
                 console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
             }
+        }
+
+        if ("query" in model) {
+            // Model supports querying itself
+            queryBindingComponent.createObject(main, {"target": model});
+        } else {
+            // No query support, set up a generic filter for the model
+            model = genericFilterComponent.createObject(main, {"sourceModel": model});
         }
         return model;
     }

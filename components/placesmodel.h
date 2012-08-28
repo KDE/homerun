@@ -83,7 +83,7 @@ class PlacesModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(QString filter READ filter WRITE setFilter NOTIFY filterChanged)
+    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
     Q_PROPERTY(QObject *rootModel READ rootModel WRITE setRootModel NOTIFY rootModelChanged)
     Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
     Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
@@ -99,8 +99,8 @@ public:
     QString arguments() const;
     void setArguments(const QString &arguments);
 
-    QString filter() const;
-    void setFilter(const QString &filter);
+    QString query() const;
+    void setQuery(const QString &);
 
     QAbstractItemModel *rootModel() const;
     /**
@@ -117,7 +117,7 @@ public:
 
 Q_SIGNALS:
     void countChanged();
-    void filterChanged();
+    void queryChanged();
     void rootModelChanged();
     void runningChanged(bool);
     void argumentsChanged(const QString &);
@@ -132,7 +132,7 @@ private:
     PathModel *m_pathModel;
     KUrl m_rootUrl;
     QString m_rootName;
-    QString m_filter;
+    QString m_query;
     QString m_arguments;
 
     void switchToRootModel();
