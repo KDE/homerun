@@ -31,7 +31,7 @@ Item {
     id: main
     signal closeRequested
     property QtObject configureAction
-    property bool embedded: false
+    property bool isContainment
     property real leftMargin: 12
     property real topMargin: 12
     property real rightMargin: 12
@@ -53,18 +53,12 @@ Item {
         id: favoritePlacesModel
     }
 
-    Component.onCompleted: {
-        //enable right click configure
-        configureAction = plasmoid.action("configure")
-        configureAction.enabled = true
-    }
-
     // UI
     Component {
         id: tabContent
         TabContent {
             id: tabContentMain
-            onStartedApplication: embedded ? closeRequested() : reset()
+            onStartedApplication: isContainment ? reset() : closeRequested()
             onSetSearchFieldRequested: searchField.text = text
         }
     }
@@ -241,6 +235,15 @@ Item {
     }
 
     // Code
+    Component.onCompleted: {
+        //enable right click configure
+        isContainment = "plasmoid" in this;
+        if (isContainment) {
+            configureAction = plasmoid.action("configure");
+            configureAction.enabled = true;
+        }
+    }
+
     Connections {
         target: main
         onCurrentTabContentChanged: {
