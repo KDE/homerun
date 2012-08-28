@@ -12,21 +12,25 @@ moved to the components/ dir.
 
 ## SortFilterModel (kde-runtime)
 ### Fix for flickering
-https://git.reviewboard.kde.org/r/105042/
+<https://git.reviewboard.kde.org/r/105042/>
+
 Applied in 4.9
 
-### Notify about changes in filterRegExp
-
 ### New methods: mapRowFromSource, mapRowToSource
-https://git.reviewboard.kde.org/r/105044/
+<https://git.reviewboard.kde.org/r/105044/>
+
 Applied in 4.9
 
 ### Fix SortFilterModel sorting by default
 Applied in 4.9
 
+### Notify about changes in filterRegExp and model + Allow setting model to 0
+<https://git.reviewboard.kde.org/r/106248/>
+
 ## RunnerModel (kde-runtime)
 ### Do not reset Plasma::RunnerModel when new matches are added
-https://git.reviewboard.kde.org/r/104917/
+<https://git.reviewboard.kde.org/r/104917/>
+
 Applied in 4.9
 
 ### Fix behavior of "runners" property
