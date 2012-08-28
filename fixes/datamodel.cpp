@@ -66,13 +66,25 @@ int SortFilterModel::roleNameToId(const QString &name)
 
 void SortFilterModel::setModel(QObject *source)
 {
-    QAbstractItemModel *model = qobject_cast<QAbstractItemModel *>(source);
-    if (!model) {
-        kWarning() << "Error: QAbstractItemModel type expected";
+    if (source == sourceModel()) {
         return;
     }
 
-    connect(model, SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
+    QAbstractItemModel *model = 0;
+    if (source) {
+        model = qobject_cast<QAbstractItemModel *>(source);
+        if (!model) {
+            kWarning() << "Error: QAbstractItemModel type expected";
+            return;
+        }
+    }
+
+    if (sourceModel()) {
+        disconnect(sourceModel(), SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
+    }
+    if (model) {
+        connect(model, SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
+    }
     QSortFilterProxyModel::setSourceModel(model);
     sourceModelChanged(model);
 }
@@ -82,6 +94,9 @@ void SortFilterModel::setModel(QObject *source)
 
 void SortFilterModel::setFilterRegExp(const QString &exp)
 {
+    if (exp == filterRegExp()) {
+        return;
+    }
     QSortFilterProxyModel::setFilterRegExp(QRegExp(exp, Qt::CaseInsensitive));
     filterRegExpChanged(exp);
 }
