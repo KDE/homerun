@@ -117,7 +117,6 @@ Item {
             delegate: ResultsView {
                 width: repeater.parent.width
                 model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
-                typeAhead: main.typeAhead
                 favoriteModels: repeater.favoriteModels
                 onIndexClicked: {
                     // Here "index" is the row number clicked inside the ResultsView
@@ -132,8 +131,6 @@ Item {
         ResultsView {
             id: view
             width: parent.width
-            typeAhead: main.typeAhead
-
             onIndexClicked: {
                 handleTriggerResult(model.trigger(index));
             }
