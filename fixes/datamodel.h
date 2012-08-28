@@ -36,7 +36,7 @@ class SortFilterModel : public QSortFilterProxyModel
     /**
      * The source model of this sorting proxy model. It has to inherit QAbstractItemModel (ListModel is not supported)
      */
-    Q_PROPERTY(QObject *sourceModel READ sourceModel WRITE setModel)
+    Q_PROPERTY(QObject *sourceModel READ sourceModel WRITE setModel NOTIFY sourceModelChanged)
 
     /**
      * The regular expression for the filter, only items with their filterRole matching filterRegExp will be displayed
@@ -100,6 +100,7 @@ public:
 
 Q_SIGNALS:
     void countChanged();
+    void sourceModelChanged(QObject *);
     void filterRegExpChanged(const QString &);
 
 protected:

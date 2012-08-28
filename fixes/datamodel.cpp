@@ -74,6 +74,7 @@ void SortFilterModel::setModel(QObject *source)
 
     connect(model, SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
     QSortFilterProxyModel::setSourceModel(model);
+    sourceModelChanged(model);
 }
 
 
