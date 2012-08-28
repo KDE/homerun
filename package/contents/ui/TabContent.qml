@@ -87,8 +87,6 @@ Item {
     Component {
         id: runnerModelComponent
         HomerunComponents.RunnerModel {
-            property string filter
-            query: filter
         }
     }
 
@@ -122,9 +120,9 @@ Item {
     }
 
     Component {
-        id: filterBindingComponent
+        id: queryBindingComponent
         Binding {
-            property: "filter"
+            property: "query"
             value: main.searchCriteria
         }
     }
@@ -452,11 +450,11 @@ Item {
             }
         }
 
-        if ("filter" in model) {
-            // Model supports filtering itself
-            filterBindingComponent.createObject(main, {"target": model});
+        if ("query" in model) {
+            // Model supports querying itself
+            queryBindingComponent.createObject(main, {"target": model});
         } else {
-            // Set up generic filtering
+            // No query support, set up a generic filter for the model
             model = genericFilterComponent.createObject(main, {"sourceModel": model});
         }
         return model;

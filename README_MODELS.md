@@ -59,6 +59,14 @@ Define optional model arguments. The model can opt to use named arguments if
 wanted. The recommended way to do so is with the functions from the
 SourceArguments namespace.
 
+### string query
+- access: read-write
+- mandatory: no
+
+A model can implement this property to implement searching/filtering itself. If
+it is not defined, Homerun will apply a generic filter to the item names when
+the user type a search criteria.
+
 ## Methods
 ### bool trigger(int row)
 - mandatory: yes
