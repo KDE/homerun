@@ -48,9 +48,6 @@ Item {
     signal setSearchFieldRequested(string text)
 
     //- Private ---------------------------------------------------
-    // Used to restore content of search field when bringing back the searchPage from history
-    property string lastSearchCriteria
-
     HomerunComponents.SharedConfig {
         id: config
         name: "homerunrc"
@@ -166,7 +163,10 @@ Item {
 
         Item {
             id: pageMain
+            property string searchCriteria
+
             property alias viewContainer: column
+
             anchors.fill: parent
 
             // Defined for pages with a single view on a browsable model
@@ -362,27 +362,11 @@ Item {
     }
 
     onSearchCriteriaChanged: {
-        lastSearchCriteria = searchCriteria;
-        /*
-        if (searchCriteria.length > 0) {
-            // User typed a new search
-            lastSearchCriteria = searchCriteria;
-        } else {
-            if (currentPage === searchPage) {
-                // User cleared search field himself
-                goBack();
-            }
-        }
-        */
+        currentPage.searchCriteria = searchCriteria;
     }
 
     onCurrentPageChanged: {
-        /*
-        if (currentPage !== searchPage && searchCriteria.length > 0) {
-            setSearchFieldRequested("");
-        }
-        */
-        setSearchFieldRequested("");
+        setSearchFieldRequested(currentPage.searchCriteria);
     }
 
     function goBack() {
@@ -391,12 +375,6 @@ Item {
 
     function goForward() {
         TabContentInternal.goForward();
-        /*
-        if (currentPage === searchPage) {
-            // Restore search query
-            setSearchFieldRequested(lastSearchCriteria);
-        }
-        */
     }
 
     function goUp() {
