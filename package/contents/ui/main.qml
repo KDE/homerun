@@ -285,6 +285,30 @@ Item {
             [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.goToNextTab],
             [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
         ];
+        if (event.modifiers == Qt.NoModifier || event.modifiers == Qt.ShiftModifier) {
+            handleTypeAheadKeyEvent(event);
+        }
         KeyboardUtils.processShortcutList(lst, event);
+    }
+
+    function handleTypeAheadKeyEvent(event) {
+        switch (event.key) {
+        case Qt.Key_Tab:
+        case Qt.Key_Escape:
+            // Keys we don't want to handle as type-ahead
+            return;
+        case Qt.Key_Backspace:
+            // Erase last char
+            searchField.text = searchField.text.slice(0, -1);
+            event.accepted = true;
+            break;
+        default:
+            // Add the char to typeAhead
+            if (event.text != "") {
+                searchField.text += event.text;
+                event.accepted = true;
+            }
+            break;
+        }
     }
 }
