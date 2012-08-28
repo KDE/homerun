@@ -36,7 +36,6 @@ Item {
     property variant favoriteModels
     property variant sources
     property variant searchSources
-    property string typeAhead
     property string searchCriteria
 
     // Exposed by ourself
@@ -49,8 +48,6 @@ Item {
     signal setSearchFieldRequested(string text)
 
     //- Private ---------------------------------------------------
-    property Item searchPage
-
     // Used to restore content of search field when bringing back the searchPage from history
     property string lastSearchCriteria
 
@@ -93,7 +90,8 @@ Item {
     Component {
         id: runnerModelComponent
         HomerunComponents.RunnerModel {
-            query: searchCriteria
+            property string filter
+            query: filter
         }
     }
 
@@ -105,6 +103,32 @@ Item {
             onOpenSourceRequested: {
                 openSource(source);
             }
+        }
+    }
+
+    // Filter components
+    Component {
+        id: genericFilterComponent
+        HomerunFixes.SortFilterModel {
+            filterRegExp: main.searchCriteria
+            property string name: sourceModel ? sourceModel.name : ""
+            property int count: sourceModel ? sourceModel.count : 0
+
+            property bool running: "running" in sourceModel ? sourceModel.running : false
+            property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
+
+            function trigger(index) {
+                var sourceIndex = mapRowToSource(index);
+                sourceModel.trigger(sourceIndex);
+            }
+        }
+    }
+
+    Component {
+        id: filterBindingComponent
+        Binding {
+            property: "filter"
+            value: main.searchCriteria
         }
     }
 
@@ -295,39 +319,10 @@ Item {
     }
 
     Item {
-        id: filterRow
-        anchors {
-            top: navRow.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        property int maxHeight: typeAheadLabel.height
-        height: typeAhead == "" ? 0 : maxHeight
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-        clip: true
-
-        PlasmaComponents.Label {
-            id: typeAheadLabel
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                top: parent.top
-            }
-            text: typeAhead + "|"
-            font.pointSize: theme.defaultFont.pointSize * 1.4
-        }
-    }
-
-    Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: filterRow.bottom
+            top: navRow.bottom
             right: parent.right
             bottom: parent.bottom
         }
@@ -350,7 +345,8 @@ Item {
 
     // Scripting
     Component.onCompleted: {
-        var lst = sources.map(createModelForSource);
+        var allSources = sources.concat(searchSources);
+        var lst = allSources.map(createModelForSource);
         var page = createPage(lst);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
@@ -366,18 +362,10 @@ Item {
     }
 
     onSearchCriteriaChanged: {
+        lastSearchCriteria = searchCriteria;
+        /*
         if (searchCriteria.length > 0) {
             // User typed a new search
-            if (searchPage) {
-                if (currentPage !== searchPage) {
-                    TabContentInternal.goToPage(searchPage);
-                }
-            } else {
-                var lst = searchSources.map(createModelForSource);
-                searchPage = createPage(lst);
-                TabContentInternal.addPage(searchPage);
-                TabContentInternal.goToLastPage();
-            }
             lastSearchCriteria = searchCriteria;
         } else {
             if (currentPage === searchPage) {
@@ -385,12 +373,16 @@ Item {
                 goBack();
             }
         }
+        */
     }
 
     onCurrentPageChanged: {
+        /*
         if (currentPage !== searchPage && searchCriteria.length > 0) {
             setSearchFieldRequested("");
         }
+        */
+        setSearchFieldRequested("");
     }
 
     function goBack() {
@@ -399,10 +391,12 @@ Item {
 
     function goForward() {
         TabContentInternal.goForward();
+        /*
         if (currentPage === searchPage) {
             // Restore search query
             setSearchFieldRequested(lastSearchCriteria);
         }
+        */
     }
 
     function goUp() {
@@ -419,7 +413,6 @@ Item {
     }
 
     function handleTriggerResult(result) {
-        main.typeAhead = "";
         if (result) {
             startedApplication();
             return;
@@ -435,36 +428,11 @@ Item {
     }
 
     Keys.onPressed: {
-        if (event.modifiers == Qt.NoModifier || event.modifiers == Qt.ShiftModifier) {
-            handleTypeAheadKeyEvent(event);
-        }
         KeyboardUtils.processShortcutList([
             [Qt.AltModifier, Qt.Key_Left, goBack],
             [Qt.AltModifier, Qt.Key_Right, goForward],
             [Qt.AltModifier, Qt.Key_Up, goUp],
             ], event);
-    }
-
-    function handleTypeAheadKeyEvent(event) {
-        switch (event.key) {
-
-        case Qt.Key_Tab:
-        case Qt.Key_Escape:
-            // Keys we don't want to handle as type-ahead
-            return;
-        case Qt.Key_Backspace:
-            // Erase last char
-            typeAhead = typeAhead.slice(0, -1);
-            event.accepted = true;
-            break;
-        default:
-            // Add the char to typeAhead
-            if (event.text != "") {
-                typeAhead += event.text;
-                event.accepted = true;
-            }
-            break;
-        }
     }
 
     function createModelForSource(source) {
@@ -504,6 +472,14 @@ Item {
             } else {
                 console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
             }
+        }
+
+        if ("filter" in model) {
+            // Model supports filtering itself
+            filterBindingComponent.createObject(main, {"target": model});
+        } else {
+            // Set up generic filtering
+            model = genericFilterComponent.createObject(main, {"sourceModel": model});
         }
         return model;
     }
