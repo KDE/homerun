@@ -43,6 +43,9 @@ class QSizeF;
 class HomerunLauncher : public Plasma::Applet
 {
     Q_OBJECT
+    enum {
+        DontShow = -2
+    };
 public:
     HomerunLauncher(QObject * parent, const QVariantList & args);
 
@@ -50,10 +53,12 @@ public:
 
 private Q_SLOTS:
     void toggle();
-    void checkAndLaunch();
 
 private:
     Plasma::IconWidget *m_icon;
+
+    void startViewer(int screen);
+    bool isViewerRunning() const;
 };
 
 K_EXPORT_PLASMA_APPLET (homerunlauncher, HomerunLauncher)

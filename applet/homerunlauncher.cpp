@@ -62,30 +62,37 @@ void HomerunLauncher::init()
 
     layout->addItem(m_icon);
 
-    //oddly doesn't work?
-    //KToolInvocation::startServiceByDesktopPath("homerunviewer.desktop", QStringList(), &error);
-    //kDebug() << "ERROR?: " << error;
-    checkAndLaunch();
+    if (!isViewerRunning()) {
+        kDebug() << "Service not registered, launching homerunviewer";
+        startViewer(HomerunLauncher::DontShow);
+    }
 }
 
-void HomerunLauncher::checkAndLaunch()
+bool HomerunLauncher::isViewerRunning() const
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.homerunViewer")) {
-        kDebug() << "Service not registered, launching homerunviewer";
-        KRun::runCommand("homerunviewer", 0);
+    return QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.homerunViewer");
+}
+
+void HomerunLauncher::startViewer(int screen)
+{
+    QString cmd = "homerunviewer";
+    if (screen != DontShow) {
+        cmd += " --show " + QString::number(screen);
     }
+    KRun::runCommand(cmd, 0);
 }
 
 void HomerunLauncher::toggle()
 {
-    kDebug() << "ICON CLICKED!";
-    checkAndLaunch();
+    int screen = containment()->screen();
+    if (!isViewerRunning()) {
+        startViewer(screen);
+        return;
+    }
 
     QDBusConnection bus = QDBusConnection::sessionBus();
-
     QDBusInterface interface("org.kde.homerunViewer", "/HomerunViewer", "org.kde.homerunViewer", bus);
-
-    interface.asyncCall("toggle", containment()->screen());
+    interface.asyncCall("toggle", screen);
 }
 
 #include "homerunlauncher.moc"

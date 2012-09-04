@@ -41,8 +41,14 @@ int main(int argc, char *argv[])
     aboutData.addAuthor(ki18n("Shaun Reich"), ki18n("Developer"), "shaun.reich@blue-systems.com");
     aboutData.addAuthor(ki18n("Aurélien Gâteau"), ki18n("Developer"), "agateau@kde.org");
 
+    // Define cmdline options
     KCmdLineArgs::init(argc, argv, &aboutData);
+    KCmdLineOptions options;
+    options.add("show <screen>", ki18n("Show on screen <screen>"), "-1");
+    KCmdLineArgs::addCmdLineOptions(options);
+    KUniqueApplication::addCmdLineOptions();
 
+    // Create app
     if (!KUniqueApplication::start()) {
         kError() << "Already running.";
         return 0;
@@ -52,7 +58,18 @@ int main(int argc, char *argv[])
     app.disableSessionManagement();
     app.setQuitOnLastWindowClosed(false);
 
+    // Create view
     FullView view;
-    view.toggle(-1);
+    KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+    if (args->isSet("show")) {
+        QString str = args->getOption("show");
+        bool ok;
+        int screen = str.toInt(&ok);
+        if (!ok) {
+            kError() << "Invalid screen number:" << str << ". Using screen 0.";
+            screen = 0;
+        }
+        view.toggle(screen);
+    }
     return app.exec();
 }
