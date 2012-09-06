@@ -59,7 +59,9 @@ QObject *SourcePluginLoader::createModelForSource(const QString &source)
     } else if (modelName == "GroupedServiceModel") {
         model = new GroupedServiceModel(this);
     } else if (modelName == "PlacesModel") {
-        model = new PlacesModel(this);
+        PlacesModel* placesModel = new PlacesModel(this);
+        placesModel->setRootModel(m_favoriteModels["place"].value<QObject*>());
+        model = placesModel;
     } else if (modelName == "FavoriteAppsModel") {
         return m_favoriteModels["app"].value<QObject*>();
     } else if (modelName == "PowerModel") {

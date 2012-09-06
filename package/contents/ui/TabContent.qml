@@ -33,7 +33,7 @@ Item {
 
     //- Public ----------------------------------------------------
     // Defined by outside world
-    property variant favoriteModels
+    property QtObject loader
     property variant sources
     property variant searchSources
     property string searchCriteria
@@ -51,11 +51,6 @@ Item {
     HomerunComponents.SharedConfig {
         id: config
         name: "homerunrc"
-    }
-
-    HomerunComponents.SourcePluginLoader {
-        id: loader
-        favoriteModels: favoriteModels
     }
 
     // Models
@@ -122,6 +117,17 @@ Item {
             function trigger(index) {
                 var sourceIndex = mapRowToSource(index);
                 sourceModel.trigger(sourceIndex);
+            }
+
+        }
+    }
+
+    Component {
+        id: openSourceConnectedConnectionComponent
+        Connections {
+            ignoreUnknownSignals: true
+            onOpenSourceRequested: {
+                openSource(source);
             }
         }
     }
@@ -420,45 +426,10 @@ Item {
 
     function createModelForSource(source) {
         var model = loader.createModelForSource(source);
-        /*
-        var idx = source.indexOf(":");
-        var modelName;
-        var modelArgs;
-        if (idx > 0) {
-            modelName = source.slice(0, idx);
-            modelArgs = source.slice(idx + 1);
-        } else {
-            modelName = source;
-        }
-        var model;
-        if (modelName == "ServiceModel") {
-            model = serviceModelComponent.createObject(main);
-        } else if (modelName == "GroupedServiceModel") {
-            model = groupedServiceModelComponent.createObject(main);
-        } else if (modelName == "PlacesModel") {
-            model = placesModelComponent.createObject(main);
-        } else if (modelName == "FavoriteAppsModel") {
-            model = main.favoriteModels["app"];
-        } else if (modelName == "PowerModel") {
-            model = powerModelComponent.createObject(main);
-        } else if (modelName == "SessionModel") {
-            model = sessionModelComponent.createObject(main);
-        } else if (modelName == "RunnerModel") {
-            model = runnerModelComponent.createObject(main);
-        } else {
-            console.log("Error: unknown model type: " + modelName);
-            return;
-        }
-        model.objectName = source;
 
-        if (modelArgs) {
-            if ("arguments" in model) {
-                model.arguments = modelArgs;
-            } else {
-                console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
-            }
-        }
-        */
+        // Create connection now: if we do it after applying the filter, then
+        // model is the filter model not the source model
+        openSourceConnectedConnectionComponent.createObject(model);
 
         if ("query" in model) {
             // Model supports querying itself
@@ -467,6 +438,7 @@ Item {
             // No query support, set up a generic filter for the model
             model = genericFilterComponent.createObject(main, {"sourceModel": model});
         }
+
         return model;
     }
 
@@ -478,7 +450,7 @@ Item {
             var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
             var viewArgs = {};
             viewArgs["model"] = model;
-            viewArgs["favoriteModels"] = favoriteModels;
+            viewArgs["favoriteModels"] = loader.favoriteModels;
             if (viewExtraArgs !== undefined) {
                 for (var key in viewExtraArgs) {
                     viewArgs[key] = viewExtraArgs[key];

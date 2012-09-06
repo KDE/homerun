@@ -53,6 +53,11 @@ Item {
         id: favoritePlacesModel
     }
 
+    HomerunComponents.SourcePluginLoader {
+        id: loader
+        favoriteModels: createFavoriteModelsObject();
+    }
+
     // UI
     Component {
         id: tabContent
@@ -81,14 +86,12 @@ Item {
                 property string searchPlaceholder: model.searchPlaceholder
 
                 Component.onCompleted: {
-                    var favoriteModels = createFavoriteModelsObject();
-
                     // "tab" is a property of TabButton, that is why it is not declared with "var"
                     // FIXME
                     tab = tabContent.createObject(tabGroup, {
+                        "loader": loader,
                         "sources": model.sources,
                         "searchSources": model.searchSources,
-                        "favoriteModels": favoriteModels,
                     });
 
                     var lst = tabContentList;
