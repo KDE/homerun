@@ -53,7 +53,13 @@ Item {
         name: "homerunrc"
     }
 
+    HomerunComponents.SourcePluginLoader {
+        id: loader
+        favoriteModels: favoriteModels
+    }
+
     // Models
+    /*
     Component {
         id: serviceModelComponent
         HomerunComponents.ServiceModel {
@@ -100,6 +106,7 @@ Item {
             }
         }
     }
+    */
 
     // Filter components
     Component {
@@ -412,6 +419,8 @@ Item {
     }
 
     function createModelForSource(source) {
+        var model = loader.createModelForSource(source);
+        /*
         var idx = source.indexOf(":");
         var modelName;
         var modelArgs;
@@ -449,6 +458,7 @@ Item {
                 console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
             }
         }
+        */
 
         if ("query" in model) {
             // Model supports querying itself

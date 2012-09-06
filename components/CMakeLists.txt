@@ -14,6 +14,7 @@ set(components_SRCS
     sessionmodel.cpp
     sharedconfig.cpp
     sourcearguments.cpp
+    sourcepluginloader.cpp
     )
 
 qt4_automoc(${components_SRCS})
