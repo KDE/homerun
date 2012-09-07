@@ -17,7 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 // Self
-#include <sourcepluginloader.h>
+#include <sourceregistry.h>
 
 // Local
 #include <groupedservicemodel.h>
@@ -32,16 +32,16 @@
 
 // Qt
 
-SourcePluginLoader::SourcePluginLoader(QObject *parent)
+SourceRegistry::SourceRegistry(QObject *parent)
 : QObject(parent)
 {
 }
 
-SourcePluginLoader::~SourcePluginLoader()
+SourceRegistry::~SourceRegistry()
 {
 }
 
-QObject *SourcePluginLoader::createModelForSource(const QString &source)
+QObject *SourceRegistry::createModelForSource(const QString &source)
 {
     QString modelName;
     QString modelArgs;
@@ -88,15 +88,15 @@ QObject *SourcePluginLoader::createModelForSource(const QString &source)
     return model;
 }
 
-QVariantMap SourcePluginLoader::favoriteModels() const
+QVariantMap SourceRegistry::favoriteModels() const
 {
     return m_favoriteModels;
 }
 
-void SourcePluginLoader::setFavoriteModels(const QVariantMap &models)
+void SourceRegistry::setFavoriteModels(const QVariantMap &models)
 {
     m_favoriteModels = models;
     favoriteModelsChanged();
 }
 
-#include <sourcepluginloader.moc>
+#include <sourceregistry.moc>

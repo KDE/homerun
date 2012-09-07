@@ -33,7 +33,7 @@ Item {
 
     //- Public ----------------------------------------------------
     // Defined by outside world
-    property QtObject loader
+    property QtObject sourceRegistry
     property variant sources
     property variant searchSources
     property string searchCriteria
@@ -425,7 +425,7 @@ Item {
     }
 
     function createModelForSource(source) {
-        var model = loader.createModelForSource(source);
+        var model = sourceRegistry.createModelForSource(source);
 
         // Create connections now: if we do it after applying the filter, then
         // "model" may have been changed to be a filter model, not the source
@@ -451,7 +451,7 @@ Item {
             var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
             var viewArgs = {};
             viewArgs["model"] = model;
-            viewArgs["favoriteModels"] = loader.favoriteModels;
+            viewArgs["favoriteModels"] = sourceRegistry.favoriteModels;
             if (viewExtraArgs !== undefined) {
                 for (var key in viewExtraArgs) {
                     viewArgs[key] = viewExtraArgs[key];

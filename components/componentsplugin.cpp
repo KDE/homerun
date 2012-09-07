@@ -34,7 +34,7 @@
 #include "runnermodel.h"
 #include "servicemodel.h"
 #include "sessionmodel.h"
-#include "sourcepluginloader.h"
+#include "sourceregistry.h"
 
 void ComponentsPlugin::registerTypes(const char *uri)
 {
@@ -50,7 +50,7 @@ void ComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<SharedConfig>(uri, 0, 1, "SharedConfig");
     qmlRegisterType<RunnerModel>(uri, 0, 1, "RunnerModel");
     qmlRegisterType<ServiceModel>(uri, 0, 1, "ServiceModel");
-    qmlRegisterType<SourcePluginLoader>(uri, 0, 1, "SourcePluginLoader");
+    qmlRegisterType<SourceRegistry>(uri, 0, 1, "SourceRegistry");
     qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
     qRegisterMetaType<Plasma::QueryMatch *>("QueryMatch");
 }

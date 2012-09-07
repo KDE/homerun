@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef SOURCEPLUGINLOADER_H
-#define SOURCEPLUGINLOADER_H
+#ifndef SOURCEREGISTRY_H
+#define SOURCEREGISTRY_H
 
 // Local
 
@@ -32,13 +32,13 @@ class QAbstractItemModel;
 /**
  *
  */
-class SourcePluginLoader : public QObject
+class SourceRegistry : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels WRITE setFavoriteModels NOTIFY favoriteModelsChanged)
 public:
-    explicit SourcePluginLoader(QObject *parent = 0);
-    ~SourcePluginLoader();
+    explicit SourceRegistry(QObject *parent = 0);
+    ~SourceRegistry();
 
     Q_INVOKABLE QObject *createModelForSource(const QString &source);
 
@@ -52,4 +52,4 @@ private:
     QVariantMap m_favoriteModels;
 };
 
-#endif /* SOURCEPLUGINLOADER_H */
+#endif /* SOURCEREGISTRY_H */

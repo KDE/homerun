@@ -53,8 +53,8 @@ Item {
         id: favoritePlacesModel
     }
 
-    HomerunComponents.SourcePluginLoader {
-        id: loader
+    HomerunComponents.SourceRegistry {
+        id: sourceRegistry
         favoriteModels: createFavoriteModelsObject();
     }
 
@@ -89,7 +89,7 @@ Item {
                     // "tab" is a property of TabButton, that is why it is not declared with "var"
                     // FIXME
                     tab = tabContent.createObject(tabGroup, {
-                        "loader": loader,
+                        "sourceRegistry": sourceRegistry,
                         "sources": model.sources,
                         "searchSources": model.searchSources,
                     });
