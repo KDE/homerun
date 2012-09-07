@@ -427,12 +427,13 @@ Item {
     function createModelForSource(source) {
         var model = loader.createModelForSource(source);
 
-        // Create connection now: if we do it after applying the filter, then
-        // model is the filter model not the source model
+        // Create connections now: if we do it after applying the filter, then
+        // "model" may have been changed to be a filter model, not the source
+        // model
         openSourceConnectedConnectionComponent.createObject(model);
 
         if ("query" in model) {
-            // Model supports querying itself
+            // Model provides a "query" property, connect it to the search field
             queryBindingComponent.createObject(main, {"target": model});
         } else {
             // No query support, set up a generic filter for the model
