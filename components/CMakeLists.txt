@@ -1,6 +1,7 @@
 project(components)
 
 set(components_SRCS
+    abstractsource.cpp
     componentsplugin.cpp
     favoriteappsmodel.cpp
     groupedservicemodel.cpp

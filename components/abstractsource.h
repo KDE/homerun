@@ -16,47 +16,38 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef SOURCEREGISTRY_H
-#define SOURCEREGISTRY_H
+#ifndef ABSTRACTSOURCE_H
+#define ABSTRACTSOURCE_H
 
 // Local
 
 // Qt
 #include <QObject>
-#include <QVariant>
 
 // KDE
-#include <KSharedConfig>
 
 class QAbstractItemModel;
 
-class SourceRegistryPrivate;
+class SourceRegistry;
+
+class AbstractSourcePrivate;
 
 /**
- * The source registry. This class is responsible for loading source plugins
- * and instantiating source models.
+ * Base class to implement homerun sources
  */
-class SourceRegistry : public QObject
+class AbstractSource : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels CONSTANT)
 public:
-    explicit SourceRegistry(QObject *parent = 0);
-    ~SourceRegistry();
+    AbstractSource(SourceRegistry *registry);
+    ~AbstractSource();
 
-    /**
-     * sourceString is a string version of source name + source args
-     */
-    Q_INVOKABLE QObject *createModelForSource(const QString &sourceString);
+    SourceRegistry *registry() const;
 
-    QVariantMap favoriteModels() const;
-
-    QAbstractItemModel *favoriteModel(const QString &name) const;
-
-    KSharedConfig::Ptr config() const;
+    virtual QAbstractItemModel *createModel(const QString &args) = 0;
 
 private:
-    SourceRegistryPrivate * const d;
+    AbstractSourcePrivate * const d;
 };
 
-#endif /* SOURCEREGISTRY_H */
+#endif /* ABSTRACTSOURCE_H */

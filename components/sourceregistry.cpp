@@ -20,6 +20,7 @@
 #include <sourceregistry.h>
 
 // Local
+#include <abstractsource.h>
 #include <favoriteappsmodel.h>
 #include <groupedservicemodel.h>
 #include <placesmodel.h>
@@ -33,17 +34,6 @@
 #include <KDebug>
 
 // Qt
-
-//- AbstractSource --------------------------------------------
-AbstractSource::AbstractSource(SourceRegistry *registry)
-: QObject(registry)
-, m_registry(registry)
-{}
-
-SourceRegistry *AbstractSource::registry() const
-{
-    return m_registry;
-}
 
 //- SimpleSource ----------------------------------------------
 template<class T>
