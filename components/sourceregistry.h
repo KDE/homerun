@@ -46,7 +46,8 @@ private:
 };
 
 /**
- *
+ * The source registry. This class is responsible for loading source plugins
+ * and instantiating source models.
  */
 class SourceRegistry : public QObject
 {
