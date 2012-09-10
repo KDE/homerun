@@ -53,27 +53,6 @@ Item {
         name: "homerunrc"
     }
 
-    // Models
-    /*
-    Component {
-        id: serviceModelComponent
-        HomerunComponents.ServiceModel {
-            installer: config.readEntry("PackageManagement", "categoryInstaller")
-
-            onOpenSourceRequested: {
-                openSource(source);
-            }
-        }
-    }
-
-    Component {
-        id: groupedServiceModelComponent
-        HomerunComponents.GroupedServiceModel {
-            installer: config.readEntry("PackageManagement", "categoryInstaller")
-        }
-    }
-    */
-
     // Filter components
     Component {
         id: genericFilterComponent

@@ -26,6 +26,7 @@
 #include <QVariant>
 
 // KDE
+#include <KSharedConfig>
 
 class QAbstractItemModel;
 
@@ -64,10 +65,14 @@ public:
 
     QAbstractItemModel *favoriteModel(const QString &name) const;
 
+    KSharedConfig::Ptr config() const;
+
 private:
     QHash<QString, QAbstractItemModel*> m_favoriteModels;
 
     QHash<QString, AbstractSource *> m_sources;
+
+    KSharedConfig::Ptr m_config;
 };
 
 #endif /* SOURCEREGISTRY_H */

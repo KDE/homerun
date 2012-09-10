@@ -29,6 +29,7 @@
 #include <sessionmodel.h>
 
 // KDE
+#include <KConfigGroup>
 #include <KDebug>
 
 // Qt
@@ -104,15 +105,55 @@ public:
     }
 };
 
+//- ServiceSource ---------------------------------------------
+class ServiceSource : public AbstractSource
+{
+public:
+    ServiceSource(SourceRegistry *registry)
+    : AbstractSource(registry)
+    {}
+
+    QAbstractItemModel *createModel(const QString &args)
+    {
+        ServiceModel *model = new ServiceModel(registry());
+
+        KConfigGroup group(registry()->config(), "PackageManagement");
+        model->setInstaller(group.readEntry("categoryInstaller"));
+
+        model->setArguments(args);
+        return model;
+    }
+};
+
+//- GroupedServiceSource --------------------------------------
+class GroupedServiceSource : public AbstractSource
+{
+public:
+    GroupedServiceSource(SourceRegistry *registry)
+    : AbstractSource(registry)
+    {}
+
+    QAbstractItemModel *createModel(const QString &/*args*/)
+    {
+        GroupedServiceModel *model = new GroupedServiceModel(registry());
+
+        KConfigGroup group(registry()->config(), "PackageManagement");
+        model->setInstaller(group.readEntry("categoryInstaller"));
+
+        return model;
+    }
+};
+
 //- SourceRegistry --------------------------------------------
 SourceRegistry::SourceRegistry(QObject *parent)
 : QObject(parent)
+, m_config(KSharedConfig::openConfig("homerunrc"))
 {
     m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
-    m_sources.insert("Service", new SimpleSource<ServiceModel>(this));
-    m_sources.insert("GroupedService", new SimpleSource<GroupedServiceModel>(this));
+    m_sources.insert("Service", new ServiceSource(this));
+    m_sources.insert("GroupedService", new GroupedServiceSource(this));
     m_sources.insert("Places", new PlacesSource(this));
     m_sources.insert("FavoriteApps", new SingletonSource(m_favoriteModels.value("app"), this));
     m_sources.insert("Power", new SimpleSource<PowerModel>(this));
@@ -163,6 +204,11 @@ QVariantMap SourceRegistry::favoriteModels() const
 QAbstractItemModel *SourceRegistry::favoriteModel(const QString &name) const
 {
     return m_favoriteModels.value(name);
+}
+
+KSharedConfig::Ptr SourceRegistry::config() const
+{
+    return m_config;
 }
 
 #include <sourceregistry.moc>
