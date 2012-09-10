@@ -45,6 +45,8 @@ private:
     SourceRegistry *m_registry;
 };
 
+class SourceRegistryPrivate;
+
 /**
  * The source registry. This class is responsible for loading source plugins
  * and instantiating source models.
@@ -69,11 +71,7 @@ public:
     KSharedConfig::Ptr config() const;
 
 private:
-    QHash<QString, QAbstractItemModel*> m_favoriteModels;
-
-    QHash<QString, AbstractSource *> m_sources;
-
-    KSharedConfig::Ptr m_config;
+    SourceRegistryPrivate * const d;
 };
 
 #endif /* SOURCEREGISTRY_H */

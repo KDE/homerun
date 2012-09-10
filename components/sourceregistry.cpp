@@ -144,25 +144,35 @@ public:
     }
 };
 
+//- SourceRegistryPrivate -------------------------------------
+struct SourceRegistryPrivate
+{
+    QHash<QString, QAbstractItemModel*> m_favoriteModels;
+    QHash<QString, AbstractSource *> m_sources;
+    KSharedConfig::Ptr m_config;
+};
+
 //- SourceRegistry --------------------------------------------
 SourceRegistry::SourceRegistry(QObject *parent)
 : QObject(parent)
-, m_config(KSharedConfig::openConfig("homerunrc"))
+, d(new SourceRegistryPrivate)
 {
-    m_favoriteModels.insert("app", new FavoriteAppsModel(this));
-    m_favoriteModels.insert("place", new FavoritePlacesModel(this));
+    d->m_config = KSharedConfig::openConfig("homerunrc");
+    d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
+    d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
-    m_sources.insert("Service", new ServiceSource(this));
-    m_sources.insert("GroupedService", new GroupedServiceSource(this));
-    m_sources.insert("Places", new PlacesSource(this));
-    m_sources.insert("FavoriteApps", new SingletonSource(m_favoriteModels.value("app"), this));
-    m_sources.insert("Power", new SimpleSource<PowerModel>(this));
-    m_sources.insert("Session", new SimpleSource<SessionModel>(this));
-    m_sources.insert("Runner", new SimpleSource<RunnerModel>(this));
+    d->m_sources.insert("Service", new ServiceSource(this));
+    d->m_sources.insert("GroupedService", new GroupedServiceSource(this));
+    d->m_sources.insert("Places", new PlacesSource(this));
+    d->m_sources.insert("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this));
+    d->m_sources.insert("Power", new SimpleSource<PowerModel>(this));
+    d->m_sources.insert("Session", new SimpleSource<SessionModel>(this));
+    d->m_sources.insert("Runner", new SimpleSource<RunnerModel>(this));
 }
 
 SourceRegistry::~SourceRegistry()
 {
+    delete d;
 }
 
 QObject *SourceRegistry::createModelForSource(const QString &sourceString)
@@ -179,7 +189,7 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceString)
 
     QAbstractItemModel *model = 0;
 
-    AbstractSource *source = m_sources.value(name);
+    AbstractSource *source = d->m_sources.value(name);
     if (!source) {
         kWarning() << "No source named" << name;
         return 0;
@@ -194,7 +204,7 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceString)
 QVariantMap SourceRegistry::favoriteModels() const
 {
     QVariantMap map;
-    auto it = m_favoriteModels.constBegin(), end = m_favoriteModels.constEnd();
+    auto it = d->m_favoriteModels.constBegin(), end = d->m_favoriteModels.constEnd();
     for (; it != end; ++it) {
         map.insert(it.key(), QVariant::fromValue<QObject *>(it.value()));
     }
@@ -203,12 +213,12 @@ QVariantMap SourceRegistry::favoriteModels() const
 
 QAbstractItemModel *SourceRegistry::favoriteModel(const QString &name) const
 {
-    return m_favoriteModels.value(name);
+    return d->m_favoriteModels.value(name);
 }
 
 KSharedConfig::Ptr SourceRegistry::config() const
 {
-    return m_config;
+    return d->m_config;
 }
 
 #include <sourceregistry.moc>
