@@ -152,6 +152,10 @@ Item {
 
                 model: repeater.modelNeedsFiltering ? createFilterForModel(sourceModel) : sourceModel
                 favoriteModels: repeater.favoriteModels
+
+                onIndexClicked: {
+                    handleTriggerResult(model.trigger(index));
+                }
             }
         }
     }
