@@ -29,13 +29,28 @@
 
 class QAbstractItemModel;
 
+class SourceRegistry;
+
+class AbstractSourcePlugin : public QObject
+{
+public:
+    AbstractSourcePlugin(SourceRegistry *registry);
+
+    SourceRegistry *registry() const;
+
+    virtual QAbstractItemModel *modelForSource(const QString &name, const QString &args) = 0;
+
+private:
+    SourceRegistry *m_registry;
+};
+
 /**
  *
  */
 class SourceRegistry : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels WRITE setFavoriteModels NOTIFY favoriteModelsChanged)
+    Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels CONSTANT)
 public:
     explicit SourceRegistry(QObject *parent = 0);
     ~SourceRegistry();
@@ -43,13 +58,13 @@ public:
     Q_INVOKABLE QObject *createModelForSource(const QString &source);
 
     QVariantMap favoriteModels() const;
-    void setFavoriteModels(const QVariantMap &models);
 
-Q_SIGNALS:
-    void favoriteModelsChanged();
+    QAbstractItemModel *favoriteModel(const QString &name) const;
 
 private:
-    QVariantMap m_favoriteModels;
+    QHash<QString, QAbstractItemModel*> m_favoriteModels;
+
+    QHash<QString, AbstractSourcePlugin *> m_pluginForSource;
 };
 
 #endif /* SOURCEREGISTRY_H */

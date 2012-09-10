@@ -20,6 +20,7 @@
 #include <sourceregistry.h>
 
 // Local
+#include <favoriteappsmodel.h>
 #include <groupedservicemodel.h>
 #include <placesmodel.h>
 #include <powermodel.h>
@@ -32,9 +33,91 @@
 
 // Qt
 
+//- AbstractSourcePlugin --------------------------------------------
+AbstractSourcePlugin::AbstractSourcePlugin(SourceRegistry *registry)
+: QObject(registry)
+, m_registry(registry)
+{}
+
+SourceRegistry *AbstractSourcePlugin::registry() const
+{
+    return m_registry;
+}
+
+//- SimpleSourcePlugin ----------------------------------------------
+template<class T>
+class SimpleSourcePlugin : public AbstractSourcePlugin
+{
+public:
+    SimpleSourcePlugin(SourceRegistry *registry)
+    : AbstractSourcePlugin(registry)
+    {}
+
+    QAbstractItemModel *modelForSource(const QString &name, const QString &args)
+    {
+        T* model = new T(registry());
+
+        if (!args.isEmpty()) {
+            if (model->metaObject()->indexOfProperty("arguments") >= 0) {
+                model->setProperty("arguments", args);
+            } else {
+                kWarning() << "Trying to set arguments on model " << name << ", which does not support arguments";
+            }
+        }
+
+        return model;
+    }
+};
+
+//- SingletonSourcePlugin -------------------------------------------
+class SingletonSourcePlugin : public AbstractSourcePlugin
+{
+public:
+    SingletonSourcePlugin(QAbstractItemModel *model, SourceRegistry *registry)
+    : AbstractSourcePlugin(registry)
+    , m_model(model)
+    {}
+
+    QAbstractItemModel *modelForSource(const QString &/*name*/, const QString &/* args */)
+    {
+        return m_model;
+    }
+
+private:
+    QAbstractItemModel *m_model;
+};
+
+//- PlacesSourcePlugin ----------------------------------------------
+class PlacesSourcePlugin : public AbstractSourcePlugin
+{
+public:
+    PlacesSourcePlugin(SourceRegistry *registry)
+    : AbstractSourcePlugin(registry)
+    {}
+
+    QAbstractItemModel *modelForSource(const QString &/*name*/, const QString &args)
+    {
+        PlacesModel *model = new PlacesModel(registry());
+        model->setRootModel(registry()->favoriteModel("place"));
+        model->setArguments(args);
+        return model;
+    }
+};
+
+//- SourceRegistry --------------------------------------------------
 SourceRegistry::SourceRegistry(QObject *parent)
 : QObject(parent)
 {
+    m_favoriteModels.insert("app", new FavoriteAppsModel(this));
+    m_favoriteModels.insert("place", new FavoritePlacesModel(this));
+
+    m_pluginForSource.insert("ServiceModel", new SimpleSourcePlugin<ServiceModel>(this));
+    m_pluginForSource.insert("GroupedServiceModel", new SimpleSourcePlugin<GroupedServiceModel>(this));
+    m_pluginForSource.insert("PlacesModel", new PlacesSourcePlugin(this));
+    m_pluginForSource.insert("FavoriteAppsModel", new SingletonSourcePlugin(m_favoriteModels.value("app"), this));
+    m_pluginForSource.insert("PowerModel", new SimpleSourcePlugin<PowerModel>(this));
+    m_pluginForSource.insert("SessionModel", new SimpleSourcePlugin<SessionModel>(this));
+    m_pluginForSource.insert("RunnerModel", new SimpleSourcePlugin<RunnerModel>(this));
 }
 
 SourceRegistry::~SourceRegistry()
@@ -54,49 +137,32 @@ QObject *SourceRegistry::createModelForSource(const QString &source)
     }
 
     QAbstractItemModel *model = 0;
-    if (modelName == "ServiceModel") {
-        model = new ServiceModel(this);
-    } else if (modelName == "GroupedServiceModel") {
-        model = new GroupedServiceModel(this);
-    } else if (modelName == "PlacesModel") {
-        PlacesModel* placesModel = new PlacesModel(this);
-        placesModel->setRootModel(m_favoriteModels["place"].value<QObject*>());
-        model = placesModel;
-    } else if (modelName == "FavoriteAppsModel") {
-        return m_favoriteModels["app"].value<QObject*>();
-    } else if (modelName == "PowerModel") {
-        model = new PowerModel(this);
-    } else if (modelName == "SessionModel") {
-        model = new SessionModel(this);
-    } else if (modelName == "RunnerModel") {
-        model = new RunnerModel(this);
-    } else {
-        kWarning() << "Unknown model type" << modelName;
+
+    AbstractSourcePlugin *plugin = m_pluginForSource.value(modelName);
+    if (!plugin) {
+        kWarning() << "No plugin provides a source named" << modelName;
         return 0;
     }
+    model = plugin->modelForSource(modelName, modelArgs);
     Q_ASSERT(model);
     model->setObjectName(source);
-
-    if (!modelArgs.isEmpty()) {
-        if (model->metaObject()->indexOfProperty("arguments") >= 0) {
-            model->setProperty("arguments", modelArgs);
-        } else {
-            kWarning() << "Trying to set arguments on model " << modelName << ", which does not support arguments";
-        }
-    }
 
     return model;
 }
 
 QVariantMap SourceRegistry::favoriteModels() const
 {
-    return m_favoriteModels;
+    QVariantMap map;
+    auto it = m_favoriteModels.constBegin(), end = m_favoriteModels.constEnd();
+    for (; it != end; ++it) {
+        map.insert(it.key(), QVariant::fromValue<QObject *>(it.value()));
+    }
+    return map;
 }
 
-void SourceRegistry::setFavoriteModels(const QVariantMap &models)
+QAbstractItemModel *SourceRegistry::favoriteModel(const QString &name) const
 {
-    m_favoriteModels = models;
-    favoriteModelsChanged();
+    return m_favoriteModels.value(name);
 }
 
 #include <sourceregistry.moc>

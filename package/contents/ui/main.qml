@@ -45,17 +45,8 @@ Item {
         id: pageModel
     }
 
-    HomerunComponents.FavoriteAppsModel {
-        id: favoriteAppsModel
-    }
-
-    HomerunComponents.FavoritePlacesModel {
-        id: favoritePlacesModel
-    }
-
     HomerunComponents.SourceRegistry {
         id: sourceRegistry
-        favoriteModels: createFavoriteModelsObject();
     }
 
     // UI
@@ -265,13 +256,6 @@ Item {
             return;
         }
         firstView.forceActiveFocus();
-    }
-
-    function createFavoriteModelsObject() {
-        var favoriteModels = new Object();
-        favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
-        favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
-        return favoriteModels;
     }
 
     function reset() {

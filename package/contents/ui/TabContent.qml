@@ -72,35 +72,6 @@ Item {
             installer: config.readEntry("PackageManagement", "categoryInstaller")
         }
     }
-
-    Component {
-        id: powerModelComponent
-        HomerunComponents.PowerModel {
-        }
-    }
-
-    Component {
-        id: sessionModelComponent
-        HomerunComponents.SessionModel {
-        }
-    }
-
-    Component {
-        id: runnerModelComponent
-        HomerunComponents.RunnerModel {
-        }
-    }
-
-    Component {
-        id: placesModelComponent
-        HomerunComponents.PlacesModel {
-            rootModel: main.favoriteModels["place"]
-
-            onOpenSourceRequested: {
-                openSource(source);
-            }
-        }
-    }
     */
 
     // Filter components
