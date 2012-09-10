@@ -3,6 +3,7 @@ Encoding=UTF-8
 # ctxt: "Homerun" is a product name
 Name=KDE Homerun
 Name[da]=KDE Homerun
+Name[el]=KDE Homerun
 Name[fr]=Homerun pour KDE
 Name[hu]=KDE Homerun
 Name[nl]=KDE Homerun
@@ -13,6 +14,7 @@ Name[uk]=KDE Homerun
 Name[x-test]=xxKDE Homerunxx
 Comment=An application launcher
 Comment[da]=Programstarter
+Comment[el]=Εκτέλεση εφαρμογών
 Comment[fr]=Un lanceur d'applications
 Comment[hu]=Egy alkalmazásindító
 Comment[nl]=Een programmastarter

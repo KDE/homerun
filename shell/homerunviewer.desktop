@@ -8,6 +8,7 @@ Exec=homerunviewer
 
 Name=KDE Homerun application
 Name[da]=KDE Homerun-program
+Name[el]=Εφαρμογή KDE Homerun
 Name[fr]=Application Homerun pour KDE
 Name[hu]=KDE Homerun alkalmazás
 Name[nl]=Toepassing KDE Homerun
@@ -20,6 +21,7 @@ Name[x-test]=xxKDE Homerun applicationxx
 
 Comment=Displays KDE Homerun in a popup
 Comment[da]=Viser KDE Homerun i en pop-op
+Comment[el]=Εμφάνιση του KDE Homerun σε αναδυόμενο
 Comment[fr]=Affiche Homerun pour KDE dans une fenêtre qui apparaît
 Comment[hu]=Megjeleníti a KDE Homerunt felugró ablakban
 Comment[nl]=Toont KDE Homerun in een pop-up

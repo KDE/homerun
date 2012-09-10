@@ -173,8 +173,6 @@ Item {
         }
         width: 22
         height: width
-        icon: searchField.visible ? filterTabBar.currentTab.iconSource : ""
-        visible: searchField.visible
     }
 
     HomerunFixes.TextField {
@@ -187,7 +185,6 @@ Item {
             bottom: filterTabBar.bottom
         }
 
-        visible: currentTabContent.searchSources.length > 0
         width: parent.width / 4
 
         clearButtonShown: true
@@ -235,6 +232,16 @@ Item {
         if (isContainment) {
             configureAction = plasmoid.action("configure");
             configureAction.enabled = true;
+
+            // fit the containment to within the boundaries of the visible panels
+            // (so no panels should be covering any information)
+            // rect 0 is available screen region, rect 1 is for panels not 100% wide
+            screen = plasmoid.screen
+            region = plasmoid.availableScreenRegion(screen)[0]
+            main.y = region.y
+            main.x = region.x
+            main.height = region.height
+            main.width = region.width
         }
     }
 

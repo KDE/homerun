@@ -79,8 +79,8 @@ Item {
         id: genericFilterComponent
         HomerunFixes.SortFilterModel {
             filterRegExp: main.searchCriteria
-            property string name: sourceModel ? sourceModel.name : ""
-            property int count: sourceModel ? sourceModel.count : 0
+            property string name: sourceModel.name
+            property int count: sourceModel.count
 
             property bool running: "running" in sourceModel ? sourceModel.running : false
             property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
@@ -113,29 +113,29 @@ Item {
 
     // UI components
     Component {
-        id: multiResultsViewComponent
-        Repeater {
-            id: repeater
-            property variant favoriteModels
-            delegate: ResultsView {
-                width: repeater.parent.width
-                model: repeater.model.modelForRow(index) // Here "index" is the current row number within the repeater
-                favoriteModels: repeater.favoriteModels
-                onIndexClicked: {
-                    // Here "index" is the row number clicked inside the ResultsView
-                    handleTriggerResult(model.trigger(index));
-                }
-            }
-        }
-    }
-
-    Component {
         id: resultsViewComponent
         ResultsView {
             id: view
             width: parent.width
             onIndexClicked: {
                 handleTriggerResult(model.trigger(index));
+            }
+        }
+    }
+
+    Component {
+        id: multiResultsViewComponent
+        Repeater {
+            id: repeater
+            property variant favoriteModels
+            property bool modelNeedsFiltering: false
+            delegate: ResultsView {
+                width: repeater.parent.width
+
+                property QtObject sourceModel: repeater.model.modelForRow(index)
+
+                model: repeater.modelNeedsFiltering ? createFilterForModel(sourceModel) : sourceModel
+                favoriteModels: repeater.favoriteModels
             }
         }
     }
@@ -404,11 +404,8 @@ Item {
         openSourceConnectedConnectionComponent.createObject(model);
 
         if ("query" in model) {
-            // Model provides a "query" property, connect it to the search field
+            // Model supports querying itself, bind the search criteria field to its "query" property
             queryBindingComponent.createObject(main, {"target": model});
-        } else {
-            // No query support, set up a generic filter for the model
-            model = genericFilterComponent.createObject(main, {"sourceModel": model});
         }
 
         return model;
@@ -419,15 +416,25 @@ Item {
         var firstView = null;
         models.forEach(function(model) {
             var isMultiViewModel = "modelForRow" in model;
-            var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
+            var modelNeedsFiltering = !("query" in model);
+
             var viewArgs = {};
-            viewArgs["model"] = model;
             viewArgs["favoriteModels"] = sourceRegistry.favoriteModels;
+            viewArgs["model"] = model;
+            if (modelNeedsFiltering) {
+                if (isMultiViewModel) {
+                    viewArgs["modelNeedsFiltering"] = true;
+                } else {
+                    viewArgs["model"] = createFilterForModel(model);
+                }
+            }
             if (viewExtraArgs !== undefined) {
                 for (var key in viewExtraArgs) {
                     viewArgs[key] = viewExtraArgs[key];
                 }
             }
+
+            var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
             var obj = component.createObject(page.viewContainer, viewArgs);
             if (!isMultiViewModel && firstView === null) {
                 // Check isMultiViewModel because in that case obj is not a ResultsView
@@ -440,6 +447,10 @@ Item {
             firstView.forceActiveFocus();
         }
         return page;
+    }
+
+    function createFilterForModel(model) {
+        return genericFilterComponent.createObject(model, {"sourceModel": model});
     }
 
     function reset() {
