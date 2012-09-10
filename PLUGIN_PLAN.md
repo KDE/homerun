@@ -14,20 +14,30 @@ Must be able to:
         void setSourceArguments(const SourceArguments::Hash &)
         SourceArguments::Hash sourceArguments() const
 
-# Design a SourcePlugin interface
+# Design a AbstractSource interface
 
 Must be able to:
 
 - instantiate source models given their arguments
 - instantiate a SourceConfigurator to configure a model source arguments
 
-    class SourcePlugin : public QObject
-        QAbstractItemModel *modelForSource(const QString &name, const SourceArguments::Hash &)
+    class AbstractSource : public QObject
+        QAbstractItemModel *modelForSource(const SourceArguments::Hash &)
         SourceConfigurator *createConfigurator() const
 
-A plugin can be either static (bundled in homeruncomponents.so) or dynamic, installed as a .so.
+A source can be either static (bundled in homeruncomponents.so) or dynamic:
+implemented in a plugin.
 
-Each dynamic plugin should have its own .desktop file installed as:
+# Source plugins
+
+A source plugin is a standard KDE plugin which implements the KPluginFactory
+class.
+
+If a plugin wants to provide multiple sources, it must implement
+KPluginFactory::create() and return different sources depending on the value of
+the first element of the "args" parameter, which will be the source name.
+
+Each source plugin should have its own .desktop file installed as:
 
     $KDEDIR/share/kde4/services/homerun-source-$name.desktop
 
