@@ -106,8 +106,8 @@ Item {
         id: genericFilterComponent
         HomerunFixes.SortFilterModel {
             filterRegExp: main.searchCriteria
-            property string name: sourceModel ? sourceModel.name : ""
-            property int count: sourceModel ? sourceModel.count : 0
+            property string name: sourceModel.name
+            property int count: sourceModel.count
 
             property bool running: "running" in sourceModel ? sourceModel.running : false
             property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
