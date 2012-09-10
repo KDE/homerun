@@ -111,13 +111,13 @@ SourceRegistry::SourceRegistry(QObject *parent)
     m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
-    m_sources.insert("ServiceModel", new SimpleSource<ServiceModel>(this));
-    m_sources.insert("GroupedServiceModel", new SimpleSource<GroupedServiceModel>(this));
-    m_sources.insert("PlacesModel", new PlacesSource(this));
-    m_sources.insert("FavoriteAppsModel", new SingletonSource(m_favoriteModels.value("app"), this));
-    m_sources.insert("PowerModel", new SimpleSource<PowerModel>(this));
-    m_sources.insert("SessionModel", new SimpleSource<SessionModel>(this));
-    m_sources.insert("RunnerModel", new SimpleSource<RunnerModel>(this));
+    m_sources.insert("Service", new SimpleSource<ServiceModel>(this));
+    m_sources.insert("GroupedService", new SimpleSource<GroupedServiceModel>(this));
+    m_sources.insert("Places", new PlacesSource(this));
+    m_sources.insert("FavoriteApps", new SingletonSource(m_favoriteModels.value("app"), this));
+    m_sources.insert("Power", new SimpleSource<PowerModel>(this));
+    m_sources.insert("Session", new SimpleSource<SessionModel>(this));
+    m_sources.insert("Runner", new SimpleSource<RunnerModel>(this));
 }
 
 SourceRegistry::~SourceRegistry()

@@ -14,28 +14,28 @@ serviceId=dolphin
 name=Home
 icon=go-home
 query=Search...
-source0=FavoriteAppsModel
-source1=PlacesModel
-searchSource0=RunnerModel
+source0=FavoriteApps
+source1=Places
+searchSource0=Runner
 
 [Page1]
 name=Applications
 query=Search for applications...
 icon=applications-other
-source0=ServiceModel
+source0=Service
 # For a grouped list of all apps
-#source0=GroupedServiceModel
-searchSource0=RunnerModel:services,shell
+#source0=GroupedService
+searchSource0=Runner:services,shell
 
 [Page2]
 name=Documents
 query=Search for documents...
 icon=folder-documents
-source0=PlacesModel
-searchSource0=RunnerModel:bookmarks,recentdocuments,nepomuksearch,youtube
+source0=Places
+searchSource0=Runner:bookmarks,recentdocuments,nepomuksearch,youtube
 
 [Page3]
 name=Power
 icon=system-shutdown
-source0=PowerModel
-source1=SessionModel
+source0=Power
+source1=Session

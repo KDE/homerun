@@ -153,7 +153,7 @@ PlacesModel::PlacesModel(QObject *parent)
 
 static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
 {
-    return QString("PlacesModel:rootUrl=%1,rootName=%2,url=%3")
+    return QString("Places:rootUrl=%1,rootName=%2,url=%3")
         .arg(SourceArguments::escapeValue(rootUrl.url()))
         .arg(SourceArguments::escapeValue(rootName))
         .arg(SourceArguments::escapeValue(url.url()));

@@ -63,7 +63,7 @@ GroupNode::GroupNode(KServiceGroup::Ptr group, ServiceModel *model)
 
 bool GroupNode::trigger()
 {
-    QString source = "ServiceModel:entryPath=" % SourceArguments::escapeValue(m_entryPath);
+    QString source = "Service:entryPath=" % SourceArguments::escapeValue(m_entryPath);
     QMetaObject::invokeMethod(m_model, "openSourceRequested", Q_ARG(QString, source));
     return false;
 }
@@ -176,7 +176,7 @@ void ServiceModel::load(const QString &entryPath)
     } else {
         KServiceGroup::Ptr group = KServiceGroup::group(entryPath);
         loadServiceGroup(group);
-        QString source = "ServiceModel:entryPath=" % SourceArguments::escapeValue(entryPath);
+        QString source = "Service:entryPath=" % SourceArguments::escapeValue(entryPath);
         m_pathModel->addPath(group->caption(), source);
     }
 
