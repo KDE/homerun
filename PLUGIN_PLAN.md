@@ -46,6 +46,22 @@ Custom keys for the .desktop file:
 - int X-KDE-Homerun-APIVersion
 - QStringList X-KDE-Homerun-Sources
 
+## SourceConfigurator
+
+Created by an AbstractSource to let the user configure the source: provides a
+UI to adjust the source arguments.
+
+Must be able to:
+
+- create a set of widgets
+- initialize widgets from source arguments
+- create source arguments from widgets
+
+API:
+    void setupUi(QWidget *)
+    void setSourceArguments(const SourceArguments::Hash &)
+    SourceArguments::Hash sourceArguments() const
+
 # Open questions
 
 - How to handle "global" config? (for example to read package management settings)
@@ -63,21 +79,7 @@ Custom keys for the .desktop file:
 
 ## Define the SourceConfigurator class
 
-Must be able to:
-
-- create a set of widgets
-- initialize widgets from source arguments
-- create source arguments from widgets
-
-    class SourceConfigurator : public QObject
-        SourceConfig(QObject *)
-        void setupUi(QWidget *)
-        void setSourceArguments(const SourceArguments::Hash &)
-        SourceArguments::Hash sourceArguments() const
-
 ## Move implementations of AbstractSource with their model
-
-## Define SourceConfigurator
 
 ## Modify SourceRegistry to support plugins
 
