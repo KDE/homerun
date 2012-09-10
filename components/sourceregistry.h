@@ -31,14 +31,14 @@ class QAbstractItemModel;
 
 class SourceRegistry;
 
-class AbstractSourcePlugin : public QObject
+class AbstractSource : public QObject
 {
 public:
-    AbstractSourcePlugin(SourceRegistry *registry);
+    AbstractSource(SourceRegistry *registry);
 
     SourceRegistry *registry() const;
 
-    virtual QAbstractItemModel *modelForSource(const QString &name, const QString &args) = 0;
+    virtual QAbstractItemModel *modelForSource(const QString &args) = 0;
 
 private:
     SourceRegistry *m_registry;
@@ -64,7 +64,7 @@ public:
 private:
     QHash<QString, QAbstractItemModel*> m_favoriteModels;
 
-    QHash<QString, AbstractSourcePlugin *> m_pluginForSource;
+    QHash<QString, AbstractSource *> m_sources;
 };
 
 #endif /* SOURCEREGISTRY_H */
