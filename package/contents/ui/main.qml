@@ -179,8 +179,6 @@ Item {
         }
         width: 22
         height: width
-        icon: searchField.visible ? filterTabBar.currentTab.iconSource : ""
-        visible: searchField.visible
     }
 
     HomerunFixes.TextField {
@@ -193,7 +191,6 @@ Item {
             bottom: filterTabBar.bottom
         }
 
-        visible: currentTabContent.searchSources.length > 0
         width: parent.width / 4
 
         clearButtonShown: true
