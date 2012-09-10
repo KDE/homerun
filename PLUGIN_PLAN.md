@@ -64,9 +64,6 @@ API:
 
 # Open questions
 
-- How to handle "global" config? (for example to read package management settings)
-  It should probably be exposed from SourceRegistry
-
 - Should there be explicit support for registering a singleton source?
 
 - How to expose favorite models?
