@@ -38,7 +38,7 @@ public:
 
     SourceRegistry *registry() const;
 
-    virtual QAbstractItemModel *modelForSource(const QString &args) = 0;
+    virtual QAbstractItemModel *createModel(const QString &args) = 0;
 
 private:
     SourceRegistry *m_registry;
@@ -55,7 +55,10 @@ public:
     explicit SourceRegistry(QObject *parent = 0);
     ~SourceRegistry();
 
-    Q_INVOKABLE QObject *createModelForSource(const QString &source);
+    /**
+     * sourceString is a string version of source name + source args
+     */
+    Q_INVOKABLE QObject *createModelForSource(const QString &sourceString);
 
     QVariantMap favoriteModels() const;
 

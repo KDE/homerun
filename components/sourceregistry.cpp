@@ -53,7 +53,7 @@ public:
     : AbstractSource(registry)
     {}
 
-    QAbstractItemModel *modelForSource(const QString &args)
+    QAbstractItemModel *createModel(const QString &args)
     {
         T* model = new T(registry());
 
@@ -78,7 +78,7 @@ public:
     , m_model(model)
     {}
 
-    QAbstractItemModel *modelForSource(const QString &/* args */)
+    QAbstractItemModel *createModel(const QString &/* args */)
     {
         return m_model;
     }
@@ -95,7 +95,7 @@ public:
     : AbstractSource(registry)
     {}
 
-    QAbstractItemModel *modelForSource(const QString &args)
+    QAbstractItemModel *createModel(const QString &args)
     {
         PlacesModel *model = new PlacesModel(registry());
         model->setRootModel(registry()->favoriteModel("place"));
@@ -143,7 +143,7 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceString)
         kWarning() << "No source named" << name;
         return 0;
     }
-    model = source->modelForSource(args);
+    model = source->createModel(args);
     Q_ASSERT(model);
     model->setObjectName(name);
 
