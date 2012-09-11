@@ -261,7 +261,8 @@ QAbstractItemModel *PlacesSource::createModel(const QString &str)
     KUrl url = args.value("url");
 
     if (!rootUrl.isValid()) {
-        return registry()->favoriteModel("place");
+        kWarning() << "Missing 'rootUrl' argument. defaulting to '/'.";
+        rootUrl = KUrl("file:///");
     }
 
     if (rootName.isEmpty()) {

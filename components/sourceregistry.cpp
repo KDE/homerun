@@ -137,6 +137,7 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_sources.insert("Service", new ServiceSource(this));
     d->m_sources.insert("GroupedService", new GroupedServiceSource(this));
     d->m_sources.insert("Places", new PlacesSource(this));
+    d->m_sources.insert("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this));
     d->m_sources.insert("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this));
     d->m_sources.insert("Power", new SimpleSource<PowerModel>(this));
     d->m_sources.insert("Session", new SimpleSource<SessionModel>(this));

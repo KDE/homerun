@@ -15,7 +15,7 @@ name=Home
 icon=go-home
 query=Search...
 source0=FavoriteApps
-source1=Places
+source1=FavoritePlaces
 searchSource0=Runner
 
 [Page1]
@@ -31,7 +31,7 @@ searchSource0=Runner:services,shell
 name=Documents
 query=Search for documents...
 icon=folder-documents
-source0=Places
+source0=FavoritePlaces
 searchSource0=Runner:bookmarks,recentdocuments,nepomuksearch,youtube
 
 [Page3]
