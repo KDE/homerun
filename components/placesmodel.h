@@ -46,7 +46,7 @@ class DirModel : public KDirSortFilterProxyModel
 
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
     Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
-    //Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
+    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
     DirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url, QObject *parent);
 
@@ -70,10 +70,15 @@ public:
 
     bool running() const;
 
+    QString query() const;
+
+    void setQuery(const QString &query);
+
 Q_SIGNALS:
     void countChanged();
     void runningChanged(bool);
     void openSourceRequested(const QString &source);
+    void queryChanged(const QString &);
 
 private Q_SLOTS:
     void emitRunningChanged();

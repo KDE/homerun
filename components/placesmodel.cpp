@@ -139,6 +139,20 @@ PathModel *DirModel::pathModel() const
     return m_pathModel;
 }
 
+QString DirModel::query() const
+{
+    return filterRegExp().pattern();
+}
+
+void DirModel::setQuery(const QString &value)
+{
+    if (value == query()) {
+        return;
+    }
+    setFilterRegExp(QRegExp(value, Qt::CaseInsensitive));
+    queryChanged(value);
+}
+
 void DirModel::emitRunningChanged()
 {
     runningChanged(running());
