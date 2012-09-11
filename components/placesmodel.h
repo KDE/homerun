@@ -38,7 +38,7 @@ class PathModel;
 /**
  * Internal
  */
-class ProxyDirModel : public KDirSortFilterProxyModel
+class DirModel : public KDirSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
@@ -48,7 +48,7 @@ class ProxyDirModel : public KDirSortFilterProxyModel
     Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
     //Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
-    ProxyDirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url, QObject *parent);
+    DirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url, QObject *parent);
 
     enum {
         FavoriteIdRole = Qt::UserRole + 1,
@@ -124,10 +124,10 @@ private:
     QModelIndex indexForFavoriteId(const QString &favoriteId) const;
 };
 
-class PlacesSource : public AbstractSource
+class DirSource : public AbstractSource
 {
 public:
-    PlacesSource(SourceRegistry *registry);
+    DirSource(SourceRegistry *registry);
     QAbstractItemModel *createModel(const QString &args);
 };
 

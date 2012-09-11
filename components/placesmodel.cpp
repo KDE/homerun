@@ -46,14 +46,14 @@ static QString favoriteIdFromUrl(const KUrl &url)
 
 static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
 {
-    return QString("Places:rootUrl=%1,rootName=%2,url=%3")
+    return QString("Dir:rootUrl=%1,rootName=%2,url=%3")
         .arg(SourceArguments::escapeValue(rootUrl.url()))
         .arg(SourceArguments::escapeValue(rootName))
         .arg(SourceArguments::escapeValue(url.url()));
 }
 
-//- ProxyDirModel ------------------------------------------------------
-ProxyDirModel::ProxyDirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url, QObject *parent)
+//- DirModel ------------------------------------------------------
+DirModel::DirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url, QObject *parent)
 : KDirSortFilterProxyModel(parent)
 , m_pathModel(new PathModel(this))
 , m_rootUrl(rootUrl)
@@ -65,7 +65,7 @@ ProxyDirModel::ProxyDirModel(const KUrl &rootUrl, const QString &rootName, const
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
     roles.insert(Qt::DecorationRole, "icon");
-    roles.insert(ProxyDirModel::FavoriteIdRole, "favoriteId");
+    roles.insert(DirModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 
     connect(dirLister(), SIGNAL(started(KUrl)), SLOT(emitRunningChanged()));
@@ -76,7 +76,7 @@ ProxyDirModel::ProxyDirModel(const KUrl &rootUrl, const QString &rootName, const
     dirLister()->openUrl(url);
 }
 
-void ProxyDirModel::initPathModel(const KUrl &openedUrl)
+void DirModel::initPathModel(const KUrl &openedUrl)
 {
     m_pathModel->addPath(m_rootName, sourceString(m_rootUrl, m_rootName, m_rootUrl));
 
@@ -91,18 +91,18 @@ void ProxyDirModel::initPathModel(const KUrl &openedUrl)
     }
 }
 
-KFileItem ProxyDirModel::itemForIndex(const QModelIndex &index) const
+KFileItem DirModel::itemForIndex(const QModelIndex &index) const
 {
     const QModelIndex sourceIndex = mapToSource(index);
     return static_cast<KDirModel *>(sourceModel())->itemForIndex(sourceIndex);
 }
 
-KDirLister *ProxyDirModel::dirLister() const
+KDirLister *DirModel::dirLister() const
 {
     return static_cast<KDirModel *>(sourceModel())->dirLister();
 }
 
-QVariant ProxyDirModel::data(const QModelIndex &index, int role) const
+QVariant DirModel::data(const QModelIndex &index, int role) const
 {
     if (role != FavoriteIdRole) {
         return QSortFilterProxyModel::data(index, role);
@@ -119,32 +119,32 @@ QVariant ProxyDirModel::data(const QModelIndex &index, int role) const
     }
 }
 
-int ProxyDirModel::count() const
+int DirModel::count() const
 {
     return rowCount(QModelIndex());
 }
 
-QString ProxyDirModel::name() const
+QString DirModel::name() const
 {
     return dirLister()->url().fileName();
 }
 
-bool ProxyDirModel::running() const
+bool DirModel::running() const
 {
     return !dirLister()->isFinished();
 }
 
-PathModel *ProxyDirModel::pathModel() const
+PathModel *DirModel::pathModel() const
 {
     return m_pathModel;
 }
 
-void ProxyDirModel::emitRunningChanged()
+void DirModel::emitRunningChanged()
 {
     runningChanged(running());
 }
 
-bool ProxyDirModel::trigger(int row)
+bool DirModel::trigger(int row)
 {
     bool closed = false;
     QModelIndex idx = index(row, 0);
@@ -248,12 +248,12 @@ int FavoritePlacesModel::count() const
     return rowCount(QModelIndex());
 }
 
-//- PlacesSource -------------------------------------------------------
-PlacesSource::PlacesSource(SourceRegistry *registry)
+//- DirSource -------------------------------------------------------
+DirSource::DirSource(SourceRegistry *registry)
 : AbstractSource(registry)
 {}
 
-QAbstractItemModel *PlacesSource::createModel(const QString &str)
+QAbstractItemModel *DirSource::createModel(const QString &str)
 {
     SourceArguments::Hash args = SourceArguments::parse(str);
     KUrl rootUrl = args.value("rootUrl");
@@ -276,7 +276,7 @@ QAbstractItemModel *PlacesSource::createModel(const QString &str)
     }
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
-    return new ProxyDirModel(rootUrl, rootName, url, registry());
+    return new DirModel(rootUrl, rootName, url, registry());
 }
 
 #include "placesmodel.moc"
