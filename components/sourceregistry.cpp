@@ -46,7 +46,7 @@ public:
 
     QAbstractItemModel *createModel(const QString &args)
     {
-        T* model = new T(registry());
+        T* model = new T;
 
         if (!args.isEmpty()) {
             if (model->metaObject()->indexOfProperty("arguments") >= 0) {
@@ -88,7 +88,7 @@ public:
 
     QAbstractItemModel *createModel(const QString &args)
     {
-        ServiceModel *model = new ServiceModel(registry());
+        ServiceModel *model = new ServiceModel;
 
         KConfigGroup group(registry()->config(), "PackageManagement");
         model->setInstaller(group.readEntry("categoryInstaller"));
@@ -108,7 +108,7 @@ public:
 
     QAbstractItemModel *createModel(const QString &/*args*/)
     {
-        GroupedServiceModel *model = new GroupedServiceModel(registry());
+        GroupedServiceModel *model = new GroupedServiceModel;
 
         KConfigGroup group(registry()->config(), "PackageManagement");
         model->setInstaller(group.readEntry("categoryInstaller"));
@@ -149,7 +149,7 @@ SourceRegistry::~SourceRegistry()
     delete d;
 }
 
-QObject *SourceRegistry::createModelForSource(const QString &sourceString)
+QObject *SourceRegistry::createModelForSource(const QString &sourceString, QObject *parent)
 {
     QString name;
     QString args;
@@ -171,6 +171,12 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceString)
     model = source->createModel(args);
     Q_ASSERT(model);
     model->setObjectName(name);
+
+    // If the model already has a parent, then don't change it.
+    // This is used by singleton sources to keep their model alive.
+    if (!model->parent()) {
+        model->setParent(parent);
+    }
 
     return model;
 }

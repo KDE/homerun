@@ -21,7 +21,6 @@
 // Local
 #include <pathmodel.h>
 #include <sourcearguments.h>
-#include <sourceregistry.h>
 
 // KDE
 #include <KDebug>
@@ -290,7 +289,7 @@ QAbstractItemModel *DirSource::createModel(const QString &str)
     }
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
-    return new DirModel(rootUrl, rootName, url, registry());
+    return new DirModel(rootUrl, rootName, url);
 }
 
 #include "placesmodel.moc"

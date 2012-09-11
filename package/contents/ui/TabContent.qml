@@ -205,7 +205,7 @@ Item {
                 }
             }
 
-            Component.onCompleted: {
+            function finishModelConnections() {
                 for (var idx = 0; idx < models.length; ++idx) {
                     var model = models[idx];
                     runningConnectionComponent.createObject(pageMain, {"target": model});
@@ -311,8 +311,7 @@ Item {
     // Scripting
     Component.onCompleted: {
         var allSources = sources.concat(searchSources);
-        var lst = allSources.map(createModelForSource);
-        var page = createPage(lst);
+        var page = createPage(allSources);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -363,9 +362,8 @@ Item {
     }
 
     function openSource(source) {
-        var models = [createModelForSource(source)];
-        var page = createPage(models, { "showHeader": false });
-        page.pathModel = models[0].pathModel;
+        var page = createPage([source], { "showHeader": false });
+        page.pathModel = page.models[0].pathModel;
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -378,8 +376,8 @@ Item {
             ], event);
     }
 
-    function createModelForSource(source) {
-        var model = sourceRegistry.createModelForSource(source);
+    function createModelForSource(source, parent) {
+        var model = sourceRegistry.createModelForSource(source, parent);
 
         // Create connections now: if we do it after applying the filter, then
         // "model" may have been changed to be a filter model, not the source
@@ -394,8 +392,14 @@ Item {
         return model;
     }
 
-    function createPage(models, viewExtraArgs /*= {}*/) {
-        var page = pageComponent.createObject(pageContainer, {"models": models});
+    function createPage(sources, viewExtraArgs /*= {}*/) {
+        var page = pageComponent.createObject(pageContainer);
+
+        // Create models
+        var models = sources.map(function(x) { return createModelForSource(x, page) });
+        page.models = models;
+
+        // Create views
         var firstView = null;
         models.forEach(function(model) {
             var isMultiViewModel = "modelForRow" in model;
@@ -423,12 +427,17 @@ Item {
                 // Check isMultiViewModel because in that case obj is not a ResultsView
                 firstView = obj;
             }
+
+            // Useful for debugging
             page.objectName += model.objectName + ",";
         });
+
+        page.finishModelConnections();
 
         if (firstView) {
             firstView.forceActiveFocus();
         }
+
         return page;
     }
 

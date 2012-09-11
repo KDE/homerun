@@ -47,7 +47,7 @@ public:
     /**
      * sourceString is a string version of source name + source args
      */
-    Q_INVOKABLE QObject *createModelForSource(const QString &sourceString);
+    Q_INVOKABLE QObject *createModelForSource(const QString &sourceString, QObject *parent);
 
     QVariantMap favoriteModels() const;
 
