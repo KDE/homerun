@@ -78,23 +78,6 @@ private:
     QAbstractItemModel *m_model;
 };
 
-//- PlacesSource ----------------------------------------------
-class PlacesSource : public AbstractSource
-{
-public:
-    PlacesSource(SourceRegistry *registry)
-    : AbstractSource(registry)
-    {}
-
-    QAbstractItemModel *createModel(const QString &args)
-    {
-        PlacesModel *model = new PlacesModel(registry());
-        model->setRootModel(registry()->favoriteModel("place"));
-        model->setArguments(args);
-        return model;
-    }
-};
-
 //- ServiceSource ---------------------------------------------
 class ServiceSource : public AbstractSource
 {

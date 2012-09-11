@@ -19,8 +19,13 @@
 #ifndef PLACESMODEL_H
 #define PLACESMODEL_H
 
+// Local
+#include <abstractsource.h>
+
+// Qt
 #include <QSortFilterProxyModel>
 
+// KDE
 #include <KDirSortFilterProxyModel>
 #include <KFilePlacesModel>
 #include <KUrl>
@@ -138,6 +143,13 @@ private:
     void switchToRootModel();
     void switchToDirModel();
     void openDirUrl(const KUrl &url);
+};
+
+class PlacesSource : public AbstractSource
+{
+public:
+    PlacesSource(SourceRegistry *registry);
+    QAbstractItemModel *createModel(const QString &args);
 };
 
 #endif /* PLACESMODEL_H */

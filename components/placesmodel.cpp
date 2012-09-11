@@ -21,6 +21,7 @@
 // Local
 #include <pathmodel.h>
 #include <sourcearguments.h>
+#include <sourceregistry.h>
 
 // KDE
 #include <KDebug>
@@ -338,6 +339,19 @@ void PlacesModel::emitRunningChanged()
 QString PlacesModel::name() const
 {
     return i18n("Favorite Places");
+}
+
+//- PlacesSource -------------------------------------------------------
+PlacesSource::PlacesSource(SourceRegistry *registry)
+: AbstractSource(registry)
+{}
+
+QAbstractItemModel *PlacesSource::createModel(const QString &args)
+{
+    PlacesModel *model = new PlacesModel(registry());
+    model->setRootModel(registry()->favoriteModel("place"));
+    model->setArguments(args);
+    return model;
 }
 
 #include "placesmodel.moc"
