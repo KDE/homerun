@@ -66,8 +66,12 @@ static QStringList split(const QString &src)
 
 Hash parse(const QString &str)
 {
-    QStringList tokens = split(str);
     Hash args;
+    if (str.isEmpty()) {
+        return args;
+    }
+
+    QStringList tokens = split(str);
     Q_FOREACH(const QString &token, tokens) {
         int idx = token.indexOf('=');
         if (idx == -1) {
