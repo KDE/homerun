@@ -126,7 +126,7 @@ int DirModel::count() const
 
 QString DirModel::name() const
 {
-    return dirLister()->url().fileName();
+    return m_rootName;
 }
 
 bool DirModel::running() const
