@@ -28,6 +28,7 @@
 #include <KServiceGroup>
 
 class ServiceModel;
+class SourceRegistry;
 
 /**
  * A model which returns all services in grouped sub-models
@@ -35,10 +36,11 @@ class ServiceModel;
 class GroupedServiceModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
 public:
     explicit GroupedServiceModel(QObject *parent = 0);
     ~GroupedServiceModel();
+
+    void init(SourceRegistry *registry);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
@@ -58,7 +60,7 @@ private Q_SLOTS:
 private:
     QList<KServiceGroup::Ptr> m_pendingGroupList;
     QList<ServiceModel *> m_models;
-    QString m_installer;
+    SourceRegistry *m_registry;
 
     ServiceModel *createServiceModel(KServiceGroup::Ptr group);
 };

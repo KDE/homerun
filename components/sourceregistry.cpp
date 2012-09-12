@@ -99,10 +99,7 @@ public:
     QAbstractItemModel *createModel(const QString &/*args*/)
     {
         GroupedServiceModel *model = new GroupedServiceModel;
-
-        KConfigGroup group(registry()->config(), "PackageManagement");
-        model->setInstaller(group.readEntry("categoryInstaller"));
-
+        model->init(registry());
         return model;
     }
 };

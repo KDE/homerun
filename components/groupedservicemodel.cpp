@@ -22,6 +22,7 @@
 // Local
 #include <servicemodel.h>
 #include <sourcearguments.h>
+#include <sourceregistry.h>
 
 // KDE
 #include <KDebug>
@@ -106,28 +107,18 @@ QVariant GroupedServiceModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void GroupedServiceModel::setInstaller(const QString &installer)
+void GroupedServiceModel::init(SourceRegistry *registry)
 {
-    if (installer == m_installer) {
-        return;
-    }
-    m_installer = installer;
-    // HACK: We wait until we have an installer to load entries so that all groups contain the installer item
+    m_registry = registry;
     loadRootEntries();
-    installerChanged(installer);
-}
-
-QString GroupedServiceModel::installer() const
-{
-    return m_installer;
 }
 
 ServiceModel *GroupedServiceModel::createServiceModel(KServiceGroup::Ptr group)
 {
-    ServiceModel *model = new ServiceModel(this);
-    model->setInstaller(m_installer);
-    model->setArguments("entryPath=" % SourceArguments::escapeValue(group->entryPath()));
-    return model;
+    Q_ASSERT(m_registry);
+    QString sourceString = "Service:entryPath=" % SourceArguments::escapeValue(group->entryPath());
+    QObject *model = m_registry->createModelForSource(sourceString, this);
+    return static_cast<ServiceModel *>(model);
 }
 
 #include <groupedservicemodel.moc>
