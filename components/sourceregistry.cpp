@@ -68,26 +68,6 @@ private:
     QAbstractItemModel *m_model;
 };
 
-//- ServiceSource ---------------------------------------------
-class ServiceSource : public AbstractSource
-{
-public:
-    ServiceSource(SourceRegistry *registry)
-    : AbstractSource(registry)
-    {}
-
-    QAbstractItemModel *createModel(const QString &args)
-    {
-        ServiceModel *model = new ServiceModel;
-
-        KConfigGroup group(registry()->config(), "PackageManagement");
-        model->setInstaller(group.readEntry("categoryInstaller"));
-
-        model->setArguments(args);
-        return model;
-    }
-};
-
 //- GroupedServiceSource --------------------------------------
 class GroupedServiceSource : public AbstractSource
 {

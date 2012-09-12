@@ -22,6 +22,7 @@
 #include <pathmodel.h>
 #include <servicemodel.h>
 #include <sourcearguments.h>
+#include <sourceregistry.h>
 
 // Qt
 #include <QIcon>
@@ -302,6 +303,22 @@ QString ServiceModel::name() const
     } else {
         return i18n("Applications");
     }
+}
+
+//- ServiceSource ---------------------------------------------
+ServiceSource::ServiceSource(SourceRegistry *registry)
+: AbstractSource(registry)
+{}
+
+QAbstractItemModel *ServiceSource::createModel(const QString &args)
+{
+    ServiceModel *model = new ServiceModel;
+
+    KConfigGroup group(registry()->config(), "PackageManagement");
+    model->setInstaller(group.readEntry("categoryInstaller"));
+
+    model->setArguments(args);
+    return model;
 }
 
 #include "servicemodel.moc"

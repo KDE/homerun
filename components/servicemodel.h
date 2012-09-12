@@ -21,9 +21,14 @@
 #ifndef SERVICEMODEL_H
 #define SERVICEMODEL_H
 
+// Local
+#include <abstractsource.h>
+
+// Qt
 #include <QAbstractListModel>
 #include <QStringList>
 
+// KDE
 #include <KIcon>
 #include <KService>
 #include <KServiceGroup>
@@ -141,6 +146,13 @@ private:
     QString m_arguments;
 
     void load(const QString &entryPath);
+};
+
+class ServiceSource : public AbstractSource
+{
+public:
+    ServiceSource(SourceRegistry *registry);
+    QAbstractItemModel *createModel(const QString &args);
 };
 
 #endif
