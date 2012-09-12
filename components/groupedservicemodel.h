@@ -70,7 +70,7 @@ class GroupedServiceSource : public AbstractSource
 {
 public:
     GroupedServiceSource(SourceRegistry *registry);
-    QAbstractItemModel *createModel(const QString &/*args*/);
+    QAbstractItemModel *createModel(const SourceArguments &/*args*/);
 };
 
 #endif /* GROUPEDSERVICEMODEL_H */

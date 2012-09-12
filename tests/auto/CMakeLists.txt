@@ -33,13 +33,13 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${components_SOURCE_DIR}/placesmodel.cpp
     ${components_SOURCE_DIR}/abstractsource.cpp
     ${components_SOURCE_DIR}/pathmodel.cpp
-    ${components_SOURCE_DIR}/sourcearguments.cpp
+    ${components_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(placesmodeltest_x11
     ${components_SOURCE_DIR}/placesmodel.cpp
     ${components_SOURCE_DIR}/abstractsource.cpp
     ${components_SOURCE_DIR}/pathmodel.cpp
-    ${components_SOURCE_DIR}/sourcearguments.cpp
+    ${components_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(runnerinfoprovidertest_x11 ${components_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
 

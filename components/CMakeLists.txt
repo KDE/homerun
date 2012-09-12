@@ -14,7 +14,7 @@ set(components_SRCS
     servicemodel.cpp
     sessionmodel.cpp
     sharedconfig.cpp
-    sourcearguments.cpp
+    sourceid.cpp
     sourceregistry.cpp
     )
 

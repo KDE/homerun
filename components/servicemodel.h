@@ -144,7 +144,7 @@ class ServiceSource : public AbstractSource
 {
 public:
     ServiceSource(SourceRegistry *registry);
-    QAbstractItemModel *createModel(const QString &args);
+    QAbstractItemModel *createModel(const SourceArguments &args);
 };
 
 #endif

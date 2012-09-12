@@ -28,6 +28,7 @@
 #include <runnermodel.h>
 #include <servicemodel.h>
 #include <sessionmodel.h>
+#include <sourceid.h>
 
 // KDE
 #include <KConfigGroup>
@@ -44,7 +45,7 @@ public:
     , m_model(model)
     {}
 
-    QAbstractItemModel *createModel(const QString &/* args */)
+    QAbstractItemModel *createModel(const SourceArguments &/* args */)
     {
         return m_model;
     }
@@ -77,7 +78,7 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_sources.insert("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this));
     d->m_sources.insert("Power", new SimpleSource<PowerModel>(this));
     d->m_sources.insert("Session", new SimpleSource<SessionModel>(this));
-    d->m_sources.insert("Runner", new SimpleSource<RunnerModel>(this));
+    d->m_sources.insert("Runner", new RunnerSource(this));
 }
 
 SourceRegistry::~SourceRegistry()
@@ -87,26 +88,26 @@ SourceRegistry::~SourceRegistry()
 
 QObject *SourceRegistry::createModelForSource(const QString &sourceString, QObject *parent)
 {
-    QString name;
-    QString args;
-    int idx = sourceString.indexOf(':');
-    if (idx > 0) {
-        name = sourceString.left(idx);
-        args = sourceString.mid(idx + 1);
-    } else {
-        name = sourceString;
+    bool ok;
+    SourceId sourceId = SourceId::fromString(sourceString, &ok);
+    if (!ok) {
+        kWarning() << "Invalid sourceString" << sourceString;
+        return 0;
     }
 
     QAbstractItemModel *model = 0;
 
-    AbstractSource *source = d->m_sources.value(name);
+    AbstractSource *source = d->m_sources.value(sourceId.name());
     if (!source) {
-        kWarning() << "No source named" << name;
+        kWarning() << "No source named" << sourceId.name();
         return 0;
     }
-    model = source->createModel(args);
-    Q_ASSERT(model);
-    model->setObjectName(name);
+    model = source->createModel(sourceId.arguments());
+    if (!model) {
+        kWarning() << "Failed to create model from" << sourceString;
+        return 0;
+    }
+    model->setObjectName(sourceString);
 
     // If the model already has a parent, then don't change it.
     // This is used by singleton sources to keep their model alive.

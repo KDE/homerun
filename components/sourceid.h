@@ -16,52 +16,50 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef SOURCEARGUMENTS_H
-#define SOURCEARGUMENTS_H
+#ifndef SOURCEID_H
+#define SOURCEID_H
 
 // Local
 
 // Qt
 #include <QHash>
 #include <QString>
-#include <QStringList>
 
 // KDE
 
 /**
- * Set of methods to serialize/deserialize arguments for Homerun sources
- *
- * Given the arguments:
- * - key1: value1
- * - key2: value2
- *
- * They get serialized into the string:
- * "key1=value1,key2=value2"
- *
- * ',' is used as a separator.
- * Keys may only contain alphanumeric characters.
- * A few characters are escaped in values:
- * - , => \'
- * - \ => \\
+ * The arguments of a source. Used within a SourceId instance.
  */
-namespace SourceArguments
+class SourceArguments : public QHash<QString, QString>
 {
+public:
+    SourceArguments &add(const QString &key, const QString &value);
+
+    QString toString() const;
+
+    static SourceArguments fromString(const QString &, bool *ok);
+};
 
 /**
- * A dictionary of arguments
+ * Represents a source and its optional arguments
  */
-typedef QHash<QString, QString> Hash;
+class SourceId
+{
+public:
+    void setName(const QString &);
+    QString name() const;
+    SourceArguments &arguments();
+    const SourceArguments &arguments() const;
 
-/**
- * Escape a value so that it can be used in a string version of source arguments
- */
-QString escapeValue(const QString &value);
+    QString toString() const;
 
-/**
- * Parse a string version of source arguments into a hash
- */
-Hash parse(const QString &str);
+    static SourceId fromString(const QString &, bool *ok);
 
-} // namespace
+    bool isValid() const;
 
-#endif /* SOURCEARGUMENTS_H */
+private:
+    QString m_name;
+    SourceArguments m_arguments;
+};
+
+#endif /* SOURCEID_H */

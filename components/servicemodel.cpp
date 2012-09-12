@@ -21,7 +21,7 @@
 // Local
 #include <pathmodel.h>
 #include <servicemodel.h>
-#include <sourcearguments.h>
+#include <sourceid.h>
 #include <sourceregistry.h>
 
 // Qt
@@ -39,6 +39,14 @@
 #include <KSycocaEntry>
 
 #include <Plasma/RunnerManager>
+
+static QString sourceString(const QString &entryPath)
+{
+    SourceId sourceId;
+    sourceId.setName("Service");
+    sourceId.arguments().add("entryPath", entryPath);
+    return sourceId.toString();
+}
 
 //- AbstractNode ---------------------------------------------------------------
 AbstractNode::~AbstractNode()
@@ -64,7 +72,7 @@ GroupNode::GroupNode(KServiceGroup::Ptr group, ServiceModel *model)
 
 bool GroupNode::trigger()
 {
-    QString source = "Service:entryPath=" % SourceArguments::escapeValue(m_entryPath);
+    QString source = sourceString(m_entryPath);
     QMetaObject::invokeMethod(m_model, "openSourceRequested", Q_ARG(QString, source));
     return false;
 }
@@ -177,7 +185,7 @@ void ServiceModel::load(const QString &entryPath)
     } else {
         KServiceGroup::Ptr group = KServiceGroup::group(entryPath);
         loadServiceGroup(group);
-        QString source = "Service:entryPath=" % SourceArguments::escapeValue(entryPath);
+        QString source = sourceString(entryPath);
         m_pathModel->addPath(group->caption(), source);
     }
 
@@ -278,15 +286,14 @@ ServiceSource::ServiceSource(SourceRegistry *registry)
 : AbstractSource(registry)
 {}
 
-QAbstractItemModel *ServiceSource::createModel(const QString &arguments)
+QAbstractItemModel *ServiceSource::createModel(const SourceArguments &arguments)
 {
     ServiceModel *model = new ServiceModel;
 
     KConfigGroup group(registry()->config(), "PackageManagement");
     model->m_installer = group.readEntry("categoryInstaller");
 
-    SourceArguments::Hash args = SourceArguments::parse(arguments);
-    model->load(args.value("entryPath"));
+    model->load(arguments.value("entryPath"));
 
     return model;
 }

@@ -20,7 +20,7 @@
 
 // Local
 #include <pathmodel.h>
-#include <sourcearguments.h>
+#include <sourceid.h>
 
 // KDE
 #include <KDebug>
@@ -45,10 +45,13 @@ static QString favoriteIdFromUrl(const KUrl &url)
 
 static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
 {
-    return QString("Dir:rootUrl=%1,rootName=%2,url=%3")
-        .arg(SourceArguments::escapeValue(rootUrl.url()))
-        .arg(SourceArguments::escapeValue(rootName))
-        .arg(SourceArguments::escapeValue(url.url()));
+    SourceId sourceId;
+    sourceId.setName("Dir");
+    sourceId.arguments()
+        .add("rootUrl", rootUrl.url())
+        .add("rootName", rootName)
+        .add("url", url.url());
+    return sourceId.toString();
 }
 
 //- DirModel ------------------------------------------------------
@@ -79,7 +82,14 @@ void DirModel::init(const KUrl &rootUrl, const QString &rootName, const KUrl &ur
 
 void DirModel::initPathModel(const KUrl &openedUrl)
 {
-    m_pathModel->addPath(m_rootName, sourceString(m_rootUrl, m_rootName, m_rootUrl));
+    SourceId sourceId;
+    sourceId.setName("Dir");
+    sourceId.arguments()
+        .add("rootUrl", m_rootUrl.url())
+        .add("rootName", m_rootName)
+        .add("url", m_rootUrl.url());
+
+    m_pathModel->addPath(m_rootName, sourceId.toString());
 
     QString relativePath = KUrl::relativeUrl(m_rootUrl, openedUrl);
     if (relativePath == "./") {
@@ -88,7 +98,8 @@ void DirModel::initPathModel(const KUrl &openedUrl)
     KUrl url = m_rootUrl;
     Q_FOREACH(const QString &token, relativePath.split('/')) {
         url.addPath(token);
-        m_pathModel->addPath(token, sourceString(m_rootUrl, m_rootName, url));
+        sourceId.arguments()["url"] = url.url();
+        m_pathModel->addPath(token, sourceId.toString());
     }
 }
 
@@ -268,9 +279,8 @@ DirSource::DirSource(SourceRegistry *registry)
 : AbstractSource(registry)
 {}
 
-QAbstractItemModel *DirSource::createModel(const QString &str)
+QAbstractItemModel *DirSource::createModel(const SourceArguments &args)
 {
-    SourceArguments::Hash args = SourceArguments::parse(str);
     KUrl rootUrl = args.value("rootUrl");
     QString rootName = args.value("rootName");
     KUrl url = args.value("url");

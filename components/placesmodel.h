@@ -135,7 +135,7 @@ class DirSource : public AbstractSource
 {
 public:
     DirSource(SourceRegistry *registry);
-    QAbstractItemModel *createModel(const QString &args);
+    QAbstractItemModel *createModel(const SourceArguments &args);
 };
 
 #endif /* PLACESMODEL_H */

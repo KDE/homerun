@@ -21,7 +21,7 @@
 
 // Local
 #include <servicemodel.h>
-#include <sourcearguments.h>
+#include <sourceid.h>
 #include <sourceregistry.h>
 
 // KDE
@@ -116,8 +116,10 @@ void GroupedServiceModel::init(SourceRegistry *registry)
 ServiceModel *GroupedServiceModel::createServiceModel(KServiceGroup::Ptr group)
 {
     Q_ASSERT(m_registry);
-    QString sourceString = "Service:entryPath=" % SourceArguments::escapeValue(group->entryPath());
-    QObject *model = m_registry->createModelForSource(sourceString, this);
+    SourceId sourceId;
+    sourceId.setName("Service");
+    sourceId.arguments().add("entryPath", group->entryPath());
+    QObject *model = m_registry->createModelForSource(sourceId.toString(), this);
     return static_cast<ServiceModel *>(model);
 }
 
@@ -126,7 +128,7 @@ GroupedServiceSource::GroupedServiceSource(SourceRegistry *registry)
 : AbstractSource(registry)
 {}
 
-QAbstractItemModel *GroupedServiceSource::createModel(const QString &/*args*/)
+QAbstractItemModel *GroupedServiceSource::createModel(const SourceArguments &/*args*/)
 {
     GroupedServiceModel *model = new GroupedServiceModel;
     model->init(registry());

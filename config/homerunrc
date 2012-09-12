@@ -25,14 +25,14 @@ icon=applications-other
 source0=Service
 # For a grouped list of all apps
 #source0=GroupedService
-searchSource0=Runner:services,shell
+searchSource0=Runner:whitelist=services,shell
 
 [Page2]
 name=Documents
 query=Search for documents...
 icon=folder-documents
 source0=FavoritePlaces
-searchSource0=Runner:bookmarks,recentdocuments,nepomuksearch,youtube
+searchSource0=Runner:whitelist=bookmarks,recentdocuments,nepomuksearch,youtube
 
 [Page3]
 name=Power

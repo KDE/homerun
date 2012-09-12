@@ -28,6 +28,7 @@
 
 class QAbstractItemModel;
 
+class SourceArguments;
 class SourceRegistry;
 
 class AbstractSourcePrivate;
@@ -44,7 +45,7 @@ public:
 
     SourceRegistry *registry() const;
 
-    virtual QAbstractItemModel *createModel(const QString &args) = 0;
+    virtual QAbstractItemModel *createModel(const SourceArguments &args) = 0;
 
 private:
     AbstractSourcePrivate * const d;
@@ -62,7 +63,7 @@ public:
     : AbstractSource(registry)
     {}
 
-    QAbstractItemModel *createModel(const QString &/*args*/)
+    QAbstractItemModel *createModel(const SourceArguments &/*args*/)
     {
         return new T;
     }
