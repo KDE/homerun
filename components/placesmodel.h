@@ -48,7 +48,9 @@ class DirModel : public KDirSortFilterProxyModel
     Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
     Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
-    DirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url, QObject *parent = 0);
+    explicit DirModel(QObject *parent = 0);
+
+    void init(const KUrl &rootUrl, const QString &rootName, const KUrl &url);
 
     enum {
         FavoriteIdRole = Qt::UserRole + 1,

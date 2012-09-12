@@ -52,11 +52,9 @@ static QString sourceString(const KUrl &rootUrl, const QString &rootName, const 
 }
 
 //- DirModel ------------------------------------------------------
-DirModel::DirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url, QObject *parent)
+DirModel::DirModel(QObject *parent)
 : KDirSortFilterProxyModel(parent)
 , m_pathModel(new PathModel(this))
-, m_rootUrl(rootUrl)
-, m_rootName(rootName)
 {
     setSourceModel(new KDirModel(this));
     setSortFoldersFirst(true);
@@ -69,9 +67,13 @@ DirModel::DirModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url
 
     connect(dirLister(), SIGNAL(started(KUrl)), SLOT(emitRunningChanged()));
     connect(dirLister(), SIGNAL(completed()), SLOT(emitRunningChanged()));
+}
 
+void DirModel::init(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
+{
+    m_rootUrl = rootUrl;
+    m_rootName = rootName;
     initPathModel(url);
-
     dirLister()->openUrl(url);
 }
 
@@ -289,7 +291,9 @@ QAbstractItemModel *DirSource::createModel(const QString &str)
     }
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
-    return new DirModel(rootUrl, rootName, url);
+    DirModel *model = new DirModel;
+    model->init(rootUrl, rootName, url);
+    return model;
 }
 
 #include "placesmodel.moc"
