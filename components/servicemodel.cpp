@@ -186,20 +186,6 @@ void ServiceModel::load(const QString &entryPath)
     emit countChanged();
 }
 
-void ServiceModel::setInstaller(const QString& installer)
-{
-    if (installer == m_installer) {
-        return;
-    }
-    m_installer = installer;
-    installerChanged(installer);
-}
-
-QString ServiceModel::installer() const
-{
-    return m_installer;
-}
-
 void ServiceModel::loadRootEntries()
 {
     KServiceGroup::Ptr group = KServiceGroup::root();
@@ -272,24 +258,6 @@ void ServiceModel::doLoadServiceGroup(KServiceGroup::Ptr group)
     }
 }
 
-QString ServiceModel::arguments() const
-{
-    return m_arguments;
-}
-
-void ServiceModel::setArguments(const QString& arguments)
-{
-    if (m_arguments == arguments) {
-        return;
-    }
-
-    SourceArguments::Hash args = SourceArguments::parse(arguments);
-    load(args.value("entryPath"));
-
-    m_arguments = arguments;
-    argumentsChanged(m_arguments);
-}
-
 PathModel *ServiceModel::pathModel() const
 {
     return m_pathModel;
@@ -310,14 +278,16 @@ ServiceSource::ServiceSource(SourceRegistry *registry)
 : AbstractSource(registry)
 {}
 
-QAbstractItemModel *ServiceSource::createModel(const QString &args)
+QAbstractItemModel *ServiceSource::createModel(const QString &arguments)
 {
     ServiceModel *model = new ServiceModel;
 
     KConfigGroup group(registry()->config(), "PackageManagement");
-    model->setInstaller(group.readEntry("categoryInstaller"));
+    model->m_installer = group.readEntry("categoryInstaller");
 
-    model->setArguments(args);
+    SourceArguments::Hash args = SourceArguments::parse(arguments);
+    model->load(args.value("entryPath"));
+
     return model;
 }
 
