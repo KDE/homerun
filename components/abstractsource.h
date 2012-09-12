@@ -50,4 +50,23 @@ private:
     AbstractSourcePrivate * const d;
 };
 
+/**
+ * If your source is simple (just returns a model), you can use this
+ * simpler template.
+ */
+template<class T>
+class SimpleSource : public AbstractSource
+{
+public:
+    SimpleSource(SourceRegistry *registry)
+    : AbstractSource(registry)
+    {}
+
+    QAbstractItemModel *createModel(const QString &/*args*/)
+    {
+        return new T;
+    }
+};
+
+
 #endif /* ABSTRACTSOURCE_H */
