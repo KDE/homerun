@@ -44,19 +44,9 @@ public:
     : AbstractSource(registry)
     {}
 
-    QAbstractItemModel *createModel(const QString &args)
+    QAbstractItemModel *createModel(const QString &/*args*/)
     {
-        T* model = new T;
-
-        if (!args.isEmpty()) {
-            if (model->metaObject()->indexOfProperty("arguments") >= 0) {
-                model->setProperty("arguments", args);
-            } else {
-                kWarning() << "Trying to set arguments on a model which does not support arguments";
-            }
-        }
-
-        return model;
+        return new T;
     }
 };
 

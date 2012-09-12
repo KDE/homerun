@@ -51,14 +51,6 @@ representing the position inside the model.
 Set to true to indicate the model is busy filling itself. Homerun will show a
 busy indicator as long as this property is true.
 
-### string arguments
-- access: read-write
-- mandatory: no
-
-Define optional model arguments. The model can opt to use named arguments if
-wanted. The recommended way to do so is with the functions from the
-SourceArguments namespace.
-
 ### string query
 - access: read-write
 - mandatory: no
