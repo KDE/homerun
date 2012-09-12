@@ -33,6 +33,9 @@
 // KDE
 #include <KConfigGroup>
 #include <KDebug>
+#include <KPluginFactory>
+#include <KPluginLoader>
+#include <KServiceTypeTrader>
 
 // Qt
 
@@ -54,12 +57,71 @@ private:
     QAbstractItemModel *m_model;
 };
 
+struct PluginInfo
+{
+    QStringList sources;
+    KService::Ptr service;
+
+    PluginInfo(KService::Ptr ptr)
+    : service(ptr)
+    {
+        QVariant value = ptr->property("X-Homerun-Sources", QVariant::StringList);
+        sources = value.toStringList();
+    }
+};
+
 //- SourceRegistryPrivate -------------------------------------
 struct SourceRegistryPrivate
 {
     QHash<QString, QAbstractItemModel*> m_favoriteModels;
     QHash<QString, AbstractSource *> m_sources;
     KSharedConfig::Ptr m_config;
+
+    QList<PluginInfo> m_pluginInfoList;
+
+    void listSourcePlugins()
+    {
+        KService::List offers = KServiceTypeTrader::self()->query("Homerun/Source");
+        Q_FOREACH(KService::Ptr ptr, offers) {
+            m_pluginInfoList << PluginInfo(ptr);
+        }
+    }
+
+    void loadPluginForSource(const QString &name)
+    {
+        // Look for a plugin providing a source named 'name'
+        auto it = m_pluginInfoList.begin(), end = m_pluginInfoList.end();
+        for (; it != end; ++it) {
+            if (it->sources.contains(name)) {
+                break;
+            }
+        }
+        if (it == end) {
+            return;
+        }
+        QStringList sourceNames = it->sources;
+        KService::Ptr ptr = it->service;
+        m_pluginInfoList.erase(it);
+
+        // Create a source from the plugin
+        KPluginLoader loader(*ptr);
+        KPluginFactory *factory = loader.factory();
+        if (!factory) {
+            kWarning() << "Failed to load plugin (desktop file: " << ptr->entryPath() << ", source:" << name << ")";
+            kWarning() << loader.errorString();
+            return;
+        }
+        AbstractSource *source = factory->create<AbstractSource>();
+        if (!source) {
+            kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << name << ")";
+            return;
+        }
+
+        // Register the source
+        Q_FOREACH(const QString &sourceName, sourceNames) {
+            m_sources.insert(sourceName, source);
+        }
+    }
 };
 
 //- SourceRegistry --------------------------------------------
@@ -79,6 +141,8 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_sources.insert("Power", new SimpleSource<PowerModel>(this));
     d->m_sources.insert("Session", new SimpleSource<SessionModel>(this));
     d->m_sources.insert("Runner", new RunnerSource(this));
+
+    d->listSourcePlugins();
 }
 
 SourceRegistry::~SourceRegistry()
@@ -99,8 +163,12 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceString, QObje
 
     AbstractSource *source = d->m_sources.value(sourceId.name());
     if (!source) {
-        kWarning() << "No source named" << sourceId.name();
-        return 0;
+        d->loadPluginForSource(sourceId.name());
+        source = d->m_sources.value(sourceId.name());
+        if (!source) {
+            kWarning() << "No source named" << sourceId.name();
+            return 0;
+        }
     }
     model = source->createModel(sourceId.arguments());
     if (!model) {
