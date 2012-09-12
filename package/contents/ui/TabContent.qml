@@ -378,6 +378,9 @@ Item {
 
     function createModelForSource(source, parent) {
         var model = sourceRegistry.createModelForSource(source, parent);
+        if (!model) {
+            return null;
+        }
 
         // Create connections now: if we do it after applying the filter, then
         // "model" may have been changed to be a filter model, not the source
@@ -396,7 +399,13 @@ Item {
         var page = pageComponent.createObject(pageContainer);
 
         // Create models
-        var models = sources.map(function(x) { return createModelForSource(x, page) });
+        var models = [];
+        sources.forEach(function(x) {
+            var model = createModelForSource(x, page);
+            if (model) {
+                models.push(model);
+            }
+        });
         page.models = models;
 
         // Create views
