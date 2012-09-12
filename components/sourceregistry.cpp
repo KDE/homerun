@@ -35,21 +35,6 @@
 
 // Qt
 
-//- SimpleSource ----------------------------------------------
-template<class T>
-class SimpleSource : public AbstractSource
-{
-public:
-    SimpleSource(SourceRegistry *registry)
-    : AbstractSource(registry)
-    {}
-
-    QAbstractItemModel *createModel(const QString &/*args*/)
-    {
-        return new T;
-    }
-};
-
 //- SingletonSource -------------------------------------------
 class SingletonSource : public AbstractSource
 {
@@ -66,22 +51,6 @@ public:
 
 private:
     QAbstractItemModel *m_model;
-};
-
-//- GroupedServiceSource --------------------------------------
-class GroupedServiceSource : public AbstractSource
-{
-public:
-    GroupedServiceSource(SourceRegistry *registry)
-    : AbstractSource(registry)
-    {}
-
-    QAbstractItemModel *createModel(const QString &/*args*/)
-    {
-        GroupedServiceModel *model = new GroupedServiceModel;
-        model->init(registry());
-        return model;
-    }
 };
 
 //- SourceRegistryPrivate -------------------------------------

@@ -121,4 +121,16 @@ ServiceModel *GroupedServiceModel::createServiceModel(KServiceGroup::Ptr group)
     return static_cast<ServiceModel *>(model);
 }
 
+//- GroupedServiceSource --------------------------------------
+GroupedServiceSource::GroupedServiceSource(SourceRegistry *registry)
+: AbstractSource(registry)
+{}
+
+QAbstractItemModel *GroupedServiceSource::createModel(const QString &/*args*/)
+{
+    GroupedServiceModel *model = new GroupedServiceModel;
+    model->init(registry());
+    return model;
+}
+
 #include <groupedservicemodel.moc>

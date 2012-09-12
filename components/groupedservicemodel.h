@@ -20,6 +20,7 @@
 #define GROUPEDSERVICEMODEL_H
 
 // Local
+#include <abstractsource.h>
 
 // Qt
 #include <QAbstractListModel>
@@ -63,6 +64,13 @@ private:
     SourceRegistry *m_registry;
 
     ServiceModel *createServiceModel(KServiceGroup::Ptr group);
+};
+
+class GroupedServiceSource : public AbstractSource
+{
+public:
+    GroupedServiceSource(SourceRegistry *registry);
+    QAbstractItemModel *createModel(const QString &/*args*/);
 };
 
 #endif /* GROUPEDSERVICEMODEL_H */
