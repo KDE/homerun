@@ -33,3 +33,5 @@ target_link_libraries(componentsplugin
 
 install(TARGETS componentsplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/components)
 install(FILES qmldir DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/components)
+
+install(FILES homerun-source.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
