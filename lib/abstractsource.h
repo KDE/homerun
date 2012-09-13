@@ -73,5 +73,8 @@ public:
     }
 };
 
+#define HOMERUN_EXPORT_SOURCE(libName, className) \
+    K_PLUGIN_FACTORY(factory, registerPlugin<className>();) \
+    K_EXPORT_PLUGIN(factory("homerun_source_" #libName))
 
 #endif /* ABSTRACTSOURCE_H */

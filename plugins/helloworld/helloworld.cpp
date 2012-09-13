@@ -31,11 +31,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // KDE
 #include <KDebug>
+#include <KLocale>
 #include <KPluginFactory>
 
 typedef SimpleSource<HelloWorldModel> HelloWorldSource;
-K_PLUGIN_FACTORY(HelloWorldFactory, registerPlugin<HelloWorldSource>();)
-K_EXPORT_PLUGIN(HelloWorldFactory("homerun_source_helloworld"))
+// First argument is the library name without the "homerun_source_" prefix
+// Second argument is the class name of the source
+HOMERUN_EXPORT_SOURCE(helloworld, HelloWorldSource)
 
 HelloWorldModel::HelloWorldModel()
 {
@@ -49,12 +51,12 @@ HelloWorldModel::HelloWorldModel()
     QStandardItem *item;
 
     item = new QStandardItem;
-    item->setText("Hello");
+    item->setText(i18n("Hello"));
     item->setData("face-smile", Qt::DecorationRole);
     appendRow(item);
 
     item = new QStandardItem;
-    item->setText("World");
+    item->setText(i18n("World"));
     item->setData("network-defaultroute", Qt::DecorationRole);
     appendRow(item);
 }
@@ -69,7 +71,7 @@ bool HelloWorldModel::trigger(int row)
 
 QString HelloWorldModel::name() const
 {
-    return "Hello World";
+    return i18n("Hello World");
 }
 
 int HelloWorldModel::count() const
