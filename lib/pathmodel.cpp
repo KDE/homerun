@@ -25,6 +25,10 @@
 
 // Qt
 
+enum {
+    SourceRole = Qt::UserRole + 1,
+};
+
 PathModel::PathModel(QObject *parent)
 : QStandardItemModel(parent)
 {

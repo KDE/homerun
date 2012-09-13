@@ -38,10 +38,6 @@ public:
     explicit PathModel(QObject *parent = 0);
     ~PathModel();
 
-    enum {
-        SourceRole = Qt::UserRole + 1,
-    };
-
     void addPath(const QString &label, const QString &source);
 
     int count() const;
