@@ -20,6 +20,7 @@
 #define PATHMODEL_H
 
 // Local
+#include <homerun_export.h>
 
 // Qt
 #include <QStandardItemModel>
@@ -29,7 +30,7 @@
 /**
  * Represents the path in a browsable Homerun model
  */
-class PathModel : public QStandardItemModel
+class HOMERUN_EXPORT PathModel : public QStandardItemModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
