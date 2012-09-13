@@ -14,16 +14,25 @@ set(lib_VERSION ${lib_SO_VERSION}.${lib_MINOR_VERSION}.${lib_PATCH_VERSION})
 
 set(lib_SRCS
     abstractsource.cpp
-    favoriteappsmodel.cpp
-    groupedservicemodel.cpp
     pathmodel.cpp
-    placesmodel.cpp
-    powermodel.cpp
-    runnermodel.cpp
-    servicemodel.cpp
-    sessionmodel.cpp
     sourceid.cpp
     sourceregistry.cpp
+    )
+
+# Private classes
+set(lib_SRCS ${lib_SRCS}
+    private/favoriteappsmodel.cpp
+    private/groupedservicemodel.cpp
+    private/placesmodel.cpp
+    private/powermodel.cpp
+    private/runnermodel.cpp
+    private/servicemodel.cpp
+    private/sessionmodel.cpp
+    )
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/private
     )
 
 qt4_automoc(${lib_SRCS})
@@ -41,6 +50,12 @@ target_link_libraries(homerun
     ${KDE4_KFILE_LIBS}
     ${KDE4_KDECORE_LIBS}
     ${KDE4WORKSPACE_KWORKSPACE_LIBS}
+    )
+
+install(DIRECTORY .
+    DESTINATION include/homerun
+    FILES_MATCHING PATTERN "*.h"
+    PATTERN "private" EXCLUDE
     )
 
 install(TARGETS homerun DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})

@@ -28,15 +28,15 @@ include_directories(
 homerun_add_unit_test(pagemodeltest ${components_SOURCE_DIR}/pagemodel.cpp)
 
 # X11-dependent tests
-homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/favoriteappsmodel.cpp)
+homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/private/favoriteappsmodel.cpp)
 homerun_add_unit_test(favoriteplacesmodeltest_x11
-    ${lib_SOURCE_DIR}/placesmodel.cpp
+    ${lib_SOURCE_DIR}/private/placesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(placesmodeltest_x11
-    ${lib_SOURCE_DIR}/placesmodel.cpp
+    ${lib_SOURCE_DIR}/private/placesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceid.cpp
