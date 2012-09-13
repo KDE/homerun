@@ -16,36 +16,19 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-// Self
-#include <abstractsource.h>
+#ifndef HOMERUN_EXPORT_H
+#define HOMERUN_EXPORT_H
 
-// Local
-#include <sourceregistry.h>
+#include <kdemacros.h>
 
-// KDE
+#ifndef HOMERUN_EXPORT
+# if defined(MAKE_HOMERUN_LIB)
+/* We are building this library */
+#  define HOMERUN_EXPORT KDE_EXPORT
+# else
+/* We are using this library */
+#  define HOMERUN_EXPORT KDE_IMPORT
+# endif
+#endif
 
-// Qt
-
-struct AbstractSourcePrivate
-{
-    SourceRegistry *m_registry;
-};
-
-AbstractSource::AbstractSource(SourceRegistry *registry)
-: QObject(registry)
-, d(new AbstractSourcePrivate)
-{
-    d->m_registry = registry;
-}
-
-AbstractSource::~AbstractSource()
-{
-    delete d;
-}
-
-SourceRegistry *AbstractSource::registry() const
-{
-    return d->m_registry;
-}
-
-#include <abstractsource.moc>
+#endif /* HOMERUN_EXPORT_H */

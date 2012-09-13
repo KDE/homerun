@@ -275,8 +275,8 @@ int FavoritePlacesModel::count() const
 }
 
 //- DirSource -------------------------------------------------------
-DirSource::DirSource(SourceRegistry *registry)
-: AbstractSource(registry)
+DirSource::DirSource(QObject *parent)
+: AbstractSource(parent)
 {}
 
 QAbstractItemModel *DirSource::createModel(const SourceArguments &args)

@@ -20,6 +20,7 @@
 #define SOURCEID_H
 
 // Local
+#include <homerun_export.h>
 
 // Qt
 #include <QHash>
@@ -30,7 +31,7 @@
 /**
  * The arguments of a source. Used within a SourceId instance.
  */
-class SourceArguments : public QHash<QString, QString>
+class HOMERUN_EXPORT SourceArguments : public QHash<QString, QString>
 {
 public:
     SourceArguments &add(const QString &key, const QString &value);
@@ -43,7 +44,7 @@ public:
 /**
  * Represents a source and its optional arguments
  */
-class SourceId
+class HOMERUN_EXPORT SourceId
 {
 public:
     void setName(const QString &);

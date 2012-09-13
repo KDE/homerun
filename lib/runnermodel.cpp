@@ -348,8 +348,8 @@ void RunnerModel::trigger(const Plasma::QueryMatch& match)
 }
 
 //- RunnerSource ------------------------------
-RunnerSource::RunnerSource(SourceRegistry *registry)
-: AbstractSource(registry)
+RunnerSource::RunnerSource(QObject *parent)
+: AbstractSource(parent)
 {}
 
 QAbstractItemModel *RunnerSource::createModel(const SourceArguments &arguments)

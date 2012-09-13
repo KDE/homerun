@@ -20,9 +20,11 @@
 #define ABSTRACTSOURCE_H
 
 // Local
+#include <homerun_export.h>
 
 // Qt
 #include <QObject>
+#include <QVariant>
 
 // KDE
 
@@ -36,12 +38,14 @@ class AbstractSourcePrivate;
 /**
  * Base class to implement homerun sources
  */
-class AbstractSource : public QObject
+class HOMERUN_EXPORT AbstractSource : public QObject
 {
     Q_OBJECT
 public:
-    AbstractSource(SourceRegistry *registry);
+    AbstractSource(QObject *parent, const QVariantList &args = QVariantList());
     ~AbstractSource();
+
+    virtual void init(SourceRegistry *registry);
 
     SourceRegistry *registry() const;
 
@@ -56,11 +60,11 @@ private:
  * simpler template.
  */
 template<class T>
-class SimpleSource : public AbstractSource
+class HOMERUN_EXPORT SimpleSource : public AbstractSource
 {
 public:
-    SimpleSource(SourceRegistry *registry)
-    : AbstractSource(registry)
+    SimpleSource(QObject *parent, const QVariantList &args = QVariantList())
+    : AbstractSource(parent, args)
     {}
 
     QAbstractItemModel *createModel(const SourceArguments &/*args*/)

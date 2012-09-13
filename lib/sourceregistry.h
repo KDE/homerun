@@ -20,6 +20,7 @@
 #define SOURCEREGISTRY_H
 
 // Local
+#include <homerun_export.h>
 
 // Qt
 #include <QObject>
@@ -36,7 +37,7 @@ class SourceRegistryPrivate;
  * The source registry. This class is responsible for loading source plugins
  * and instantiating source models.
  */
-class SourceRegistry : public QObject
+class HOMERUN_EXPORT SourceRegistry : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels CONSTANT)

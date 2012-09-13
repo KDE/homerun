@@ -21,6 +21,7 @@ install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAM
 # config/
 install(FILES config/homerunrc DESTINATION ${CONFIG_INSTALL_DIR})
 
+add_subdirectory(lib)
 add_subdirectory(applet)
 add_subdirectory(shell)
 add_subdirectory(components)

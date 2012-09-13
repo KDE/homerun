@@ -134,7 +134,7 @@ private:
 class DirSource : public AbstractSource
 {
 public:
-    DirSource(SourceRegistry *registry);
+    DirSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &args);
 };
 

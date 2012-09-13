@@ -65,7 +65,7 @@ struct PluginInfo
     PluginInfo(KService::Ptr ptr)
     : service(ptr)
     {
-        QVariant value = ptr->property("X-Homerun-Sources", QVariant::StringList);
+        QVariant value = ptr->property("X-KDE-Homerun-Sources", QVariant::StringList);
         sources = value.toStringList();
     }
 };
@@ -141,6 +141,10 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_sources.insert("Power", new SimpleSource<PowerModel>(this));
     d->m_sources.insert("Session", new SimpleSource<SessionModel>(this));
     d->m_sources.insert("Runner", new RunnerSource(this));
+
+    Q_FOREACH(AbstractSource *source, d->m_sources) {
+        source->init(this);
+    }
 
     d->listSourcePlugins();
 }

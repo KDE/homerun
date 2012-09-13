@@ -129,7 +129,7 @@ private:
 class RunnerSource : public AbstractSource
 {
 public:
-    RunnerSource(SourceRegistry *registry);
+    RunnerSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &arguments);
 };
 
