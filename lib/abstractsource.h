@@ -56,8 +56,8 @@ private:
 };
 
 /**
- * If your source is simple (just returns a model), you can use this
- * simpler template.
+ * If your source just creates an argument-less model, you can use this simpler
+ * template class.
  */
 template<class T>
 class HOMERUN_EXPORT SimpleSource : public AbstractSource
