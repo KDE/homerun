@@ -1,5 +1,17 @@
 project(lib)
 
+## Lib version
+### Bump this one when a binary-incompatible change is introduced
+set(lib_SO_VERSION 0)
+
+### Bump this one when the API is extended in a binary-compatible way
+set(lib_MINOR_VERSION 0)
+
+### Bump this one when changes do not extend the API
+set(lib_PATCH_VERSION 0)
+
+set(lib_VERSION ${lib_SO_VERSION}.${lib_MINOR_VERSION}.${lib_PATCH_VERSION})
+
 set(lib_SRCS
     abstractsource.cpp
     favoriteappsmodel.cpp
@@ -17,6 +29,10 @@ set(lib_SRCS
 qt4_automoc(${lib_SRCS})
 
 kde4_add_library(homerun SHARED ${lib_SRCS})
+set_target_properties(homerun PROPERTIES
+    VERSION ${lib_VERSION}
+    SOVERSION ${lib_SO_VERSION}
+    )
 
 target_link_libraries(homerun
     ${QT_QTCORE_LIBRARY}
