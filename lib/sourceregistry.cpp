@@ -103,7 +103,7 @@ struct SourceRegistryPrivate
         KService::Ptr ptr = it->service;
         m_pluginInfoList.erase(it);
 
-        // Create a source from the plugin
+        // Create the plugin factory
         KPluginLoader loader(*ptr);
         KPluginFactory *factory = loader.factory();
         if (!factory) {
@@ -111,14 +111,15 @@ struct SourceRegistryPrivate
             kWarning() << loader.errorString();
             return;
         }
-        AbstractSource *source = factory->create<AbstractSource>();
-        if (!source) {
-            kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << name << ")";
-            return;
-        }
 
-        // Register the source
+        // Create and register all sources provided by the plugin
         Q_FOREACH(const QString &sourceName, sourceNames) {
+            AbstractSource *source = factory->create<AbstractSource>(sourceName);
+            if (!source) {
+                kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << name << ")";
+                continue;
+            }
+
             m_sources.insert(sourceName, source);
         }
     }
