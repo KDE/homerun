@@ -74,6 +74,7 @@ struct PluginInfo
 //- SourceRegistryPrivate -------------------------------------
 struct SourceRegistryPrivate
 {
+    SourceRegistry *q;
     QHash<QString, QAbstractItemModel*> m_favoriteModels;
     QHash<QString, AbstractSource *> m_sources;
     KSharedConfig::Ptr m_config;
@@ -117,15 +118,29 @@ struct SourceRegistryPrivate
         }
 
         // Create and register all sources provided by the plugin
-        Q_FOREACH(const QString &sourceName, sourceNames) {
-            AbstractSource *source = factory->create<AbstractSource>(sourceName);
-            if (!source) {
-                kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << name << ")";
-                continue;
+        if (sourceNames.count() > 1) {
+            Q_FOREACH(const QString &sourceName, sourceNames) {
+                if (!createSource(factory, sourceName, sourceName)) {
+                    kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << sourceName << ")";
+                }
             }
-
-            m_sources.insert(sourceName, source);
+        } else {
+            if (!createSource(factory, sourceNames.first(), QString())) {
+                kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ")";
+            }
         }
+    }
+
+    bool createSource(KPluginFactory *factory, const QString &sourceName, const QString &keyword)
+    {
+        AbstractSource *source = factory->create<AbstractSource>(keyword);
+        if (!source) {
+            return false;
+        }
+
+        m_sources.insert(sourceName, source);
+        source->init(q);
+        return true;
     }
 };
 
@@ -134,6 +149,8 @@ SourceRegistry::SourceRegistry(QObject *parent)
 : QObject(parent)
 , d(new SourceRegistryPrivate)
 {
+    d->q = this;
+
     d->m_config = KSharedConfig::openConfig("homerunrc");
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
