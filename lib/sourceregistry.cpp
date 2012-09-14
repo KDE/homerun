@@ -23,6 +23,7 @@
 #include <abstractsource.h>
 #include <favoriteappsmodel.h>
 #include <groupedservicemodel.h>
+#include <libhomerun_config.h>
 #include <placesmodel.h>
 #include <powermodel.h>
 #include <runnermodel.h>
@@ -81,7 +82,10 @@ struct SourceRegistryPrivate
 
     void listSourcePlugins()
     {
-        KService::List offers = KServiceTypeTrader::self()->query("Homerun/Source");
+        KService::List offers = KServiceTypeTrader::self()->query(
+            "Homerun/Source",
+            QString("[X-KDE-Homerun-APIVersion] == %1").arg(HOMERUN_API_VERSION)
+            );
         Q_FOREACH(KService::Ptr ptr, offers) {
             m_pluginInfoList << PluginInfo(ptr);
         }
