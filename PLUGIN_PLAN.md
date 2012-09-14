@@ -12,7 +12,7 @@ Responsabilities:
 
 Methods:
 
-    QObject *createModelForSource(const QString &sourceString);
+    QObject *createModelForSource(const QString &sourceString, QObject *parent);
 
 Properties:
 
@@ -59,28 +59,11 @@ Must be able to:
 
 API:
     void setupUi(QWidget *)
-    void setSourceArguments(const SourceArguments::Hash &)
-    SourceArguments::Hash sourceArguments() const
-
-# Open questions
-
-- Should there be explicit support for registering a singleton source?
-
-- How to expose favorite models?
-
-- How to register a favorite model?
+    void setSourceArguments(const SourceArguments &)
+    SourceArguments sourceArguments() const
 
 # TODO
 
-## Refactor sources to use JSON to define arguments?
-
-## Define the SourceConfigurator class
-
-## Move implementations of AbstractSource with their model
-
 ## Modify SourceRegistry to support plugins
 
-## Real plugins
-
-Either write a real plugin, implemented in its own .so or move all|some
-existing sources to plugins.
+## Implement the SourceConfigurator class
