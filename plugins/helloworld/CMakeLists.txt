@@ -1,19 +1,23 @@
 project(helloworld)
 
+# Dependencies
+find_package(KDE4 REQUIRED)
+include(KDE4Defaults)
+find_package(Homerun REQUIRED)
+
+# Source
 set(helloworld_SRCS
     helloworld.cpp
     )
 
 qt4_automoc(${helloworld_SRCS})
 
+# Build
 kde4_add_plugin(homerun_source_helloworld SHARED ${helloworld_SRCS})
 
-# FIXME
-set(HOMERUN_INCLUDE_DIRS ${lib_SOURCE_DIR})
-set(HOMERUN_LIBRARIES homerun)
-
 include_directories(
-    ${HOMERUN_INCLUDE_DIRS}
+    ${HOMERUN_INCLUDES}
+    ${KDE4_INCLUDES}
     )
 
 # The library name must start with "homerun_source_". The
@@ -26,5 +30,6 @@ target_link_libraries(homerun_source_helloworld
     ${HOMERUN_LIBRARIES}
     )
 
+# Install
 install(TARGETS homerun_source_helloworld DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES homerun-source-helloworld.desktop DESTINATION ${SERVICES_INSTALL_DIR})
