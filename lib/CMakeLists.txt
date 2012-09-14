@@ -2,15 +2,15 @@ project(lib)
 
 ## Lib version
 ### Bump this one when a binary-incompatible change is introduced
-set(lib_SO_VERSION 0)
+set(lib_VERSION_MAJOR 0)
 
 ### Bump this one when the API is extended in a binary-compatible way
-set(lib_MINOR_VERSION 0)
+set(lib_VERSION_MINOR 0)
 
 ### Bump this one when changes do not extend the API
-set(lib_PATCH_VERSION 0)
+set(lib_VERSION_PATCH 0)
 
-set(lib_VERSION ${lib_SO_VERSION}.${lib_MINOR_VERSION}.${lib_PATCH_VERSION})
+set(lib_VERSION ${lib_VERSION_MAJOR}.${lib_VERSION_MINOR}.${lib_VERSION_PATCH})
 
 set(lib_SRCS
     abstractsource.cpp
@@ -30,6 +30,7 @@ set(lib_SRCS ${lib_SRCS}
     private/sessionmodel.cpp
     )
 
+# Build
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/private
@@ -42,7 +43,7 @@ configure_file(libhomerun_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/libhomerun_con
 kde4_add_library(homerun SHARED ${lib_SRCS})
 set_target_properties(homerun PROPERTIES
     VERSION ${lib_VERSION}
-    SOVERSION ${lib_SO_VERSION}
+    SOVERSION ${lib_VERSION_MAJOR}
     )
 
 target_link_libraries(homerun
@@ -54,11 +55,41 @@ target_link_libraries(homerun
     ${KDE4WORKSPACE_KWORKSPACE_LIBS}
     )
 
+# Install
+## Headers
 install(DIRECTORY .
     DESTINATION include/homerun
     FILES_MATCHING PATTERN "*.h"
     PATTERN "private" EXCLUDE
     )
 
-install(TARGETS homerun DESTINATION ${INSTALL_TARGETS_DEFAULT_ARGS})
+## .so
+install(TARGETS homerun
+    EXPORT HomerunTargets
+    ${INSTALL_TARGETS_DEFAULT_ARGS}
+    )
+
+## CMakeConfig
+install(EXPORT HomerunTargets
+    DESTINATION ${LIB_INSTALL_DIR}/cmake/Homerun
+    FILE HomerunTargets.cmake
+    )
+
+configure_file(
+    HomerunConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/HomerunConfig.cmake
+    @ONLY)
+
+macro_write_basic_cmake_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/HomerunConfigVersion.cmake
+    ${lib_VERSION_MAJOR} ${lib_VERSION_MINOR} ${lib_VERSION_PATCH}
+    )
+
+INSTALL(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/HomerunConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/HomerunConfigVersion.cmake
+    DESTINATION ${LIB_INSTALL_DIR}/cmake/Homerun
+    )
+
+## Desktop file
 install(FILES homerun-source.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
