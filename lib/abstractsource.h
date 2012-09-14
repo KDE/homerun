@@ -73,6 +73,10 @@ public:
     }
 };
 
+/**
+ * libName: the library name without the "homerun_source_" prefix
+ * className: the class name of the source
+ */
 #define HOMERUN_EXPORT_SOURCE(libName, className) \
     K_PLUGIN_FACTORY(factory, registerPlugin<className>();) \
     K_EXPORT_PLUGIN(factory("homerun_source_" #libName))

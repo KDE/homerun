@@ -16,6 +16,8 @@ include_directories(
     ${HOMERUN_INCLUDE_DIRS}
     )
 
+# The library name must start with "homerun_source_". The
+# HOMERUN_EXPORT_SOURCE C macro expects this.
 target_link_libraries(homerun_source_helloworld
     ${QT_QTCORE_LIBRARY}
     ${QT_QTGUI_LIBRARY}
