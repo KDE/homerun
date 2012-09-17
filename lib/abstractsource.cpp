@@ -26,6 +26,8 @@
 
 // Qt
 
+namespace Homerun {
+
 struct AbstractSourcePrivate
 {
     SourceRegistry *m_registry;
@@ -52,5 +54,7 @@ SourceRegistry *AbstractSource::registry() const
 {
     return d->m_registry;
 }
+
+} // namespace Homerun
 
 #include <abstractsource.moc>

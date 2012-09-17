@@ -31,6 +31,8 @@
 #include <QStandardItemModel>
 #include <QTimer>
 
+namespace Homerun {
+
 RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, QObject *parent)
 : QAbstractListModel(parent)
 , m_runnerId(runnerId)
@@ -362,5 +364,7 @@ QAbstractItemModel *RunnerSource::createModel(const SourceArguments &arguments)
     }
     return model;
 };
+
+} // namespace Homerun
 
 #include <runnermodel.moc>

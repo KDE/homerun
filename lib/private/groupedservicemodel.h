@@ -28,6 +28,8 @@
 // KDE
 #include <KServiceGroup>
 
+namespace Homerun {
+
 class ServiceModel;
 class SourceRegistry;
 
@@ -72,5 +74,7 @@ public:
     GroupedServiceSource(SourceRegistry *registry);
     QAbstractItemModel *createModel(const SourceArguments &/*args*/);
 };
+
+} // namespace Homerun
 
 #endif /* GROUPEDSERVICEMODEL_H */

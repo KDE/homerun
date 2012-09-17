@@ -40,6 +40,8 @@
 
 #include <Plasma/RunnerManager>
 
+namespace Homerun {
+
 static QString sourceString(const QString &entryPath)
 {
     SourceId sourceId;
@@ -297,5 +299,7 @@ QAbstractItemModel *ServiceSource::createModel(const SourceArguments &arguments)
 
     return model;
 }
+
+} // namespace Homerun
 
 #include "servicemodel.moc"

@@ -34,7 +34,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <KLocale>
 #include <KPluginFactory>
 
-typedef SimpleSource<HelloWorldModel> HelloWorldSource;
+typedef Homerun::SimpleSource<HelloWorldModel> HelloWorldSource;
 // First argument is the library name without the "homerun_source_" prefix
 // Second argument is the class name of the source
 HOMERUN_EXPORT_SOURCE(helloworld, HelloWorldSource)

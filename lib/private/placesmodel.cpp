@@ -29,6 +29,8 @@
 #include <KFilePlacesModel>
 #include <KLocale>
 
+namespace Homerun {
+
 static KUrl urlFromFavoriteId(const QString &favoriteId)
 {
     if (!favoriteId.startsWith("place:")) {
@@ -305,5 +307,7 @@ QAbstractItemModel *DirSource::createModel(const SourceArguments &args)
     model->init(rootUrl, rootName, url);
     return model;
 }
+
+} // namespace Homerun
 
 #include "placesmodel.moc"

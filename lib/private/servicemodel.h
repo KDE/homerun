@@ -34,8 +34,9 @@
 #include <KServiceGroup>
 #include <KUrl>
 
+namespace Homerun {
+
 class PathModel;
-class QTimer;
 
 class ServiceModel;
 class ServiceSource;
@@ -146,5 +147,7 @@ public:
     ServiceSource(SourceRegistry *registry);
     QAbstractItemModel *createModel(const SourceArguments &args);
 };
+
+} // namespace Homerun
 
 #endif

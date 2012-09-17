@@ -27,6 +27,8 @@
 
 class QString;
 
+namespace Homerun {
+
 enum ActionType {
     Logout,
     SwitchUser,
@@ -64,5 +66,7 @@ Q_SIGNALS:
 private:
     QList<SessionAction> m_sessionList;
 };
+
+} // namespace Homerun
 
 #endif

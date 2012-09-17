@@ -25,6 +25,8 @@
 
 // Qt
 
+namespace Homerun {
+
 enum {
     SourceRole = Qt::UserRole + 1,
 };
@@ -56,5 +58,7 @@ int PathModel::count() const
 {
     return rowCount();
 }
+
+} // namespace Homerun
 
 #include <pathmodel.moc>

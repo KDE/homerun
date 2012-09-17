@@ -27,6 +27,8 @@
 // Qt
 #include <QStringList>
 
+namespace Homerun {
+
 static const char SOURCE_NAME_SEPARATOR = ':';
 
 #define ARG_SEPARATOR ';'
@@ -160,3 +162,5 @@ QString SourceArguments::toString() const
     }
     return lst.join(ARG_SEPARATOR_STR);
 }
+
+} // namespace Homerun

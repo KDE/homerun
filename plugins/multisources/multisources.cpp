@@ -34,27 +34,27 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <KLocale>
 #include <KPluginFactory>
 
-class MultiSourcesSourceA : public AbstractSource
+class MultiSourcesSourceA : public Homerun::AbstractSource
 {
 public:
     MultiSourcesSourceA(QObject *parent, const QVariantList &args = QVariantList())
-    : AbstractSource(parent, args)
+    : Homerun::AbstractSource(parent, args)
     {}
 
-    QAbstractItemModel *createModel(const SourceArguments &)
+    QAbstractItemModel *createModel(const Homerun::SourceArguments &)
     {
         return new MultiSourcesModel("MultiA");
     }
 };
 
-class MultiSourcesSourceB : public AbstractSource
+class MultiSourcesSourceB : public Homerun::AbstractSource
 {
 public:
     MultiSourcesSourceB(QObject *parent, const QVariantList &args = QVariantList())
-    : AbstractSource(parent, args)
+    : Homerun::AbstractSource(parent, args)
     {}
 
-    QAbstractItemModel *createModel(const SourceArguments &)
+    QAbstractItemModel *createModel(const Homerun::SourceArguments &)
     {
         return new MultiSourcesModel("MultiB");
     }

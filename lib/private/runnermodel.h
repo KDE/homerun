@@ -35,6 +35,8 @@ namespace Plasma {
 class RunnerManager;
 }
 
+namespace Homerun {
+
 class RunnerSubModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -132,5 +134,7 @@ public:
     RunnerSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &arguments);
 };
+
+} // namespace Homerun
 
 #endif /* RUNNERMODEL_H */

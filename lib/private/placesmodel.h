@@ -33,6 +33,8 @@
 class KDirLister;
 class KFileItem;
 
+namespace Homerun {
+
 class PathModel;
 
 /**
@@ -137,5 +139,7 @@ public:
     DirSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &args);
 };
+
+} // namespace Homerun
 
 #endif /* PLACESMODEL_H */

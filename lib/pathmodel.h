@@ -27,6 +27,8 @@
 
 // KDE
 
+namespace Homerun {
+
 /**
  * Represents the path in a browsable Homerun model
  */
@@ -45,5 +47,7 @@ public:
 Q_SIGNALS:
     void countChanged();
 };
+
+} // namespace Homerun
 
 #endif /* PATHMODEL_H */

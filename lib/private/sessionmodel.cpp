@@ -34,6 +34,8 @@
 #include <kworkspace/kdisplaymanager.h>
 #include <kworkspace/kworkspace.h>
 
+namespace Homerun {
+
 SessionModel::SessionModel(QObject *parent)
 : QAbstractListModel(parent)
 {
@@ -136,5 +138,7 @@ bool SessionModel::trigger(int row)
 
     return true;
 }
+
+} // namespace Homerun
 
 #include "sessionmodel.moc"

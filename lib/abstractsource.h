@@ -30,6 +30,8 @@
 
 class QAbstractItemModel;
 
+namespace Homerun {
+
 class SourceArguments;
 class SourceRegistry;
 
@@ -72,6 +74,8 @@ public:
         return new T;
     }
 };
+
+} // namespace Homerun
 
 /**
  * libName: the library name without the "homerun_source_" prefix

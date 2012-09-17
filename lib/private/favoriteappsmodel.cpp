@@ -32,6 +32,7 @@
 #include <KRun>
 #include <KService>
 
+namespace Homerun {
 
 static QString serviceIdFromFavoriteId(const QString &favoriteId)
 {
@@ -208,5 +209,7 @@ bool FavoriteAppsModel::trigger(int row)
     }
     return KRun::run(*service, KUrl::List(), 0);
 }
+
+} // namespace Homerun
 
 #include "favoriteappsmodel.moc"

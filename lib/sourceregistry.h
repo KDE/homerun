@@ -31,6 +31,8 @@
 
 class QAbstractItemModel;
 
+namespace Homerun {
+
 class SourceRegistryPrivate;
 
 /**
@@ -59,5 +61,7 @@ public:
 private:
     SourceRegistryPrivate * const d;
 };
+
+} // namespace Homerun
 
 #endif /* SOURCEREGISTRY_H */

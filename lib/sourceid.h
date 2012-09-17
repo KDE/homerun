@@ -28,6 +28,8 @@
 
 // KDE
 
+namespace Homerun {
+
 /**
  * The arguments of a source. Used within a SourceId instance.
  */
@@ -62,5 +64,7 @@ private:
     QString m_name;
     SourceArguments m_arguments;
 };
+
+} // namespace Homerun
 
 #endif /* SOURCEID_H */

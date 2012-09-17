@@ -27,6 +27,8 @@
 
 class QString;
 
+namespace Homerun {
+
 enum PowerType {
     Shutdown,
     Restart,
@@ -67,5 +69,7 @@ Q_SIGNALS:
 private:
     QList<PowerAction> m_powerList;
 };
+
+} // namespace Homerun
 
 #endif

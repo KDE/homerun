@@ -40,6 +40,8 @@
 
 // Qt
 
+namespace Homerun {
+
 //- SingletonSource -------------------------------------------
 class SingletonSource : public AbstractSource
 {
@@ -231,5 +233,7 @@ KSharedConfig::Ptr SourceRegistry::config() const
 {
     return d->m_config;
 }
+
+} // namespace Homerun
 
 #include <sourceregistry.moc>

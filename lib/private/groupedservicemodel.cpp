@@ -29,6 +29,8 @@
 
 // Qt
 
+namespace Homerun {
+
 GroupedServiceModel::GroupedServiceModel(QObject *parent)
 : QAbstractListModel(parent)
 {
@@ -134,5 +136,7 @@ QAbstractItemModel *GroupedServiceSource::createModel(const SourceArguments &/*a
     model->init(registry());
     return model;
 }
+
+} // namespace Homerun
 
 #include <groupedservicemodel.moc>

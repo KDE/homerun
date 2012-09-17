@@ -35,7 +35,7 @@ void ComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
     qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
     qmlRegisterType<SharedConfig>(uri, 0, 1, "SharedConfig");
-    qmlRegisterType<SourceRegistry>(uri, 0, 1, "SourceRegistry");
+    qmlRegisterType<Homerun::SourceRegistry>(uri, 0, 1, "SourceRegistry");
 }
 
 #include "componentsplugin.moc"

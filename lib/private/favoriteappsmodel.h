@@ -27,6 +27,8 @@
 #include <KService>
 #include <KSharedConfig>
 
+namespace Homerun {
+
 struct FavoriteInfo
 {
     int rank;
@@ -73,5 +75,7 @@ private:
 
     int rowForFavoriteId(const QString &favoriteId) const;
 };
+
+} // namespace Homerun
 
 #endif // FAVORITEAPPSMODEL_H
