@@ -27,13 +27,10 @@
 // KDE
 #include <KDebug>
 #include <KIcon>
+#include <KConfigGroup>
 #include <KLocale>
 #include <KRun>
 #include <KService>
-
-//Plasma
-#include <Plasma/AbstractRunner>
-#include <Plasma/RunnerManager>
 
 
 static QString serviceIdFromFavoriteId(const QString &favoriteId)
