@@ -43,6 +43,7 @@ class HOMERUN_EXPORT SourceRegistry : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels CONSTANT)
+    Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
 public:
     explicit SourceRegistry(QObject *parent = 0);
     ~SourceRegistry();
@@ -57,6 +58,12 @@ public:
     QAbstractItemModel *favoriteModel(const QString &name) const;
 
     KSharedConfig::Ptr config() const;
+
+    QString configFileName() const;
+    void setConfigFileName(const QString &name);
+
+Q_SIGNALS:
+    void configFileNameChanged(const QString &);
 
 private:
     SourceRegistryPrivate * const d;

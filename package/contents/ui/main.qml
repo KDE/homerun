@@ -37,6 +37,8 @@ Item {
     property real rightMargin: 12
     property real bottomMargin: 12
 
+    property string configFileName: "homerunrc"
+
     property variant tabContentList: []
     property alias currentTabContent: tabGroup.currentTab
 
@@ -47,6 +49,7 @@ Item {
 
     HomerunComponents.SourceRegistry {
         id: sourceRegistry
+        configFileName: main.configFileName
     }
 
     // UI

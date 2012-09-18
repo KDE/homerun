@@ -153,7 +153,6 @@ SourceRegistry::SourceRegistry(QObject *parent)
 {
     d->q = this;
 
-    d->m_config = KSharedConfig::openConfig("homerunrc");
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
@@ -232,6 +231,20 @@ QAbstractItemModel *SourceRegistry::favoriteModel(const QString &name) const
 KSharedConfig::Ptr SourceRegistry::config() const
 {
     return d->m_config;
+}
+
+QString SourceRegistry::configFileName() const
+{
+    return d->m_config ? d->m_config->name() : QString();
+}
+
+void SourceRegistry::setConfigFileName(const QString &name)
+{
+    if (d->m_config && d->m_config->name() == name) {
+        return;
+    }
+    d->m_config = KSharedConfig::openConfig(name);
+    configFileNameChanged(name);
 }
 
 } // namespace Homerun
