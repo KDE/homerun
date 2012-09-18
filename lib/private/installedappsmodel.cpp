@@ -20,7 +20,7 @@
 
 // Local
 #include <pathmodel.h>
-#include <servicemodel.h>
+#include <installedappsmodel.h>
 #include <sourceid.h>
 #include <sourceregistry.h>
 
@@ -45,7 +45,7 @@ namespace Homerun {
 static QString sourceString(const QString &entryPath)
 {
     SourceId sourceId;
-    sourceId.setName("Service");
+    sourceId.setName("InstalledApps");
     sourceId.arguments().add("entryPath", entryPath);
     return sourceId.toString();
 }
@@ -63,7 +63,7 @@ bool AbstractNode::lessThan(AbstractNode *n1, AbstractNode *n2)
 }
 
 //- GroupNode ------------------------------------------------------------------
-GroupNode::GroupNode(KServiceGroup::Ptr group, ServiceModel *model)
+GroupNode::GroupNode(KServiceGroup::Ptr group, InstalledAppsModel *model)
 : m_model(model)
 {
     m_icon = group->icon();
@@ -121,8 +121,8 @@ bool InstallerNode::trigger()
     return KRun::run(command, KUrl::List(), 0, m_service->name(), m_service->icon());
 }
 
-//- ServiceModel ------------------------------------------------------------
-ServiceModel::ServiceModel (QObject *parent)
+//- InstalledAppsModel ------------------------------------------------------------
+InstalledAppsModel::InstalledAppsModel (QObject *parent)
 : QAbstractListModel(parent)
 , m_pathModel(new PathModel(this))
 {
@@ -136,22 +136,22 @@ ServiceModel::ServiceModel (QObject *parent)
     setRoleNames(roles);
 }
 
-ServiceModel::~ServiceModel()
+InstalledAppsModel::~InstalledAppsModel()
 {
     qDeleteAll(m_nodeList);
 }
 
-int ServiceModel::rowCount(const QModelIndex& index) const
+int InstalledAppsModel::rowCount(const QModelIndex& index) const
 {
     return index.isValid() ? 0 : m_nodeList.count();
 }
 
-int ServiceModel::count() const
+int InstalledAppsModel::count() const
 {
     return m_nodeList.count();
 }
 
-QVariant ServiceModel::data(const QModelIndex &index, int role) const
+QVariant InstalledAppsModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.row() >= m_nodeList.count()) {
         return QVariant();
@@ -170,12 +170,12 @@ QVariant ServiceModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool ServiceModel::trigger(int row)
+bool InstalledAppsModel::trigger(int row)
 {
     return m_nodeList.at(row)->trigger();
 }
 
-void ServiceModel::load(const QString &entryPath)
+void InstalledAppsModel::load(const QString &entryPath)
 {
     m_pathModel->clear();
     beginResetModel();
@@ -196,7 +196,7 @@ void ServiceModel::load(const QString &entryPath)
     emit countChanged();
 }
 
-void ServiceModel::loadRootEntries()
+void InstalledAppsModel::loadRootEntries()
 {
     KServiceGroup::Ptr group = KServiceGroup::root();
     KServiceGroup::List list = group->entries(false /* sorted: set to false as it does not seem to work */);
@@ -215,7 +215,7 @@ void ServiceModel::loadRootEntries()
     qSort(m_nodeList.begin(), m_nodeList.end(), AbstractNode::lessThan);
 }
 
-void ServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
+void InstalledAppsModel::loadServiceGroup(KServiceGroup::Ptr group)
 {
     doLoadServiceGroup(group);
 
@@ -231,7 +231,7 @@ void ServiceModel::loadServiceGroup(KServiceGroup::Ptr group)
     }
 }
 
-void ServiceModel::doLoadServiceGroup(KServiceGroup::Ptr group)
+void InstalledAppsModel::doLoadServiceGroup(KServiceGroup::Ptr group)
 {
     /* This method is separate from loadServiceGroup so that
      * - only one installer node is added at the end
@@ -268,12 +268,12 @@ void ServiceModel::doLoadServiceGroup(KServiceGroup::Ptr group)
     }
 }
 
-PathModel *ServiceModel::pathModel() const
+PathModel *InstalledAppsModel::pathModel() const
 {
     return m_pathModel;
 }
 
-QString ServiceModel::name() const
+QString InstalledAppsModel::name() const
 {
     if (m_pathModel->count() > 0) {
         QModelIndex index = m_pathModel->index(m_pathModel->count() - 1, 0);
@@ -283,14 +283,14 @@ QString ServiceModel::name() const
     }
 }
 
-//- ServiceSource ---------------------------------------------
-ServiceSource::ServiceSource(SourceRegistry *registry)
+//- InstalledAppsSource ---------------------------------------------
+InstalledAppsSource::InstalledAppsSource(SourceRegistry *registry)
 : AbstractSource(registry)
 {}
 
-QAbstractItemModel *ServiceSource::createModel(const SourceArguments &arguments)
+QAbstractItemModel *InstalledAppsSource::createModel(const SourceArguments &arguments)
 {
-    ServiceModel *model = new ServiceModel;
+    InstalledAppsModel *model = new InstalledAppsModel;
 
     KConfigGroup group(registry()->config(), "PackageManagement");
     model->m_installer = group.readEntry("categoryInstaller");
@@ -302,4 +302,4 @@ QAbstractItemModel *ServiceSource::createModel(const SourceArguments &arguments)
 
 } // namespace Homerun
 
-#include "servicemodel.moc"
+#include "installedappsmodel.moc"

@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef SERVICEMODEL_H
-#define SERVICEMODEL_H
+#ifndef INSTALLEDAPPSMODEL_H
+#define INSTALLEDAPPSMODEL_H
 
 // Local
 #include <abstractsource.h>
@@ -38,8 +38,8 @@ namespace Homerun {
 
 class PathModel;
 
-class ServiceModel;
-class ServiceSource;
+class InstalledAppsModel;
+class InstalledAppsSource;
 
 class AbstractNode
 {
@@ -63,12 +63,12 @@ protected:
 class GroupNode : public AbstractNode
 {
 public:
-    GroupNode(KServiceGroup::Ptr group, ServiceModel *model);
+    GroupNode(KServiceGroup::Ptr group, InstalledAppsModel *model);
 
     bool trigger(); // reimp
 
 private:
-    ServiceModel *m_model;
+    InstalledAppsModel *m_model;
     QString m_entryPath;
 };
 
@@ -92,12 +92,12 @@ public:
     bool trigger(); // reimp
 
 private:
-    ServiceModel *m_model;
+    InstalledAppsModel *m_model;
     KServiceGroup::Ptr m_group;
     KService::Ptr m_service;
 };
 
-class ServiceModel : public QAbstractListModel
+class InstalledAppsModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
@@ -109,8 +109,8 @@ public:
         FavoriteIdRole = Qt::UserRole + 1,
     };
 
-    ServiceModel(QObject *parent = 0);
-    ~ServiceModel();
+    InstalledAppsModel(QObject *parent = 0);
+    ~InstalledAppsModel();
 
     int rowCount(const QModelIndex&) const;
     int count() const;
@@ -138,13 +138,13 @@ private:
 
     void load(const QString &entryPath);
 
-    friend class ServiceSource;
+    friend class InstalledAppsSource;
 };
 
-class ServiceSource : public AbstractSource
+class InstalledAppsSource : public AbstractSource
 {
 public:
-    ServiceSource(SourceRegistry *registry);
+    InstalledAppsSource(SourceRegistry *registry);
     QAbstractItemModel *createModel(const SourceArguments &args);
 };
 

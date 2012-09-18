@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef GROUPEDSERVICEMODEL_H
-#define GROUPEDSERVICEMODEL_H
+#ifndef GROUPEDINSTALLEDAPPSMODEL_H
+#define GROUPEDINSTALLEDAPPSMODEL_H
 
 // Local
 #include <abstractsource.h>
@@ -30,18 +30,18 @@
 
 namespace Homerun {
 
-class ServiceModel;
+class InstalledAppsModel;
 class SourceRegistry;
 
 /**
  * A model which returns all services in grouped sub-models
  */
-class GroupedServiceModel : public QAbstractListModel
+class GroupedInstalledAppsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit GroupedServiceModel(QObject *parent = 0);
-    ~GroupedServiceModel();
+    explicit GroupedInstalledAppsModel(QObject *parent = 0);
+    ~GroupedInstalledAppsModel();
 
     void init(SourceRegistry *registry);
 
@@ -62,19 +62,19 @@ private Q_SLOTS:
 
 private:
     QList<KServiceGroup::Ptr> m_pendingGroupList;
-    QList<ServiceModel *> m_models;
+    QList<InstalledAppsModel *> m_models;
     SourceRegistry *m_registry;
 
-    ServiceModel *createServiceModel(KServiceGroup::Ptr group);
+    InstalledAppsModel *createInstalledAppsModel(KServiceGroup::Ptr group);
 };
 
-class GroupedServiceSource : public AbstractSource
+class GroupedInstalledAppsSource : public AbstractSource
 {
 public:
-    GroupedServiceSource(SourceRegistry *registry);
+    GroupedInstalledAppsSource(SourceRegistry *registry);
     QAbstractItemModel *createModel(const SourceArguments &/*args*/);
 };
 
 } // namespace Homerun
 
-#endif /* GROUPEDSERVICEMODEL_H */
+#endif /* GROUPEDINSTALLEDAPPSMODEL_H */

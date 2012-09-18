@@ -22,12 +22,12 @@
 // Local
 #include <abstractsource.h>
 #include <favoriteappsmodel.h>
-#include <groupedservicemodel.h>
+#include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
 #include <placesmodel.h>
 #include <powermodel.h>
 #include <runnermodel.h>
-#include <servicemodel.h>
+#include <installedappsmodel.h>
 #include <sessionmodel.h>
 #include <sourceid.h>
 
@@ -157,8 +157,8 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
-    d->m_sources.insert("Service", new ServiceSource(this));
-    d->m_sources.insert("GroupedService", new GroupedServiceSource(this));
+    d->m_sources.insert("InstalledApps", new InstalledAppsSource(this));
+    d->m_sources.insert("GroupedInstalledApps", new GroupedInstalledAppsSource(this));
     d->m_sources.insert("Dir", new DirSource(this));
     d->m_sources.insert("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this));
     d->m_sources.insert("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this));

@@ -22,9 +22,9 @@ searchSource0=Runner
 name=Applications
 query=Search for applications...
 icon=applications-other
-source0=Service
+source0=InstalledApps
 # For a grouped list of all apps
-#source0=GroupedService
+#source0=GroupedInstalledApps
 searchSource0=Runner:whitelist=services,shell
 
 [Page2]

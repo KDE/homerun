@@ -22,11 +22,11 @@ set(lib_SRCS
 # Private classes
 set(lib_SRCS ${lib_SRCS}
     private/favoriteappsmodel.cpp
-    private/groupedservicemodel.cpp
+    private/groupedinstalledappsmodel.cpp
     private/placesmodel.cpp
     private/powermodel.cpp
     private/runnermodel.cpp
-    private/servicemodel.cpp
+    private/installedappsmodel.cpp
     private/sessionmodel.cpp
     )
 

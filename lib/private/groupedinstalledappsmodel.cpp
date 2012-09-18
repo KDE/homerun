@@ -17,10 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 // Self
-#include <groupedservicemodel.h>
+#include <groupedinstalledappsmodel.h>
 
 // Local
-#include <servicemodel.h>
+#include <installedappsmodel.h>
 #include <sourceid.h>
 #include <sourceregistry.h>
 
@@ -31,16 +31,16 @@
 
 namespace Homerun {
 
-GroupedServiceModel::GroupedServiceModel(QObject *parent)
+GroupedInstalledAppsModel::GroupedInstalledAppsModel(QObject *parent)
 : QAbstractListModel(parent)
 {
 }
 
-GroupedServiceModel::~GroupedServiceModel()
+GroupedInstalledAppsModel::~GroupedInstalledAppsModel()
 {
 }
 
-QObject *GroupedServiceModel::modelForRow(int row) const
+QObject *GroupedInstalledAppsModel::modelForRow(int row) const
 {
     if (row < 0 || row >= m_models.count()) {
         kWarning() << "No model for row" << row << "!";
@@ -49,7 +49,7 @@ QObject *GroupedServiceModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
-void GroupedServiceModel::loadRootEntries()
+void GroupedInstalledAppsModel::loadRootEntries()
 {
     KServiceGroup::Ptr group = KServiceGroup::root();
     KServiceGroup::List list = group->entries(false /* sorted: set to false as it does not seem to work */);
@@ -70,20 +70,20 @@ void GroupedServiceModel::loadRootEntries()
     QMetaObject::invokeMethod(this, "loadNextGroup", Qt::QueuedConnection);
 }
 
-void GroupedServiceModel::loadNextGroup()
+void GroupedInstalledAppsModel::loadNextGroup()
 {
     if (m_pendingGroupList.isEmpty()) {
         return;
     }
     KServiceGroup::Ptr group = m_pendingGroupList.takeFirst();
-    ServiceModel *model = createServiceModel(group);
+    InstalledAppsModel *model = createInstalledAppsModel(group);
     beginInsertRows(QModelIndex(), m_models.count(), m_models.count());
     m_models << model;
     endInsertRows();
     QMetaObject::invokeMethod(this, "loadNextGroup", Qt::QueuedConnection);
 }
 
-int GroupedServiceModel::rowCount(const QModelIndex &parent) const
+int GroupedInstalledAppsModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) {
         return 0;
@@ -91,13 +91,13 @@ int GroupedServiceModel::rowCount(const QModelIndex &parent) const
     return m_models.count();
 }
 
-QVariant GroupedServiceModel::data(const QModelIndex &index, int role) const
+QVariant GroupedInstalledAppsModel::data(const QModelIndex &index, int role) const
 {
     if (index.parent().isValid()) {
         return QVariant();
     }
 
-    ServiceModel *model = m_models.value(index.row());
+    InstalledAppsModel *model = m_models.value(index.row());
     if (!model) {
         return QVariant();
     }
@@ -109,34 +109,34 @@ QVariant GroupedServiceModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void GroupedServiceModel::init(SourceRegistry *registry)
+void GroupedInstalledAppsModel::init(SourceRegistry *registry)
 {
     m_registry = registry;
     loadRootEntries();
 }
 
-ServiceModel *GroupedServiceModel::createServiceModel(KServiceGroup::Ptr group)
+InstalledAppsModel *GroupedInstalledAppsModel::createInstalledAppsModel(KServiceGroup::Ptr group)
 {
     Q_ASSERT(m_registry);
     SourceId sourceId;
-    sourceId.setName("Service");
+    sourceId.setName("InstalledApps");
     sourceId.arguments().add("entryPath", group->entryPath());
     QObject *model = m_registry->createModelForSource(sourceId.toString(), this);
-    return static_cast<ServiceModel *>(model);
+    return static_cast<InstalledAppsModel *>(model);
 }
 
-//- GroupedServiceSource --------------------------------------
-GroupedServiceSource::GroupedServiceSource(SourceRegistry *registry)
+//- GroupedInstalledAppsSource --------------------------------------
+GroupedInstalledAppsSource::GroupedInstalledAppsSource(SourceRegistry *registry)
 : AbstractSource(registry)
 {}
 
-QAbstractItemModel *GroupedServiceSource::createModel(const SourceArguments &/*args*/)
+QAbstractItemModel *GroupedInstalledAppsSource::createModel(const SourceArguments &/*args*/)
 {
-    GroupedServiceModel *model = new GroupedServiceModel;
+    GroupedInstalledAppsModel *model = new GroupedInstalledAppsModel;
     model->init(registry());
     return model;
 }
 
 } // namespace Homerun
 
-#include <groupedservicemodel.moc>
+#include <groupedinstalledappsmodel.moc>
