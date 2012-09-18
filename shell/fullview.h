@@ -42,6 +42,8 @@ public:
     FullView();
     ~FullView();
 
+    void setConfigFileName(const QString &name);
+
 public Q_SLOTS:
     /**
      * If the view is not visible, show it in @p screen. If @p screen is -1

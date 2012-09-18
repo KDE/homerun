@@ -88,6 +88,11 @@ void FullView::setupBackground()
     rootObject()->setProperty("bottomMargin", bottom);
 }
 
+void FullView::setConfigFileName(const QString &name)
+{
+    rootObject()->setProperty("configFileName", name);
+}
+
 void FullView::focusOutEvent(QFocusEvent* event)
 {
     event->accept();

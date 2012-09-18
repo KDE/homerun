@@ -37,7 +37,7 @@ Item {
     property real rightMargin: 12
     property real bottomMargin: 12
 
-    property string configFileName: "homerunrc"
+    property string configFileName
 
     property variant tabContentList: []
     property alias currentTabContent: tabGroup.currentTab
@@ -246,6 +246,14 @@ Item {
             main.x = region.x
             main.height = region.height
             main.width = region.width
+
+            // Set config file only here so that when running homerunviewer with
+            // a custom config file (with --config /path/to/customrc). Homerun
+            // directly loads the custom config file.
+            // If value of configFileName were set when it is declared, Homerun
+            // would first load the default config file, then overwrite it with
+            // the custom one.
+            main.configFileName = "homerunrc";
         }
     }
 
