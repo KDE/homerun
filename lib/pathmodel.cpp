@@ -31,8 +31,13 @@ enum {
     SourceRole = Qt::UserRole + 1,
 };
 
+struct PathModelPrivate
+{
+};
+
 PathModel::PathModel(QObject *parent)
 : QStandardItemModel(parent)
+, d(new PathModelPrivate)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "label");
@@ -45,6 +50,7 @@ PathModel::PathModel(QObject *parent)
 
 PathModel::~PathModel()
 {
+    delete d;
 }
 
 void PathModel::addPath(const QString &label, const QString &source)

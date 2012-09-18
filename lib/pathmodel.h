@@ -29,6 +29,8 @@
 
 namespace Homerun {
 
+class PathModelPrivate;
+
 /**
  * Represents the path in a browsable Homerun model
  */
@@ -46,6 +48,9 @@ public:
 
 Q_SIGNALS:
     void countChanged();
+
+private:
+    PathModelPrivate * const d;
 };
 
 } // namespace Homerun
