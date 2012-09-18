@@ -28,12 +28,15 @@ function dumpPages() {
 }
 
 function addPage(page) {
+    clearHistoryAfterCurrentPage();
+    pages.push(page);
+}
+
+function clearHistoryAfterCurrentPage() {
     if (currentIndex > -1) {
-        // Remove pages after currentIndex
         var lst = pages.splice(currentIndex + 1);
         lst.forEach(function(x) { x.destroy(); });
     }
-    pages.push(page);
 }
 
 function goToPage(wantedPage) {

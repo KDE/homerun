@@ -456,5 +456,6 @@ Item {
 
     function reset() {
         TabContentInternal.goTo(0);
+        TabContentInternal.clearHistoryAfterCurrentPage();
     }
 }
