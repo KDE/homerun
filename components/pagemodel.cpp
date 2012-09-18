@@ -92,7 +92,6 @@ PageModel::PageModel(QObject *parent)
     roles.insert(SearchPlaceholderRole, "searchPlaceholder");
 
     setRoleNames(roles);
-    setConfig(KSharedConfig::openConfig("homerunrc"));
 }
 
 PageModel::~PageModel()
@@ -121,6 +120,20 @@ void PageModel::setConfig(const KSharedConfig::Ptr &ptr)
         }
     }
     endResetModel();
+    configFileNameChanged(m_config->name());
+}
+
+QString PageModel::configFileName() const
+{
+    return m_config ? m_config->name() : QString();
+}
+
+void PageModel::setConfigFileName(const QString &name)
+{
+    if (name == configFileName()) {
+        return;
+    }
+    setConfig(KSharedConfig::openConfig(name));
 }
 
 int PageModel::rowCount(const QModelIndex &parent) const

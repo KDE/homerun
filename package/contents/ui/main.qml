@@ -45,6 +45,7 @@ Item {
     // Models
     HomerunComponents.PageModel {
         id: pageModel
+        configFileName: main.configFileName
     }
 
     HomerunComponents.SourceRegistry {
