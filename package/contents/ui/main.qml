@@ -231,9 +231,9 @@ Item {
 
     // Code
     Component.onCompleted: {
-        //enable right click configure
         isContainment = "plasmoid" in this;
         if (isContainment) {
+            // enable right click configure
             configureAction = plasmoid.action("configure");
             configureAction.enabled = true;
 
