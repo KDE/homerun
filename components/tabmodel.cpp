@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#include "pagemodel.h"
+#include "tabmodel.h"
 
 // KDE
 #include <KConfigGroup>
@@ -39,7 +39,7 @@ static QStringList readSources(const KConfigGroup &group, const QString &prefix)
     return lst;
 }
 
-class Page
+class Tab
 {
 public:
     QString m_name;
@@ -48,40 +48,40 @@ public:
     QStringList m_sources;
     QStringList m_searchSources;
 
-    static Page *createFromGroup(const KConfigGroup &group)
+    static Tab *createFromGroup(const KConfigGroup &group)
     {
         // Read all mandatory keys first
 
         // (read "name" as QByteArray because i18n() wants a char* as argument)
         QString name = i18n(group.readEntry("name", QByteArray()));
         if (name.isEmpty()) {
-            kWarning() << "Missing 'name' key in page group" << group.name();
+            kWarning() << "Missing 'name' key in tab group" << group.name();
             return 0;
         }
         QStringList sources = readSources(group, "source");
         if (sources.isEmpty()) {
-            kWarning() << "No source defined in page group" << group.name();
+            kWarning() << "No source defined in tab group" << group.name();
             return 0;
         }
 
-        // Create page and read optional keys
-        Page *page = new Page;
-        page->m_name = name;
-        page->m_sources = sources;
-        page->m_searchSources = readSources(group, "searchSource");
-        page->m_iconName = group.readEntry("icon");
+        // Create tab and read optional keys
+        Tab *tab = new Tab;
+        tab->m_name = name;
+        tab->m_sources = sources;
+        tab->m_searchSources = readSources(group, "searchSource");
+        tab->m_iconName = group.readEntry("icon");
         // We use "query" because it is automatically extracted as a
         // translatable string by l10n-kde4/scripts/createdesktopcontext.pl
         QByteArray placeHolder = group.readEntry("query", QByteArray());
         if (!placeHolder.isEmpty()) {
-            page->m_searchPlaceholder = i18n(placeHolder);
+            tab->m_searchPlaceholder = i18n(placeHolder);
         }
-        return page;
+        return tab;
     }
 };
 
 
-PageModel::PageModel(QObject *parent)
+TabModel::TabModel(QObject *parent)
 : QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
@@ -94,41 +94,41 @@ PageModel::PageModel(QObject *parent)
     setRoleNames(roles);
 }
 
-PageModel::~PageModel()
+TabModel::~TabModel()
 {
-    qDeleteAll(m_pageList);
+    qDeleteAll(m_tabList);
 }
 
-void PageModel::setConfig(const KSharedConfig::Ptr &ptr)
+void TabModel::setConfig(const KSharedConfig::Ptr &ptr)
 {
     beginResetModel();
     m_config = ptr;
-    qDeleteAll(m_pageList);
-    m_pageList.clear();
-    QStringList pageGroupList;
+    qDeleteAll(m_tabList);
+    m_tabList.clear();
+    QStringList tabGroupList;
     Q_FOREACH(const QString &groupName, m_config->groupList()) {
-        if (groupName.startsWith("Page")) {
-            pageGroupList << groupName;
+        if (groupName.startsWith("Tab")) {
+            tabGroupList << groupName;
         }
     }
-    pageGroupList.sort();
-    Q_FOREACH(const QString &groupName, pageGroupList) {
+    tabGroupList.sort();
+    Q_FOREACH(const QString &groupName, tabGroupList) {
         KConfigGroup group = m_config->group(groupName);
-        Page *page = Page::createFromGroup(group);
-        if (page) {
-            m_pageList << page;
+        Tab *tab = Tab::createFromGroup(group);
+        if (tab) {
+            m_tabList << tab;
         }
     }
     endResetModel();
     configFileNameChanged(m_config->name());
 }
 
-QString PageModel::configFileName() const
+QString TabModel::configFileName() const
 {
     return m_config ? m_config->name() : QString();
 }
 
-void PageModel::setConfigFileName(const QString &name)
+void TabModel::setConfigFileName(const QString &name)
 {
     if (name == configFileName()) {
         return;
@@ -136,7 +136,7 @@ void PageModel::setConfigFileName(const QString &name)
     setConfig(KSharedConfig::openConfig(name));
 }
 
-int PageModel::rowCount(const QModelIndex &parent) const
+int TabModel::rowCount(const QModelIndex &parent) const
 {
     if (m_config.isNull()) {
         return 0;
@@ -144,30 +144,30 @@ int PageModel::rowCount(const QModelIndex &parent) const
     if (parent.isValid()) {
         return 0;
     }
-    return m_pageList.count();
+    return m_tabList.count();
 }
 
-QVariant PageModel::data(const QModelIndex &index, int role) const
+QVariant TabModel::data(const QModelIndex &index, int role) const
 {
-    Page *page = m_pageList.value(index.row());
-    if (!page) {
+    Tab *tab = m_tabList.value(index.row());
+    if (!tab) {
         return QVariant();
     }
     switch (role) {
     case Qt::DisplayRole:
-        return page->m_name;
+        return tab->m_name;
     case IconNameRole:
-        return page->m_iconName;
+        return tab->m_iconName;
     case SourcesRole:
-        return page->m_sources;
+        return tab->m_sources;
     case SearchSourcesRole:
-        return page->m_searchSources;
+        return tab->m_searchSources;
     case SearchPlaceholderRole:
-        return page->m_searchPlaceholder;
+        return tab->m_searchPlaceholder;
     default:
         kWarning() << "Unhandled role" << role;
         return QVariant();
     }
 }
 
-#include "pagemodel.moc"
+#include "tabmodel.moc"

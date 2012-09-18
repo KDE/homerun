@@ -27,7 +27,7 @@ include_directories(
 # tests, binaries of X11-dependent tests must be suffixed with "_x11".
 
 # X11-independent tests
-homerun_add_unit_test(pagemodeltest ${components_SOURCE_DIR}/pagemodel.cpp)
+homerun_add_unit_test(tabmodeltest ${components_SOURCE_DIR}/tabmodel.cpp)
 
 # X11-dependent tests
 homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/private/favoriteappsmodel.cpp)

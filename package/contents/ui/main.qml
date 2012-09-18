@@ -43,8 +43,8 @@ Item {
     property alias currentTabContent: tabGroup.currentTab
 
     // Models
-    HomerunComponents.PageModel {
-        id: pageModel
+    HomerunComponents.TabModel {
+        id: tabModel
         configFileName: main.configFileName
     }
 
@@ -74,7 +74,7 @@ Item {
         }
 
         Repeater {
-            model: pageModel
+            model: tabModel
             PlasmaComponents.TabButton {
                 text: model.name
                 iconSource: model.iconName
@@ -105,7 +105,7 @@ Item {
         }
 
         layout.onChildrenChanged: {
-            // Workaround to make sure there is a current tab when pageModel
+            // Workaround to make sure there is a current tab when tabModel
             // is done loading
             if (isTab(filterTabBar.currentTab)) {
                 return;

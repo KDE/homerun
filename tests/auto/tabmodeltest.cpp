@@ -16,14 +16,14 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#include "pagemodeltest.h"
+#include "tabmodeltest.h"
 
 #include <KTemporaryFile>
 #include <qtest_kde.h>
 
-#include <pagemodel.h>
+#include <tabmodel.h>
 
-QTEST_KDEMAIN(PageModelTest, NoGUI)
+QTEST_KDEMAIN(TabModelTest, NoGUI)
 
 static KTemporaryFile *generateTestFile(const QString &content)
 {
@@ -34,45 +34,45 @@ static KTemporaryFile *generateTestFile(const QString &content)
     return file;
 }
 
-void PageModelTest::testPageOrder()
+void TabModelTest::testTabOrder()
 {
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
-        "[Page0]\n"
-        "name=page0\n"
+        "[Tab0]\n"
+        "name=tab0\n"
         "source0=foo\n"
-        "[Page5]\n"
-        "name=page5\n"
+        "[Tab5]\n"
+        "name=tab5\n"
         "source0=foo\n"
-        "[Page4]\n"
-        "name=page4\n"
+        "[Tab4]\n"
+        "name=tab4\n"
         "source0=foo\n"
-        "[Page2]\n"
-        "name=page2\n"
+        "[Tab2]\n"
+        "name=tab2\n"
         "source0=foo\n"
-        "[Page3]\n"
-        "name=page3\n"
+        "[Tab3]\n"
+        "name=tab3\n"
         "source0=foo\n"
-        "[Page6]\n"
-        "name=page6\n"
+        "[Tab6]\n"
+        "name=tab6\n"
         "source0=foo\n"
-        "[Page1]\n"
-        "name=page1\n"
+        "[Tab1]\n"
+        "name=tab1\n"
         "source0=foo\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
-    PageModel model;
+    TabModel model;
     model.setConfig(config);
 
     QCOMPARE(model.rowCount(), 7);
 
     for (int row = 0; row < 7; ++row) {
         QModelIndex index = model.index(row, 0);
-        QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("page%1").arg(row));
+        QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("tab%1").arg(row));
     }
 }
 
-void PageModelTest::testLoadKeys_data()
+void TabModelTest::testLoadKeys_data()
 {
     QTest::addColumn<QString>("configText");
     QTest::addColumn<QString>("name");
@@ -81,38 +81,38 @@ void PageModelTest::testLoadKeys_data()
     QTest::addColumn<QStringList>("searchSources");
 
     QTest::newRow("name+icon")
-        <<  "[Page0]\n"
-            "name=page0\n"
+        <<  "[Tab0]\n"
+            "name=tab0\n"
             "icon=icon0\n"
             "source0=foo\n"
-        << "page0"
+        << "tab0"
         << "icon0"
         << (QStringList() << "foo")
         << QStringList();
 
     QTest::newRow("name-only")
-        <<  "[Page0]\n"
-            "name=page0\n"
+        <<  "[Tab0]\n"
+            "name=tab0\n"
             "source0=foo\n"
-        << "page0"
+        << "tab0"
         << QString()
         << (QStringList() << "foo")
         << QStringList();
 
     QTest::newRow("multi-sources")
-        <<  "[Page0]\n"
-            "name=page0\n"
+        <<  "[Tab0]\n"
+            "name=tab0\n"
             "source0=foo\n"
             "source1=bar\n"
             "searchSource0=baz\n"
             "searchSource1=boom\n"
-        << "page0"
+        << "tab0"
         << QString()
         << (QStringList() << "foo" << "bar")
         << (QStringList() << "baz" << "boom");
 }
 
-void PageModelTest::testLoadKeys()
+void TabModelTest::testLoadKeys()
 {
     QFETCH(QString, configText);
     QFETCH(QString, name);
@@ -125,16 +125,16 @@ void PageModelTest::testLoadKeys()
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
 
     // Load it
-    PageModel model;
+    TabModel model;
     model.setConfig(config);
 
     QCOMPARE(model.rowCount(), 1);
 
     QModelIndex index = model.index(0, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
-    QCOMPARE(index.data(PageModel::IconNameRole).toString(), iconName);
-    QCOMPARE(index.data(PageModel::SourcesRole).toStringList(), sources);
-    QCOMPARE(index.data(PageModel::SearchSourcesRole).toStringList(), searchSources);
+    QCOMPARE(index.data(TabModel::IconNameRole).toString(), iconName);
+    QCOMPARE(index.data(TabModel::SourcesRole).toStringList(), sources);
+    QCOMPARE(index.data(TabModel::SearchSourcesRole).toStringList(), searchSources);
 }
 
-#include "pagemodeltest.moc"
+#include "tabmodeltest.moc"

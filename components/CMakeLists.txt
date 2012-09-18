@@ -2,7 +2,7 @@ project(components)
 
 set(components_SRCS
     componentsplugin.cpp
-    pagemodel.cpp
+    tabmodel.cpp
     runnerinfoprovider.cpp
     sharedconfig.cpp
     )

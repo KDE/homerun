@@ -16,19 +16,19 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PAGEMODELTEST_H
-#define PAGEMODELTEST_H
+#ifndef TABMODELTEST_H
+#define TABMODELTEST_H
 
 #include <QObject>
 
-class PageModelTest : public QObject
+class TabModelTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    void testPageOrder();
+    void testTabOrder();
     void testLoadKeys();
     void testLoadKeys_data();
 };
 
-#endif /* PAGEMODELTEST_H */
+#endif /* TABMODELTEST_H */
