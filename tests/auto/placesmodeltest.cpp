@@ -34,6 +34,8 @@
 #include <KTempDir>
 #include <qtest_kde.h>
 
+using namespace Homerun;
+
 QTEST_KDEMAIN(PlacesModelTest, GUI)
 
 static void touch(const QString &path)

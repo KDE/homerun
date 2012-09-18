@@ -17,6 +17,8 @@ endmacro(homerun_add_unit_test)
 
 include_directories(
     ${components_SOURCE_DIR}
+    ${lib_SOURCE_DIR}
+    ${lib_SOURCE_DIR}/private
     )
 
 # Tests which depend on X11 cannot be run on headless builders. If X11 is not
