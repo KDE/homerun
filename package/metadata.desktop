@@ -25,7 +25,7 @@ Comment[sv]=Ett startprogram
 Comment[uk]=Засіб для запуску програм
 Comment[x-test]=xxAn application launcherxx
 
-Icon=preferences-desktop-notification
+Icon=homerun
 Type=Service
 X-KDE-ServiceTypes=Plasma/Containment
 
