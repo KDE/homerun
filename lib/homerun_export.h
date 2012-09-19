@@ -16,19 +16,19 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PAGEMODELTEST_H
-#define PAGEMODELTEST_H
+#ifndef HOMERUN_EXPORT_H
+#define HOMERUN_EXPORT_H
 
-#include <QObject>
+#include <kdemacros.h>
 
-class PageModelTest : public QObject
-{
-    Q_OBJECT
+#ifndef HOMERUN_EXPORT
+# if defined(MAKE_HOMERUN_LIB)
+/* We are building this library */
+#  define HOMERUN_EXPORT KDE_EXPORT
+# else
+/* We are using this library */
+#  define HOMERUN_EXPORT KDE_IMPORT
+# endif
+#endif
 
-private Q_SLOTS:
-    void testPageOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
-};
-
-#endif /* PAGEMODELTEST_H */
+#endif /* HOMERUN_EXPORT_H */

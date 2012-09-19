@@ -27,14 +27,12 @@
 // KDE
 #include <KDebug>
 #include <KIcon>
+#include <KConfigGroup>
 #include <KLocale>
 #include <KRun>
 #include <KService>
 
-//Plasma
-#include <Plasma/AbstractRunner>
-#include <Plasma/RunnerManager>
-
+namespace Homerun {
 
 static QString serviceIdFromFavoriteId(const QString &favoriteId)
 {
@@ -211,5 +209,7 @@ bool FavoriteAppsModel::trigger(int row)
     }
     return KRun::run(*service, KUrl::List(), 0);
 }
+
+} // namespace Homerun
 
 #include "favoriteappsmodel.moc"

@@ -16,23 +16,9 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PLACESMODELTEST_H
-#define PLACESMODELTEST_H
+#ifndef LIBHOMERUN_CONFIG_H
+#define LIBHOMERUN_CONFIG_H
 
-#include <QObject>
+#define HOMERUN_API_VERSION @lib_VERSION_MAJOR@
 
-class PlacesModelTest : public QObject
-{
-    Q_OBJECT
-
-private Q_SLOTS:
-    void initTestCase();
-
-    // FIXME: Those DirModel tests should be moved to a DirModelTest class
-    void testDirModelSortOrder();
-    void testDirModelFavoriteId();
-
-    void testSortOrder();
-};
-
-#endif /* PLACESMODELTEST_H */
+#endif /* LIBHOMERUN_CONFIG_H */

@@ -16,10 +16,11 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef GROUPEDSERVICEMODEL_H
-#define GROUPEDSERVICEMODEL_H
+#ifndef GROUPEDINSTALLEDAPPSMODEL_H
+#define GROUPEDINSTALLEDAPPSMODEL_H
 
 // Local
+#include <abstractsource.h>
 
 // Qt
 #include <QAbstractListModel>
@@ -27,18 +28,22 @@
 // KDE
 #include <KServiceGroup>
 
-class ServiceModel;
+namespace Homerun {
+
+class InstalledAppsModel;
+class SourceRegistry;
 
 /**
  * A model which returns all services in grouped sub-models
  */
-class GroupedServiceModel : public QAbstractListModel
+class GroupedInstalledAppsModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
 public:
-    explicit GroupedServiceModel(QObject *parent = 0);
-    ~GroupedServiceModel();
+    explicit GroupedInstalledAppsModel(QObject *parent = 0);
+    ~GroupedInstalledAppsModel();
+
+    void init(SourceRegistry *registry);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
@@ -57,10 +62,19 @@ private Q_SLOTS:
 
 private:
     QList<KServiceGroup::Ptr> m_pendingGroupList;
-    QList<ServiceModel *> m_models;
-    QString m_installer;
+    QList<InstalledAppsModel *> m_models;
+    SourceRegistry *m_registry;
 
-    ServiceModel *createServiceModel(KServiceGroup::Ptr group);
+    InstalledAppsModel *createInstalledAppsModel(KServiceGroup::Ptr group);
 };
 
-#endif /* GROUPEDSERVICEMODEL_H */
+class GroupedInstalledAppsSource : public AbstractSource
+{
+public:
+    GroupedInstalledAppsSource(SourceRegistry *registry);
+    QAbstractItemModel *createModel(const SourceArguments &/*args*/);
+};
+
+} // namespace Homerun
+
+#endif /* GROUPEDINSTALLEDAPPSMODEL_H */

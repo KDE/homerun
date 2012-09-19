@@ -59,8 +59,16 @@ int main(int argc, char *argv[])
     app.setQuitOnLastWindowClosed(false);
 
     // Create view
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    KCmdLineArgs *kdeArgs = KCmdLineArgs::parsedArgs("kde");
+
     FullView view;
-    KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
+
+    view.setConfigFileName(
+        kdeArgs->isSet("config")
+        ? kdeArgs->getOption("config")
+        : "homerunrc");
+
     if (args->isSet("show")) {
         QString str = args->getOption("show");
         bool ok;

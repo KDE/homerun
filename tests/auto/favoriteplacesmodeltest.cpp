@@ -30,6 +30,8 @@
 // Qt
 #include <QFile>
 
+using namespace Homerun;
+
 QTEST_KDEMAIN(FavoritePlacesModelTest, NoGUI)
 
 void FavoritePlacesModelTest::initTestCase()

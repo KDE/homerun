@@ -16,23 +16,43 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PLACESMODELTEST_H
-#define PLACESMODELTEST_H
+#ifndef PATHMODEL_H
+#define PATHMODEL_H
 
-#include <QObject>
+// Local
+#include <homerun_export.h>
 
-class PlacesModelTest : public QObject
+// Qt
+#include <QStandardItemModel>
+
+// KDE
+
+namespace Homerun {
+
+class PathModelPrivate;
+
+/**
+ * Represents the path in a browsable Homerun model
+ */
+class HOMERUN_EXPORT PathModel : public QStandardItemModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+public:
+    explicit PathModel(QObject *parent = 0);
+    ~PathModel();
 
-private Q_SLOTS:
-    void initTestCase();
+    void addPath(const QString &label, const QString &source);
 
-    // FIXME: Those DirModel tests should be moved to a DirModelTest class
-    void testDirModelSortOrder();
-    void testDirModelFavoriteId();
+    int count() const;
 
-    void testSortOrder();
+Q_SIGNALS:
+    void countChanged();
+
+private:
+    PathModelPrivate * const d;
 };
 
-#endif /* PLACESMODELTEST_H */
+} // namespace Homerun
+
+#endif /* PATHMODEL_H */

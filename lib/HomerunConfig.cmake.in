@@ -1,0 +1,17 @@
+get_filename_component(HOMERUN_CMAKE_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+
+# versions
+set(HOMERUN_VERSION_MAJOR @lib_VERSION_MAJOR@)
+set(HOMERUN_VERSION_MINOR @lib_VERSION_MINOR@)
+set(HOMERUN_VERSION_PATCH @lib_VERSION_PATCH@)
+set(HOMERUN_VERSION @lib_VERSION@)
+set(HOMERUN_VERSION_STRING "@lib_VERSION@")
+
+# includes
+set(HOMERUN_INCLUDES "@INCLUDE_INSTALL_DIR@/homerun")
+
+# exported targets
+include(${HOMERUN_CMAKE_DIR}/HomerunTargets.cmake)
+
+# libraries
+set(HOMERUN_LIBRARIES homerun)

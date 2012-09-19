@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Multi Sources
+Comment=An example of Homerun plugin providing multiple sources
+Type=Service
+X-KDE-ServiceTypes=Homerun/Source
+X-KDE-Library=homerun_source_multisources
+
+X-KDE-Homerun-Sources=MultiA,MultiB
+X-KDE-Homerun-APIVersion=0

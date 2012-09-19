@@ -37,20 +37,20 @@ Item {
     property real rightMargin: 12
     property real bottomMargin: 12
 
+    property string configFileName
+
     property variant tabContentList: []
     property alias currentTabContent: tabGroup.currentTab
 
     // Models
-    HomerunComponents.PageModel {
-        id: pageModel
+    HomerunComponents.TabModel {
+        id: tabModel
+        configFileName: main.configFileName
     }
 
-    HomerunComponents.FavoriteAppsModel {
-        id: favoriteAppsModel
-    }
-
-    HomerunComponents.FavoritePlacesModel {
-        id: favoritePlacesModel
+    HomerunComponents.SourceRegistry {
+        id: sourceRegistry
+        configFileName: main.configFileName
     }
 
     // UI
@@ -74,21 +74,19 @@ Item {
         }
 
         Repeater {
-            model: pageModel
+            model: tabModel
             PlasmaComponents.TabButton {
                 text: model.name
                 iconSource: model.iconName
                 property string searchPlaceholder: model.searchPlaceholder
 
                 Component.onCompleted: {
-                    var favoriteModels = createFavoriteModelsObject();
-
                     // "tab" is a property of TabButton, that is why it is not declared with "var"
                     // FIXME
                     tab = tabContent.createObject(tabGroup, {
+                        "sourceRegistry": sourceRegistry,
                         "sources": model.sources,
                         "searchSources": model.searchSources,
-                        "favoriteModels": favoriteModels,
                     });
 
                     var lst = tabContentList;
@@ -107,7 +105,7 @@ Item {
         }
 
         layout.onChildrenChanged: {
-            // Workaround to make sure there is a current tab when pageModel
+            // Workaround to make sure there is a current tab when tabModel
             // is done loading
             if (isTab(filterTabBar.currentTab)) {
                 return;
@@ -233,9 +231,9 @@ Item {
 
     // Code
     Component.onCompleted: {
-        //enable right click configure
         isContainment = "plasmoid" in this;
         if (isContainment) {
+            // enable right click configure
             configureAction = plasmoid.action("configure");
             configureAction.enabled = true;
 
@@ -248,6 +246,14 @@ Item {
             main.x = region.x
             main.height = region.height
             main.width = region.width
+
+            // Set config file only here so that when running homerunviewer with
+            // a custom config file (with --config /path/to/customrc). Homerun
+            // directly loads the custom config file.
+            // If value of configFileName were set when it is declared, Homerun
+            // would first load the default config file, then overwrite it with
+            // the custom one.
+            main.configFileName = "homerunrc";
         }
     }
 
@@ -269,13 +275,6 @@ Item {
             return;
         }
         firstView.forceActiveFocus();
-    }
-
-    function createFavoriteModelsObject() {
-        var favoriteModels = new Object();
-        favoriteModels[favoriteAppsModel.favoritePrefix] = favoriteAppsModel;
-        favoriteModels[favoritePlacesModel.favoritePrefix] = favoritePlacesModel;
-        return favoriteModels;
     }
 
     function reset() {

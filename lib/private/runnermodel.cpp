@@ -20,6 +20,7 @@
 #include <runnermodel.h>
 
 // Local
+#include <sourceid.h>
 
 // KDE
 #include <KDebug>
@@ -29,6 +30,8 @@
 // Qt
 #include <QStandardItemModel>
 #include <QTimer>
+
+namespace Homerun {
 
 RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, QObject *parent)
 : QAbstractListModel(parent)
@@ -220,29 +223,21 @@ QObject *RunnerModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
-QString RunnerModel::arguments() const
+void RunnerModel::setAllowedRunners(const QStringList &list)
 {
-    QStringList lst = m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
-    return lst.join(",");
-}
+    QStringList existingList = m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
 
-void RunnerModel::setArguments(const QString& argString)
-{
-    QStringList args = argString.split(',');
-    QStringList existingArgs = m_manager ? m_manager->allowedRunners() : m_pendingRunnersList;
-
-    if (existingArgs.toSet() == args.toSet()) {
+    if (existingList.toSet() == list.toSet()) {
         return;
     }
     if (m_manager) {
-        m_manager->setAllowedRunners(args);
+        m_manager->setAllowedRunners(list);
 
         //automagically enter single runner mode if there's only 1 allowed runner
-        m_manager->setSingleMode(args.count() == 1);
+        m_manager->setSingleMode(list.count() == 1);
     } else {
-        m_pendingRunnersList = args;
+        m_pendingRunnersList = list;
     }
-    emit argumentsChanged();
 }
 
 QString RunnerModel::currentQuery() const
@@ -353,5 +348,23 @@ void RunnerModel::trigger(const Plasma::QueryMatch& match)
 {
     m_manager->run(match);
 }
+
+//- RunnerSource ------------------------------
+RunnerSource::RunnerSource(QObject *parent)
+: AbstractSource(parent)
+{}
+
+QAbstractItemModel *RunnerSource::createModel(const SourceArguments &arguments)
+{
+    RunnerModel *model = new RunnerModel;
+    QString allowed = arguments.value("whitelist");
+    if (!allowed.isEmpty()) {
+        QStringList runners = allowed.split(',');
+        model->setAllowedRunners(runners);
+    }
+    return model;
+};
+
+} // namespace Homerun
 
 #include <runnermodel.moc>

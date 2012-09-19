@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef SESSIONMODEL_H
-#define SESSIONMODEL_H
+#ifndef POWERMODEL_H
+#define POWERMODEL_H
 
 #include <QAbstractListModel>
 
@@ -27,28 +27,31 @@
 
 class QString;
 
-enum ActionType {
-    Logout,
-    SwitchUser,
-    Lock
+namespace Homerun {
+
+enum PowerType {
+    Shutdown,
+    Restart,
+    Hibernate,
+    Suspend
 };
 
-struct SessionAction
+struct PowerAction
 {
     QString name;
     QString iconName;
-    ActionType type;
+    PowerType type;
 };
 
-class SessionModel : public QAbstractListModel
+class PowerModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
-    SessionModel(QObject *parent = 0);
-    ~SessionModel();
+    PowerModel(QObject *parent = 0);
+    ~PowerModel();
 
     int count() const;
     QString name() const;
@@ -58,11 +61,15 @@ public:
 
     Q_INVOKABLE bool trigger(int row);
 
+    void suspend(const QString& type);
+
 Q_SIGNALS:
     void countChanged();
 
 private:
-    QList<SessionAction> m_sessionList;
+    QList<PowerAction> m_powerList;
 };
+
+} // namespace Homerun
 
 #endif

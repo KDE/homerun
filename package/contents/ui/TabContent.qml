@@ -33,7 +33,7 @@ Item {
 
     //- Public ----------------------------------------------------
     // Defined by outside world
-    property variant favoriteModels
+    property QtObject sourceRegistry
     property variant sources
     property variant searchSources
     property string searchCriteria
@@ -53,54 +53,6 @@ Item {
         name: "homerunrc"
     }
 
-    // Models
-    Component {
-        id: serviceModelComponent
-        HomerunComponents.ServiceModel {
-            installer: config.readEntry("PackageManagement", "categoryInstaller")
-
-            onOpenSourceRequested: {
-                openSource(source);
-            }
-        }
-    }
-
-    Component {
-        id: groupedServiceModelComponent
-        HomerunComponents.GroupedServiceModel {
-            installer: config.readEntry("PackageManagement", "categoryInstaller")
-        }
-    }
-
-    Component {
-        id: powerModelComponent
-        HomerunComponents.PowerModel {
-        }
-    }
-
-    Component {
-        id: sessionModelComponent
-        HomerunComponents.SessionModel {
-        }
-    }
-
-    Component {
-        id: runnerModelComponent
-        HomerunComponents.RunnerModel {
-        }
-    }
-
-    Component {
-        id: placesModelComponent
-        HomerunComponents.PlacesModel {
-            rootModel: main.favoriteModels["place"]
-
-            onOpenSourceRequested: {
-                openSource(source);
-            }
-        }
-    }
-
     // Filter components
     Component {
         id: genericFilterComponent
@@ -115,6 +67,17 @@ Item {
             function trigger(index) {
                 var sourceIndex = mapRowToSource(index);
                 sourceModel.trigger(sourceIndex);
+            }
+
+        }
+    }
+
+    Component {
+        id: openSourceConnectedConnectionComponent
+        Connections {
+            ignoreUnknownSignals: true
+            onOpenSourceRequested: {
+                openSource(source);
             }
         }
     }
@@ -242,7 +205,7 @@ Item {
                 }
             }
 
-            Component.onCompleted: {
+            function finishModelConnections() {
                 for (var idx = 0; idx < models.length; ++idx) {
                     var model = models[idx];
                     runningConnectionComponent.createObject(pageMain, {"target": model});
@@ -348,8 +311,7 @@ Item {
     // Scripting
     Component.onCompleted: {
         var allSources = sources.concat(searchSources);
-        var lst = allSources.map(createModelForSource);
-        var page = createPage(lst);
+        var page = createPage(allSources);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -400,9 +362,8 @@ Item {
     }
 
     function openSource(source) {
-        var models = [createModelForSource(source)];
-        var page = createPage(models, { "showHeader": false });
-        page.pathModel = models[0].pathModel;
+        var page = createPage([source], { "showHeader": false });
+        page.pathModel = page.models[0].pathModel;
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -415,61 +376,46 @@ Item {
             ], event);
     }
 
-    function createModelForSource(source) {
-        var idx = source.indexOf(":");
-        var modelName;
-        var modelArgs;
-        if (idx > 0) {
-            modelName = source.slice(0, idx);
-            modelArgs = source.slice(idx + 1);
-        } else {
-            modelName = source;
+    function createModelForSource(source, parent) {
+        var model = sourceRegistry.createModelForSource(source, parent);
+        if (!model) {
+            return null;
         }
-        var model;
-        if (modelName == "ServiceModel") {
-            model = serviceModelComponent.createObject(main);
-        } else if (modelName == "GroupedServiceModel") {
-            model = groupedServiceModelComponent.createObject(main);
-        } else if (modelName == "PlacesModel") {
-            model = placesModelComponent.createObject(main);
-        } else if (modelName == "FavoriteAppsModel") {
-            model = main.favoriteModels["app"];
-        } else if (modelName == "PowerModel") {
-            model = powerModelComponent.createObject(main);
-        } else if (modelName == "SessionModel") {
-            model = sessionModelComponent.createObject(main);
-        } else if (modelName == "RunnerModel") {
-            model = runnerModelComponent.createObject(main);
-        } else {
-            console.log("Error: unknown model type: " + modelName);
-            return;
-        }
-        model.objectName = source;
 
-        if (modelArgs) {
-            if ("arguments" in model) {
-                model.arguments = modelArgs;
-            } else {
-                console.log("Error: trying to set arguments on model " + model + ", which does not support arguments");
-            }
-        }
+        // Create connections now: if we do it after applying the filter, then
+        // "model" may have been changed to be a filter model, not the source
+        // model
+        openSourceConnectedConnectionComponent.createObject(model);
 
         if ("query" in model) {
             // Model supports querying itself, bind the search criteria field to its "query" property
             queryBindingComponent.createObject(main, {"target": model});
         }
+
         return model;
     }
 
-    function createPage(models, viewExtraArgs /*= {}*/) {
-        var page = pageComponent.createObject(pageContainer, {"models": models});
+    function createPage(sources, viewExtraArgs /*= {}*/) {
+        var page = pageComponent.createObject(pageContainer);
+
+        // Create models
+        var models = [];
+        sources.forEach(function(x) {
+            var model = createModelForSource(x, page);
+            if (model) {
+                models.push(model);
+            }
+        });
+        page.models = models;
+
+        // Create views
         var firstView = null;
         models.forEach(function(model) {
             var isMultiViewModel = "modelForRow" in model;
             var modelNeedsFiltering = !("query" in model);
 
             var viewArgs = {};
-            viewArgs["favoriteModels"] = favoriteModels;
+            viewArgs["favoriteModels"] = sourceRegistry.favoriteModels;
             viewArgs["model"] = model;
             if (modelNeedsFiltering) {
                 if (isMultiViewModel) {
@@ -490,12 +436,17 @@ Item {
                 // Check isMultiViewModel because in that case obj is not a ResultsView
                 firstView = obj;
             }
+
+            // Useful for debugging
             page.objectName += model.objectName + ",";
         });
+
+        page.finishModelConnections();
 
         if (firstView) {
             firstView.forceActiveFocus();
         }
+
         return page;
     }
 
@@ -505,5 +456,6 @@ Item {
 
     function reset() {
         TabContentInternal.goTo(0);
+        TabContentInternal.clearHistoryAfterCurrentPage();
     }
 }

@@ -19,8 +19,13 @@
 #ifndef PLACESMODEL_H
 #define PLACESMODEL_H
 
+// Local
+#include <abstractsource.h>
+
+// Qt
 #include <QSortFilterProxyModel>
 
+// KDE
 #include <KDirSortFilterProxyModel>
 #include <KFilePlacesModel>
 #include <KUrl>
@@ -28,25 +33,66 @@
 class KDirLister;
 class KFileItem;
 
+namespace Homerun {
+
 class PathModel;
 
 /**
  * Internal
  */
-class ProxyDirModel : public KDirSortFilterProxyModel
+class DirModel : public KDirSortFilterProxyModel
 {
+    Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QString name READ name CONSTANT)
+
+    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+    Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
+    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
-    explicit ProxyDirModel(QObject *parent = 0);
+    explicit DirModel(QObject *parent = 0);
+
+    void init(const KUrl &rootUrl, const QString &rootName, const KUrl &url);
 
     enum {
         FavoriteIdRole = Qt::UserRole + 1,
     };
+
+    Q_INVOKABLE bool trigger(int row);
 
     KFileItem itemForIndex(const QModelIndex &index) const;
 
     KDirLister *dirLister() const;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
+
+    PathModel *pathModel() const;
+
+    int count() const;
+
+    QString name() const;
+
+    bool running() const;
+
+    QString query() const;
+
+    void setQuery(const QString &query);
+
+Q_SIGNALS:
+    void countChanged();
+    void runningChanged(bool);
+    void openSourceRequested(const QString &source);
+    void queryChanged(const QString &);
+
+private Q_SLOTS:
+    void emitRunningChanged();
+
+private:
+    PathModel *m_pathModel;
+    KUrl m_rootUrl;
+    QString m_rootName;
+
+    void initPathModel(const KUrl &url);
 };
 
 /**
@@ -56,6 +102,8 @@ class FavoritePlacesModel : public KFilePlacesModel
 {
     Q_OBJECT
     Q_PROPERTY(QString favoritePrefix READ favoritePrefix CONSTANT)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QString name READ name CONSTANT)
 
 public:
     enum {
@@ -67,77 +115,31 @@ public:
     Q_INVOKABLE bool isFavorite(const QString &favoriteId) const;
     Q_INVOKABLE void addFavorite(const QString &favoriteId);
     Q_INVOKABLE void removeFavorite(const QString &favoriteId);
+    Q_INVOKABLE bool trigger(int row);
 
     QString favoritePrefix() const;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 
+    QString name() const;
+
+    int count() const;
+
+Q_SIGNALS:
+    void openSourceRequested(const QString &source);
+    void countChanged();
+
 private:
     QModelIndex indexForFavoriteId(const QString &favoriteId) const;
 };
 
-/**
- * A model which can be used to navigate from favorite places
- */
-class PlacesModel : public QSortFilterProxyModel
+class DirSource : public AbstractSource
 {
-    Q_OBJECT
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
-    Q_PROPERTY(QObject *rootModel READ rootModel WRITE setRootModel NOTIFY rootModelChanged)
-    Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
-    Q_PROPERTY(QObject *pathModel READ pathModel CONSTANT)
-    Q_PROPERTY(bool running READ running NOTIFY runningChanged)
-    Q_PROPERTY(QString name READ name CONSTANT)
-
 public:
-    PlacesModel(QObject *parent = 0);
-    Q_INVOKABLE bool trigger(int row);
-
-    int count() const;
-
-    QString arguments() const;
-    void setArguments(const QString &arguments);
-
-    QString query() const;
-    void setQuery(const QString &);
-
-    QAbstractItemModel *rootModel() const;
-    /**
-     * Defines the root model to use. model must be a QAbstractItemModel and
-     * provide a KFilePlacesModel::UrlRole returning a QUrl.
-     */
-    void setRootModel(QObject *model);
-
-    QAbstractItemModel *pathModel() const;
-
-    bool running() const;
-
-    QString name() const;
-
-Q_SIGNALS:
-    void countChanged();
-    void queryChanged();
-    void rootModelChanged();
-    void runningChanged(bool);
-    void argumentsChanged(const QString &);
-    void openSourceRequested(const QString &source);
-
-private Q_SLOTS:
-    void emitRunningChanged();
-
-private:
-    QAbstractItemModel *m_rootModel;
-    ProxyDirModel *m_proxyDirModel;
-    PathModel *m_pathModel;
-    KUrl m_rootUrl;
-    QString m_rootName;
-    QString m_query;
-    QString m_arguments;
-
-    void switchToRootModel();
-    void switchToDirModel();
-    void openDirUrl(const KUrl &url);
+    DirSource(QObject *parent);
+    QAbstractItemModel *createModel(const SourceArguments &args);
 };
+
+} // namespace Homerun
 
 #endif /* PLACESMODEL_H */

@@ -16,37 +16,19 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PATHMODEL_H
-#define PATHMODEL_H
+#ifndef TABMODELTEST_H
+#define TABMODELTEST_H
 
-// Local
+#include <QObject>
 
-// Qt
-#include <QStandardItemModel>
-
-// KDE
-
-/**
- * Represents the path in a browsable Homerun model
- */
-class PathModel : public QStandardItemModel
+class TabModelTest : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-public:
-    explicit PathModel(QObject *parent = 0);
-    ~PathModel();
 
-    enum {
-        SourceRole = Qt::UserRole + 1,
-    };
-
-    void addPath(const QString &label, const QString &source);
-
-    int count() const;
-
-Q_SIGNALS:
-    void countChanged();
+private Q_SLOTS:
+    void testTabOrder();
+    void testLoadKeys();
+    void testLoadKeys_data();
 };
 
-#endif /* PATHMODEL_H */
+#endif /* TABMODELTEST_H */

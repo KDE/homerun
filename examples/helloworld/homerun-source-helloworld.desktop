@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Hello World
+Comment=An example of Homerun Source
+Type=Service
+X-KDE-ServiceTypes=Homerun/Source
+X-KDE-Library=homerun_source_helloworld
+
+X-KDE-Homerun-Sources=HelloWorld
+X-KDE-Homerun-APIVersion=0

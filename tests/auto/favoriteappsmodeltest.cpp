@@ -29,6 +29,8 @@
 
 #include <favoriteappsmodel.h>
 
+using namespace Homerun;
+
 QTEST_KDEMAIN(FavoriteAppsModelTest, GUI)
 
 static KTemporaryFile *generateTestFile(const QString &content)

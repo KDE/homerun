@@ -38,6 +38,8 @@
 #include <Plasma/AbstractRunner>
 #include <Plasma/RunnerManager>
 
+namespace Homerun {
+
 PowerModel::PowerModel(QObject *parent)
 : QAbstractListModel(parent)
 {
@@ -141,5 +143,7 @@ void PowerModel::suspend(const QString& type)
                                                                                                     type);
     QDBusConnection::sessionBus().asyncCall(msg);
 }
+
+} // namespace Homerun
 
 #include "powermodel.moc"

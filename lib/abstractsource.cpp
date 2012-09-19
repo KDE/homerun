@@ -16,23 +16,45 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PLACESMODELTEST_H
-#define PLACESMODELTEST_H
+// Self
+#include <abstractsource.h>
 
-#include <QObject>
+// Local
+#include <sourceregistry.h>
 
-class PlacesModelTest : public QObject
+// KDE
+
+// Qt
+
+namespace Homerun {
+
+struct AbstractSourcePrivate
 {
-    Q_OBJECT
-
-private Q_SLOTS:
-    void initTestCase();
-
-    // FIXME: Those DirModel tests should be moved to a DirModelTest class
-    void testDirModelSortOrder();
-    void testDirModelFavoriteId();
-
-    void testSortOrder();
+    SourceRegistry *m_registry;
 };
 
-#endif /* PLACESMODELTEST_H */
+AbstractSource::AbstractSource(QObject *parent, const QVariantList &/*args*/)
+: QObject(parent)
+, d(new AbstractSourcePrivate)
+{
+    d->m_registry = 0;
+}
+
+AbstractSource::~AbstractSource()
+{
+    delete d;
+}
+
+void AbstractSource::init(SourceRegistry *registry)
+{
+    d->m_registry = registry;
+}
+
+SourceRegistry *AbstractSource::registry() const
+{
+    return d->m_registry;
+}
+
+} // namespace Homerun
+
+#include <abstractsource.moc>

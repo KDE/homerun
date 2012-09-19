@@ -34,6 +34,8 @@
 #include <KTempDir>
 #include <qtest_kde.h>
 
+using namespace Homerun;
+
 QTEST_KDEMAIN(PlacesModelTest, GUI)
 
 static void touch(const QString &path)
@@ -49,7 +51,7 @@ void PlacesModelTest::initTestCase()
     file.remove();
 }
 
-void PlacesModelTest::testProxyDirModelSortOrder()
+void PlacesModelTest::testDirModelSortOrder()
 {
     KTempDir tempDir("placesmodeltest");
     QDir dir(tempDir.name());
@@ -63,45 +65,48 @@ void PlacesModelTest::testProxyDirModelSortOrder()
         dir.mkdir(name);
     }
 
-    ProxyDirModel proxyDirModel;
+    DirModel dirModel;
 
     QEventLoop loop;
-    connect(proxyDirModel.dirLister(), SIGNAL(completed()), &loop, SLOT(quit()));
-    proxyDirModel.dirLister()->openUrl(dir.absolutePath());
+    connect(dirModel.dirLister(), SIGNAL(completed()), &loop, SLOT(quit()));
+
+    KUrl rootUrl = KUrl::fromLocalFile(dir.absolutePath());
+    dirModel.init(rootUrl, rootUrl.fileName(), rootUrl);
     loop.exec();
 
     QStringList expected = dirNames + fileNames;
-    for (int row = 0; row < proxyDirModel.rowCount(); ++row) {
-        QModelIndex index = proxyDirModel.index(row, 0);
+    for (int row = 0; row < dirModel.rowCount(); ++row) {
+        QModelIndex index = dirModel.index(row, 0);
         QString name = index.data(Qt::DisplayRole).toString();
         QCOMPARE(name, expected[row]);
     }
 }
 
-void PlacesModelTest::testProxyDirModelFavoriteId()
+void PlacesModelTest::testDirModelFavoriteId()
 {
     KTempDir tempDir("placesmodeltest");
     QDir dir(tempDir.name());
     dir.mkdir("adir");
     touch(dir.absoluteFilePath("afile"));
 
-    ProxyDirModel proxyDirModel;
-
+    DirModel dirModel;
     QEventLoop loop;
-    connect(proxyDirModel.dirLister(), SIGNAL(completed()), &loop, SLOT(quit()));
-    proxyDirModel.dirLister()->openUrl(dir.absolutePath());
+    connect(dirModel.dirLister(), SIGNAL(completed()), &loop, SLOT(quit()));
+
+    KUrl rootUrl = KUrl::fromLocalFile(dir.absolutePath());
+    dirModel.init(rootUrl, rootUrl.fileName(), rootUrl);
     loop.exec();
 
     // Dir
     {
-        QModelIndex index = proxyDirModel.index(0, 0);
-        QString favoriteId = index.data(ProxyDirModel::FavoriteIdRole).toString();
+        QModelIndex index = dirModel.index(0, 0);
+        QString favoriteId = index.data(DirModel::FavoriteIdRole).toString();
         QCOMPARE(favoriteId, QString("place:file://" + dir.absoluteFilePath("adir")));
     }
     // File
     {
-        QModelIndex index = proxyDirModel.index(1, 0);
-        QString favoriteId = index.data(ProxyDirModel::FavoriteIdRole).toString();
+        QModelIndex index = dirModel.index(1, 0);
+        QString favoriteId = index.data(DirModel::FavoriteIdRole).toString();
         QCOMPARE(favoriteId, QString());
     }
 }
@@ -121,18 +126,20 @@ void PlacesModelTest::testSortOrder()
         dir.mkdir(name);
     }
 
-    // Point a PlacesModel to the sandbox
-    FavoritePlacesModel rootModel;
-    PlacesModel model;
-    model.setRootModel(&rootModel);
-    model.setArguments("rootUrl=file:///,rootName=Root,url=file://" + dir.absolutePath());
-    QTest::qWait(5000);
+    // Point a DirModel to the sandbox
+    DirModel dirModel;
+    QEventLoop loop;
+    connect(dirModel.dirLister(), SIGNAL(completed()), &loop, SLOT(quit()));
+
+    KUrl rootUrl = KUrl::fromLocalFile(dir.absolutePath());
+    dirModel.init(rootUrl, rootUrl.fileName(), rootUrl);
+    loop.exec();
 
     // Check model content
     QStringList expected = dirNames + fileNames;
-    QCOMPARE(model.rowCount(), expected.length());
-    for (int row = 0; row < model.rowCount(); ++row) {
-        QModelIndex index = model.index(row, 0);
+    QCOMPARE(dirModel.rowCount(), expected.length());
+    for (int row = 0; row < dirModel.rowCount(); ++row) {
+        QModelIndex index = dirModel.index(row, 0);
         QString name = index.data(Qt::DisplayRole).toString();
         QCOMPARE(name, expected[row]);
     }

@@ -25,32 +25,17 @@
 #include <Plasma/QueryMatch>
 
 #include "sharedconfig.h"
-#include "favoriteappsmodel.h"
-#include "groupedservicemodel.h"
-#include "pagemodel.h"
-#include "placesmodel.h"
-#include "powermodel.h"
+#include "tabmodel.h"
 #include "runnerinfoprovider.h"
-#include "runnermodel.h"
-#include "servicemodel.h"
-#include "sessionmodel.h"
+#include "sourceregistry.h"
 
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
-    qmlRegisterType<FavoriteAppsModel>(uri, 0, 1, "FavoriteAppsModel");
-    qmlRegisterType<FavoritePlacesModel>(uri, 0, 1, "FavoritePlacesModel");
-    qmlRegisterType<GroupedServiceModel>(uri, 0, 1, "GroupedServiceModel");
-    qmlRegisterType<PageModel>(uri, 0, 1, "PageModel");
-    qmlRegisterType<PlacesModel>(uri, 0, 1, "PlacesModel");
-    qmlRegisterType<PowerModel>(uri, 0, 1, "PowerModel");
-    qmlRegisterType<SessionModel>(uri, 0, 1, "SessionModel");
+    qmlRegisterType<TabModel>(uri, 0, 1, "TabModel");
     qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
     qmlRegisterType<SharedConfig>(uri, 0, 1, "SharedConfig");
-    qmlRegisterType<RunnerModel>(uri, 0, 1, "RunnerModel");
-    qmlRegisterType<ServiceModel>(uri, 0, 1, "ServiceModel");
-    qmlRegisterInterface<Plasma::QueryMatch>("QueryMatch");
-    qRegisterMetaType<Plasma::QueryMatch *>("QueryMatch");
+    qmlRegisterType<Homerun::SourceRegistry>(uri, 0, 1, "SourceRegistry");
 }
 
 #include "componentsplugin.moc"

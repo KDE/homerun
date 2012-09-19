@@ -16,21 +16,22 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PAGEMODEL_H
-#define PAGEMODEL_H
+#ifndef TABMODEL_H
+#define TABMODEL_H
 
 #include <QAbstractListModel>
 
 #include <KSharedConfig>
 
-class Page;
+class Tab;
 
 /**
- * A PageModel loads the definition of Homerun pages from a configuration file
+ * A TabModel loads the definition of Homerun tabs from a configuration file
  */
-class PageModel : public QAbstractListModel
+class TabModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
 
 public:
     enum {
@@ -40,17 +41,23 @@ public:
         SearchPlaceholderRole,
     };
 
-    PageModel(QObject *parent = 0);
-    ~PageModel();
+    TabModel(QObject *parent = 0);
+    ~TabModel();
 
     void setConfig(const KSharedConfig::Ptr &);
+
+    QString configFileName() const;
+    void setConfigFileName(const QString &name);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 
+Q_SIGNALS:
+    void configFileNameChanged(const QString &);
+
 private:
     KSharedConfig::Ptr m_config;
-    QList<Page*> m_pageList;
+    QList<Tab*> m_tabList;
 };
 
-#endif /* PAGEMODEL_H */
+#endif /* TABMODEL_H */

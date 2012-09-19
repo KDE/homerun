@@ -17,6 +17,8 @@ endmacro(homerun_add_unit_test)
 
 include_directories(
     ${components_SOURCE_DIR}
+    ${lib_SOURCE_DIR}
+    ${lib_SOURCE_DIR}/private
     )
 
 # Tests which depend on X11 cannot be run on headless builders. If X11 is not
@@ -25,19 +27,21 @@ include_directories(
 # tests, binaries of X11-dependent tests must be suffixed with "_x11".
 
 # X11-independent tests
-homerun_add_unit_test(pagemodeltest ${components_SOURCE_DIR}/pagemodel.cpp)
+homerun_add_unit_test(tabmodeltest ${components_SOURCE_DIR}/tabmodel.cpp)
 
 # X11-dependent tests
-homerun_add_unit_test(favoriteappsmodeltest_x11 ${components_SOURCE_DIR}/favoriteappsmodel.cpp)
+homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/private/favoriteappsmodel.cpp)
 homerun_add_unit_test(favoriteplacesmodeltest_x11
-    ${components_SOURCE_DIR}/placesmodel.cpp
-    ${components_SOURCE_DIR}/pathmodel.cpp
-    ${components_SOURCE_DIR}/sourcearguments.cpp
+    ${lib_SOURCE_DIR}/private/placesmodel.cpp
+    ${lib_SOURCE_DIR}/abstractsource.cpp
+    ${lib_SOURCE_DIR}/pathmodel.cpp
+    ${lib_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(placesmodeltest_x11
-    ${components_SOURCE_DIR}/placesmodel.cpp
-    ${components_SOURCE_DIR}/pathmodel.cpp
-    ${components_SOURCE_DIR}/sourcearguments.cpp
+    ${lib_SOURCE_DIR}/private/placesmodel.cpp
+    ${lib_SOURCE_DIR}/abstractsource.cpp
+    ${lib_SOURCE_DIR}/pathmodel.cpp
+    ${lib_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(runnerinfoprovidertest_x11 ${components_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
 

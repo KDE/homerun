@@ -18,21 +18,28 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef SERVICEMODEL_H
-#define SERVICEMODEL_H
+#ifndef INSTALLEDAPPSMODEL_H
+#define INSTALLEDAPPSMODEL_H
 
+// Local
+#include <abstractsource.h>
+
+// Qt
 #include <QAbstractListModel>
 #include <QStringList>
 
+// KDE
 #include <KIcon>
 #include <KService>
 #include <KServiceGroup>
 #include <KUrl>
 
-class PathModel;
-class QTimer;
+namespace Homerun {
 
-class ServiceModel;
+class PathModel;
+
+class InstalledAppsModel;
+class InstalledAppsSource;
 
 class AbstractNode
 {
@@ -56,12 +63,12 @@ protected:
 class GroupNode : public AbstractNode
 {
 public:
-    GroupNode(KServiceGroup::Ptr group, ServiceModel *model);
+    GroupNode(KServiceGroup::Ptr group, InstalledAppsModel *model);
 
     bool trigger(); // reimp
 
 private:
-    ServiceModel *m_model;
+    InstalledAppsModel *m_model;
     QString m_entryPath;
 };
 
@@ -85,18 +92,16 @@ public:
     bool trigger(); // reimp
 
 private:
-    ServiceModel *m_model;
+    InstalledAppsModel *m_model;
     KServiceGroup::Ptr m_group;
     KService::Ptr m_service;
 };
 
-class ServiceModel : public QAbstractListModel
+class InstalledAppsModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QObject* pathModel READ pathModel CONSTANT)
-    Q_PROPERTY(QString installer READ installer WRITE setInstaller NOTIFY installerChanged)
-    Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
     Q_PROPERTY(QString name READ name CONSTANT)
 
 public:
@@ -104,18 +109,12 @@ public:
         FavoriteIdRole = Qt::UserRole + 1,
     };
 
-    ServiceModel(QObject *parent = 0);
-    ~ServiceModel();
+    InstalledAppsModel(QObject *parent = 0);
+    ~InstalledAppsModel();
 
     int rowCount(const QModelIndex&) const;
     int count() const;
     QVariant data(const QModelIndex&, int) const;
-
-    void setInstaller(const QString &installer);
-    QString installer() const;
-
-    void setArguments(const QString &arguments);
-    QString arguments() const;
 
     PathModel *pathModel() const;
 
@@ -125,8 +124,6 @@ public:
 
 Q_SIGNALS:
     void countChanged();
-    void installerChanged(const QString &);
-    void argumentsChanged(const QString &);
     void openSourceRequested(const QString &source);
 
 private:
@@ -134,13 +131,23 @@ private:
     void loadServiceGroup(KServiceGroup::Ptr group);
     void doLoadServiceGroup(KServiceGroup::Ptr group);
 
-private:
     PathModel *m_pathModel;
     QList<AbstractNode *> m_nodeList;
     QString m_installer;
     QString m_arguments;
 
     void load(const QString &entryPath);
+
+    friend class InstalledAppsSource;
 };
+
+class InstalledAppsSource : public AbstractSource
+{
+public:
+    InstalledAppsSource(SourceRegistry *registry);
+    QAbstractItemModel *createModel(const SourceArguments &args);
+};
+
+} // namespace Homerun
 
 #endif

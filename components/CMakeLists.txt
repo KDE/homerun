@@ -2,21 +2,14 @@ project(components)
 
 set(components_SRCS
     componentsplugin.cpp
-    favoriteappsmodel.cpp
-    groupedservicemodel.cpp
-    pagemodel.cpp
-    pathmodel.cpp
-    placesmodel.cpp
-    powermodel.cpp
+    tabmodel.cpp
     runnerinfoprovider.cpp
-    runnermodel.cpp
-    servicemodel.cpp
-    sessionmodel.cpp
     sharedconfig.cpp
-    sourcearguments.cpp
     )
 
 qt4_automoc(${components_SRCS})
+
+include_directories(${lib_SOURCE_DIR})
 
 kde4_add_library(componentsplugin SHARED ${components_SRCS})
 
@@ -26,7 +19,7 @@ target_link_libraries(componentsplugin
         ${KDE4_PLASMA_LIBS}
         ${KDE4_KIO_LIBS}
         ${KDE4_KFILE_LIBS}
-        ${KDE4WORKSPACE_KWORKSPACE_LIBS}
+        homerun
         )
 
 install(TARGETS componentsplugin DESTINATION ${IMPORTS_INSTALL_DIR}/org/kde/homerun/components)

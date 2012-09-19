@@ -20,6 +20,7 @@
 #define RUNNERMODEL_H
 
 // Local
+#include <abstractsource.h>
 
 // Qt
 #include <QAbstractListModel>
@@ -33,6 +34,8 @@ class QTimer;
 namespace Plasma {
 class RunnerManager;
 }
+
+namespace Homerun {
 
 class RunnerSubModel : public QAbstractListModel
 {
@@ -77,8 +80,6 @@ private:
 class RunnerModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString arguments READ arguments WRITE setArguments NOTIFY argumentsChanged)
-
     /**
      * @property string set the KRunner query
      */
@@ -92,8 +93,7 @@ public:
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
 
-    QString arguments() const;
-    void setArguments(const QString &args);
+    void setAllowedRunners(const QStringList &runners);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
@@ -106,7 +106,6 @@ public Q_SLOTS:
     void scheduleQuery(const QString &query);
 
 Q_SIGNALS:
-    void argumentsChanged();
     void queryChanged();
     void runningChanged(bool);
 
@@ -128,5 +127,14 @@ private:
     bool m_running;
     QString m_pendingQuery;
 };
+
+class RunnerSource : public AbstractSource
+{
+public:
+    RunnerSource(QObject *parent);
+    QAbstractItemModel *createModel(const SourceArguments &arguments);
+};
+
+} // namespace Homerun
 
 #endif /* RUNNERMODEL_H */
