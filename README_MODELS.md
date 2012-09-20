@@ -63,10 +63,8 @@ the user type a search criteria.
 ### bool trigger(int row)
 - mandatory: yes
 
-Triggers the action associated with the item at row "row".
-Returns true if the trigger started an action outside of Homerun, false if it
-did not. Returning false can happen if the action failed or if it was handled
-in another way, for example because the model emitted openSourceRequested().
+Triggers the action associated with the item at row "row". Returns true if you
+want Homerun to close, false otherwise.
 
 ## Signals
 ## openSourceRequested(QString source)
