@@ -2,6 +2,10 @@
 Type=ServiceType
 X-KDE-ServiceType=Homerun/Source
 Comment=Homerun source plugin
+Comment[nl]=Plug-in voor Homerun-bron
+Comment[sv]=Homerun-källinsticksprogram
+Comment[uk]=Додаток джерела до Homerun
+Comment[x-test]=xxHomerun source pluginxx
 
 [PropertyDef::X-KDE-Homerun-APIVersion]
 Type=int
