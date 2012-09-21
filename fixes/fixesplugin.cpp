@@ -23,7 +23,6 @@
 
 // Local
 #include <datamodel.h>
-#include <runnermodel.h>
 
 // Qt
 #include <QtDeclarative/qdeclarative.h>
@@ -32,8 +31,6 @@ void FixesPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.fixes"));
     qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
-    qmlRegisterType<RunnerModel>(uri, 0, 1, "RunnerModel");
 }
 
 #include "fixesplugin.moc"
-

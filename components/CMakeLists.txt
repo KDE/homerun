@@ -3,8 +3,6 @@ project(components)
 set(components_SRCS
     componentsplugin.cpp
     tabmodel.cpp
-    runnerinfoprovider.cpp
-    sharedconfig.cpp
     )
 
 qt4_automoc(${components_SRCS})

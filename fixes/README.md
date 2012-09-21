@@ -29,16 +29,6 @@ Applied in 4.9
 
 Applied in 4.10
 
-## RunnerModel (kde-runtime)
-### Do not reset Plasma::RunnerModel when new matches are added
-<https://git.reviewboard.kde.org/r/104917/>
-
-Applied in 4.9
-
-### Fix behavior of "runners" property
-https://git.reviewboard.kde.org/r/105024/
-Applied in 4.9
-
 ## Label.qml (kde-runtime)
 A copy of the 4.9 version. The 4.8 version imports QtQuick 1.0, but we need
 QtQuick 1.1 to be able to use properties like "truncated" or "maximumLineCount".

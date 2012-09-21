@@ -3,7 +3,6 @@ project(fixes)
 set(fixes_SRCS
     datamodel.cpp
     fixesplugin.cpp
-    runnermodel.cpp
     )
 
 qt4_automoc(${fixes_SRCS})

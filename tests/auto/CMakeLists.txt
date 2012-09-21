@@ -43,7 +43,6 @@ homerun_add_unit_test(placesmodeltest_x11
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceid.cpp
     )
-homerun_add_unit_test(runnerinfoprovidertest_x11 ${components_SOURCE_DIR}/runnerinfoprovider.cpp) # Depends on having a running klauncher, which needs $DISPLAY
 
 # Definition of the "check" target
 set(_check_command ${CMAKE_CTEST_COMMAND} --verbose)

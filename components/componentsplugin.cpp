@@ -22,21 +22,14 @@
 
 #include <QtDeclarative/qdeclarative.h>
 
-#include <Plasma/QueryMatch>
-
-#include "sharedconfig.h"
 #include "tabmodel.h"
-#include "runnerinfoprovider.h"
 #include "sourceregistry.h"
 
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
     qmlRegisterType<TabModel>(uri, 0, 1, "TabModel");
-    qmlRegisterType<RunnerInfoProvider>(uri, 0, 1, "RunnerInfoProvider");
-    qmlRegisterType<SharedConfig>(uri, 0, 1, "SharedConfig");
     qmlRegisterType<Homerun::SourceRegistry>(uri, 0, 1, "SourceRegistry");
 }
 
 #include "componentsplugin.moc"
-

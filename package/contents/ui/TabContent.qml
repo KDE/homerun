@@ -48,11 +48,6 @@ Item {
     signal setSearchFieldRequested(string text)
 
     //- Private ---------------------------------------------------
-    HomerunComponents.SharedConfig {
-        id: config
-        name: "homerunrc"
-    }
-
     // Filter components
     Component {
         id: genericFilterComponent
