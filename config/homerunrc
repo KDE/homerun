@@ -16,6 +16,7 @@ icon=go-home
 query=Search...
 source0=FavoriteApps
 source1=FavoritePlaces
+source2=RecentDocuments
 searchSource0=Runner
 
 [Tab1]
@@ -32,7 +33,8 @@ name=Documents
 query=Search for documents...
 icon=folder-documents
 source0=FavoritePlaces
-searchSource0=Runner:whitelist=bookmarks,recentdocuments,nepomuksearch,youtube
+source1=RecentDocuments
+searchSource0=Runner:whitelist=bookmarks,nepomuksearch,youtube
 
 [Tab3]
 name=Power
