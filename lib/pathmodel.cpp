@@ -40,7 +40,7 @@ PathModel::PathModel(QObject *parent)
 , d(new PathModelPrivate)
 {
     QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "label");
+    roles.insert(Qt::DisplayRole, "display");
     roles.insert(SourceRole, "source");
     setRoleNames(roles);
     connect(this, SIGNAL(modelReset()), SIGNAL(countChanged()));

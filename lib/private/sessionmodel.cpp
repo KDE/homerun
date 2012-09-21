@@ -40,7 +40,7 @@ SessionModel::SessionModel(QObject *parent)
 : QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "label");
+    roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "icon");
     setRoleNames(roles);
 

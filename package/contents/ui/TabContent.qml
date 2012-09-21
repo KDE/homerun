@@ -276,7 +276,7 @@ Item {
                     flat: false
                     checked: model.index == currentPage.pathModel.count - 1
                     enabled: !checked
-                    text: model.label
+                    text: model.display
                     onClicked: openSource(model.source)
                 }
             }

@@ -129,7 +129,7 @@ InstalledAppsModel::InstalledAppsModel (QObject *parent)
     load(QString());
 
     QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "label");
+    roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "icon");
     roles.insert(FavoriteIdRole, "favoriteId");
 

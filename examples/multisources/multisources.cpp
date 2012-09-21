@@ -71,7 +71,7 @@ MultiSourcesModel::MultiSourcesModel(const QString &name)
 {
     // Declare roles
     QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "label");
+    roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "icon");
     setRoleNames(roles);
 

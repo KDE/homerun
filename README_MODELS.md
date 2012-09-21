@@ -1,7 +1,7 @@
 # Features of a Homerun-friendly model
 
 ## Roles
-### string label
+### string display
 - mandatory: yes
 
 Item text

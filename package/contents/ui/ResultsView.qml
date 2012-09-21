@@ -65,7 +65,7 @@ FocusScope {
             iconWidth: main.iconWidth
             width: main.resultItemWidth
 
-            currentText: model.label
+            currentText: model.display
             currentIcon: model.icon
             favoriteIcon: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
