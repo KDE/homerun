@@ -1,6 +1,18 @@
 [Desktop Entry]
 Name=Hello World
+Name[nl]=Hallo wereld
+Name[pt]=Olá Mundo
+Name[pt_BR]=Olá mundo
+Name[sv]=Hello World
+Name[uk]=Привіт, світе
+Name[x-test]=xxHello Worldxx
 Comment=An example of Homerun Source
+Comment[nl]=Voorbeeld van een Homerun-bron
+Comment[pt]=Um exemplo de código do Homerun
+Comment[pt_BR]=Exemplo de código do Homerun
+Comment[sv]=Ett exempel på Homerun-källor
+Comment[uk]=Приклад джерела Homerun
+Comment[x-test]=xxAn example of Homerun Sourcexx
 Type=Service
 X-KDE-ServiceTypes=Homerun/Source
 X-KDE-Library=homerun_source_recentdocuments

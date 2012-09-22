@@ -1,11 +1,15 @@
 [Desktop Entry]
 Name=Multi Sources
 Name[nl]=Meervoudige bronnen
+Name[pt]=Multi-Fontes
+Name[pt_BR]=Diversas fontes
 Name[sv]=Flera källor
 Name[uk]=Декілька джерел
 Name[x-test]=xxMulti Sourcesxx
 Comment=An example of Homerun plugin providing multiple sources
 Comment[nl]=Een voorbeeld van Homerun-plug-in die meervoudige bronnen levert
+Comment[pt]=Um exemplo de 'plugin' do Homerun que suporta várias fontes
+Comment[pt_BR]=Exemplo de plugin do Homerun que suporta diversas fontes
 Comment[sv]=Ett exempel på ett Homerun-insticksprogram som tillhandahåller flera källor
 Comment[uk]=Приклад додатка Homerun з декількома джерелами
 Comment[x-test]=xxAn example of Homerun plugin providing multiple sourcesxx
