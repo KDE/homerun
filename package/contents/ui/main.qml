@@ -182,7 +182,7 @@ Item {
         id: searchField
 
         anchors {
-            right: parent.right
+            right: configButton.left
             rightMargin: parent.rightMargin
             top: filterTabBar.top
             bottom: filterTabBar.bottom
@@ -197,6 +197,53 @@ Item {
         KeyNavigation.backtab: content
 
         onTextChanged: currentTabContent.searchCriteria = text;
+    }
+
+    // Config button
+    PlasmaComponents.ToolButton {
+        id: configButton
+        anchors {
+            right: parent.right
+            verticalCenter: searchField.verticalCenter
+            rightMargin: parent.rightMargin
+        }
+        iconSource: "configure"
+
+        property QtObject menu
+
+        onClicked: {
+            if (!menu) {
+                menu = configMenuComponent.createObject(configButton);
+            }
+            menu.open();
+        }
+
+        Component {
+            id: configMenuComponent
+            PlasmaComponents.ContextMenu {
+                visualParent: configButton
+                PlasmaComponents.MenuItem {
+                    text: i18n("Configure");
+                    onClicked: {
+                        var dlg = configDialogComponent.createObject(main, {tabModel: tabModel, sourceRegistry: sourceRegistry});
+                        dlg.exec();
+                    }
+                }
+            }
+        }
+
+        Component {
+            id: configDialogComponent
+            HomerunComponents.ConfigDialog {
+                /*
+                // FIXME: Anyone knowing how to refer to an item by its id if
+                // the id is also the name of a property is welcomed to fix this
+                // and the hack in configMeun.onClicked()
+                tabModel: tabModel
+                sourceRegistry: sourceRegistry
+                */
+            }
+        }
     }
 
     // Main content

@@ -22,14 +22,16 @@
 
 #include <QtDeclarative/qdeclarative.h>
 
-#include "tabmodel.h"
-#include "sourceregistry.h"
+#include <configdialog.h>
+#include <sourceregistry.h>
+#include <tabmodel.h>
 
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
-    qmlRegisterType<TabModel>(uri, 0, 1, "TabModel");
+    qmlRegisterType<ConfigDialog>(uri, 0, 1, "ConfigDialog");
     qmlRegisterType<Homerun::SourceRegistry>(uri, 0, 1, "SourceRegistry");
+    qmlRegisterType<TabModel>(uri, 0, 1, "TabModel");
 }
 
 #include "componentsplugin.moc"

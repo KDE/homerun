@@ -2,6 +2,7 @@ project(components)
 
 set(components_SRCS
     componentsplugin.cpp
+    configdialog.cpp
     tabmodel.cpp
     )
 

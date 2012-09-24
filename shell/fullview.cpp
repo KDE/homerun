@@ -30,6 +30,7 @@
 
 #include "homerunvieweradaptor.h"
 
+#include <QApplication>
 #include <QDesktopWidget>
 #include <QKeyEvent>
 
@@ -96,7 +97,9 @@ void FullView::setConfigFileName(const QString &name)
 void FullView::focusOutEvent(QFocusEvent* event)
 {
     event->accept();
-    resetAndHide();
+    if (!QApplication::activeWindow()) {
+        resetAndHide();
+    }
 }
 
 FullView::~FullView()
