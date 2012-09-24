@@ -132,7 +132,7 @@ void TabModelTest::testLoadKeys()
 
     QModelIndex index = model.index(0, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
-    QCOMPARE(index.data(TabModel::IconNameRole).toString(), iconName);
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), iconName);
     QCOMPARE(index.data(TabModel::SourcesRole).toStringList(), sources);
     QCOMPARE(index.data(TabModel::SearchSourcesRole).toStringList(), searchSources);
 }

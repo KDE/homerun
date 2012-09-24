@@ -35,8 +35,7 @@ class TabModel : public QAbstractListModel
 
 public:
     enum {
-        IconNameRole = Qt::UserRole + 1,
-        SourcesRole,
+        SourcesRole = Qt::UserRole + 1,
         SearchSourcesRole,
         SearchPlaceholderRole,
     };

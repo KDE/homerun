@@ -85,8 +85,8 @@ TabModel::TabModel(QObject *parent)
 : QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "name");
-    roles.insert(IconNameRole, "iconName");
+    roles.insert(Qt::DisplayRole, "display");
+    roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(SourcesRole, "sources");
     roles.insert(SearchSourcesRole, "searchSources");
     roles.insert(SearchPlaceholderRole, "searchPlaceholder");
@@ -156,7 +156,7 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case Qt::DisplayRole:
         return tab->m_name;
-    case IconNameRole:
+    case Qt::DecorationRole:
         return tab->m_iconName;
     case SourcesRole:
         return tab->m_sources;

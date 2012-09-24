@@ -76,8 +76,8 @@ Item {
         Repeater {
             model: tabModel
             PlasmaComponents.TabButton {
-                text: model.name
-                iconSource: model.iconName
+                text: model.display
+                iconSource: model.decoration
                 property string searchPlaceholder: model.searchPlaceholder
 
                 Component.onCompleted: {
