@@ -11,7 +11,7 @@ Position: top-right, next to the search field
 
 # X Show config dialog from the menu
 
-# _ List tabs in dialog
+# X List tabs in dialog
 
 # _ List available sources
 

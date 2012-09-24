@@ -4,6 +4,8 @@ set(components_SRCS
     componentsplugin.cpp
     configdialog.cpp
     tabmodel.cpp
+    tabconfigwidget.cpp
+    tabcontentconfigwidget.cpp
     )
 
 qt4_automoc(${components_SRCS})

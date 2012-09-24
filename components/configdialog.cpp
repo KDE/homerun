@@ -21,6 +21,7 @@
 
 // Local
 #include <tabmodel.h>
+#include <tabconfigwidget.h>
 
 // libhomerun
 #include <sourceregistry.h>
@@ -82,15 +83,11 @@ void ConfigDialog::exec()
 {
     Q_ASSERT(m_tabModel);
     QScopedPointer<KDialog> dialog(new KDialog(QApplication::activeWindow()));
+
+    TabConfigWidget *widget = new TabConfigWidget(m_tabModel, m_sourceRegistry);
+    dialog->setMainWidget(widget);
+
     dialog->exec();
-    /*
-    KActionSelector;
-    kWarning() << "tabs:";
-    for (int row = 0; row < m_tabModel->rowCount(); ++row) {
-        QModelIndex index = m_tabModel->index(row, 0);
-        kWarning() << "-" << index.data(Qt::DisplayRole);
-    }
-    */
 }
 
 #include <configdialog.moc>
