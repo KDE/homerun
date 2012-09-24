@@ -66,7 +66,7 @@ DirModel::DirModel(QObject *parent)
 
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(DirModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 
@@ -193,7 +193,7 @@ FavoritePlacesModel::FavoritePlacesModel(QObject *parent)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(FavoritePlacesModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 }

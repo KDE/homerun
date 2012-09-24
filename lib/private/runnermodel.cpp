@@ -40,7 +40,7 @@ RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, QOb
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
+    roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(FavoriteIdRole, "favoriteId");
     /*
     roles.insert(Type, "type");

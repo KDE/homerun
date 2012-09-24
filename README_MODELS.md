@@ -6,7 +6,7 @@
 
 Item text
 
-### string|QIcon icon
+### string|QIcon decoration
 - mandatory: yes
 
 Name of the item icon

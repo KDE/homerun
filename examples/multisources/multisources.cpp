@@ -69,12 +69,6 @@ K_EXPORT_PLUGIN(factory("homerun_source_multisources"))
 MultiSourcesModel::MultiSourcesModel(const QString &name)
 : m_name(name)
 {
-    // Declare roles
-    QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
-    setRoleNames(roles);
-
     // Create an item
     QStandardItem *item;
 

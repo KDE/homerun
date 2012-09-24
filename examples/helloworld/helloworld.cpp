@@ -41,12 +41,6 @@ HOMERUN_EXPORT_SOURCE(helloworld, HelloWorldSource)
 
 HelloWorldModel::HelloWorldModel()
 {
-    // Declare roles
-    QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
-    setRoleNames(roles);
-
     // Create two items
     QStandardItem *item;
 

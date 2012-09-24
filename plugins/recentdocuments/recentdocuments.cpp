@@ -44,11 +44,6 @@ RecentDocumentsModel::RecentDocumentsModel()
     connect(watch, SIGNAL(deleted(QString)), SLOT(load()));
     connect(watch, SIGNAL(dirty(QString)), SLOT(load()));
 
-    QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
-    setRoleNames(roles);
-
     load();
 }
 

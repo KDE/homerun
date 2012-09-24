@@ -43,11 +43,6 @@ namespace Homerun {
 PowerModel::PowerModel(QObject *parent)
 : QAbstractListModel(parent)
 {
-    QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
-    setRoleNames(roles);
-
     PowerAction shutdown;
     shutdown.name = i18nc("an action", "Shutdown");
     shutdown.type = Shutdown;

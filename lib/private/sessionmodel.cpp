@@ -39,11 +39,6 @@ namespace Homerun {
 SessionModel::SessionModel(QObject *parent)
 : QAbstractListModel(parent)
 {
-    QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "icon");
-    setRoleNames(roles);
-
     //FIXME: instead of just hiding these things..it'd be awesome if we could grey them out and/or provide a reason why they're not there.
     //otherwise the user is hunting for the power buttons and for some reason it isn't where it should be.
     const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
