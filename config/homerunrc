@@ -17,7 +17,7 @@ query=Search...
 source0=FavoriteApps
 source1=FavoritePlaces
 source2=RecentDocuments
-searchSource0=Runner
+source3=Runner
 
 [Tab1]
 name=Applications
@@ -26,7 +26,7 @@ icon=applications-other
 source0=InstalledApps
 # For a grouped list of all apps
 #source0=GroupedInstalledApps
-searchSource0=Runner:whitelist=services,shell
+source1=Runner:whitelist=services,shell
 
 [Tab2]
 name=Documents
@@ -34,7 +34,7 @@ query=Search for documents...
 icon=folder-documents
 source0=FavoritePlaces
 source1=RecentDocuments
-searchSource0=Runner:whitelist=bookmarks,nepomuksearch,youtube
+source2=Runner:whitelist=bookmarks,nepomuksearch,youtube
 
 [Tab3]
 name=Power

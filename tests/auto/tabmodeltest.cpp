@@ -78,7 +78,6 @@ void TabModelTest::testLoadKeys_data()
     QTest::addColumn<QString>("name");
     QTest::addColumn<QString>("iconName");
     QTest::addColumn<QStringList>("sources");
-    QTest::addColumn<QStringList>("searchSources");
 
     QTest::newRow("name+icon")
         <<  "[Tab0]\n"
@@ -87,8 +86,7 @@ void TabModelTest::testLoadKeys_data()
             "source0=foo\n"
         << "tab0"
         << "icon0"
-        << (QStringList() << "foo")
-        << QStringList();
+        << (QStringList() << "foo");
 
     QTest::newRow("name-only")
         <<  "[Tab0]\n"
@@ -96,20 +94,16 @@ void TabModelTest::testLoadKeys_data()
             "source0=foo\n"
         << "tab0"
         << QString()
-        << (QStringList() << "foo")
-        << QStringList();
+        << (QStringList() << "foo");
 
     QTest::newRow("multi-sources")
         <<  "[Tab0]\n"
             "name=tab0\n"
             "source0=foo\n"
             "source1=bar\n"
-            "searchSource0=baz\n"
-            "searchSource1=boom\n"
         << "tab0"
         << QString()
-        << (QStringList() << "foo" << "bar")
-        << (QStringList() << "baz" << "boom");
+        << (QStringList() << "foo" << "bar");
 }
 
 void TabModelTest::testLoadKeys()
@@ -118,7 +112,6 @@ void TabModelTest::testLoadKeys()
     QFETCH(QString, name);
     QFETCH(QString, iconName);
     QFETCH(QStringList, sources);
-    QFETCH(QStringList, searchSources);
 
     // Create config file
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
@@ -134,7 +127,6 @@ void TabModelTest::testLoadKeys()
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
     QCOMPARE(index.data(Qt::DecorationRole).toString(), iconName);
     QCOMPARE(index.data(TabModel::SourcesRole).toStringList(), sources);
-    QCOMPARE(index.data(TabModel::SearchSourcesRole).toStringList(), searchSources);
 }
 
 #include "tabmodeltest.moc"

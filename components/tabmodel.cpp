@@ -26,13 +26,13 @@
 /**
  * Return values for all keys of a group which start with @p prefix
  */
-static QStringList readSources(const KConfigGroup &group, const QString &prefix)
+static QStringList readSources(const KConfigGroup &group)
 {
     QStringList lst;
     QMap<QString, QString> map = group.entryMap();
     auto it = map.constBegin(), end = map.constEnd();
     for (; it != end; ++it) {
-        if (it.key().startsWith(prefix)) {
+        if (it.key().startsWith("source")) {
             lst << it.value();
         }
     }
@@ -46,7 +46,6 @@ public:
     QString m_iconName;
     QString m_searchPlaceholder;
     QStringList m_sources;
-    QStringList m_searchSources;
 
     static Tab *createFromGroup(const KConfigGroup &group)
     {
@@ -58,7 +57,7 @@ public:
             kWarning() << "Missing 'name' key in tab group" << group.name();
             return 0;
         }
-        QStringList sources = readSources(group, "source");
+        QStringList sources = readSources(group);
         if (sources.isEmpty()) {
             kWarning() << "No source defined in tab group" << group.name();
             return 0;
@@ -68,7 +67,6 @@ public:
         Tab *tab = new Tab;
         tab->m_name = name;
         tab->m_sources = sources;
-        tab->m_searchSources = readSources(group, "searchSource");
         tab->m_iconName = group.readEntry("icon");
         // We use "query" because it is automatically extracted as a
         // translatable string by l10n-kde4/scripts/createdesktopcontext.pl
@@ -88,7 +86,6 @@ TabModel::TabModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(SourcesRole, "sources");
-    roles.insert(SearchSourcesRole, "searchSources");
     roles.insert(SearchPlaceholderRole, "searchPlaceholder");
 
     setRoleNames(roles);
@@ -160,8 +157,6 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
         return tab->m_iconName;
     case SourcesRole:
         return tab->m_sources;
-    case SearchSourcesRole:
-        return tab->m_searchSources;
     case SearchPlaceholderRole:
         return tab->m_searchPlaceholder;
     default:

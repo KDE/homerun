@@ -86,7 +86,6 @@ Item {
                     tab = tabContent.createObject(tabGroup, {
                         "sourceRegistry": sourceRegistry,
                         "sources": model.sources,
-                        "searchSources": model.searchSources,
                     });
 
                     var lst = tabContentList;

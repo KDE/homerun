@@ -35,7 +35,6 @@ Item {
     // Defined by outside world
     property QtObject sourceRegistry
     property variant sources
-    property variant searchSources
     property string searchCriteria
 
     // Exposed by ourself
@@ -305,8 +304,7 @@ Item {
 
     // Scripting
     Component.onCompleted: {
-        var allSources = sources.concat(searchSources);
-        var page = createPage(allSources);
+        var page = createPage(sources);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
