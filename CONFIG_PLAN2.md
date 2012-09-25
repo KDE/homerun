@@ -19,9 +19,9 @@ SourceEditor.qml
 
 # X Show available sources in SourceEditor
 
-# _ Add a new SourceEditor to TabContentEditor when selected
+# X Add a new SourceEditor to TabContentEditor when selected
 
-# _ Propagate new source to config file
+# X Propagate new source to config file
 
 # _ Add up|down buttons (or drag'n'drop) to SourceEditor
 

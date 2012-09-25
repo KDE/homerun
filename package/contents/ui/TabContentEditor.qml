@@ -58,6 +58,10 @@ Item {
         delegate: PlasmaComponents.Button {
             width: parent.width
             text: model.display
+            onClicked: {
+                createSourceEditor(model.display);
+                updateSources();
+            }
         }
     }
 
