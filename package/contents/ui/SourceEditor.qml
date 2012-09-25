@@ -29,6 +29,7 @@ Item {
     height: frame.height
 
     signal removeRequested
+    signal moveRequested(int delta)
 
     PlasmaCore.FrameSvgItem {
         id: frame
@@ -43,18 +44,35 @@ Item {
             text: sourceName
         }
 
-        PlasmaComponents.Button {
-            id: removeButton
+        Row {
+            height: label.height
             anchors {
                 right: parent.right
                 rightMargin: parent.margins.right
                 top: parent.top
                 topMargin: parent.margins.top
             }
-            height: label.height
-            width: height
-            iconSource: "list-remove"
-            onClicked: main.removeRequested()
+
+            PlasmaComponents.Button {
+                id: upButton
+                width: height
+                iconSource: "arrow-up"
+                onClicked: main.moveRequested(-1)
+            }
+
+            PlasmaComponents.Button {
+                id: downButton
+                width: height
+                iconSource: "arrow-down"
+                onClicked: main.moveRequested(1)
+            }
+
+            PlasmaComponents.Button {
+                id: removeButton
+                width: height
+                iconSource: "list-remove"
+                onClicked: main.removeRequested()
+            }
         }
     }
 }

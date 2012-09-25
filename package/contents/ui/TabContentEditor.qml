@@ -34,13 +34,24 @@ Item {
         SourceEditor {
             id: sourceEditorMain
             sourceRegistry: main.sourceRegistry
-            width: parent.width
+            width: parent ? parent.width : 0
+
+            sourceName: model.sourceName
+
             onRemoveRequested: {
-                sourceName = "";
+                selectedSourcesModel.remove(model.index);
                 main.updateSources();
-                sourceEditorMain.destroy();
+            }
+            onMoveRequested: {
+                selectedSourcesModel.move(model.index, model.index + delta, 1);
+                main.updateSources();
             }
         }
+    }
+
+    // Models
+    ListModel {
+        id: selectedSourcesModel
     }
 
     // Ui
@@ -59,14 +70,14 @@ Item {
             width: parent.width
             text: model.display
             onClicked: {
-                createSourceEditor(model.display);
+                selectedSourcesModel.append({sourceName: model.display});
                 updateSources();
             }
         }
     }
 
-    Column {
-        id: sourceEditorContainer
+    ListView {
+        id: selectedSourcesView
         anchors {
             left: availableSourcesView.right
             leftMargin: 12
@@ -74,27 +85,26 @@ Item {
             top: parent.top
             bottom: parent.bottom
         }
+        model: selectedSourcesModel
+        delegate: sourceEditorComponent
     }
 
     // Scripting
     Component.onCompleted: {
-        sources.forEach(createSourceEditor);
+        fillSelectedSourcesModel();
     }
 
-    function createSourceEditor(sourceName) {
-        sourceEditorComponent.createObject(sourceEditorContainer, {sourceName: sourceName});
+    function fillSelectedSourcesModel() {
+        sources.forEach(function(sourceName) {
+            selectedSourcesModel.append({sourceName: sourceName});
+        });
     }
 
     function updateSources() {
         var lst = new Array();
-        for (var idx = 0; idx < sourceEditorContainer.children.length; ++idx) {
-            var item = sourceEditorContainer.children[idx];
-            if ("sourceName" in item) {
-                var name = item.sourceName;
-                if (name !== "") {
-                    lst.push(name);
-                }
-            }
+        for (var idx = 0; idx < selectedSourcesModel.count; ++idx) {
+            var item = selectedSourcesModel.get(idx);
+            lst.push(item.sourceName);
         }
         sourcesUpdated(lst);
     }
