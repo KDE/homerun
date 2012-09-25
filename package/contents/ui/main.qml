@@ -42,6 +42,8 @@ Item {
     property variant tabContentList: []
     property alias currentTabContent: tabGroup.currentTab
 
+    property bool configureMode: false
+
     // Models
     HomerunComponents.TabModel {
         id: tabModel
@@ -223,25 +225,11 @@ Item {
             PlasmaComponents.ContextMenu {
                 visualParent: configButton
                 PlasmaComponents.MenuItem {
-                    text: i18n("Configure");
+                    text: configureMode ? i18n("End Configure") : i18n("Configure");
                     onClicked: {
-                        var dlg = configDialogComponent.createObject(main, {tabModel: tabModel, sourceRegistry: sourceRegistry});
-                        dlg.exec();
+                        configureMode = !configureMode;
                     }
                 }
-            }
-        }
-
-        Component {
-            id: configDialogComponent
-            HomerunComponents.ConfigDialog {
-                /*
-                // FIXME: Anyone knowing how to refer to an item by its id if
-                // the id is also the name of a property is welcomed to fix this
-                // and the hack in configMeun.onClicked()
-                tabModel: tabModel
-                sourceRegistry: sourceRegistry
-                */
             }
         }
     }
