@@ -18,34 +18,26 @@
  */
 
 import QtQuick 1.1
+import org.kde.plasma.core 0.1 as PlasmaCore
+import org.kde.plasma.components 0.1 as PlasmaComponents
 
 Item {
-    id: main
     property QtObject sourceRegistry
-    property variant sources
-    property string searchCriteria
+    property string sourceName
 
-    // Components
-    Component {
-        id: sourceEditorComponent
-        SourceEditor {
-            sourceRegistry: main.sourceRegistry
-            width: parent.width
+    height: frame.height
+
+    PlasmaCore.FrameSvgItem {
+        id: frame
+        imagePath: "widgets/tooltip"
+        width: parent.width
+        height: label.height + margins.top + margins.bottom
+
+        PlasmaComponents.Label {
+            id: label
+            x: parent.margins.left
+            y: parent.margins.top
+            text: sourceName
         }
-    }
-
-    // Ui
-    Column {
-        id: sourceEditorContainer
-        anchors.fill: parent
-    }
-
-    // Scripting
-    Component.onCompleted: {
-        sources.forEach(createSourceEditor);
-    }
-
-    function createSourceEditor(sourceName) {
-        sourceEditorComponent.createObject(sourceEditorContainer, {sourceName: sourceName});
     }
 }

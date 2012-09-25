@@ -7,7 +7,7 @@ Position: top-right, next to the search field
 
 # X Introduce "Configure" mode in main.qml
 
-# _ When entering configure mode, delete all TabContent and create a new Item
+# X When entering configure mode, delete all TabContent and create a new Item
 
 TabContentEditor.qml
 
