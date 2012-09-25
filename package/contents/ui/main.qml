@@ -65,7 +65,7 @@ Item {
     }
 
     Component {
-        id: configTabContentComponent
+        id: tabContentEditorComponent
         TabContentEditor {
             sources: tabButton.sources
             property Item tabButton
@@ -124,12 +124,18 @@ Item {
         }
 
         function createTabContent(tab) {
-            var component = configureMode ? configTabContentComponent : tabContent;
-            // tab.tab is the tab content
-            tab.tab = component.createObject(tabGroup, {
-                "sourceRegistry": sourceRegistry,
-                "sources": tab.sources,
-            });
+            if (configureMode) {
+                tab.tab = tabContentEditorComponent.createObject(tabGroup, {
+                    "sourceRegistry": sourceRegistry,
+                    "sources": tab.sources,
+                    "tabButton": tab,
+                });
+            } else {
+                tab.tab = tabContent.createObject(tabGroup, {
+                    "sourceRegistry": sourceRegistry,
+                    "sources": tab.sources,
+                });
+            }
         }
 
         function firstTab() {
