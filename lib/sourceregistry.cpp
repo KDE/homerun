@@ -74,16 +74,8 @@ struct SourceInfo
 //- PluginInfo ------------------------------------------------
 struct PluginInfo
 {
-    QStringList sources;
     KService::Ptr service;
-    QList<SourceInfo*> sourceInfos; // List of SourceInfos waiting for this plugin to be loaded
-
-    PluginInfo(KService::Ptr ptr)
-    : service(ptr)
-    {
-        QVariant value = ptr->property("X-KDE-Homerun-Sources", QVariant::StringList);
-        sources = value.toStringList();
-    }
+    QSet<SourceInfo*> sourceInfos; // Set of SourceInfos waiting for this plugin to be loaded
 };
 
 //- AvailableSourcesModel -------------------------------------
@@ -141,37 +133,41 @@ struct SourceRegistryPrivate
             QString("[X-KDE-Homerun-APIVersion] == %1").arg(HOMERUN_API_VERSION)
             );
         Q_FOREACH(KService::Ptr ptr, offers) {
-            PluginInfo pluginInfo(ptr);
-            Q_FOREACH(const QString &name, pluginInfo.sources) {
+            PluginInfo pluginInfo;
+            pluginInfo.service = ptr;
+
+            QVariant value = ptr->property("X-KDE-Homerun-Sources", QVariant::StringList);
+            QStringList sources = value.toStringList();
+            Q_FOREACH(const QString &name, sources) {
                 SourceInfo* sourceInfo = registerSource(name, 0);
                 pluginInfo.sourceInfos << sourceInfo;
             }
+
             m_pluginInfoList << pluginInfo;
         }
     }
 
-    void loadPluginForSource(const QString &name)
+    void loadPluginForSourceInfo(SourceInfo *sourceInfo)
     {
-        // Look for a plugin providing a source named 'name'
+        // Look for a plugin associated with this sourceInfo
         auto it = m_pluginInfoList.begin(), end = m_pluginInfoList.end();
         for (; it != end; ++it) {
-            if (it->sources.contains(name)) {
+            if (it->sourceInfos.contains(sourceInfo)) {
                 break;
             }
         }
         if (it == end) {
             return;
         }
-        QStringList sourceNames = it->sources;
         KService::Ptr ptr = it->service;
-        QList<SourceInfo *> sourceInfos = it->sourceInfos;
+        QSet<SourceInfo *> sourceInfos = it->sourceInfos;
         m_pluginInfoList.erase(it);
 
         // Create the plugin factory
         KPluginLoader loader(*ptr);
         KPluginFactory *factory = loader.factory();
         if (!factory) {
-            kWarning() << "Failed to load plugin (desktop file: " << ptr->entryPath() << ", source:" << name << ")";
+            kWarning() << "Failed to load plugin (desktop file: " << ptr->entryPath() << ", source:" << sourceInfo->name << ")";
             kWarning() << loader.errorString();
             return;
         }
@@ -313,7 +309,7 @@ AbstractSource *SourceRegistry::sourceByName(const QString &name) const
     if (sourceInfo->source) {
         return sourceInfo->source;
     }
-    d->loadPluginForSource(name);
+    d->loadPluginForSourceInfo(sourceInfo);
     if (!sourceInfo->source) {
         kWarning() << "Failed to load source for" << name;
         return 0;
