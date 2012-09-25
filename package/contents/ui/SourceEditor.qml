@@ -22,10 +22,13 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
 Item {
+    id: main
     property QtObject sourceRegistry
     property string sourceName
 
     height: frame.height
+
+    signal removeRequested
 
     PlasmaCore.FrameSvgItem {
         id: frame
@@ -38,6 +41,20 @@ Item {
             x: parent.margins.left
             y: parent.margins.top
             text: sourceName
+        }
+
+        PlasmaComponents.Button {
+            id: removeButton
+            anchors {
+                right: parent.right
+                rightMargin: parent.margins.right
+                top: parent.top
+                topMargin: parent.margins.top
+            }
+            height: label.height
+            width: height
+            iconSource: "list-remove"
+            onClicked: main.removeRequested()
         }
     }
 }

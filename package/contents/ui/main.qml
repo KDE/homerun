@@ -67,6 +67,11 @@ Item {
     Component {
         id: configTabContentComponent
         TabContentEditor {
+            sources: tabButton.sources
+            property Item tabButton
+            onSourcesUpdated: {
+                tabButton.setSources(sources);
+            }
         }
     }
 
@@ -87,6 +92,9 @@ Item {
                 iconSource: model.decoration
                 property string searchPlaceholder: model.searchPlaceholder
                 property variant sources: model.sources
+                function setSources(value) {
+                    tabModel.setSourcesForRow(model.index, value);
+                }
             }
         }
 

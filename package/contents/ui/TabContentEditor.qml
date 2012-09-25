@@ -25,12 +25,20 @@ Item {
     property variant sources
     property string searchCriteria
 
+    signal sourcesUpdated(variant sources)
+
     // Components
     Component {
         id: sourceEditorComponent
         SourceEditor {
+            id: sourceEditorMain
             sourceRegistry: main.sourceRegistry
             width: parent.width
+            onRemoveRequested: {
+                sourceName = "";
+                main.updateSources();
+                sourceEditorMain.destroy();
+            }
         }
     }
 
@@ -47,5 +55,19 @@ Item {
 
     function createSourceEditor(sourceName) {
         sourceEditorComponent.createObject(sourceEditorContainer, {sourceName: sourceName});
+    }
+
+    function updateSources() {
+        var lst = new Array();
+        for (var idx = 0; idx < sourceEditorContainer.children.length; ++idx) {
+            var item = sourceEditorContainer.children[idx];
+            if ("sourceName" in item) {
+                var name = item.sourceName;
+                if (name !== "") {
+                    lst.push(name);
+                }
+            }
+        }
+        sourcesUpdated(lst);
     }
 }

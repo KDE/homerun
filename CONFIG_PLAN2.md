@@ -13,9 +13,9 @@ TabContentEditor.qml
 
 SourceEditor.qml
 
-# _ Add a "Remove" button to SourceEditor
+# X Add a "Remove" button to SourceEditor
 
-# _ Propagate removal to config file
+# X Propagate removal to config file
 
 # _ Add a "Add Source" button at the end of TabContentEditor
 
