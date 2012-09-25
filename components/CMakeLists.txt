@@ -8,6 +8,10 @@ set(components_SRCS
     tabcontentconfigwidget.cpp
     )
 
+kde4_add_ui_files(components_SRCS
+    tabcontentconfigwidget.ui
+    )
+
 qt4_automoc(${components_SRCS})
 
 include_directories(${lib_SOURCE_DIR})

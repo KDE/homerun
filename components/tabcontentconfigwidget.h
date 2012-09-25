@@ -27,10 +27,16 @@
 
 // KDE
 
+class QStandardItemModel;
+
 namespace Homerun
 {
 class SourceRegistry;
 }
+
+class AvailableSourcesProxyModel;
+
+class Ui_TabContentConfigWidget;
 
 /**
  * A widget to configure the content of an homerun tab
@@ -45,6 +51,14 @@ public:
 private:
     QPersistentModelIndex m_index;
     Homerun::SourceRegistry *m_sourceRegistry;
+    Ui_TabContentConfigWidget *m_ui;
+    AvailableSourcesProxyModel *m_availableSourcesModel;
+    QStandardItemModel *m_selectedSourcesModel;
+
+    void fillSelectedSourcesModel();
+
+private Q_SLOTS:
+    void updateTabModel();
 };
 
 #endif /* TABCONTENTCONFIGWIDGET_H */
