@@ -50,7 +50,8 @@ public:
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole); // reimp
+
+    Q_INVOKABLE void setSourcesForRow(int row, const QVariant &sources);
 
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
