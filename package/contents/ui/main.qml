@@ -39,8 +39,9 @@ Item {
 
     property string configFileName
 
-    property variant tabContentList: []
     property alias currentTabContent: tabGroup.currentTab
+
+    property bool configureMode: false
 
     // Models
     HomerunComponents.TabModel {
@@ -63,6 +64,17 @@ Item {
         }
     }
 
+    Component {
+        id: tabContentEditorComponent
+        TabContentEditor {
+            sources: tabButton.sources
+            property Item tabButton
+            onSourcesUpdated: {
+                tabButton.setSources(sources);
+            }
+        }
+    }
+
     PlasmaComponents.TabBar {
         id: filterTabBar
 
@@ -79,18 +91,9 @@ Item {
                 text: model.display
                 iconSource: model.decoration
                 property string searchPlaceholder: model.searchPlaceholder
-
-                Component.onCompleted: {
-                    // "tab" is a property of TabButton, that is why it is not declared with "var"
-                    // FIXME
-                    tab = tabContent.createObject(tabGroup, {
-                        "sourceRegistry": sourceRegistry,
-                        "sources": model.sources,
-                    });
-
-                    var lst = tabContentList;
-                    lst.push(tab);
-                    tabContentList = lst;
+                property variant sources: model.sources
+                function setSources(value) {
+                    tabModel.setSourcesForRow(model.index, value);
                 }
             }
         }
@@ -110,6 +113,29 @@ Item {
                 return;
             }
             filterTabBar.currentTab = firstTab();
+        }
+
+        onCurrentTabChanged: {
+            if (!currentTab.tab) {
+                createTabContent(currentTab);
+            }
+            // Setting currentTab does not change the tab content, so do it ourselves
+            tabGroup.currentTab = currentTab.tab;
+        }
+
+        function createTabContent(tab) {
+            if (configureMode) {
+                tab.tab = tabContentEditorComponent.createObject(tabGroup, {
+                    "sourceRegistry": sourceRegistry,
+                    "sources": tab.sources,
+                    "tabButton": tab,
+                });
+            } else {
+                tab.tab = tabContent.createObject(tabGroup, {
+                    "sourceRegistry": sourceRegistry,
+                    "sources": tab.sources,
+                });
+            }
         }
 
         function firstTab() {
@@ -136,21 +162,15 @@ Item {
             return lst;
         }
 
-        function setCurrentTab(tab) {
-            currentTab = tab;
-            // Setting currentTab does not change the tab content, so do it ourselves
-            tabGroup.currentTab = currentTab.tab;
-        }
-
         function goToFirstTab() {
-            setCurrentTab(filterTabBar.firstTab());
+            currentTab = filterTabBar.firstTab();
         }
 
         function goToPreviousTab() {
             var lst = tabList();
             for (var idx = 1; idx < lst.length; ++idx) {
                 if (lst[idx] == filterTabBar.currentTab) {
-                    setCurrentTab(lst[idx - 1]);
+                    currentTab = lst[idx - 1];
                     return;
                 }
             }
@@ -160,7 +180,7 @@ Item {
             var lst = tabList();
             for (var idx = 0; idx < lst.length - 1; ++idx) {
                 if (lst[idx] == filterTabBar.currentTab) {
-                    setCurrentTab(lst[idx + 1]);
+                    currentTab = lst[idx + 1];
                     return;
                 }
             }
@@ -182,7 +202,7 @@ Item {
         id: searchField
 
         anchors {
-            right: parent.right
+            right: configButton.left
             rightMargin: parent.rightMargin
             top: filterTabBar.top
             bottom: filterTabBar.bottom
@@ -197,6 +217,45 @@ Item {
         KeyNavigation.backtab: content
 
         onTextChanged: currentTabContent.searchCriteria = text;
+    }
+
+    // Config button
+    PlasmaComponents.ToolButton {
+        id: configButton
+        anchors {
+            right: parent.right
+            verticalCenter: searchField.verticalCenter
+            rightMargin: parent.rightMargin
+        }
+        iconSource: "configure"
+
+        property QtObject menu
+
+        onClicked: {
+            if (!menu) {
+                menu = configMenuComponent.createObject(configButton);
+            }
+            menu.open();
+        }
+
+        Component {
+            id: configMenuComponent
+            PlasmaComponents.ContextMenu {
+                visualParent: configButton
+                PlasmaComponents.MenuItem {
+                    text: configureMode ? i18n("End Configure") : i18n("Configure");
+                    onClicked: {
+                        configureMode = !configureMode;
+                        filterTabBar.tabList().forEach(function(tab) {
+                            if (tab.tab) {
+                                tab.tab.destroy();
+                            }
+                        });
+                        filterTabBar.createTabContent(filterTabBar.currentTab);
+                    }
+                }
+            }
+        }
     }
 
     // Main content
@@ -278,8 +337,10 @@ Item {
 
     function reset() {
         filterTabBar.goToFirstTab();
-        tabContentList.forEach(function(content) {
-            content.reset();
+        filterTabBar.tabList().forEach(function(tab) {
+            if (tab.tab && tab.tab.reset) {
+                tab.tab.reset();
+            }
         });
         searchField.text = "";
     }

@@ -23,6 +23,8 @@
 #include <KDebug>
 #include <KLocale>
 
+static const char *SOURCE_KEY_PREFIX = "source";
+
 /**
  * Return values for all keys of a group which start with @p prefix
  */
@@ -32,7 +34,7 @@ static QStringList readSources(const KConfigGroup &group)
     QMap<QString, QString> map = group.entryMap();
     auto it = map.constBegin(), end = map.constEnd();
     for (; it != end; ++it) {
-        if (it.key().startsWith("source")) {
+        if (it.key().startsWith(SOURCE_KEY_PREFIX)) {
             lst << it.value();
         }
     }
@@ -42,10 +44,29 @@ static QStringList readSources(const KConfigGroup &group)
 class Tab
 {
 public:
+    KConfigGroup m_group;
+
     QString m_name;
     QString m_iconName;
     QString m_searchPlaceholder;
     QStringList m_sources;
+
+    void saveSources()
+    {
+        Q_FOREACH(const QString &key, m_group.keyList()) {
+            if (key.startsWith(SOURCE_KEY_PREFIX)) {
+                m_group.deleteEntry(key);
+            }
+        }
+        int num = 0;
+        Q_FOREACH(const QString &source, m_sources) {
+            QString key = QLatin1String(SOURCE_KEY_PREFIX) + QString::number(num);
+            m_group.writeEntry(key, source);
+            ++num;
+        }
+
+        m_group.sync();
+    }
 
     static Tab *createFromGroup(const KConfigGroup &group)
     {
@@ -65,6 +86,7 @@ public:
 
         // Create tab and read optional keys
         Tab *tab = new Tab;
+        tab->m_group = group;
         tab->m_name = name;
         tab->m_sources = sources;
         tab->m_iconName = group.readEntry("icon");
@@ -163,6 +185,21 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
         kWarning() << "Unhandled role" << role;
         return QVariant();
     }
+}
+
+void TabModel::setSourcesForRow(int row, const QVariant &value)
+{
+    Tab *tab = m_tabList.value(row);
+    if (!tab) {
+        kWarning() << "Invalid row number" << row;
+        return;
+    }
+    QStringList sources = value.toStringList();
+    tab->m_sources = sources;
+    tab->saveSources();
+
+    QModelIndex idx = index(row, 0);
+    dataChanged(idx, idx);
 }
 
 #include "tabmodel.moc"

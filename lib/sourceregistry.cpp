@@ -60,17 +60,56 @@ private:
     QAbstractItemModel *m_model;
 };
 
+//- SourceInfo ------------------------------------------------
+struct SourceInfo
+{
+    QString name;
+    AbstractSource *source;
+
+    SourceInfo()
+    : source(0)
+    {}
+};
+
+//- PluginInfo ------------------------------------------------
 struct PluginInfo
 {
-    QStringList sources;
     KService::Ptr service;
+    QSet<SourceInfo*> sourceInfos; // Set of SourceInfos waiting for this plugin to be loaded
+};
 
-    PluginInfo(KService::Ptr ptr)
-    : service(ptr)
+//- AvailableSourcesModel -------------------------------------
+class AvailableSourcesModel : public QAbstractListModel
+{
+public:
+    AvailableSourcesModel(const QList<SourceInfo *> &sources, QObject *parent)
+    : QAbstractListModel(parent)
+    , m_sourceInfos(sources)
+    {}
+
+    int rowCount(const QModelIndex &parent) const
     {
-        QVariant value = ptr->property("X-KDE-Homerun-Sources", QVariant::StringList);
-        sources = value.toStringList();
+        return parent.isValid() ? 0 : m_sourceInfos.size();
     }
+
+    QVariant data(const QModelIndex &index, int role) const
+    {
+        int row = index.row();
+        if (row < 0 || row >= m_sourceInfos.size()) {
+            return QVariant();
+        }
+        SourceInfo *sourceInfo = m_sourceInfos.at(row);
+        switch (role) {
+        case Qt::DisplayRole:
+            return sourceInfo->name;
+        default:
+            break;
+        }
+        return QVariant();
+    }
+
+private:
+    const QList<SourceInfo *> &m_sourceInfos;
 };
 
 //- SourceRegistryPrivate -------------------------------------
@@ -78,7 +117,11 @@ struct SourceRegistryPrivate
 {
     SourceRegistry *q;
     QHash<QString, QAbstractItemModel*> m_favoriteModels;
-    QHash<QString, AbstractSource *> m_sources;
+
+    QList<SourceInfo *> m_sourceInfos;
+    QHash<QString, SourceInfo *> m_sourceInfoByName;
+
+    AvailableSourcesModel *m_availableSourcesModel;
     KSharedConfig::Ptr m_config;
 
     QList<PluginInfo> m_pluginInfoList;
@@ -90,59 +133,67 @@ struct SourceRegistryPrivate
             QString("[X-KDE-Homerun-APIVersion] == %1").arg(HOMERUN_API_VERSION)
             );
         Q_FOREACH(KService::Ptr ptr, offers) {
-            m_pluginInfoList << PluginInfo(ptr);
+            PluginInfo pluginInfo;
+            pluginInfo.service = ptr;
+
+            QVariant value = ptr->property("X-KDE-Homerun-Sources", QVariant::StringList);
+            QStringList sources = value.toStringList();
+            Q_FOREACH(const QString &name, sources) {
+                SourceInfo* sourceInfo = registerSource(name, 0);
+                pluginInfo.sourceInfos << sourceInfo;
+            }
+
+            m_pluginInfoList << pluginInfo;
         }
     }
 
-    void loadPluginForSource(const QString &name)
+    void loadPluginForSourceInfo(SourceInfo *sourceInfo)
     {
-        // Look for a plugin providing a source named 'name'
+        // Look for a plugin associated with this sourceInfo
         auto it = m_pluginInfoList.begin(), end = m_pluginInfoList.end();
         for (; it != end; ++it) {
-            if (it->sources.contains(name)) {
+            if (it->sourceInfos.contains(sourceInfo)) {
                 break;
             }
         }
         if (it == end) {
             return;
         }
-        QStringList sourceNames = it->sources;
         KService::Ptr ptr = it->service;
+        QSet<SourceInfo *> sourceInfos = it->sourceInfos;
         m_pluginInfoList.erase(it);
 
         // Create the plugin factory
         KPluginLoader loader(*ptr);
         KPluginFactory *factory = loader.factory();
         if (!factory) {
-            kWarning() << "Failed to load plugin (desktop file: " << ptr->entryPath() << ", source:" << name << ")";
+            kWarning() << "Failed to load plugin (desktop file: " << ptr->entryPath() << ", source:" << sourceInfo->name << ")";
             kWarning() << loader.errorString();
             return;
         }
 
         // Create and register all sources provided by the plugin
-        if (sourceNames.count() > 1) {
-            Q_FOREACH(const QString &sourceName, sourceNames) {
-                if (!createSource(factory, sourceName, sourceName)) {
-                    kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << sourceName << ")";
-                }
+        Q_FOREACH(SourceInfo *sourceInfo, sourceInfos) {
+            const QString keyword = sourceInfos.count() > 1 ? sourceInfo->name : QString();
+            AbstractSource *source = factory->create<AbstractSource>(keyword);
+            if (!source) {
+                kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << sourceInfo->name << ")";
+                continue;
             }
-        } else {
-            if (!createSource(factory, sourceNames.first(), QString())) {
-                kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ")";
-            }
+            sourceInfo->source = source;
+
+            source->init(q);
         }
     }
 
-    bool createSource(KPluginFactory *factory, const QString &sourceName, const QString &keyword)
+    SourceInfo *registerSource(const QString &name, AbstractSource *source)
     {
-        AbstractSource *source = factory->create<AbstractSource>(keyword);
-        if (!source) {
-            return false;
-        }
-
-        m_sources.insert(sourceName, source);
-        source->init(q);
-        return true;
+        SourceInfo *info = new SourceInfo;
+        info->name = name;
+        info->source = source;
+        m_sourceInfos << info;
+        m_sourceInfoByName.insert(name, info);
+        return info;
     }
 };
 
@@ -152,21 +203,22 @@ SourceRegistry::SourceRegistry(QObject *parent)
 , d(new SourceRegistryPrivate)
 {
     d->q = this;
+    d->m_availableSourcesModel = new AvailableSourcesModel(d->m_sourceInfos, this);
 
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
-    d->m_sources.insert("InstalledApps", new InstalledAppsSource(this));
-    d->m_sources.insert("GroupedInstalledApps", new GroupedInstalledAppsSource(this));
-    d->m_sources.insert("Dir", new DirSource(this));
-    d->m_sources.insert("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this));
-    d->m_sources.insert("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this));
-    d->m_sources.insert("Power", new SimpleSource<PowerModel>(this));
-    d->m_sources.insert("Session", new SimpleSource<SessionModel>(this));
-    d->m_sources.insert("Runner", new RunnerSource(this));
+    d->registerSource("InstalledApps", new InstalledAppsSource(this));
+    d->registerSource("GroupedInstalledApps", new GroupedInstalledAppsSource(this));
+    d->registerSource("Dir", new DirSource(this));
+    d->registerSource("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this));
+    d->registerSource("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this));
+    d->registerSource("Power", new SimpleSource<PowerModel>(this));
+    d->registerSource("Session", new SimpleSource<SessionModel>(this));
+    d->registerSource("Runner", new RunnerSource(this));
 
-    Q_FOREACH(AbstractSource *source, d->m_sources) {
-        source->init(this);
+    Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
+        sourceInfo->source->init(this);
     }
 
     d->listSourcePlugins();
@@ -174,6 +226,7 @@ SourceRegistry::SourceRegistry(QObject *parent)
 
 SourceRegistry::~SourceRegistry()
 {
+    qDeleteAll(d->m_sourceInfos);
     delete d;
 }
 
@@ -186,18 +239,12 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceString, QObje
         return 0;
     }
 
-    QAbstractItemModel *model = 0;
-
-    AbstractSource *source = d->m_sources.value(sourceId.name());
+    AbstractSource *source = sourceByName(sourceId.name());
     if (!source) {
-        d->loadPluginForSource(sourceId.name());
-        source = d->m_sources.value(sourceId.name());
-        if (!source) {
-            kWarning() << "No source named" << sourceId.name();
-            return 0;
-        }
+        return 0;
     }
-    model = source->createModel(sourceId.arguments());
+
+    QAbstractItemModel *model = source->createModel(sourceId.arguments());
     if (!model) {
         kWarning() << "Failed to create model from" << sourceString;
         return 0;
@@ -245,6 +292,29 @@ void SourceRegistry::setConfigFileName(const QString &name)
     }
     d->m_config = KSharedConfig::openConfig(name);
     configFileNameChanged(name);
+}
+
+QAbstractItemModel *SourceRegistry::availableSourcesModel() const
+{
+    return d->m_availableSourcesModel;
+}
+
+AbstractSource *SourceRegistry::sourceByName(const QString &name) const
+{
+    SourceInfo *sourceInfo = d->m_sourceInfoByName.value(name);
+    if (!sourceInfo) {
+        kWarning() << "No source named" << name;
+        return 0;
+    }
+    if (sourceInfo->source) {
+        return sourceInfo->source;
+    }
+    d->loadPluginForSourceInfo(sourceInfo);
+    if (!sourceInfo->source) {
+        kWarning() << "Failed to load source for" << name;
+        return 0;
+    }
+    return sourceInfo->source;
 }
 
 } // namespace Homerun

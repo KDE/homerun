@@ -33,6 +33,7 @@ class QAbstractItemModel;
 
 namespace Homerun {
 
+class AbstractSource;
 class SourceRegistryPrivate;
 
 /**
@@ -61,6 +62,11 @@ public:
 
     QString configFileName() const;
     void setConfigFileName(const QString &name);
+
+    //// Config API
+    Q_INVOKABLE QAbstractItemModel *availableSourcesModel() const;
+
+    AbstractSource *sourceByName(const QString &name) const;
 
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
