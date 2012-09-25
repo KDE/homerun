@@ -64,6 +64,12 @@ Item {
         }
     }
 
+    Component {
+        id: configTabContentComponent
+        TabContentEditor {
+        }
+    }
+
     PlasmaComponents.TabBar {
         id: filterTabBar
 
@@ -103,14 +109,19 @@ Item {
 
         onCurrentTabChanged: {
             if (!currentTab.tab) {
-                // currentTab.tab is the tab content
-                currentTab.tab = tabContent.createObject(tabGroup, {
-                    "sourceRegistry": sourceRegistry,
-                    "sources": currentTab.sources,
-                });
+                createTabContent(currentTab);
             }
             // Setting currentTab does not change the tab content, so do it ourselves
             tabGroup.currentTab = currentTab.tab;
+        }
+
+        function createTabContent(tab) {
+            var component = configureMode ? configTabContentComponent : tabContent;
+            // tab.tab is the tab content
+            tab.tab = component.createObject(tabGroup, {
+                "sourceRegistry": sourceRegistry,
+                "sources": tab.sources,
+            });
         }
 
         function firstTab() {
@@ -221,9 +232,12 @@ Item {
                     text: configureMode ? i18n("End Configure") : i18n("Configure");
                     onClicked: {
                         configureMode = !configureMode;
-                        if (configureMode) {
-                            reset();
-                        }
+                        filterTabBar.tabList().forEach(function(tab) {
+                            if (tab.tab) {
+                                tab.tab.destroy();
+                            }
+                        });
+                        filterTabBar.createTabContent(filterTabBar.currentTab);
                     }
                 }
             }
@@ -310,7 +324,7 @@ Item {
     function reset() {
         filterTabBar.goToFirstTab();
         filterTabBar.tabList().forEach(function(tab) {
-            if (tab.tab) {
+            if (tab.tab && tab.tab.reset) {
                 tab.tab.reset();
             }
         });
