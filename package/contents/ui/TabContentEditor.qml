@@ -40,6 +40,7 @@ Item {
             isLast: model.index == selectedSourcesModel.count - 1
 
             sourceName: model.sourceName
+            sourceArguments: model.sourceArguments
 
             onRemoveRequested: {
                 selectedSourcesModel.remove(model.index);
@@ -47,6 +48,11 @@ Item {
             }
             onMoveRequested: {
                 selectedSourcesModel.move(model.index, model.index + delta, 1);
+                main.updateSources();
+            }
+
+            onSourceArgumentsChanged: {
+                selectedSourcesModel.setProperty(model.index, "sourceArguments", sourceArguments);
                 main.updateSources();
             }
         }
@@ -98,8 +104,21 @@ Item {
     }
 
     function fillSelectedSourcesModel() {
-        sources.forEach(function(sourceName) {
-            selectedSourcesModel.append({sourceName: sourceName});
+        sources.forEach(function(sourceString) {
+            var idx = sourceString.indexOf(":");
+            var name;
+            var arguments;
+            if (idx == -1) {
+                name = sourceString;
+                arguments = "";
+            } else {
+                name = sourceString.slice(0, idx);
+                arguments = sourceString.slice(idx + 1);
+            }
+            selectedSourcesModel.append({
+                sourceName: name,
+                sourceArguments: arguments,
+            });
         });
     }
 
@@ -107,7 +126,11 @@ Item {
         var lst = new Array();
         for (var idx = 0; idx < selectedSourcesModel.count; ++idx) {
             var item = selectedSourcesModel.get(idx);
-            lst.push(item.sourceName);
+            var str = item.sourceName;
+            if (item.sourceArguments != "") {
+                str += ":" + item.sourceArguments;
+            }
+            lst.push(str);
         }
         sourcesUpdated(lst);
     }

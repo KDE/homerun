@@ -27,7 +27,7 @@ SourceEditor.qml
 
 # X Propagate source reordering to config file
 
-# _ Add line edit to SourceEditor for primitive configuration
+# X Add line edit to SourceEditor for primitive configuration
 
 # _ Add a way for sources to provide a configuration QML file
 

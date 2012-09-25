@@ -25,6 +25,7 @@ Item {
     id: main
     property QtObject sourceRegistry
     property string sourceName
+    property string sourceArguments
 
     property bool isFirst
     property bool isLast
@@ -33,6 +34,7 @@ Item {
 
     signal removeRequested
     signal moveRequested(int delta)
+    signal sourceArgumentsChanged(string sourceArguments)
 
     PlasmaCore.FrameSvgItem {
         id: frame
@@ -47,7 +49,25 @@ Item {
             text: sourceName
         }
 
+        PlasmaComponents.TextField {
+            id: argumentsTextField
+            x: 200
+            width: 300
+            anchors {
+                top: label.top
+                bottom: label.bottom
+            }
+            text: sourceArguments
+            onActiveFocusChanged: {
+                if (!activeFocus && text != sourceArguments) {
+                    console.log("Changed to " + text);
+                    sourceArgumentsChanged(text);
+                }
+            }
+        }
+
         Row {
+            id: buttonRow
             height: label.height
             anchors {
                 right: parent.right
