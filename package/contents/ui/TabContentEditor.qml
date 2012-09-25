@@ -36,6 +36,9 @@ Item {
             sourceRegistry: main.sourceRegistry
             width: parent ? parent.width : 0
 
+            isFirst: model.index == 0
+            isLast: model.index == selectedSourcesModel.count - 1
+
             sourceName: model.sourceName
 
             onRemoveRequested: {

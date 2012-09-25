@@ -26,6 +26,9 @@ Item {
     property QtObject sourceRegistry
     property string sourceName
 
+    property bool isFirst
+    property bool isLast
+
     height: frame.height
 
     signal removeRequested
@@ -57,6 +60,7 @@ Item {
                 id: upButton
                 width: height
                 iconSource: "arrow-up"
+                enabled: !main.isFirst
                 onClicked: main.moveRequested(-1)
             }
 
@@ -64,6 +68,7 @@ Item {
                 id: downButton
                 width: height
                 iconSource: "arrow-down"
+                enabled: !main.isLast
                 onClicked: main.moveRequested(1)
             }
 

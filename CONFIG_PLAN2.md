@@ -23,9 +23,9 @@ SourceEditor.qml
 
 # X Propagate new source to config file
 
-# _ Add up|down buttons (or drag'n'drop) to SourceEditor
+# X Add up|down buttons (or drag'n'drop) to SourceEditor
 
-# _ Propagate source reordering to config file
+# X Propagate source reordering to config file
 
 # _ Add line edit to SourceEditor for primitive configuration
 
