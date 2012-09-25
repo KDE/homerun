@@ -165,4 +165,22 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool TabModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (role != SourcesRole) {
+        kWarning() << "Cannot set data for role" << role;
+        return false;
+    }
+
+    Tab *tab = m_tabList.value(index.row());
+    if (!tab) {
+        kWarning() << "No tab for row" << index.row();
+        return false;
+    }
+
+    tab->m_sources = value.toStringList();
+    dataChanged(index, index);
+    return true;
+}
+
 #include "tabmodel.moc"
