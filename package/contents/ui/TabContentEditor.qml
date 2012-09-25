@@ -18,6 +18,7 @@
  */
 
 import QtQuick 1.1
+import org.kde.plasma.components 0.1 as PlasmaComponents
 
 Item {
     id: main
@@ -43,9 +44,32 @@ Item {
     }
 
     // Ui
+    ListView {
+        id: availableSourcesView
+        anchors {
+            left: parent.left
+            top: parent.top
+            bottom: parent.bottom
+        }
+        width: 200
+
+        model: sourceRegistry.availableSourcesModel()
+
+        delegate: PlasmaComponents.Button {
+            width: parent.width
+            text: model.display
+        }
+    }
+
     Column {
         id: sourceEditorContainer
-        anchors.fill: parent
+        anchors {
+            left: availableSourcesView.right
+            leftMargin: 12
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
+        }
     }
 
     // Scripting

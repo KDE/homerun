@@ -17,9 +17,7 @@ SourceEditor.qml
 
 # X Propagate removal to config file
 
-# _ Add a "Add Source" button at the end of TabContentEditor
-
-# _ Show available sources in a Plasma dialog when "Add Source" is clicked
+# X Show available sources in SourceEditor
 
 # _ Add a new SourceEditor to TabContentEditor when selected
 
