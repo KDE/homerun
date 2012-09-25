@@ -39,7 +39,6 @@ Item {
 
     property string configFileName
 
-    property variant tabContentList: []
     property alias currentTabContent: tabGroup.currentTab
 
     property bool configureMode: false
@@ -81,19 +80,7 @@ Item {
                 text: model.display
                 iconSource: model.decoration
                 property string searchPlaceholder: model.searchPlaceholder
-
-                Component.onCompleted: {
-                    // "tab" is a property of TabButton, that is why it is not declared with "var"
-                    // FIXME
-                    tab = tabContent.createObject(tabGroup, {
-                        "sourceRegistry": sourceRegistry,
-                        "sources": model.sources,
-                    });
-
-                    var lst = tabContentList;
-                    lst.push(tab);
-                    tabContentList = lst;
-                }
+                property variant sources: model.sources
             }
         }
 
@@ -112,6 +99,18 @@ Item {
                 return;
             }
             filterTabBar.currentTab = firstTab();
+        }
+
+        onCurrentTabChanged: {
+            if (!currentTab.tab) {
+                // currentTab.tab is the tab content
+                currentTab.tab = tabContent.createObject(tabGroup, {
+                    "sourceRegistry": sourceRegistry,
+                    "sources": currentTab.sources,
+                });
+            }
+            // Setting currentTab does not change the tab content, so do it ourselves
+            tabGroup.currentTab = currentTab.tab;
         }
 
         function firstTab() {
@@ -138,21 +137,15 @@ Item {
             return lst;
         }
 
-        function setCurrentTab(tab) {
-            currentTab = tab;
-            // Setting currentTab does not change the tab content, so do it ourselves
-            tabGroup.currentTab = currentTab.tab;
-        }
-
         function goToFirstTab() {
-            setCurrentTab(filterTabBar.firstTab());
+            currentTab = filterTabBar.firstTab();
         }
 
         function goToPreviousTab() {
             var lst = tabList();
             for (var idx = 1; idx < lst.length; ++idx) {
                 if (lst[idx] == filterTabBar.currentTab) {
-                    setCurrentTab(lst[idx - 1]);
+                    currentTab = lst[idx - 1];
                     return;
                 }
             }
@@ -162,7 +155,7 @@ Item {
             var lst = tabList();
             for (var idx = 0; idx < lst.length - 1; ++idx) {
                 if (lst[idx] == filterTabBar.currentTab) {
-                    setCurrentTab(lst[idx + 1]);
+                    currentTab = lst[idx + 1];
                     return;
                 }
             }
@@ -313,8 +306,10 @@ Item {
 
     function reset() {
         filterTabBar.goToFirstTab();
-        tabContentList.forEach(function(content) {
-            content.reset();
+        filterTabBar.tabList().forEach(function(tab) {
+            if (tab.tab) {
+                tab.tab.reset();
+            }
         });
         searchField.text = "";
     }
