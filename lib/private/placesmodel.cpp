@@ -20,6 +20,7 @@
 
 // Local
 #include <pathmodel.h>
+#include <sourceconfigurationwidget.h>
 #include <sourceid.h>
 
 // KDE
@@ -28,6 +29,10 @@
 #include <KDirModel>
 #include <KFilePlacesModel>
 #include <KLocale>
+#include <KUrlRequester>
+
+// Qt
+#include <QVBoxLayout>
 
 namespace Homerun {
 
@@ -276,6 +281,35 @@ int FavoritePlacesModel::count() const
     return rowCount(QModelIndex());
 }
 
+//- DirConfigurationWidget ------------------------------------------
+class DirConfigurationWidget : public SourceConfigurationWidget
+{
+public:
+    DirConfigurationWidget(const SourceArguments &args)
+    {
+        m_requester = new KUrlRequester;
+
+        QVBoxLayout *layout = new QVBoxLayout(this);
+        layout->setMargin(0);
+        layout->addWidget(m_requester);
+
+        KUrl url = args.value("rootUrl");
+        if (url.isValid()) {
+            m_requester->setUrl(url);
+        }
+    }
+
+    SourceArguments arguments() const
+    {
+        SourceArguments args;
+        args.insert("rootUrl", m_requester->url().url());
+        return args;
+    }
+
+private:
+    KUrlRequester *m_requester;
+};
+
 //- DirSource -------------------------------------------------------
 DirSource::DirSource(QObject *parent)
 : AbstractSource(parent)
@@ -306,6 +340,16 @@ QAbstractItemModel *DirSource::createModel(const SourceArguments &args)
     DirModel *model = new DirModel;
     model->init(rootUrl, rootName, url);
     return model;
+}
+
+bool DirSource::isConfigurable() const
+{
+    return true;
+}
+
+SourceConfigurationWidget *DirSource::createConfigurationWidget(const SourceArguments &args)
+{
+    return new DirConfigurationWidget(args);
 }
 
 } // namespace Homerun

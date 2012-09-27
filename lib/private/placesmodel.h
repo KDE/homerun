@@ -138,6 +138,8 @@ class DirSource : public AbstractSource
 public:
     DirSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &args);
+    bool isConfigurable() const;
+    SourceConfigurationWidget *createConfigurationWidget(const SourceArguments &args);
 };
 
 } // namespace Homerun
