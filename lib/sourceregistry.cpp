@@ -36,6 +36,7 @@
 #include <KConfigGroup>
 #include <KDebug>
 #include <KPluginFactory>
+#include <KPluginInfo>
 #include <KPluginLoader>
 #include <KServiceTypeTrader>
 
@@ -66,6 +67,7 @@ private:
 struct SourceInfo
 {
     QString name;
+    QString visibleName;
     AbstractSource *source;
     KService::Ptr service;
 
@@ -106,7 +108,7 @@ public:
         SourceInfo *sourceInfo = m_sourceInfos.at(row);
         switch (role) {
         case Qt::DisplayRole:
-            return sourceInfo->name;
+            return sourceInfo->visibleName;
         case SourceIdRole:
             return sourceInfo->name;
         default:
@@ -137,16 +139,17 @@ struct SourceRegistryPrivate
             "Homerun/Source",
             QString("[X-KDE-Homerun-APIVersion] == %1").arg(HOMERUN_API_VERSION)
             );
+
         Q_FOREACH(KService::Ptr ptr, offers) {
-            QVariant value = ptr->property("X-KDE-PluginInfo-Name", QVariant::String);
-            QString name = value.toString();
-            if (name.isEmpty()) {
+            KPluginInfo pluginInfo(ptr);
+            if (pluginInfo.pluginName().isEmpty()) {
                 kWarning() << "Missing X-KDE-PluginInfo-Name key in" << ptr->entryPath();
                 continue;
             }
             SourceInfo *sourceInfo = new SourceInfo;
             sourceInfo->service = ptr;
-            sourceInfo->name = name;
+            sourceInfo->name = pluginInfo.pluginName();
+            sourceInfo->visibleName = pluginInfo.name();
             registerSourceInfo(sourceInfo);
         }
     }
@@ -173,10 +176,11 @@ struct SourceRegistryPrivate
         source->init(q);
     }
 
-    void registerSource(const QString &name, AbstractSource *source)
+    void registerSource(const QString &name, AbstractSource *source, const QString &visibleName)
     {
         SourceInfo *info = new SourceInfo;
         info->name = name;
+        info->visibleName = visibleName;
         info->source = source;
         registerSourceInfo(info);
     }
@@ -228,14 +232,30 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
-    d->registerSource("InstalledApps", new InstalledAppsSource(this));
-    d->registerSource("GroupedInstalledApps", new GroupedInstalledAppsSource(this));
-    d->registerSource("Dir", new DirSource(this));
-    d->registerSource("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this));
-    d->registerSource("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this));
-    d->registerSource("Power", new SimpleSource<PowerModel>(this));
-    d->registerSource("Session", new SimpleSource<SessionModel>(this));
-    d->registerSource("Runner", new RunnerSource(this));
+    d->registerSource("InstalledApps", new InstalledAppsSource(this),
+        i18n("Installed Applications")
+    );
+    d->registerSource("GroupedInstalledApps", new GroupedInstalledAppsSource(this),
+        i18n("All Installed Applications")
+    );
+    d->registerSource("Dir", new DirSource(this),
+        i18n("Folder")
+    );
+    d->registerSource("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this),
+        i18n("Favorite Places")
+    );
+    d->registerSource("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this),
+        i18n("Favorite Applications")
+    );
+    d->registerSource("Power", new SimpleSource<PowerModel>(this),
+        i18n("Power Management")
+    );
+    d->registerSource("Session", new SimpleSource<SessionModel>(this),
+        i18n("Session")
+    );
+    d->registerSource("Runner", new RunnerSource(this),
+        i18n("KRunner")
+    );
 
     Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
         sourceInfo->source->init(this);
@@ -327,8 +347,12 @@ QString SourceRegistry::visibleNameForSource(const QString &sourceString) const
         kWarning() << "Invalid sourceString" << sourceString;
         return QString();
     }
-    // FIXME: Get info from plugin desktop file
-    return sourceId.name();
+    SourceInfo *info = d->m_sourceInfoByName.value(sourceId.name());
+    if (!info) {
+        kWarning() << "No source for" << sourceString;
+        return QString();
+    }
+    return info->visibleName;
 }
 
 bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
