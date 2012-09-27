@@ -82,10 +82,19 @@ struct PluginInfo
 class AvailableSourcesModel : public QAbstractListModel
 {
 public:
+    enum {
+        SourceIdRole = Qt::UserRole + 1
+    };
+
     AvailableSourcesModel(const QList<SourceInfo *> &sources, QObject *parent)
     : QAbstractListModel(parent)
     , m_sourceInfos(sources)
-    {}
+    {
+        QHash<int, QByteArray> roles;
+        roles.insert(Qt::DisplayRole, "display");
+        roles.insert(SourceIdRole, "sourceId");
+        setRoleNames(roles);
+    }
 
     int rowCount(const QModelIndex &parent) const
     {
@@ -101,6 +110,8 @@ public:
         SourceInfo *sourceInfo = m_sourceInfos.at(row);
         switch (role) {
         case Qt::DisplayRole:
+            return sourceInfo->name;
+        case SourceIdRole:
             return sourceInfo->name;
         default:
             break;
@@ -315,6 +326,18 @@ AbstractSource *SourceRegistry::sourceByName(const QString &name) const
         return 0;
     }
     return sourceInfo->source;
+}
+
+QString SourceRegistry::visibleNameForSource(const QString &sourceString) const
+{
+    bool ok;
+    SourceId sourceId = SourceId::fromString(sourceString, &ok);
+    if (!ok) {
+        kWarning() << "Invalid sourceString" << sourceString;
+        return QString();
+    }
+    // FIXME: Get info from plugin desktop file
+    return sourceId.name();
 }
 
 } // namespace Homerun

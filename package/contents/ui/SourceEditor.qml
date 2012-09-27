@@ -24,8 +24,8 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 Item {
     id: main
     property QtObject sourceRegistry
-    property string sourceName
-    property string sourceArguments
+    property string visibleName
+    property string sourceId
 
     property bool isFirst
     property bool isLast
@@ -34,7 +34,7 @@ Item {
 
     signal removeRequested
     signal moveRequested(int delta)
-    signal sourceArgumentsChanged(string sourceArguments)
+    signal sourceIdChanged(string sourceId)
 
     PlasmaCore.FrameSvgItem {
         id: frame
@@ -46,7 +46,7 @@ Item {
             id: label
             x: parent.margins.left
             y: parent.margins.top
-            text: sourceName
+            text: main.visibleName
         }
 
         PlasmaComponents.TextField {
@@ -57,11 +57,10 @@ Item {
                 top: label.top
                 bottom: label.bottom
             }
-            text: sourceArguments
+            text: sourceId
             onActiveFocusChanged: {
-                if (!activeFocus && text != sourceArguments) {
-                    console.log("Changed to " + text);
-                    sourceArgumentsChanged(text);
+                if (!activeFocus && text != sourceId) {
+                    sourceIdChanged(text);
                 }
             }
         }

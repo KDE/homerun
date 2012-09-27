@@ -39,8 +39,8 @@ Item {
             isFirst: model.index == 0
             isLast: model.index == selectedSourcesModel.count - 1
 
-            sourceName: model.sourceName
-            sourceArguments: model.sourceArguments
+            sourceId: model.sourceId
+            visibleName: model.visibleName
 
             onRemoveRequested: {
                 selectedSourcesModel.remove(model.index);
@@ -51,8 +51,8 @@ Item {
                 main.updateSources();
             }
 
-            onSourceArgumentsChanged: {
-                selectedSourcesModel.setProperty(model.index, "sourceArguments", sourceArguments);
+            onSourceIdChanged: {
+                selectedSourcesModel.setProperty(model.index, "sourceId", sourceId);
                 main.updateSources();
             }
         }
@@ -79,7 +79,10 @@ Item {
             width: parent.width
             text: model.display
             onClicked: {
-                selectedSourcesModel.append({sourceName: model.display});
+                selectedSourcesModel.append({
+                    sourceId: model.sourceId,
+                    visibleName: model.display,
+                });
                 updateSources();
             }
         }
@@ -104,20 +107,10 @@ Item {
     }
 
     function fillSelectedSourcesModel() {
-        sources.forEach(function(sourceString) {
-            var idx = sourceString.indexOf(":");
-            var name;
-            var arguments;
-            if (idx == -1) {
-                name = sourceString;
-                arguments = "";
-            } else {
-                name = sourceString.slice(0, idx);
-                arguments = sourceString.slice(idx + 1);
-            }
+        sources.forEach(function(sourceId) {
             selectedSourcesModel.append({
-                sourceName: name,
-                sourceArguments: arguments,
+                sourceId: sourceId,
+                visibleName: sourceRegistry.visibleNameForSource(sourceId),
             });
         });
     }
@@ -126,11 +119,7 @@ Item {
         var lst = new Array();
         for (var idx = 0; idx < selectedSourcesModel.count; ++idx) {
             var item = selectedSourcesModel.get(idx);
-            var str = item.sourceName;
-            if (item.sourceArguments != "") {
-                str += ":" + item.sourceArguments;
-            }
-            lst.push(str);
+            lst.push(item.sourceId);
         }
         sourcesUpdated(lst);
     }
