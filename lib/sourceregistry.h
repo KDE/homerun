@@ -66,8 +66,6 @@ public:
     //// Config API
     Q_INVOKABLE QAbstractItemModel *availableSourcesModel() const;
 
-    AbstractSource *sourceByName(const QString &name) const;
-
     Q_INVOKABLE QString visibleNameForSource(const QString &sourceString) const;
 
     Q_INVOKABLE bool isSourceConfigurable(const QString &sourceString) const;

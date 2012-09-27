@@ -186,6 +186,24 @@ struct SourceRegistryPrivate
         m_sourceInfos << info;
         m_sourceInfoByName.insert(info->name, info);
     }
+
+    AbstractSource *sourceByName(const QString &name)
+    {
+        SourceInfo *sourceInfo = m_sourceInfoByName.value(name);
+        if (!sourceInfo) {
+            kWarning() << "No source named" << name;
+            return 0;
+        }
+        if (sourceInfo->source) {
+            return sourceInfo->source;
+        }
+        loadPluginForSourceInfo(sourceInfo);
+        if (!sourceInfo->source) {
+            kWarning() << "Failed to load source for" << name;
+            return 0;
+        }
+        return sourceInfo->source;
+    }
 };
 
 //- SourceRegistry --------------------------------------------
@@ -230,7 +248,7 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceString, QObje
         return 0;
     }
 
-    AbstractSource *source = sourceByName(sourceId.name());
+    AbstractSource *source = d->sourceByName(sourceId.name());
     if (!source) {
         return 0;
     }
@@ -290,24 +308,6 @@ QAbstractItemModel *SourceRegistry::availableSourcesModel() const
     return d->m_availableSourcesModel;
 }
 
-AbstractSource *SourceRegistry::sourceByName(const QString &name) const
-{
-    SourceInfo *sourceInfo = d->m_sourceInfoByName.value(name);
-    if (!sourceInfo) {
-        kWarning() << "No source named" << name;
-        return 0;
-    }
-    if (sourceInfo->source) {
-        return sourceInfo->source;
-    }
-    d->loadPluginForSourceInfo(sourceInfo);
-    if (!sourceInfo->source) {
-        kWarning() << "Failed to load source for" << name;
-        return 0;
-    }
-    return sourceInfo->source;
-}
-
 QString SourceRegistry::visibleNameForSource(const QString &sourceString) const
 {
     bool ok;
@@ -328,7 +328,7 @@ bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
         kWarning() << "Invalid sourceString" << sourceString;
         return false;
     }
-    AbstractSource *source = sourceByName(sourceId.name());
+    AbstractSource *source = d->sourceByName(sourceId.name());
     if (!source) {
         kWarning() << "No source for" << sourceString;
         return false;
@@ -344,7 +344,7 @@ QObject *SourceRegistry::createConfigurationDialog(const QString &sourceString)
         kWarning() << "Invalid sourceString" << sourceString;
         return 0;
     }
-    AbstractSource *source = sourceByName(sourceId.name());
+    AbstractSource *source = d->sourceByName(sourceId.name());
     if (!source) {
         kWarning() << "No source for" << sourceString;
         return 0;
