@@ -49,22 +49,6 @@ Item {
             text: main.visibleName
         }
 
-        PlasmaComponents.TextField {
-            id: argumentsTextField
-            x: 200
-            width: 300
-            anchors {
-                top: label.top
-                bottom: label.bottom
-            }
-            text: sourceId
-            onActiveFocusChanged: {
-                if (!activeFocus && text != sourceId) {
-                    sourceIdChanged(text);
-                }
-            }
-        }
-
         Row {
             id: buttonRow
             height: label.height
@@ -73,6 +57,20 @@ Item {
                 rightMargin: parent.margins.right
                 top: parent.top
                 topMargin: parent.margins.top
+            }
+
+            PlasmaComponents.Button {
+                id: configureButton
+                width: height
+                iconSource: "configure"
+                visible: sourceRegistry.isSourceConfigurable(sourceId)
+                onClicked: {
+                    var dlg = sourceRegistry.createConfigurationDialog(sourceId);
+                    if (dlg.exec()) {
+                        sourceIdChanged(dlg.sourceId());
+                    }
+                    dlg.destroy();
+                }
             }
 
             PlasmaComponents.Button {

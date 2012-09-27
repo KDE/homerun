@@ -15,6 +15,7 @@ set(lib_VERSION ${lib_VERSION_MAJOR}.${lib_VERSION_MINOR}.${lib_VERSION_PATCH})
 set(lib_SRCS
     abstractsource.cpp
     pathmodel.cpp
+    sourceconfigurationwidget.cpp
     sourceid.cpp
     sourceregistry.cpp
     )
@@ -28,6 +29,7 @@ set(lib_SRCS ${lib_SRCS}
     private/runnermodel.cpp
     private/installedappsmodel.cpp
     private/sessionmodel.cpp
+    private/sourceconfigurationdialog.cpp
     )
 
 # Build

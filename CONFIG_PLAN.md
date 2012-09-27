@@ -29,10 +29,12 @@ SourceEditor.qml
 
 # X Add line edit to SourceEditor for primitive configuration
 
-# _ Add a way for sources to provide a configuration QML file
+# X Add a way for sources to provide a configuration widget
 
-- _ Add "createConfigurator()" method to AbstractSource
-- _ Use it in SourceEditor
-- _ To test, implement it in DirModel
+- X Add "createConfigurationWidget()" method to AbstractSource
+- X Use it in SourceEditor
+- X To test, implement it in DirModel
 
 # _ Implement createConfigurator() in other sources
+
+# _ Show source "visible name" in configuration

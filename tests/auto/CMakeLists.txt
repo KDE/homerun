@@ -35,12 +35,14 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${lib_SOURCE_DIR}/private/placesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
+    ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
     ${lib_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(placesmodeltest_x11
     ${lib_SOURCE_DIR}/private/placesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
+    ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
     ${lib_SOURCE_DIR}/sourceid.cpp
     )
 

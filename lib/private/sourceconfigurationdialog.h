@@ -16,55 +16,40 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-// Self
-#include <abstractsource.h>
+#ifndef SOURCECONFIGURATIONDIALOG_H
+#define SOURCECONFIGURATIONDIALOG_H
 
 // Local
-#include <sourceregistry.h>
-
-// KDE
+#include <sourceid.h>
 
 // Qt
 
-namespace Homerun {
+// KDE
+#include <KDialog>
 
-struct AbstractSourcePrivate
+namespace Homerun
 {
-    SourceRegistry *m_registry;
+
+class AbstractSource;
+class SourceConfigurationWidget;
+
+/**
+ * A dialog to configure a source
+ */
+class SourceConfigurationDialog : public KDialog
+{
+    Q_OBJECT
+public:
+    explicit SourceConfigurationDialog(AbstractSource *source, const SourceId &sourceId, QWidget *parent);
+    ~SourceConfigurationDialog();
+
+    Q_INVOKABLE QString sourceId() const;
+
+private:
+    QString m_sourceName;
+    SourceConfigurationWidget *m_sourceWidget;
 };
 
-AbstractSource::AbstractSource(QObject *parent, const QVariantList &/*args*/)
-: QObject(parent)
-, d(new AbstractSourcePrivate)
-{
-    d->m_registry = 0;
-}
+} // namespace
 
-AbstractSource::~AbstractSource()
-{
-    delete d;
-}
-
-void AbstractSource::init(SourceRegistry *registry)
-{
-    d->m_registry = registry;
-}
-
-SourceRegistry *AbstractSource::registry() const
-{
-    return d->m_registry;
-}
-
-bool AbstractSource::isConfigurable() const
-{
-    return false;
-}
-
-SourceConfigurationWidget *AbstractSource::createConfigurationWidget(const SourceArguments &)
-{
-    return 0;
-}
-
-} // namespace Homerun
-
-#include <abstractsource.moc>
+#endif /* SOURCECONFIGURATIONDIALOG_H */

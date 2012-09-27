@@ -17,54 +17,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 // Self
-#include <abstractsource.h>
+#include <sourceconfigurationwidget.h>
 
 // Local
-#include <sourceregistry.h>
 
 // KDE
 
 // Qt
 
-namespace Homerun {
-
-struct AbstractSourcePrivate
+namespace Homerun
 {
-    SourceRegistry *m_registry;
-};
 
-AbstractSource::AbstractSource(QObject *parent, const QVariantList &/*args*/)
-: QObject(parent)
-, d(new AbstractSourcePrivate)
+SourceConfigurationWidget::SourceConfigurationWidget(QWidget *parent)
+: QWidget(parent)
 {
-    d->m_registry = 0;
 }
 
-AbstractSource::~AbstractSource()
-{
-    delete d;
-}
+} // namespace
 
-void AbstractSource::init(SourceRegistry *registry)
-{
-    d->m_registry = registry;
-}
-
-SourceRegistry *AbstractSource::registry() const
-{
-    return d->m_registry;
-}
-
-bool AbstractSource::isConfigurable() const
-{
-    return false;
-}
-
-SourceConfigurationWidget *AbstractSource::createConfigurationWidget(const SourceArguments &)
-{
-    return 0;
-}
-
-} // namespace Homerun
-
-#include <abstractsource.moc>
+#include <sourceconfigurationwidget.moc>

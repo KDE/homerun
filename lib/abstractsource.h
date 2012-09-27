@@ -34,6 +34,7 @@ namespace Homerun {
 
 class SourceArguments;
 class SourceRegistry;
+class SourceConfigurationWidget;
 
 class AbstractSourcePrivate;
 
@@ -52,6 +53,10 @@ public:
     SourceRegistry *registry() const;
 
     virtual QAbstractItemModel *createModel(const SourceArguments &args) = 0;
+
+    virtual bool isConfigurable() const;
+
+    virtual SourceConfigurationWidget *createConfigurationWidget(const SourceArguments &args);
 
 private:
     AbstractSourcePrivate * const d;

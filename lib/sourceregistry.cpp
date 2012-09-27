@@ -30,6 +30,7 @@
 #include <installedappsmodel.h>
 #include <sessionmodel.h>
 #include <sourceid.h>
+#include <sourceconfigurationdialog.h>
 
 // KDE
 #include <KConfigGroup>
@@ -39,6 +40,7 @@
 #include <KServiceTypeTrader>
 
 // Qt
+#include <QApplication>
 
 namespace Homerun {
 
@@ -338,6 +340,38 @@ QString SourceRegistry::visibleNameForSource(const QString &sourceString) const
     }
     // FIXME: Get info from plugin desktop file
     return sourceId.name();
+}
+
+bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
+{
+    bool ok;
+    SourceId sourceId = SourceId::fromString(sourceString, &ok);
+    if (!ok) {
+        kWarning() << "Invalid sourceString" << sourceString;
+        return false;
+    }
+    AbstractSource *source = sourceByName(sourceId.name());
+    if (!source) {
+        kWarning() << "No source for" << sourceString;
+        return false;
+    }
+    return source->isConfigurable();
+}
+
+QObject *SourceRegistry::createConfigurationDialog(const QString &sourceString)
+{
+    bool ok;
+    SourceId sourceId = SourceId::fromString(sourceString, &ok);
+    if (!ok) {
+        kWarning() << "Invalid sourceString" << sourceString;
+        return 0;
+    }
+    AbstractSource *source = sourceByName(sourceId.name());
+    if (!source) {
+        kWarning() << "No source for" << sourceString;
+        return 0;
+    }
+    return new SourceConfigurationDialog(source, sourceId, QApplication::activeWindow());
 }
 
 } // namespace Homerun

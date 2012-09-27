@@ -16,55 +16,32 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-// Self
-#include <abstractsource.h>
+#ifndef SOURCECONFIGURATIONWIDGET_H
+#define SOURCECONFIGURATIONWIDGET_H
 
 // Local
-#include <sourceregistry.h>
+#include <homerun_export.h>
+#include <sourceid.h>
+
+// Qt
+#include <QWidget>
 
 // KDE
 
-// Qt
-
-namespace Homerun {
-
-struct AbstractSourcePrivate
+namespace Homerun
 {
-    SourceRegistry *m_registry;
+
+/**
+ * Used by configurable sources to provide a configuration widget.
+ */
+class HOMERUN_EXPORT SourceConfigurationWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    SourceConfigurationWidget(QWidget *parent = 0);
+    virtual SourceArguments arguments() const = 0;
 };
 
-AbstractSource::AbstractSource(QObject *parent, const QVariantList &/*args*/)
-: QObject(parent)
-, d(new AbstractSourcePrivate)
-{
-    d->m_registry = 0;
-}
+} // namespace
 
-AbstractSource::~AbstractSource()
-{
-    delete d;
-}
-
-void AbstractSource::init(SourceRegistry *registry)
-{
-    d->m_registry = registry;
-}
-
-SourceRegistry *AbstractSource::registry() const
-{
-    return d->m_registry;
-}
-
-bool AbstractSource::isConfigurable() const
-{
-    return false;
-}
-
-SourceConfigurationWidget *AbstractSource::createConfigurationWidget(const SourceArguments &)
-{
-    return 0;
-}
-
-} // namespace Homerun
-
-#include <abstractsource.moc>
+#endif /* SOURCECONFIGURATIONWIDGET_H */
