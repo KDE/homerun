@@ -17,5 +17,6 @@ Type=Service
 X-KDE-ServiceTypes=Homerun/Source
 X-KDE-Library=homerun_source_recentdocuments
 
-X-KDE-Homerun-Sources=RecentDocuments
+X-KDE-PluginInfo-Name=RecentDocuments
+
 X-KDE-Homerun-APIVersion=0

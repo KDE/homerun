@@ -11,6 +11,3 @@ Comment[x-test]=xxHomerun source pluginxx
 
 [PropertyDef::X-KDE-Homerun-APIVersion]
 Type=int
-
-[PropertyDef::X-KDE-Homerun-Sources]
-Type=QStringList

@@ -67,17 +67,11 @@ struct SourceInfo
 {
     QString name;
     AbstractSource *source;
+    KService::Ptr service;
 
     SourceInfo()
     : source(0)
     {}
-};
-
-//- PluginInfo ------------------------------------------------
-struct PluginInfo
-{
-    KService::Ptr service;
-    QSet<SourceInfo*> sourceInfos; // Set of SourceInfos waiting for this plugin to be loaded
 };
 
 //- AvailableSourcesModel -------------------------------------
@@ -137,8 +131,6 @@ struct SourceRegistryPrivate
     AvailableSourcesModel *m_availableSourcesModel;
     KSharedConfig::Ptr m_config;
 
-    QList<PluginInfo> m_pluginInfoList;
-
     void listSourcePlugins()
     {
         KService::List offers = KServiceTypeTrader::self()->query(
@@ -146,67 +138,53 @@ struct SourceRegistryPrivate
             QString("[X-KDE-Homerun-APIVersion] == %1").arg(HOMERUN_API_VERSION)
             );
         Q_FOREACH(KService::Ptr ptr, offers) {
-            PluginInfo pluginInfo;
-            pluginInfo.service = ptr;
-
-            QVariant value = ptr->property("X-KDE-Homerun-Sources", QVariant::StringList);
-            QStringList sources = value.toStringList();
-            Q_FOREACH(const QString &name, sources) {
-                SourceInfo* sourceInfo = registerSource(name, 0);
-                pluginInfo.sourceInfos << sourceInfo;
+            QVariant value = ptr->property("X-KDE-PluginInfo-Name", QVariant::String);
+            QString name = value.toString();
+            if (name.isEmpty()) {
+                kWarning() << "Missing X-KDE-PluginInfo-Name key in" << ptr->entryPath();
+                continue;
             }
-
-            m_pluginInfoList << pluginInfo;
+            SourceInfo *sourceInfo = new SourceInfo;
+            sourceInfo->service = ptr;
+            sourceInfo->name = name;
+            registerSourceInfo(sourceInfo);
         }
     }
 
     void loadPluginForSourceInfo(SourceInfo *sourceInfo)
     {
-        // Look for a plugin associated with this sourceInfo
-        auto it = m_pluginInfoList.begin(), end = m_pluginInfoList.end();
-        for (; it != end; ++it) {
-            if (it->sourceInfos.contains(sourceInfo)) {
-                break;
-            }
-        }
-        if (it == end) {
-            return;
-        }
-        KService::Ptr ptr = it->service;
-        QSet<SourceInfo *> sourceInfos = it->sourceInfos;
-        m_pluginInfoList.erase(it);
-
+        Q_ASSERT(sourceInfo->service);
         // Create the plugin factory
-        KPluginLoader loader(*ptr);
+        KPluginLoader loader(*sourceInfo->service);
         KPluginFactory *factory = loader.factory();
         if (!factory) {
-            kWarning() << "Failed to load plugin (desktop file: " << ptr->entryPath() << ", source:" << sourceInfo->name << ")";
+            kWarning() << "Failed to load plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->name << ")";
             kWarning() << loader.errorString();
             return;
         }
 
-        // Create and register all sources provided by the plugin
-        Q_FOREACH(SourceInfo *sourceInfo, sourceInfos) {
-            const QString keyword = sourceInfos.count() > 1 ? sourceInfo->name : QString();
-            AbstractSource *source = factory->create<AbstractSource>(keyword);
-            if (!source) {
-                kWarning() << "Failed to create source from plugin (desktop file: " << ptr->entryPath() << ", source:" << sourceInfo->name << ")";
-                continue;
-            }
-            sourceInfo->source = source;
-
-            source->init(q);
+        // Create and register the source
+        AbstractSource *source = factory->create<AbstractSource>();
+        if (!source) {
+            kWarning() << "Failed to create source from plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->name << ")";
+            return;
         }
+        sourceInfo->source = source;
+        source->init(q);
     }
 
-    SourceInfo *registerSource(const QString &name, AbstractSource *source)
+    void registerSource(const QString &name, AbstractSource *source)
     {
         SourceInfo *info = new SourceInfo;
         info->name = name;
         info->source = source;
+        registerSourceInfo(info);
+    }
+
+    void registerSourceInfo(SourceInfo *info)
+    {
         m_sourceInfos << info;
-        m_sourceInfoByName.insert(name, info);
-        return info;
+        m_sourceInfoByName.insert(info->name, info);
     }
 };
 
