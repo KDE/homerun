@@ -204,6 +204,17 @@ struct SourceRegistryPrivate
         }
         return sourceInfo->source;
     }
+
+    AbstractSource *sourceBySourceString(const QString &sourceString)
+    {
+        bool ok;
+        SourceId sourceId = SourceId::fromString(sourceString, &ok);
+        if (!ok) {
+            kWarning() << "Invalid sourceString" << sourceString;
+            return 0;
+        }
+        return sourceByName(sourceId.name());
+    }
 };
 
 //- SourceRegistry --------------------------------------------
@@ -322,13 +333,7 @@ QString SourceRegistry::visibleNameForSource(const QString &sourceString) const
 
 bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
 {
-    bool ok;
-    SourceId sourceId = SourceId::fromString(sourceString, &ok);
-    if (!ok) {
-        kWarning() << "Invalid sourceString" << sourceString;
-        return false;
-    }
-    AbstractSource *source = d->sourceByName(sourceId.name());
+    AbstractSource *source = d->sourceBySourceString(sourceString);
     if (!source) {
         kWarning() << "No source for" << sourceString;
         return false;
