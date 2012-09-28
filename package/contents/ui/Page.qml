@@ -19,6 +19,7 @@
 
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 Item {
@@ -161,12 +162,27 @@ Item {
         }
 
         delegate: PlasmaComponents.Button {
-            width: parent.width
+            width: parent.width - 24
             text: model.display
             onClicked: {
                 addSource(model.sourceId);
                 main.updateSources();
             }
+        }
+
+        PlasmaCore.SvgItem {
+            anchors {
+                right: parent.right
+                rightMargin: 12
+                top: parent.top
+                bottom: parent.bottom
+            }
+            width: naturalSize.width
+            z: 1000
+            svg: PlasmaCore.Svg {
+                imagePath: "widgets/scrollwidget"
+            }
+            elementId: "border-right"
         }
     }
 
