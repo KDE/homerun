@@ -74,7 +74,7 @@ Column {
                 id: configureButton
                 width: height
                 iconSource: "configure"
-                visible: sourceRegistry.isSourceConfigurable(sourceId)
+                visible: sourceId ? sourceRegistry.isSourceConfigurable(sourceId) : false
                 onClicked: {
                     var dlg = sourceRegistry.createConfigurationDialog(sourceId);
                     if (dlg.exec()) {
