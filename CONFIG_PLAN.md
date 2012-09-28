@@ -41,8 +41,8 @@ SourceEditor.qml
 
 # X Expose again necessary properties to SourceEditor
 
-# _ Move availableSourcesModel to Page.qml
+# X Move availableSourcesModel to Page.qml
 
-# _ Show list of available sources in Page.qml
+# X Show list of available sources in Page.qml
 
 # _ Implement createConfigurator() in other sources

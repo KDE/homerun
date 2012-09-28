@@ -144,11 +144,38 @@ Item {
     }
 
     ListView {
+        id: availableSourcesView
+        anchors {
+            left: parent.left
+            top: parent.top
+            bottom: parent.bottom
+        }
+        width: configureMode ? parent.width * 0.2 : 0
+        opacity: configureMode ? 1 : 0
+        Behavior on width { NumberAnimation {} }
+        Behavior on opacity { NumberAnimation {} }
+
+        model: HomerunFixes.SortFilterModel {
+            sourceModel: sourceRegistry.availableSourcesModel()
+            sortRole: "display"
+        }
+
+        delegate: PlasmaComponents.Button {
+            width: parent.width
+            text: model.display
+            onClicked: {
+                addSource(model.sourceId);
+                main.updateSources();
+            }
+        }
+    }
+
+    ListView {
         id: listView
         anchors {
             top: parent.top
             bottom: parent.bottom
-            left: parent.left
+            left: availableSourcesView.right
             right: scrollBar.left
         }
         clip: true
@@ -179,6 +206,7 @@ Item {
 
             Component.onCompleted: {
                 createView(model.model, editorMain);
+                main.updateRunning();
             }
         }
     }
@@ -199,6 +227,8 @@ Item {
         }
     }
 
+    Component.onCompleted: fillSourcesModel()
+
     //- Code -------------------------------------------------------
     function getFirstView() {
         var lst = KeyboardUtils.findTabMeChildren(this);
@@ -215,14 +245,6 @@ Item {
         busyIndicator.running = false;
     }
 
-    function finishModelConnections() {
-        for (var idx = 0; idx < sourcesModel.count; ++idx) {
-            var model = sourcesModel.get(idx).model;
-            runningConnectionComponent.createObject(main, {"target": model});
-        }
-        main.updateRunning();
-    }
-
     function createFilterForModel(model) {
         if (!model) {
             console.log("createFilterForModel: invalid model");
@@ -237,9 +259,6 @@ Item {
             return null;
         }
 
-        // Create connections now: if we do it after applying the filter, then
-        // "model" may have been changed to be a filter model, not the source
-        // model
         openSourceConnectedConnectionComponent.createObject(model);
 
         if ("query" in model) {
@@ -247,6 +266,7 @@ Item {
             queryBindingComponent.createObject(main, {"target": model});
         }
 
+        runningConnectionComponent.createObject(main, {"target": model});
         return model;
     }
 
@@ -270,26 +290,8 @@ Item {
         var obj = component.createObject(parent, viewArgs);
     }
 
-    Component.onCompleted: {
-        var firstView = null;
-
-        var models = [];
-        sources.forEach(function(sourceId) {
-            var model = createModelForSource(sourceId, main);
-            if (model) {
-                models.push(model);
-            }
-            sourcesModel.append({
-                model: model,
-                sourceId: sourceId,
-            });
-        });
-
-        finishModelConnections();
-
-        if (firstView) {
-            firstView.forceActiveFocus();
-        }
+    function fillSourcesModel() {
+        sources.forEach(addSource);
     }
 
     function updateSources() {
@@ -299,5 +301,17 @@ Item {
             lst.push(item.sourceId);
         }
         sourcesUpdated(lst);
+    }
+
+    function addSource(sourceId) {
+        var model = createModelForSource(sourceId, main);
+        if (!model) {
+            console.log("addSource() could not create model for source: " + sourceId);
+            return;
+        }
+        sourcesModel.append({
+            sourceId: sourceId,
+            model: model,
+        });
     }
 }
