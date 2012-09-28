@@ -37,4 +37,4 @@ SourceEditor.qml
 
 # _ Implement createConfigurator() in other sources
 
-# _ Show source "visible name" in configuration
+# X Show source "visible name" in configuration
