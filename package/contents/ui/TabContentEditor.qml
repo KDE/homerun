@@ -19,6 +19,7 @@
 
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 Item {
     id: main
@@ -73,7 +74,10 @@ Item {
         }
         width: 200
 
-        model: sourceRegistry.availableSourcesModel()
+        model: HomerunFixes.SortFilterModel {
+            sourceModel: sourceRegistry.availableSourcesModel()
+            sortRole: "display"
+        }
 
         delegate: PlasmaComponents.Button {
             width: parent.width
