@@ -202,6 +202,7 @@ Item {
             configureMode: main.configureMode
             sourceRegistry: main.sourceRegistry
             sourceId: model.sourceId
+            property QtObject view
 
             isFirst: model.index == 0
             isLast: model.index == sourcesModel.count - 1
@@ -216,12 +217,17 @@ Item {
             }
 
             onSourceIdChanged: {
+                model.model.destroy()
+                view.destroy()
+                var newModel = createModelForSource(sourceId, main);
                 sourcesModel.setProperty(model.index, "sourceId", sourceId);
+                sourcesModel.setProperty(model.index, "model", newModel);
+                view = createView(model.model, editorMain);
                 main.updateSources();
             }
 
             Component.onCompleted: {
-                createView(model.model, editorMain);
+                view = createView(model.model, editorMain);
                 main.updateRunning();
             }
         }
@@ -303,7 +309,7 @@ Item {
         }
 
         var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
-        var obj = component.createObject(parent, viewArgs);
+        return component.createObject(parent, viewArgs);
     }
 
     function fillSourcesModel() {
