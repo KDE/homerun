@@ -35,6 +35,14 @@ SourceEditor.qml
 - X Use it in SourceEditor
 - X To test, implement it in DirModel
 
-# _ Implement createConfigurator() in other sources
-
 # X Show source "visible name" in configuration
+
+# X Recreate selectedSourcesModel in Page.qml
+
+# X Expose again necessary properties to SourceEditor
+
+# _ Move availableSourcesModel to Page.qml
+
+# _ Show list of available sources in Page.qml
+
+# _ Implement createConfigurator() in other sources

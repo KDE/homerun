@@ -59,18 +59,12 @@ Item {
         id: tabContent
         TabContent {
             id: tabContentMain
+            property Item tabButton
+            configureMode: main.configureMode
             onStartedApplication: isContainment ? reset() : closeRequested()
             onSetSearchFieldRequested: searchField.text = text
-        }
-    }
-
-    Component {
-        id: tabContentEditorComponent
-        TabContentEditor {
-            sources: tabButton.sources
-            property Item tabButton
             onSourcesUpdated: {
-                tabButton.setSources(sources);
+                tabModel.setSourcesForRow(tabButton.index, sources);
             }
         }
     }
@@ -92,9 +86,7 @@ Item {
                 iconSource: model.decoration
                 property string searchPlaceholder: model.searchPlaceholder
                 property variant sources: model.sources
-                function setSources(value) {
-                    tabModel.setSourcesForRow(model.index, value);
-                }
+                property int index: model.index
             }
         }
 
@@ -124,18 +116,11 @@ Item {
         }
 
         function createTabContent(tab) {
-            if (configureMode) {
-                tab.tab = tabContentEditorComponent.createObject(tabGroup, {
-                    "sourceRegistry": sourceRegistry,
-                    "sources": tab.sources,
-                    "tabButton": tab,
-                });
-            } else {
-                tab.tab = tabContent.createObject(tabGroup, {
-                    "sourceRegistry": sourceRegistry,
-                    "sources": tab.sources,
-                });
-            }
+            tab.tab = tabContent.createObject(tabGroup, {
+                sources: tab.sources,
+                sourceRegistry: sourceRegistry,
+                tabButton: tab,
+            });
         }
 
         function firstTab() {
@@ -246,12 +231,9 @@ Item {
                     text: configureMode ? i18n("End Configure") : i18n("Configure");
                     onClicked: {
                         configureMode = !configureMode;
-                        filterTabBar.tabList().forEach(function(tab) {
-                            if (tab.tab) {
-                                tab.tab.destroy();
-                            }
-                        });
-                        filterTabBar.createTabContent(filterTabBar.currentTab);
+                        if (configureMode) {
+                            reset();
+                        }
                     }
                 }
             }

@@ -27,6 +27,7 @@ Item {
     //- Defined by outside world -----------------------------------
     property QtObject sourceRegistry
     property variant sources
+    property bool configureMode
 
     property string searchCriteria
 
@@ -35,10 +36,14 @@ Item {
 
     //- Read-only properties ---------------------------------------
     // Defined for pages with a single view on a browsable model
-    property QtObject pathModel: models.length == 1 ? models[0].pathModel : null
+    property QtObject pathModel: sourcesModel.count == 1 ? sourcesModel.get(0).model.pathModel : null
 
-    //- Private properties -----------------------------------------
-    property list<QtObject> models
+    signal sourcesUpdated(variant sources)
+
+    //- Non visual elements ----------------------------------------
+    ListModel {
+        id: sourcesModel
+    }
 
     //- Components -------------------------------------------------
     Component {
@@ -138,26 +143,49 @@ Item {
         opacity: running ? 0.5 : 0
     }
 
-    Flickable {
-        id: flickable
+    ListView {
+        id: listView
         anchors {
             top: parent.top
             bottom: parent.bottom
             left: parent.left
             right: scrollBar.left
         }
-        contentWidth: width
-        contentHeight: viewContainer.height
         clip: true
-        Column {
-            id: viewContainer
-            width: parent.width
+        model: sourcesModel
+        delegate: SourceEditor {
+            id: editorMain
+            width: parent ? parent.width : 0
+            configureMode: main.configureMode
+            sourceRegistry: main.sourceRegistry
+            sourceId: model.sourceId
+
+            isFirst: model.index == 0
+            isLast: model.index == sourcesModel.count - 1
+
+            onRemoveRequested: {
+                sourcesModel.remove(model.index);
+                main.updateSources();
+            }
+            onMoveRequested: {
+                sourcesModel.move(model.index, model.index + delta, 1);
+                main.updateSources();
+            }
+
+            onSourceIdChanged: {
+                sourcesModel.setProperty(model.index, "sourceId", sourceId);
+                main.updateSources();
+            }
+
+            Component.onCompleted: {
+                createView(model.model, editorMain);
+            }
         }
     }
 
     PlasmaComponents.ScrollBar {
         id: scrollBar
-        flickableItem: flickable
+        flickableItem: listView
         anchors {
             right: parent.right
             top: parent.top
@@ -178,8 +206,8 @@ Item {
     }
 
     function updateRunning() {
-        for (var idx = 0; idx < models.length; ++idx) {
-            if (models[idx].running) {
+        for (var idx = 0; idx < sourcesModel.count; ++idx) {
+            if (sourcesModel.get(idx).model.running) {
                 busyIndicator.running = true;
                 return;
             }
@@ -188,8 +216,8 @@ Item {
     }
 
     function finishModelConnections() {
-        for (var idx = 0; idx < models.length; ++idx) {
-            var model = models[idx];
+        for (var idx = 0; idx < sourcesModel.count; ++idx) {
+            var model = sourcesModel.get(idx).model;
             runningConnectionComponent.createObject(main, {"target": model});
         }
         main.updateRunning();
@@ -222,44 +250,39 @@ Item {
         return model;
     }
 
+    function createView(model, parent) {
+        var isMultiViewModel = "modelForRow" in model;
+        var modelNeedsFiltering = !("query" in model);
+
+        var viewArgs = {};
+        viewArgs["favoriteModels"] = sourceRegistry.favoriteModels;
+        viewArgs["model"] = model;
+        viewArgs["showHeader"] = showHeader;
+        if (modelNeedsFiltering) {
+            if (isMultiViewModel) {
+                viewArgs["modelNeedsFiltering"] = true;
+            } else {
+                viewArgs["model"] = createFilterForModel(model);
+            }
+        }
+
+        var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
+        var obj = component.createObject(parent, viewArgs);
+    }
+
     Component.onCompleted: {
-        // Create models
+        var firstView = null;
+
         var models = [];
-        sources.forEach(function(x) {
-            var model = createModelForSource(x, main);
+        sources.forEach(function(sourceId) {
+            var model = createModelForSource(sourceId, main);
             if (model) {
                 models.push(model);
             }
-        });
-        main.models = models;
-
-        // Create views
-        var firstView = null;
-        models.forEach(function(model) {
-            var isMultiViewModel = "modelForRow" in model;
-            var modelNeedsFiltering = !("query" in model);
-
-            var viewArgs = {};
-            viewArgs["favoriteModels"] = sourceRegistry.favoriteModels;
-            viewArgs["model"] = model;
-            viewArgs["showHeader"] = showHeader;
-            if (modelNeedsFiltering) {
-                if (isMultiViewModel) {
-                    viewArgs["modelNeedsFiltering"] = true;
-                } else {
-                    viewArgs["model"] = createFilterForModel(model);
-                }
-            }
-
-            var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
-            var obj = component.createObject(viewContainer, viewArgs);
-            if (!isMultiViewModel && firstView === null) {
-                // Check isMultiViewModel because in that case obj is not a ResultsView
-                firstView = obj;
-            }
-
-            // Useful for debugging
-            main.objectName += model.objectName + ",";
+            sourcesModel.append({
+                model: model,
+                sourceId: sourceId,
+            });
         });
 
         finishModelConnections();
@@ -267,5 +290,14 @@ Item {
         if (firstView) {
             firstView.forceActiveFocus();
         }
+    }
+
+    function updateSources() {
+        var lst = new Array();
+        for (var idx = 0; idx < sourcesModel.count; ++idx) {
+            var item = sourcesModel.get(idx);
+            lst.push(item.sourceId);
+        }
+        sourcesUpdated(lst);
     }
 }

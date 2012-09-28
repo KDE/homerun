@@ -35,6 +35,7 @@ Item {
     property QtObject sourceRegistry
     property variant sources
     property string searchCriteria
+    property bool configureMode: false
 
     // Exposed by ourself
     property bool canGoBack: false
@@ -44,12 +45,17 @@ Item {
     signal startedApplication
     signal updateTabOrderRequested
     signal setSearchFieldRequested(string text)
+    signal sourcesUpdated(variant sources)
 
     //- Private ---------------------------------------------------
     Component {
         id: pageComponent
         Page {
             anchors.fill: parent
+            configureMode: main.configureMode
+            onSourcesUpdated: {
+                main.sourcesUpdated(sources);
+            }
         }
     }
 

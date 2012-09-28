@@ -21,16 +21,19 @@ import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
-Item {
+Column {
     id: main
     property QtObject sourceRegistry
-    property string visibleName
     property string sourceId
 
-    property bool isFirst
-    property bool isLast
+    property bool configureMode: false
 
-    height: frame.height
+    property bool isFirst: false
+    property bool isLast: false
+
+    height: configureMode ? Math.min(200, childrenRect.height) : childrenRect.height
+
+    clip: configureMode
 
     signal removeRequested
     signal moveRequested(int delta)
@@ -40,13 +43,21 @@ Item {
         id: frame
         imagePath: "widgets/tooltip"
         width: parent.width
-        height: label.height + margins.top + margins.bottom
+        height: configureMode ? (label.height + margins.top + margins.bottom) : 0
+        opacity: configureMode ? 1 : 0
+
+        Behavior on height {
+            NumberAnimation {}
+        }
+        Behavior on opacity {
+            NumberAnimation {}
+        }
 
         PlasmaComponents.Label {
             id: label
             x: parent.margins.left
             y: parent.margins.top
-            text: main.visibleName
+            text: sourceId ? sourceRegistry.visibleNameForSource(sourceId) : ""
         }
 
         Row {
