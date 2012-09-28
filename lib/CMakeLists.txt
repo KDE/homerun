@@ -27,9 +27,14 @@ set(lib_SRCS ${lib_SRCS}
     private/placesmodel.cpp
     private/powermodel.cpp
     private/runnermodel.cpp
+    private/runnerconfigurationwidget.cpp
     private/installedappsmodel.cpp
     private/sessionmodel.cpp
     private/sourceconfigurationdialog.cpp
+    )
+
+kde4_add_ui_files(lib_SRCS
+    private/runnerconfigurationwidget.ui
     )
 
 # Build

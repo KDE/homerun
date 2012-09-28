@@ -20,6 +20,7 @@
 #include <runnermodel.h>
 
 // Local
+#include <runnerconfigurationwidget.h>
 #include <sourceid.h>
 
 // KDE
@@ -364,6 +365,16 @@ QAbstractItemModel *RunnerSource::createModel(const SourceArguments &arguments)
     }
     return model;
 };
+
+bool RunnerSource::isConfigurable() const
+{
+    return true;
+}
+
+SourceConfigurationWidget *RunnerSource::createConfigurationWidget(const SourceArguments &args)
+{
+    return new RunnerConfigurationWidget(args);
+}
 
 } // namespace Homerun
 

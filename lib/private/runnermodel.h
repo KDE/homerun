@@ -133,6 +133,8 @@ class RunnerSource : public AbstractSource
 public:
     RunnerSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &arguments);
+    SourceConfigurationWidget *createConfigurationWidget(const SourceArguments &args);
+    bool isConfigurable() const;
 };
 
 } // namespace Homerun
