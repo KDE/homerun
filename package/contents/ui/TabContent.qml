@@ -98,20 +98,26 @@ Item {
 
     Component {
         id: multiResultsViewComponent
-        Repeater {
-            id: repeater
-            property variant favoriteModels
+        Column {
+            id: column
+            width: parent.width
+            property alias model: repeater.model
             property bool modelNeedsFiltering: false
-            delegate: ResultsView {
-                width: repeater.parent.width
+            property variant favoriteModels
 
-                property QtObject sourceModel: repeater.model.modelForRow(index)
+            Repeater {
+                id: repeater
+                delegate: ResultsView {
+                    width: column.width
 
-                model: repeater.modelNeedsFiltering ? createFilterForModel(sourceModel) : sourceModel
-                favoriteModels: repeater.favoriteModels
+                    property QtObject sourceModel: repeater.model.modelForRow(index)
 
-                onIndexClicked: {
-                    handleTriggerResult(model.trigger(index));
+                    model: column.modelNeedsFiltering ? createFilterForModel(sourceModel) : sourceModel
+                    favoriteModels: column.favoriteModels
+
+                    onIndexClicked: {
+                        handleTriggerResult(model.trigger(index));
+                    }
                 }
             }
         }
