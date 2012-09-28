@@ -122,7 +122,7 @@ Item {
 
                     model: multiMain.modelNeedsFiltering
                         ? createFilterForModel(repeater.model.modelForRow(index))
-                        : sourceModel
+                        : repeater.model.modelForRow(index)
                     favoriteModels: multiMain.favoriteModels
 
                     onIndexClicked: {
