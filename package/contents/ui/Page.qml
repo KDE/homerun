@@ -19,36 +19,115 @@
 
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 Item {
     id: main
 
     //- Defined by outside world -----------------------------------
+    property QtObject sourceRegistry
+    property variant sources
+
     property string searchCriteria
 
-    // Defined for pages with a single view on a browsable model
-    property QtObject pathModel
+    //- Read-write properties --------------------------------------
+    property bool showHeader: true
 
-    property list<QtObject> models
+    //- Read-only properties ---------------------------------------
+    // Defined for pages with a single view on a browsable model
+    property QtObject pathModel: models.length == 1 ? models[0].pathModel : null
 
     //- Private properties -----------------------------------------
-    property alias viewContainer: column
+    property list<QtObject> models
 
-    function getFirstView() {
-        var lst = KeyboardUtils.findTabMeChildren(this);
-        return lst.length > 0 ? lst[0] : null;
+    //- Components -------------------------------------------------
+    Component {
+        id: runningConnectionComponent
+        Connections {
+            ignoreUnknownSignals: true
+            onRunningChanged: main.updateRunning()
+        }
     }
 
-    function updateRunning() {
-        for (var idx = 0; idx < models.length; ++idx) {
-            if (models[idx].running) {
-                busyIndicator.running = true;
-                return;
+    // Filter components
+    Component {
+        id: genericFilterComponent
+        HomerunFixes.SortFilterModel {
+            filterRegExp: main.searchCriteria
+            property string name: sourceModel.name
+            property int count: sourceModel.count
+
+            property bool running: "running" in sourceModel ? sourceModel.running : false
+            property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
+
+            function trigger(index) {
+                var sourceIndex = mapRowToSource(index);
+                sourceModel.trigger(sourceIndex);
+            }
+
+        }
+    }
+
+    Component {
+        id: openSourceConnectedConnectionComponent
+        Connections {
+            ignoreUnknownSignals: true
+            onOpenSourceRequested: {
+                openSource(source);
             }
         }
-        busyIndicator.running = false;
     }
 
+    Component {
+        id: queryBindingComponent
+        Binding {
+            property: "query"
+            value: main.searchCriteria
+        }
+    }
+
+    // UI components
+    Component {
+        id: resultsViewComponent
+        ResultsView {
+            id: view
+            width: parent.width
+            onIndexClicked: {
+                handleTriggerResult(model.trigger(index));
+            }
+        }
+    }
+
+    Component {
+        id: multiResultsViewComponent
+        Column {
+            id: multiMain
+            width: parent.width
+            property alias model: repeater.model
+            property bool showHeader
+
+            property bool modelNeedsFiltering: false
+            property variant favoriteModels
+
+            Repeater {
+                id: repeater
+                delegate: ResultsView {
+                    width: multiMain.width
+
+                    model: multiMain.modelNeedsFiltering
+                        ? createFilterForModel(repeater.model.modelForRow(index))
+                        : sourceModel
+                    favoriteModels: multiMain.favoriteModels
+
+                    onIndexClicked: {
+                        handleTriggerResult(model.trigger(index));
+                    }
+                }
+            }
+        }
+    }
+
+    //- UI ---------------------------------------------------------
     PlasmaComponents.BusyIndicator {
         id: busyIndicator
         anchors {
@@ -68,10 +147,10 @@ Item {
             right: scrollBar.left
         }
         contentWidth: width
-        contentHeight: column.height
+        contentHeight: viewContainer.height
         clip: true
         Column {
-            id: column
+            id: viewContainer
             width: parent.width
         }
     }
@@ -92,12 +171,20 @@ Item {
         }
     }
 
-    Component {
-        id: runningConnectionComponent
-        Connections {
-            ignoreUnknownSignals: true
-            onRunningChanged: main.updateRunning()
+    //- Code -------------------------------------------------------
+    function getFirstView() {
+        var lst = KeyboardUtils.findTabMeChildren(this);
+        return lst.length > 0 ? lst[0] : null;
+    }
+
+    function updateRunning() {
+        for (var idx = 0; idx < models.length; ++idx) {
+            if (models[idx].running) {
+                busyIndicator.running = true;
+                return;
+            }
         }
+        busyIndicator.running = false;
     }
 
     function finishModelConnections() {
@@ -106,5 +193,79 @@ Item {
             runningConnectionComponent.createObject(main, {"target": model});
         }
         main.updateRunning();
+    }
+
+    function createFilterForModel(model) {
+        if (!model) {
+            console.log("createFilterForModel: invalid model");
+            return null;
+        }
+        return genericFilterComponent.createObject(model, {"sourceModel": model});
+    }
+
+    function createModelForSource(source, parent) {
+        var model = sourceRegistry.createModelForSource(source, parent);
+        if (!model) {
+            return null;
+        }
+
+        // Create connections now: if we do it after applying the filter, then
+        // "model" may have been changed to be a filter model, not the source
+        // model
+        openSourceConnectedConnectionComponent.createObject(model);
+
+        if ("query" in model) {
+            // Model supports querying itself, bind the search criteria field to its "query" property
+            queryBindingComponent.createObject(main, {"target": model});
+        }
+
+        return model;
+    }
+
+    Component.onCompleted: {
+        // Create models
+        var models = [];
+        sources.forEach(function(x) {
+            var model = createModelForSource(x, main);
+            if (model) {
+                models.push(model);
+            }
+        });
+        main.models = models;
+
+        // Create views
+        var firstView = null;
+        models.forEach(function(model) {
+            var isMultiViewModel = "modelForRow" in model;
+            var modelNeedsFiltering = !("query" in model);
+
+            var viewArgs = {};
+            viewArgs["favoriteModels"] = sourceRegistry.favoriteModels;
+            viewArgs["model"] = model;
+            viewArgs["showHeader"] = showHeader;
+            if (modelNeedsFiltering) {
+                if (isMultiViewModel) {
+                    viewArgs["modelNeedsFiltering"] = true;
+                } else {
+                    viewArgs["model"] = createFilterForModel(model);
+                }
+            }
+
+            var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
+            var obj = component.createObject(viewContainer, viewArgs);
+            if (!isMultiViewModel && firstView === null) {
+                // Check isMultiViewModel because in that case obj is not a ResultsView
+                firstView = obj;
+            }
+
+            // Useful for debugging
+            main.objectName += model.objectName + ",";
+        });
+
+        finishModelConnections();
+
+        if (firstView) {
+            firstView.forceActiveFocus();
+        }
     }
 }

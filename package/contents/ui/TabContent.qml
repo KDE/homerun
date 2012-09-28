@@ -19,7 +19,6 @@
 
 import QtQuick 1.1
 import org.kde.homerun.components 0.1 as HomerunComponents
-import org.kde.homerun.fixes 0.1 as HomerunFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
@@ -47,82 +46,6 @@ Item {
     signal setSearchFieldRequested(string text)
 
     //- Private ---------------------------------------------------
-    // Filter components
-    Component {
-        id: genericFilterComponent
-        HomerunFixes.SortFilterModel {
-            filterRegExp: main.searchCriteria
-            property string name: sourceModel.name
-            property int count: sourceModel.count
-
-            property bool running: "running" in sourceModel ? sourceModel.running : false
-            property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
-
-            function trigger(index) {
-                var sourceIndex = mapRowToSource(index);
-                sourceModel.trigger(sourceIndex);
-            }
-
-        }
-    }
-
-    Component {
-        id: openSourceConnectedConnectionComponent
-        Connections {
-            ignoreUnknownSignals: true
-            onOpenSourceRequested: {
-                openSource(source);
-            }
-        }
-    }
-
-    Component {
-        id: queryBindingComponent
-        Binding {
-            property: "query"
-            value: main.searchCriteria
-        }
-    }
-
-    // UI components
-    Component {
-        id: resultsViewComponent
-        ResultsView {
-            id: view
-            width: parent.width
-            onIndexClicked: {
-                handleTriggerResult(model.trigger(index));
-            }
-        }
-    }
-
-    Component {
-        id: multiResultsViewComponent
-        Column {
-            id: column
-            width: parent.width
-            property alias model: repeater.model
-            property bool modelNeedsFiltering: false
-            property variant favoriteModels
-
-            Repeater {
-                id: repeater
-                delegate: ResultsView {
-                    width: column.width
-
-                    property QtObject sourceModel: repeater.model.modelForRow(index)
-
-                    model: column.modelNeedsFiltering ? createFilterForModel(sourceModel) : sourceModel
-                    favoriteModels: column.favoriteModels
-
-                    onIndexClicked: {
-                        handleTriggerResult(model.trigger(index));
-                    }
-                }
-            }
-        }
-    }
-
     Component {
         id: pageComponent
         Page {
@@ -277,7 +200,6 @@ Item {
 
     function openSource(source) {
         var page = createPage([source], { "showHeader": false });
-        page.pathModel = page.models[0].pathModel;
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -290,82 +212,18 @@ Item {
             ], event);
     }
 
-    function createModelForSource(source, parent) {
-        var model = sourceRegistry.createModelForSource(source, parent);
-        if (!model) {
-            return null;
-        }
-
-        // Create connections now: if we do it after applying the filter, then
-        // "model" may have been changed to be a filter model, not the source
-        // model
-        openSourceConnectedConnectionComponent.createObject(model);
-
-        if ("query" in model) {
-            // Model supports querying itself, bind the search criteria field to its "query" property
-            queryBindingComponent.createObject(main, {"target": model});
-        }
-
-        return model;
-    }
-
     function createPage(sources, viewExtraArgs /*= {}*/) {
-        var page = pageComponent.createObject(pageContainer);
-
-        // Create models
-        var models = [];
-        sources.forEach(function(x) {
-            var model = createModelForSource(x, page);
-            if (model) {
-                models.push(model);
+        var args = {
+            sourceRegistry: sourceRegistry,
+            sources: sources,
+        };
+        if (viewExtraArgs !== undefined) {
+            for (var key in viewExtraArgs) {
+                args[key] = viewExtraArgs[key];
             }
-        });
-        page.models = models;
-
-        // Create views
-        var firstView = null;
-        models.forEach(function(model) {
-            var isMultiViewModel = "modelForRow" in model;
-            var modelNeedsFiltering = !("query" in model);
-
-            var viewArgs = {};
-            viewArgs["favoriteModels"] = sourceRegistry.favoriteModels;
-            viewArgs["model"] = model;
-            if (modelNeedsFiltering) {
-                if (isMultiViewModel) {
-                    viewArgs["modelNeedsFiltering"] = true;
-                } else {
-                    viewArgs["model"] = createFilterForModel(model);
-                }
-            }
-            if (viewExtraArgs !== undefined) {
-                for (var key in viewExtraArgs) {
-                    viewArgs[key] = viewExtraArgs[key];
-                }
-            }
-
-            var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
-            var obj = component.createObject(page.viewContainer, viewArgs);
-            if (!isMultiViewModel && firstView === null) {
-                // Check isMultiViewModel because in that case obj is not a ResultsView
-                firstView = obj;
-            }
-
-            // Useful for debugging
-            page.objectName += model.objectName + ",";
-        });
-
-        page.finishModelConnections();
-
-        if (firstView) {
-            firstView.forceActiveFocus();
         }
 
-        return page;
-    }
-
-    function createFilterForModel(model) {
-        return genericFilterComponent.createObject(model, {"sourceModel": model});
+        return pageComponent.createObject(pageContainer, args);
     }
 
     function reset() {
