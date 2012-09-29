@@ -60,6 +60,8 @@ Item {
         TabContent {
             id: tabContentMain
             property Item tabButton
+            tabIconSource: tabButton.iconSource
+            tabText: tabButton.text
             configureMode: main.configureMode
             onStartedApplication: isContainment ? reset() : closeRequested()
             onSetSearchFieldRequested: searchField.text = text

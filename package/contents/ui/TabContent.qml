@@ -34,6 +34,8 @@ Item {
     // Defined by outside world
     property QtObject sourceRegistry
     property variant sources
+    property string tabIconSource
+    property string tabText
     property string searchCriteria
     property bool configureMode: false
 
@@ -110,6 +112,15 @@ Item {
                 leftMargin: 12
             }
             height: navRow.maxHeight
+
+            PlasmaComponents.ToolButton {
+                height: breadcrumbRow.height
+                flat: false
+                iconSource: tabIconSource
+                text: tabText
+                onClicked: TabContentInternal.goTo(0);
+            }
+
             Repeater {
                 id: breadcrumbRepeater
                 model: currentPage.pathModel
