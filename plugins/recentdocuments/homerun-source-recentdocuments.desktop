@@ -1,6 +1,16 @@
 [Desktop Entry]
 Name=Recent Documents
+Name[da]=Nylige dokumenter
+Name[pt]=Documentos Recentes
+Name[pt_BR]=Documentos recentes
+Name[uk]=Нещодавні документи
+Name[x-test]=xxRecent Documentsxx
 Comment=List recently opened documents
+Comment[da]=Liste over nyligt åbnede dokumenter
+Comment[pt]=Listar os documentos abertos recentemente
+Comment[pt_BR]=Lista dos documentos abertos recentemente
+Comment[uk]=Список нещодавно відкритих документів
+Comment[x-test]=xxList recently opened documentsxx
 Type=Service
 X-KDE-ServiceTypes=Homerun/Source
 X-KDE-Library=homerun_source_recentdocuments
