@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=World Clocks
+Comment=Clocks from around the world
+Type=Service
+X-KDE-ServiceTypes=Homerun/Source
+X-KDE-Library=homerun_source_clocks
+
+X-KDE-PluginInfo-Name=Clocks
+
+X-KDE-Homerun-APIVersion=0

@@ -1,1 +1,2 @@
+add_subdirectory(clocks)
 add_subdirectory(recentdocuments)
