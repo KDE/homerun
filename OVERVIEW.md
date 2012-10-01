@@ -27,3 +27,38 @@ The model of a source usually directly provide the data to display, in w
 hich case the SourceItem contains only one ResultsView. Source model may a
 lso provide sub-models, in which case the SourceItem will contain one
 ResultsView per sub-model.
+
+A ResultsView is made of a grid view which contains one or more Result items.
+Each Result displays one element of the ResultsView model.
+
+To sum up, the architecture looks like this:
+
+- main.qml
+  - TabContent
+    - Page
+      - SourceItem
+        - ResultsView
+          - Result
+          - ...
+          - ...
+          - ...
+      - SourceItem (The source associated with this item provides 2 sub-models)
+        - ResultsView
+          - Result
+          - ...
+          - ...
+        - ResultsView
+          - Result
+          - ...
+      - SourceItem
+        - ResultsView
+          - Result
+          - ...
+    - Page (Only if first page contained a browsable source)
+      - SourceItem
+        - ResultsView
+          - Result
+          - ...
+  - TabContent
+  - TabContent
+  - TabContent
