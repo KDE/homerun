@@ -32,6 +32,7 @@ Item {
     property string favoriteIcon
     property alias currentText: resultLabel.text
     property alias currentIcon: resultIcon.icon
+    property bool configureMode: false
 
     // Exposed by us
     property alias truncated: resultLabel.truncated
@@ -151,6 +152,7 @@ Item {
         id: itemMouseArea
         anchors.fill: parent
         hoverEnabled: true
+        enabled: !configureMode
     }
 
     MouseArea {
@@ -159,5 +161,6 @@ Item {
         id: favoriteMouseArea
         anchors.fill: favoriteIconItem
         hoverEnabled: true
+        enabled: !configureMode
     }
 }

@@ -39,10 +39,14 @@ FocusScope {
     property alias count: gridView.count
     property bool tabMe: gridView.count > 0
 
+    property bool configureMode: false
+
     signal indexClicked(int index)
 
     //- Private -------------------------------------------------
     height: childrenRect.height
+
+    opacity: configureMode ? 0.6 : 1
 
     //FIXME: figure out sizing properly..
     property int iconWidth: 64
@@ -64,6 +68,7 @@ FocusScope {
             id: resultMain
             iconWidth: main.iconWidth
             width: main.resultItemWidth
+            configureMode: main.configureMode
 
             currentText: model.display
             currentIcon: model.decoration
@@ -296,6 +301,9 @@ FocusScope {
     }
 
     function emitIndexClicked(index) {
+        if (configureMode) {
+            return;
+        }
         indexClicked(index);
     }
 }

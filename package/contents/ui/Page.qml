@@ -99,6 +99,7 @@ Item {
         ResultsView {
             id: view
             width: parent.width
+            configureMode: main.configureMode
             onIndexClicked: {
                 handleTriggerResult(model.trigger(index));
             }
@@ -120,6 +121,7 @@ Item {
                 id: repeater
                 delegate: ResultsView {
                     width: multiMain.width
+                    configureMode: main.configureMode
 
                     model: multiMain.modelNeedsFiltering
                         ? createFilterForModel(repeater.model.modelForRow(index))
