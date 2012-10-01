@@ -1,14 +1,18 @@
 [Desktop Entry]
 Name=Recent Documents
 Name[da]=Nylige dokumenter
+Name[nl]=Recente documenten
 Name[pt]=Documentos Recentes
 Name[pt_BR]=Documentos recentes
+Name[sv]=Senaste dokument
 Name[uk]=Нещодавні документи
 Name[x-test]=xxRecent Documentsxx
 Comment=List recently opened documents
 Comment[da]=Liste over nyligt åbnede dokumenter
+Comment[nl]=Recent geopende documenten tonen
 Comment[pt]=Listar os documentos abertos recentemente
 Comment[pt_BR]=Lista dos documentos abertos recentemente
+Comment[sv]=Lista senast öppnade dokument
 Comment[uk]=Список нещодавно відкритих документів
 Comment[x-test]=xxList recently opened documentsxx
 Type=Service
