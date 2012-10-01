@@ -36,7 +36,6 @@ class TabModel : public QAbstractListModel
 public:
     enum {
         SourcesRole = Qt::UserRole + 1,
-        SearchSourcesRole,
         SearchPlaceholderRole,
     };
 
