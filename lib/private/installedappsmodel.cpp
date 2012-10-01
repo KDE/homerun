@@ -284,8 +284,8 @@ QString InstalledAppsModel::name() const
 }
 
 //- InstalledAppsSource ---------------------------------------------
-InstalledAppsSource::InstalledAppsSource(SourceRegistry *registry)
-: AbstractSource(registry)
+InstalledAppsSource::InstalledAppsSource(QObject *parent)
+: AbstractSource(parent)
 {}
 
 QAbstractItemModel *InstalledAppsSource::createModel(const SourceArguments &arguments)

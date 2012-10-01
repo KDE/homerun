@@ -16,55 +16,38 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-// Self
-#include <abstractsource.h>
+#ifndef ABSTRACTSOURCEREGISTRY_H
+#define ABSTRACTSOURCEREGISTRY_H
 
-// Local
-#include <sourceregistry.h>
-
-// KDE
+#include <homerun_export.h>
 
 // Qt
+#include <QObject>
 
-namespace Homerun {
+// KDE
+#include <KSharedConfig>
 
-struct AbstractSourcePrivate
+namespace Homerun
 {
-    AbstractSourceRegistry *m_registry;
+
+class AbstractSourceRegistryPrivate;
+
+/**
+ * Interface to Homerun source registry. Makes it possible for sources to create
+ * other models by their name and access homerun configuration.
+ */
+class HOMERUN_EXPORT AbstractSourceRegistry
+{
+public:
+    AbstractSourceRegistry();
+    virtual ~AbstractSourceRegistry();
+    virtual QObject *createModelForSource(const QString &sourceString, QObject *parent) = 0;
+    virtual KSharedConfig::Ptr config() const = 0;
+
+private:
+    AbstractSourceRegistryPrivate *const d;
 };
 
-AbstractSource::AbstractSource(QObject *parent, const QVariantList &/*args*/)
-: QObject(parent)
-, d(new AbstractSourcePrivate)
-{
-    d->m_registry = 0;
-}
+} // namespace
 
-AbstractSource::~AbstractSource()
-{
-    delete d;
-}
-
-void AbstractSource::init(AbstractSourceRegistry *registry)
-{
-    d->m_registry = registry;
-}
-
-AbstractSourceRegistry *AbstractSource::registry() const
-{
-    return d->m_registry;
-}
-
-bool AbstractSource::isConfigurable() const
-{
-    return false;
-}
-
-SourceConfigurationWidget *AbstractSource::createConfigurationWidget(const SourceArguments &)
-{
-    return 0;
-}
-
-} // namespace Homerun
-
-#include <abstractsource.moc>
+#endif /* ABSTRACTSOURCEREGISTRY_H */

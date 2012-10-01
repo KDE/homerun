@@ -20,9 +20,9 @@
 #include <groupedinstalledappsmodel.h>
 
 // Local
+#include <abstractsourceregistry.h>
 #include <installedappsmodel.h>
 #include <sourceid.h>
-#include <sourceregistry.h>
 
 // KDE
 #include <KDebug>
@@ -109,7 +109,7 @@ QVariant GroupedInstalledAppsModel::data(const QModelIndex &index, int role) con
     }
 }
 
-void GroupedInstalledAppsModel::init(SourceRegistry *registry)
+void GroupedInstalledAppsModel::init(AbstractSourceRegistry *registry)
 {
     m_registry = registry;
     loadRootEntries();
@@ -126,8 +126,8 @@ InstalledAppsModel *GroupedInstalledAppsModel::createInstalledAppsModel(KService
 }
 
 //- GroupedInstalledAppsSource --------------------------------------
-GroupedInstalledAppsSource::GroupedInstalledAppsSource(SourceRegistry *registry)
-: AbstractSource(registry)
+GroupedInstalledAppsSource::GroupedInstalledAppsSource(QObject *parent)
+: AbstractSource(parent)
 {}
 
 QAbstractItemModel *GroupedInstalledAppsSource::createModel(const SourceArguments &/*args*/)

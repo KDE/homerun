@@ -7,7 +7,10 @@ set(components_SRCS
 
 qt4_automoc(${components_SRCS})
 
-include_directories(${lib_SOURCE_DIR})
+include_directories(
+    ${lib_SOURCE_DIR}
+    ${lib_SOURCE_DIR}/private
+    )
 
 kde4_add_library(componentsplugin SHARED ${components_SRCS})
 

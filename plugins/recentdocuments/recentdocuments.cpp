@@ -21,7 +21,6 @@
 
 // Homerun
 #include <abstractsource.h>
-#include <sourceregistry.h>
 
 // KDE
 #include <KDebug>

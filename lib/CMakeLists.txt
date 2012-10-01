@@ -14,10 +14,10 @@ set(lib_VERSION ${lib_VERSION_MAJOR}.${lib_VERSION_MINOR}.${lib_VERSION_PATCH})
 
 set(lib_SRCS
     abstractsource.cpp
+    abstractsourceregistry.cpp
     pathmodel.cpp
     sourceconfigurationwidget.cpp
     sourceid.cpp
-    sourceregistry.cpp
     )
 
 # Private classes
@@ -31,6 +31,7 @@ set(lib_SRCS ${lib_SRCS}
     private/installedappsmodel.cpp
     private/sessionmodel.cpp
     private/sourceconfigurationdialog.cpp
+    private/sourceregistry.cpp
     )
 
 kde4_add_ui_files(lib_SRCS

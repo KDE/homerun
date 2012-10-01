@@ -32,8 +32,8 @@ class QAbstractItemModel;
 
 namespace Homerun {
 
+class AbstractSourceRegistry;
 class SourceArguments;
-class SourceRegistry;
 class SourceConfigurationWidget;
 
 class AbstractSourcePrivate;
@@ -48,9 +48,9 @@ public:
     AbstractSource(QObject *parent, const QVariantList &args = QVariantList());
     ~AbstractSource();
 
-    virtual void init(SourceRegistry *registry);
+    virtual void init(AbstractSourceRegistry *registry);
 
-    SourceRegistry *registry() const;
+    AbstractSourceRegistry *registry() const;
 
     virtual QAbstractItemModel *createModel(const SourceArguments &args) = 0;
 

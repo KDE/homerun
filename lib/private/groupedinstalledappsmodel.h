@@ -31,7 +31,6 @@
 namespace Homerun {
 
 class InstalledAppsModel;
-class SourceRegistry;
 
 /**
  * A model which returns all services in grouped sub-models
@@ -43,7 +42,7 @@ public:
     explicit GroupedInstalledAppsModel(QObject *parent = 0);
     ~GroupedInstalledAppsModel();
 
-    void init(SourceRegistry *registry);
+    void init(AbstractSourceRegistry *registry);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
@@ -63,7 +62,7 @@ private Q_SLOTS:
 private:
     QList<KServiceGroup::Ptr> m_pendingGroupList;
     QList<InstalledAppsModel *> m_models;
-    SourceRegistry *m_registry;
+    AbstractSourceRegistry *m_registry;
 
     InstalledAppsModel *createInstalledAppsModel(KServiceGroup::Ptr group);
 };
@@ -71,7 +70,7 @@ private:
 class GroupedInstalledAppsSource : public AbstractSource
 {
 public:
-    GroupedInstalledAppsSource(SourceRegistry *registry);
+    GroupedInstalledAppsSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &/*args*/);
 };
 

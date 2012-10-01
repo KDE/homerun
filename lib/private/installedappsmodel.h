@@ -144,7 +144,7 @@ private:
 class InstalledAppsSource : public AbstractSource
 {
 public:
-    InstalledAppsSource(SourceRegistry *registry);
+    InstalledAppsSource(QObject *parent);
     QAbstractItemModel *createModel(const SourceArguments &args);
 };
 
