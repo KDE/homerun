@@ -44,7 +44,7 @@ Item {
     property bool canGoForward: false
     property Item currentPage
 
-    signal startedApplication
+    signal closeRequested
     signal updateTabOrderRequested
     signal setSearchFieldRequested(string text)
     signal sourcesUpdated(variant sources)
@@ -57,6 +57,9 @@ Item {
             configureMode: main.configureMode
             onSourcesUpdated: {
                 main.sourcesUpdated(sources);
+            }
+            onCloseRequested: {
+                main.closeRequested();
             }
         }
     }
@@ -208,13 +211,6 @@ Item {
         }
         if (source !== null) {
             openSource(source);
-        }
-    }
-
-    function handleTriggerResult(result) {
-        if (result) {
-            startedApplication();
-            return;
         }
     }
 

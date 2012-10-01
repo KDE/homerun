@@ -40,6 +40,7 @@ Item {
     property QtObject pathModel: sourcesModel.count == 1 ? sourcesModel.get(0).model.pathModel : null
 
     signal sourcesUpdated(variant sources)
+    signal closeRequested()
 
     //- Non visual elements ----------------------------------------
     ListModel {
@@ -252,6 +253,12 @@ Item {
     Component.onCompleted: fillSourcesModel()
 
     //- Code -------------------------------------------------------
+    function handleTriggerResult(result) {
+        if (result) {
+            closeRequested();
+        }
+    }
+
     function getFirstView() {
         var lst = KeyboardUtils.findTabMeChildren(this);
         return lst.length > 0 ? lst[0] : null;

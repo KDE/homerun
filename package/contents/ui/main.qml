@@ -63,7 +63,7 @@ Item {
             tabIconSource: tabButton.iconSource
             tabText: tabButton.text
             configureMode: main.configureMode
-            onStartedApplication: isContainment ? reset() : closeRequested()
+            onCloseRequested: isContainment ? reset() : main.closeRequested()
             onSetSearchFieldRequested: searchField.text = text
             onSourcesUpdated: {
                 tabModel.setSourcesForRow(tabButton.index, sources);
