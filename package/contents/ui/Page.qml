@@ -196,7 +196,7 @@ Item {
         }
         clip: true
         model: sourcesModel
-        delegate: SourceEditor {
+        delegate: SourceItem {
             id: editorMain
             width: parent ? parent.width : 0
             configureMode: main.configureMode

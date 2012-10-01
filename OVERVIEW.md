@@ -17,13 +17,13 @@ some sources, like the Dir source or the InstalledApps source, allow
 navigation. In this case each new level of navigation is created as a new page.
 
 The Page item handles the content of a page. It mainly contains a ListView
-whose items are SourceEditor, there is one SourceEditor per Source.
+whose items are SourceItem, there is one SourceItem per Source.
 
-A SourceEditor is a thin decoration around one or more ResultsView. Unless user
-is configuring Homerun, SourceEditor does not have any UI, it just shows the
+A SourceItem is a thin decoration around one or more ResultsView. Unless user
+is configuring Homerun, SourceItem does not have any UI, it just shows the
 ResultsViews of its source.
 
 The model of a source usually directly provide the data to display, in w
-hich case the SourceEditor contains only one ResultsView. Source model may a
-lso provide sub-models, in which case the SourceEditor will contain one
+hich case the SourceItem contains only one ResultsView. Source model may a
+lso provide sub-models, in which case the SourceItem will contain one
 ResultsView per sub-model.
