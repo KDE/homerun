@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
         "0.0.0");
     aboutData.setLicense(KAboutData::License_GPL);
     aboutData.setCopyrightStatement(ki18n("(C) 2012 Blue Systems"));
+    aboutData.setProgramIconName("homerun");
 
     aboutData.addAuthor(ki18n("Shaun Reich"), ki18n("Developer"), "shaun.reich@blue-systems.com");
     aboutData.addAuthor(ki18n("Aurélien Gâteau"), ki18n("Developer"), "agateau@kde.org");
