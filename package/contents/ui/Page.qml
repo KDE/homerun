@@ -68,7 +68,7 @@ Item {
 
             function trigger(index) {
                 var sourceIndex = mapRowToSource(index);
-                sourceModel.trigger(sourceIndex);
+                return sourceModel.trigger(sourceIndex);
             }
 
         }
