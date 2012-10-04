@@ -70,9 +70,8 @@ Column {
                 topMargin: parent.margins.top
             }
 
-            PlasmaComponents.Button {
+            PlasmaComponents.ToolButton {
                 id: configureButton
-                width: height
                 iconSource: "configure"
                 visible: sourceId ? sourceRegistry.isSourceConfigurable(sourceId) : false
                 onClicked: {
@@ -84,25 +83,22 @@ Column {
                 }
             }
 
-            PlasmaComponents.Button {
+            PlasmaComponents.ToolButton {
                 id: upButton
-                width: height
                 iconSource: "arrow-up"
                 enabled: !main.isFirst
                 onClicked: main.moveRequested(-1)
             }
 
-            PlasmaComponents.Button {
+            PlasmaComponents.ToolButton {
                 id: downButton
-                width: height
                 iconSource: "arrow-down"
                 enabled: !main.isLast
                 onClicked: main.moveRequested(1)
             }
 
-            PlasmaComponents.Button {
+            PlasmaComponents.ToolButton {
                 id: removeButton
-                width: height
                 iconSource: "list-remove"
                 onClicked: main.removeRequested()
             }
