@@ -54,12 +54,16 @@ public:
 
     Q_INVOKABLE void setDataForRow(int row, const QByteArray &role, const QVariant &value);
 
+    Q_INVOKABLE void appendRow();
+
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
 
 private:
     KSharedConfig::Ptr m_config;
     QList<Tab*> m_tabList;
+
+    QStringList tabGroupList() const;
 };
 
 #endif /* TABMODEL_H */

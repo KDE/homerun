@@ -22,6 +22,7 @@
 #include <tabmodel.h>
 
 // KDE
+#include <KConfigGroup>
 #include <KTemporaryFile>
 #include <qtest_kde.h>
 
@@ -116,6 +117,13 @@ void TabModelTest::testLoadKeys_data()
         << "tab0"
         << QString()
         << (QStringList() << "foo" << "bar");
+
+    QTest::newRow("no-sources")
+        <<  "[Tab0]\n"
+            "name=tab0\n"
+        << "tab0"
+        << QString()
+        << QStringList();
 }
 
 void TabModelTest::testLoadKeys()
@@ -175,6 +183,43 @@ void TabModelTest::testSetText()
     QCOMPARE(bottomRight.row(), 1);
     QCOMPARE(topLeft.column(), 0);
     QCOMPARE(bottomRight.column(), 0);
+}
+
+void TabModelTest::testAppendRow()
+{
+    QString configText =
+        "[Tab0]\n"
+        "name=first\n"
+        "source=foo\n"
+        ;
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    TabModel model;
+    model.setConfig(config);
+    QCOMPARE(model.rowCount(), 1);
+
+    QSignalSpy aboutInsertedSpy(&model, SIGNAL(rowsAboutToBeInserted(QModelIndex, int, int)));
+    QSignalSpy insertedSpy(&model, SIGNAL(rowsInserted(QModelIndex, int, int)));
+    model.appendRow();
+    QCOMPARE(model.rowCount(), 2);
+
+    QVERIFY(config->hasGroup("Tab1"));
+    QString name = config->group("Tab1").readEntry("name");
+    QCOMPARE(name, QString("-")); // Name cannot be empty
+
+    QCOMPARE(aboutInsertedSpy.count(), 1);
+    QVariantList args = aboutInsertedSpy.takeFirst();
+    QVERIFY(!args[0].value<QModelIndex>().isValid());
+    QCOMPARE(args[1].toInt(), 1);
+    QCOMPARE(args[2].toInt(), 1);
+
+    QCOMPARE(insertedSpy.count(), 1);
+    args = insertedSpy.takeFirst();
+    QVERIFY(!args[0].value<QModelIndex>().isValid());
+    QCOMPARE(args[1].toInt(), 1);
+    QCOMPARE(args[2].toInt(), 1);
 }
 
 #include "tabmodeltest.moc"

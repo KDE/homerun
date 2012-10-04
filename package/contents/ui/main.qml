@@ -179,6 +179,19 @@ Item {
         }
     }
 
+    // Add tab button
+    PlasmaComponents.ToolButton {
+        anchors {
+            left: filterTabBar.right
+            leftMargin: 6
+            verticalCenter: filterTabBar.verticalCenter
+        }
+        opacity: configureMode ? 1 : 0
+        flat: false
+        iconSource: "list-add"
+        onClicked: tabModel.appendRow();
+    }
+
     // Search area
     QtExtra.QIconItem {
         anchors {

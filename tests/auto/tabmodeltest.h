@@ -33,6 +33,8 @@ private Q_SLOTS:
     void testLoadKeys_data();
 
     void testSetText();
+
+    void testAppendRow();
 };
 
 #endif /* TABMODELTEST_H */

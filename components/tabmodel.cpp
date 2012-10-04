@@ -24,6 +24,7 @@
 #include <KLocale>
 
 static const char *SOURCE_KEY_PREFIX = "source";
+static const char *TAB_GROUP_PREFIX = "Tab";
 
 /**
  * Return values for all keys of a group which start with @p prefix
@@ -51,6 +52,17 @@ public:
     QString m_searchPlaceholder;
     QStringList m_sources;
 
+    bool setName(const QString &value)
+    {
+        if (m_name == value) {
+            return false;
+        }
+        m_name = value;
+        saveName();
+        m_group.sync();
+        return true;
+    }
+
     void saveSources()
     {
         Q_FOREACH(const QString &key, m_group.keyList()) {
@@ -68,15 +80,16 @@ public:
         m_group.sync();
     }
 
-    bool setName(const QString &value)
+    void saveName()
     {
-        if (m_name == value) {
-            return false;
-        }
-        m_name = value;
-        m_group.writeEntry("name", value);
+        m_group.writeEntry("name", m_name);
+    }
+
+    void save()
+    {
+        saveName();
+        saveSources();
         m_group.sync();
-        return true;
     }
 
     static Tab *createFromGroup(const KConfigGroup &group)
@@ -89,17 +102,12 @@ public:
             kWarning() << "Missing 'name' key in tab group" << group.name();
             return 0;
         }
-        QStringList sources = readSources(group);
-        if (sources.isEmpty()) {
-            kWarning() << "No source defined in tab group" << group.name();
-            return 0;
-        }
 
         // Create tab and read optional keys
         Tab *tab = new Tab;
         tab->m_group = group;
         tab->m_name = name;
-        tab->m_sources = sources;
+        tab->m_sources = readSources(group);
         tab->m_iconName = group.readEntry("icon");
         // We use "query" because it is automatically extracted as a
         // translatable string by l10n-kde4/scripts/createdesktopcontext.pl
@@ -129,20 +137,26 @@ TabModel::~TabModel()
     qDeleteAll(m_tabList);
 }
 
+QStringList TabModel::tabGroupList() const
+{
+    QStringList list;
+    Q_FOREACH(const QString &groupName, m_config->groupList()) {
+        if (groupName.startsWith(TAB_GROUP_PREFIX)) {
+            list << groupName;
+        }
+    }
+    list.sort();
+    return list;
+}
+
 void TabModel::setConfig(const KSharedConfig::Ptr &ptr)
 {
     beginResetModel();
     m_config = ptr;
     qDeleteAll(m_tabList);
     m_tabList.clear();
-    QStringList tabGroupList;
-    Q_FOREACH(const QString &groupName, m_config->groupList()) {
-        if (groupName.startsWith("Tab")) {
-            tabGroupList << groupName;
-        }
-    }
-    tabGroupList.sort();
-    Q_FOREACH(const QString &groupName, tabGroupList) {
+    QStringList list = tabGroupList();
+    Q_FOREACH(const QString &groupName, list) {
         KConfigGroup group = m_config->group(groupName);
         Tab *tab = Tab::createFromGroup(group);
         if (tab) {
@@ -232,6 +246,28 @@ void TabModel::setDataForRow(int row, const QByteArray &roleName, const QVariant
 
     QModelIndex idx = index(row, 0);
     dataChanged(idx, idx);
+}
+
+void TabModel::appendRow()
+{
+    QStringList list = tabGroupList();
+    bool ok;
+    int lastId = list.last().mid(3).toInt(&ok);
+    if (!ok) {
+        kWarning() << "Cannot extract a valid lastId from" << list.last();
+        return;
+    }
+
+    Tab *tab = new Tab;
+    tab->m_name = "-";
+    tab->m_group = m_config->group(QLatin1String(TAB_GROUP_PREFIX) + QString::number(lastId + 1));
+
+    int count = m_tabList.count();
+    beginInsertRows(QModelIndex(), count, count);
+    m_tabList.append(tab);
+    endInsertRows();
+
+    tab->save();
 }
 
 #include "tabmodel.moc"
