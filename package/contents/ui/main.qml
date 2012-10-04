@@ -68,6 +68,11 @@ Item {
             onSourcesUpdated: {
                 tabModel.setSourcesForRow(tabButton.index, sources);
             }
+            onTabTextChanged: {
+                if (configureMode) {
+                    tabModel.setDataForRow(tabButton.index, "display", tabText);
+                }
+            }
         }
     }
 

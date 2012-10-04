@@ -65,22 +65,39 @@ Item {
     }
 
     // Ui
-    Item {
+    SlidingContainer {
+        id: editTabRow
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+        show: configureMode
+
+        Row {
+            anchors.centerIn: parent
+            spacing: 12
+
+            PlasmaComponents.Label {
+                text: i18n("Tab Label:")
+            }
+
+            PlasmaComponents.TextField {
+                text: main.tabText
+                onTextChanged: main.tabText = text
+            }
+        }
+    }
+
+    SlidingContainer {
         // navRow = back|previous + breadcrumbs
         id: navRow
         property int maxHeight: 32
-        height: canGoBack ? maxHeight : 0
-        Behavior on height {
-            NumberAnimation {
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
-        }
-        clip: true
+        show: canGoBack
 
         anchors {
+            top: editTabRow.bottom
             left: parent.left
-            top: parent.top
             right: parent.right
         }
 
