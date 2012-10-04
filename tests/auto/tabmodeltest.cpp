@@ -222,4 +222,44 @@ void TabModelTest::testAppendRow()
     QCOMPARE(args[2].toInt(), 1);
 }
 
+void TabModelTest::testRemoveRow()
+{
+    QString configText =
+        "[Tab0]\n"
+        "name=first\n"
+        "source=foo\n"
+        "\n"
+        "[Tab1]\n"
+        "name=second\n"
+        "source=bar\n"
+        ;
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    TabModel model;
+    model.setConfig(config);
+    QCOMPARE(model.rowCount(), 2);
+
+    QSignalSpy aboutRemovedSpy(&model, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)));
+    QSignalSpy removedSpy(&model, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+    model.removeRow(0);
+    QCOMPARE(model.rowCount(), 1);
+
+    QVERIFY(!config->hasGroup("Tab0"));
+    QVERIFY(config->hasGroup("Tab1"));
+
+    QCOMPARE(aboutRemovedSpy.count(), 1);
+    QVariantList args = aboutRemovedSpy.takeFirst();
+    QVERIFY(!args[0].value<QModelIndex>().isValid());
+    QCOMPARE(args[1].toInt(), 0);
+    QCOMPARE(args[2].toInt(), 0);
+
+    QCOMPARE(removedSpy.count(), 1);
+    args = removedSpy.takeFirst();
+    QVERIFY(!args[0].value<QModelIndex>().isValid());
+    QCOMPARE(args[1].toInt(), 0);
+    QCOMPARE(args[2].toInt(), 0);
+}
+
 #include "tabmodeltest.moc"

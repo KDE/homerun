@@ -117,6 +117,13 @@ public:
         }
         return tab;
     }
+
+    void remove()
+    {
+        KConfig *config = m_group.config();
+        m_group.deleteGroup();
+        config->sync();
+    }
 };
 
 
@@ -268,6 +275,21 @@ void TabModel::appendRow()
     endInsertRows();
 
     tab->save();
+}
+
+void TabModel::removeRow(int row)
+{
+    if (row < 0 || row >= m_tabList.count()) {
+        kWarning() << "Invalid row number" << row;
+        return;
+    }
+
+    beginRemoveRows(QModelIndex(), row, row);
+    Tab *tab = m_tabList.takeAt(row);
+    Q_ASSERT(tab);
+    tab->remove();
+    delete tab;
+    endRemoveRows();
 }
 
 #include "tabmodel.moc"

@@ -35,6 +35,7 @@ private Q_SLOTS:
     void testSetText();
 
     void testAppendRow();
+    void testRemoveRow();
 };
 
 #endif /* TABMODELTEST_H */

@@ -56,6 +56,8 @@ public:
 
     Q_INVOKABLE void appendRow();
 
+    Q_INVOKABLE void removeRow(int row);
+
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
 

@@ -94,6 +94,19 @@ Item {
                 property string searchPlaceholder: model.searchPlaceholder
                 property variant sources: model.sources
                 property int index: model.index
+
+                PlasmaComponents.ToolButton {
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                    }
+                    height: filterTabBar.height - 10 // FIXME: Ugly hardcoded margin
+                    width: height
+                    opacity: (configureMode && parent.checked) ? 1 : 0
+                    iconSource: "window-close"
+                    Behavior on opacity { NumberAnimation { duration: 250 }}
+                    onClicked: tabModel.removeRow(index)
+                }
             }
         }
 
