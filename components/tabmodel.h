@@ -52,6 +52,8 @@ public:
 
     Q_INVOKABLE void setSourcesForRow(int row, const QVariant &sources);
 
+    Q_INVOKABLE void setDataForRow(int row, const QByteArray &role, const QVariant &value);
+
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
 

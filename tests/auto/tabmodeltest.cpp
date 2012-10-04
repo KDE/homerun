@@ -18,12 +18,19 @@
  */
 #include "tabmodeltest.h"
 
+// Local
+#include <tabmodel.h>
+
+// KDE
 #include <KTemporaryFile>
 #include <qtest_kde.h>
 
-#include <tabmodel.h>
+// Qt
+#include <QSignalSpy>
 
 QTEST_KDEMAIN(TabModelTest, NoGUI)
+
+Q_DECLARE_METATYPE(QModelIndex)
 
 static KTemporaryFile *generateTestFile(const QString &content)
 {
@@ -32,6 +39,11 @@ static KTemporaryFile *generateTestFile(const QString &content)
     file->write(content.toUtf8());
     file->flush();
     return file;
+}
+
+void TabModelTest::initTestCase()
+{
+    qRegisterMetaType<QModelIndex>("QModelIndex");
 }
 
 void TabModelTest::testTabOrder()
@@ -127,6 +139,42 @@ void TabModelTest::testLoadKeys()
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
     QCOMPARE(index.data(Qt::DecorationRole).toString(), iconName);
     QCOMPARE(index.data(TabModel::SourcesRole).toStringList(), sources);
+}
+
+void TabModelTest::testSetText()
+{
+    QString configText =
+        "[Tab0]\n"
+        "name=first\n"
+        "source=foo\n"
+        ""
+        "[Tab1]\n"
+        "name=second\n"
+        "source=bar\n"
+        ;
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    TabModel model;
+    model.setConfig(config);
+
+    QCOMPARE(model.rowCount(), 2);
+
+    QSignalSpy spy(&model, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    model.setDataForRow(1, "display", "last");
+
+    QModelIndex index = model.index(1, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("last"));
+
+    QCOMPARE(spy.count(), 1);
+    QVariantList args = spy.takeFirst();
+    QModelIndex topLeft = args[0].value<QModelIndex>();
+    QModelIndex bottomRight = args[1].value<QModelIndex>();
+    QCOMPARE(topLeft.row(), 1);
+    QCOMPARE(bottomRight.row(), 1);
+    QCOMPARE(topLeft.column(), 0);
+    QCOMPARE(bottomRight.column(), 0);
 }
 
 #include "tabmodeltest.moc"

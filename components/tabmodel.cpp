@@ -68,6 +68,17 @@ public:
         m_group.sync();
     }
 
+    bool setName(const QString &value)
+    {
+        if (m_name == value) {
+            return false;
+        }
+        m_name = value;
+        m_group.writeEntry("name", value);
+        m_group.sync();
+        return true;
+    }
+
     static Tab *createFromGroup(const KConfigGroup &group)
     {
         // Read all mandatory keys first
@@ -197,6 +208,27 @@ void TabModel::setSourcesForRow(int row, const QVariant &value)
     QStringList sources = value.toStringList();
     tab->m_sources = sources;
     tab->saveSources();
+
+    QModelIndex idx = index(row, 0);
+    dataChanged(idx, idx);
+}
+
+void TabModel::setDataForRow(int row, const QByteArray &roleName, const QVariant &value)
+{
+    Tab *tab = m_tabList.value(row);
+    if (!tab) {
+        kWarning() << "Invalid row number" << row;
+        return;
+    }
+
+    if (roleName == "display") {
+        if (!tab->setName(value.toString())) {
+            return;
+        }
+    } else {
+        kWarning() << "Don't know how to handle role" << roleName;
+        return;
+    }
 
     QModelIndex idx = index(row, 0);
     dataChanged(idx, idx);

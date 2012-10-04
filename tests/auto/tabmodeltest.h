@@ -26,9 +26,13 @@ class TabModelTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase();
+
     void testTabOrder();
     void testLoadKeys();
     void testLoadKeys_data();
+
+    void testSetText();
 };
 
 #endif /* TABMODELTEST_H */
