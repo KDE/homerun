@@ -157,12 +157,7 @@ void FullView::updateGeometry()
 
 void FullView::drawBackground(QPainter *painter, const QRectF &/*rect*/)
 {
-    // We use the opaque background and paint it slightly translucent instead
-    // of using the translucent background because with a lot of themes, text
-    // is not readable on translucent backgrounds.
-    painter->setOpacity(0.8);
     m_backgroundSvg->paintFrame(painter);
-    painter->setOpacity(1);
 }
 
 #include "fullview.moc"
