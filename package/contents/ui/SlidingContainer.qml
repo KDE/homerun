@@ -24,12 +24,7 @@ Item {
 
     property bool show: true
 
-    QtObject {
-        id: internal
-        property int maxHeight: main.childrenRect.height
-    }
-
-    height: show ? internal.maxHeight : 0
+    height: show ? childrenRect.height : 0
     Behavior on height {
         NumberAnimation {
             duration: 200
