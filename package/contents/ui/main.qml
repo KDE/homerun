@@ -84,6 +84,8 @@ Item {
             topMargin: main.topMargin
             left: parent.left
             leftMargin: parent.leftMargin
+            right: searchField.left
+            rightMargin: configureMode ? (addTabButton.width + 6) : 0
         }
 
         Repeater {
@@ -195,13 +197,14 @@ Item {
 
     // Add tab button
     PlasmaComponents.ToolButton {
+        id: addTabButton
         anchors {
             left: filterTabBar.right
-            leftMargin: 6
+            top: filterTabBar.top
+            bottom: filterTabBar.bottom
             verticalCenter: filterTabBar.verticalCenter
         }
         opacity: configureMode ? 1 : 0
-        flat: false
         iconSource: "list-add"
         onClicked: tabModel.appendRow();
     }
@@ -212,7 +215,6 @@ Item {
 
         anchors {
             right: configButton.left
-            rightMargin: parent.rightMargin
             top: filterTabBar.top
             bottom: filterTabBar.bottom
         }
@@ -233,7 +235,8 @@ Item {
         id: configButton
         anchors {
             right: parent.right
-            verticalCenter: searchField.verticalCenter
+            top: filterTabBar.top
+            bottom: filterTabBar.bottom
             rightMargin: parent.rightMargin
         }
         iconSource: "configure"
