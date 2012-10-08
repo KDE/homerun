@@ -85,14 +85,14 @@ Column {
 
             PlasmaComponents.ToolButton {
                 id: upButton
-                iconSource: "arrow-up"
+                iconSource: "go-up"
                 enabled: !main.isFirst
                 onClicked: main.moveRequested(-1)
             }
 
             PlasmaComponents.ToolButton {
                 id: downButton
-                iconSource: "arrow-down"
+                iconSource: "go-down"
                 enabled: !main.isLast
                 onClicked: main.moveRequested(1)
             }
