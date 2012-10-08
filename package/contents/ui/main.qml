@@ -263,12 +263,7 @@ Item {
                 visualParent: configButton
                 PlasmaComponents.MenuItem {
                     text: configureMode ? i18n("End Configure") : i18n("Configure");
-                    onClicked: {
-                        configureMode = !configureMode;
-                        if (configureMode) {
-                            reset();
-                        }
-                    }
+                    onClicked: configureMode = !configureMode;
                 }
             }
         }
