@@ -101,10 +101,10 @@ Item {
                         right: parent.right
                         verticalCenter: parent.verticalCenter
                     }
-                    height: filterTabBar.height - 10 // FIXME: Ugly hardcoded margin
+                    height: parent.height - 2
                     width: height
-                    opacity: (configureMode && parent.checked) ? 1 : 0
-                    iconSource: "window-close"
+                    opacity: configureMode ? 1 : 0
+                    iconSource: "list-remove"
                     Behavior on opacity { NumberAnimation { duration: 250 }}
                     onClicked: tabModel.removeRow(index)
                 }
