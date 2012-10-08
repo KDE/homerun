@@ -207,16 +207,6 @@ Item {
     }
 
     // Search area
-    QtExtra.QIconItem {
-        anchors {
-            right: searchField.left
-            rightMargin: 6
-            verticalCenter: searchField.verticalCenter
-        }
-        width: 22
-        height: width
-    }
-
     HomerunFixes.TextField {
         id: searchField
 
