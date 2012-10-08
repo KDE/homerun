@@ -75,7 +75,7 @@ Item {
         show: configureMode
 
         Row {
-            anchors.centerIn: parent
+            anchors.horizontalCenter: parent.horizontalCenter
             spacing: 12
 
             PlasmaComponents.Label {
