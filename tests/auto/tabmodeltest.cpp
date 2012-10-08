@@ -213,8 +213,9 @@ void TabModelTest::testAppendRow()
     QCOMPARE(model.rowCount(), 2);
 
     QVERIFY(config->hasGroup("Tab1"));
+    QVERIFY(config->group("Tab1").hasKey("name"));
     QString name = config->group("Tab1").readEntry("name");
-    QCOMPARE(name, QString("-")); // Name cannot be empty
+    QCOMPARE(name, QString());
 
     QCOMPARE(aboutInsertedSpy.count(), 1);
     QVariantList args = aboutInsertedSpy.takeFirst();

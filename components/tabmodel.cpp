@@ -264,7 +264,6 @@ void TabModel::appendRow()
     }
 
     Tab *tab = new Tab;
-    tab->m_name = "-";
     tab->m_group = m_config->group(QLatin1String(TAB_GROUP_PREFIX) + QString::number(lastId + 1));
 
     int count = m_tabList.count();
