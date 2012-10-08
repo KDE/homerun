@@ -109,6 +109,13 @@ void TabModelTest::testLoadKeys_data()
         << QString()
         << (QStringList() << "foo");
 
+    QTest::newRow("unnamed")
+        <<  "[Tab0]\n"
+            "source0=foo\n"
+        << ""
+        << QString()
+        << (QStringList() << "foo");
+
     QTest::newRow("multi-sources")
         <<  "[Tab0]\n"
             "name=tab0\n"

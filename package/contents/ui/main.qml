@@ -61,7 +61,7 @@ Item {
             id: tabContentMain
             property Item tabButton
             tabIconSource: tabButton.iconSource
-            tabText: tabButton.text
+            tabText: tabButton.realText
             configureMode: main.configureMode
             onCloseRequested: isContainment ? reset() : main.closeRequested()
             onSetSearchFieldRequested: searchField.text = text
@@ -89,7 +89,8 @@ Item {
         Repeater {
             model: tabModel
             PlasmaComponents.TabButton {
-                text: model.display
+                property string realText: model.display
+                text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
                 iconSource: model.decoration
                 property string searchPlaceholder: model.searchPlaceholder
                 property variant sources: model.sources

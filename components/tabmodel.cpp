@@ -94,19 +94,17 @@ public:
 
     static Tab *createFromGroup(const KConfigGroup &group)
     {
-        // Read all mandatory keys first
+        Tab *tab = new Tab;
 
         // (read "name" as QByteArray because i18n() wants a char* as argument)
-        QString name = i18n(group.readEntry("name", QByteArray()));
-        if (name.isEmpty()) {
-            kWarning() << "Missing 'name' key in tab group" << group.name();
-            return 0;
+        QByteArray name = group.readEntry("name", QByteArray());
+        if (!name.isEmpty()) {
+            // Only translate if not empty. If name is empty i18n(name)
+            // returns I18N_EMPTY_MESSAGE.
+            tab->m_name = i18n(name);
         }
 
-        // Create tab and read optional keys
-        Tab *tab = new Tab;
         tab->m_group = group;
-        tab->m_name = name;
         tab->m_sources = readSources(group);
         tab->m_iconName = group.readEntry("icon");
         // We use "query" because it is automatically extracted as a
