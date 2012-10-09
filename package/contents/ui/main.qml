@@ -98,18 +98,19 @@ Item {
                 property variant sources: model.sources
                 property int index: model.index
 
-                PlasmaComponents.ToolButton {
-                    anchors {
-                        right: parent.right
-                        verticalCenter: parent.verticalCenter
+                rightSide: [
+                    PlasmaComponents.ToolButton {
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                        }
+                        height: parent.height - 2
+                        width: height
+                        opacity: configureMode ? 1 : 0
+                        iconSource: "list-remove"
+                        Behavior on opacity { NumberAnimation { duration: 250 }}
+                        onClicked: tabModel.removeRow(index)
                     }
-                    height: parent.height - 2
-                    width: height
-                    opacity: configureMode ? 1 : 0
-                    iconSource: "list-remove"
-                    Behavior on opacity { NumberAnimation { duration: 250 }}
-                    onClicked: tabModel.removeRow(index)
-                }
+                ]
             }
         }
 

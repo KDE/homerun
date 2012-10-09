@@ -90,6 +90,8 @@ Item {
     property alias text: label.text
     property alias iconSource: imageLoader.source
 
+    property alias rightSide: rightSideItems.data
+
     signal clicked
 
     property int iconSpacing: 4
@@ -152,7 +154,7 @@ Item {
             top: parent.top
             left: iconSource == null ? parent.left : imageLoader.right
             leftMargin: iconSource == null ? 0 : iconSpacing
-            right: parent.right
+            right: rightSideItems.left
             bottom: parent.bottom
         }
 
@@ -175,6 +177,20 @@ Item {
             internal.tabBar.currentTab = root
         }
 
-        anchors.fill: parent
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: label.right
+            bottom: parent.bottom
+        }
+    }
+
+    Row {
+        id: rightSideItems
+        anchors {
+            top: parent.top
+            right: parent.right
+            bottom: parent.bottom
+        }
     }
 }
