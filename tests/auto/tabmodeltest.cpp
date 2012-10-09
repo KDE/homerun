@@ -23,6 +23,7 @@
 
 // KDE
 #include <KConfigGroup>
+#include <KDebug>
 #include <KTemporaryFile>
 #include <qtest_kde.h>
 
@@ -270,22 +271,39 @@ void TabModelTest::testRemoveRow()
     QCOMPARE(args[2].toInt(), 0);
 }
 
+void TabModelTest::testMoveRow_data()
+{
+    QTest::addColumn<int>("from");
+    QTest::addColumn<int>("to");
+
+    QTest::newRow("2to1") << 2 << 1;
+    QTest::newRow("1to2") << 1 << 2;
+}
+
+static QMap<QString, QString> getEntries(KSharedConfig::Ptr config, int row)
+{
+    return config->group("Tab" + QString::number(row)).entryMap();
+}
+
 void TabModelTest::testMoveRow()
 {
+    QFETCH(int, from);
+    QFETCH(int, to);
+
     QString configText =
         "[Tab0]\n"
         "name=zero\n"
-        "source=zero\n"
+        "source0=zero\n"
         "\n"
         "[Tab1]\n"
         "name=one\n"
         "icon=iconOne\n"
-        "source=one\n"
+        "source0=one\n"
         "\n"
         "[Tab2]\n"
         "name=two\n"
         "icon=iconTwo\n"
-        "source=two\n"
+        "source0=two\n"
         ;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
@@ -295,40 +313,44 @@ void TabModelTest::testMoveRow()
     model.setConfig(config);
     QCOMPARE(model.rowCount(), 3);
 
+    QMap<QString, QString> beforeFrom = getEntries(config, from);
+    QMap<QString, QString> beforeTo = getEntries(config, to);
+
     QSignalSpy aboutSpy(&model, SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
     QSignalSpy spy(&model, SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)));
-    model.moveRow(2, 1);
+    model.moveRow(from, to);
 
     // Check model
     QModelIndex index;
-    index = model.index(2, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("one"));
-    index = model.index(1, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("two"));
+    index = model.index(to, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeFrom.value("name"));
+    index = model.index(from, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeTo.value("name"));
 
     // Check config
-    QCOMPARE(config->group("Tab2").readEntry("name"), QString("one"));
-    QCOMPARE(config->group("Tab2").readEntry("icon"), QString("iconOne"));
-    QCOMPARE(config->group("Tab1").readEntry("name"), QString("two"));
-    QCOMPARE(config->group("Tab1").readEntry("icon"), QString("iconTwo"));
+    QMap<QString, QString> afterFrom = getEntries(config, from);
+    QMap<QString, QString> afterTo = getEntries(config, to);
+    QCOMPARE(beforeFrom, afterTo);
+    QCOMPARE(beforeTo, afterFrom);
 
     // Check signals
+    int modelTo = to + (to > from ? 1 : 0);
     QVariantList args;
     QCOMPARE(aboutSpy.count(), 1);
     args = aboutSpy.takeFirst();
     QVERIFY(!args[0].value<QModelIndex>().isValid());
-    QCOMPARE(args[1].toInt(), 2);
-    QCOMPARE(args[2].toInt(), 2);
+    QCOMPARE(args[1].toInt(), from);
+    QCOMPARE(args[2].toInt(), from);
     QVERIFY(!args[3].value<QModelIndex>().isValid());
-    QCOMPARE(args[4].toInt(), 1);
+    QCOMPARE(args[4].toInt(), modelTo);
 
     QCOMPARE(spy.count(), 1);
     args = spy.takeFirst();
     QVERIFY(!args[0].value<QModelIndex>().isValid());
-    QCOMPARE(args[1].toInt(), 2);
-    QCOMPARE(args[2].toInt(), 2);
+    QCOMPARE(args[1].toInt(), from);
+    QCOMPARE(args[2].toInt(), from);
     QVERIFY(!args[3].value<QModelIndex>().isValid());
-    QCOMPARE(args[4].toInt(), 1);
+    QCOMPARE(args[4].toInt(), modelTo);
 }
 
 #include "tabmodeltest.moc"

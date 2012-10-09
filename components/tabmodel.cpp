@@ -305,7 +305,9 @@ void TabModel::moveRow(int from, int to)
         kWarning() << "Cannot move row to itself";
         return;
     }
-    beginMoveRows(QModelIndex(), from, from, QModelIndex(), to);
+    // See beginMoveRows() doc for an explanation on modelTo
+    int modelTo = to + (to > from ? 1 : 0);
+    beginMoveRows(QModelIndex(), from, from, QModelIndex(), modelTo);
     m_tabList.move(from, to);
     for (int row = 0; row < m_tabList.count(); ++row) {
         Tab *tab = m_tabList[row];
