@@ -92,7 +92,7 @@ Item {
 
     signal clicked
 
-    implicitWidth: label.implicitWidth + (internal.portrait ? 0 : (iconSource != null ? 16 : 0))
+    implicitWidth: label.implicitWidth + (iconSource != null ? imageLoader.implicitWidth : 0)
     implicitHeight: iconSource === null
         ? label.implicitHeight
         : Math.max(label.implicitHeight, imageLoader.implicitHeight)
@@ -114,7 +114,6 @@ Item {
 
         property Item tabBar: Utils.findParent(root, "currentTab")
         property Item tabGroup: Utils.findParent(tab, "currentTab")
-        property bool portrait: root.height >= label.paintedHeight + 16
 
         function click() {
             root.clicked()
@@ -136,15 +135,15 @@ Item {
         objectName: "label"
 
         anchors {
-            top: internal.portrait && iconSource != null ? imageLoader.bottom : parent.top
-            left: internal.portrait || iconSource == null ? parent.left : imageLoader.right
+            top: parent.top
+            left: iconSource == null ? parent.left : imageLoader.right
             leftMargin: iconSource == null ? 0 : parent.parent.anchors.leftMargin
             right: parent.right
             bottom: parent.bottom
         }
 
         elide: Text.ElideRight
-        horizontalAlignment: !internal.portrait && iconSource != null ? Text.AlignLeft : Text.AlignHCenter
+        horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
 
         color: root.checked ? theme.buttonTextColor : theme.textColor
@@ -157,9 +156,8 @@ Item {
         implicitHeight: implicitWidth
 
         anchors {
-            left: internal.portrait ? undefined : parent.left
-            horizontalCenter: internal.portrait ? parent.horizontalCenter : undefined
-            verticalCenter: internal.portrait ? undefined : parent.verticalCenter
+            left: parent.left
+            verticalCenter: parent.verticalCenter
         }
     }
 
