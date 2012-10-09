@@ -64,8 +64,6 @@ Item {
     Component.onCompleted: priv.layoutChildren()
     onChildrenChanged: priv.layoutChildren()
     onWidthChanged: priv.layoutChildren()
-    onHeightChanged: priv.layoutChildren()
-
 
     Keys.onPressed: {
         if (event.key == Qt.Key_Right || event.key == Qt.Key_Left) {
@@ -151,32 +149,34 @@ Item {
                         --visibleChildCount
                     }
                 }
+                if (root.width <= 0) {
+                    return;
+                }
                 var itemWidth = (root.width - (visibleChildCount-1)*spacing) / visibleChildCount
                 var itemIndex = mirrored ? childCount - 1 : 0
                 var increment = mirrored ? - 1 : 1
                 var visibleIndex = 0
 
+                var contentX = 0;
                 for (var i = 0; i < childCount; ++i, itemIndex += increment) {
                     var child = root.children[itemIndex]
                     if (!child.visible || root.children[i].text === undefined) {
                         continue
                     }
 
-                    child.x = visibleIndex * itemWidth + visibleIndex * spacing
-                    ++visibleIndex
-                    child.y = 0
-                    child.width = itemWidth
-                    child.height = root.height
+                    child.x = contentX;
+                    child.y = 0;
+                    child.width = itemWidth;
+                    child.height = child.implicitHeight;
 
-                    if (child.implicitWidth != undefined) {
-                        maxChildWidth = Math.max(maxChildWidth, child.implicitWidth)
-                        contentWidth = Math.max(contentWidth + i * spacing, (maxChildWidth + buttonFrame.margins.left + buttonFrame.margins.right) * childCount)
-                        contentHeight = Math.max(contentHeight, (child.implicitHeight + buttonFrame.margins.top / 2 + buttonFrame.margins.bottom / 2))
-                    }
+                    contentHeight = Math.max(contentHeight, child.height);
+
+                    contentX += itemWidth + spacing;
+                    ++visibleIndex;
                 }
             }
-            root.implicitWidth = contentWidth
-            root.implicitHeight = contentHeight
+
+            root.implicitHeight = contentHeight;
             if (priv.tabBar.currentTab === null) {
                 //99% of the cases this loop will be length 1 but a tabbar can also have other children, such as Repeater
                 for (var i = 0; i < tabBarLayout.children.length; ++i) {

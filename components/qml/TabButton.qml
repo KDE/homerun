@@ -93,7 +93,9 @@ Item {
     signal clicked
 
     implicitWidth: label.implicitWidth + (internal.portrait ? 0 : (iconSource != null ? 16 : 0))
-    implicitHeight: label.implicitHeight + (internal.portrait ? (iconSource != null ? 16 : 0) : 0)
+    implicitHeight: iconSource === null
+        ? label.implicitHeight
+        : Math.max(label.implicitHeight, imageLoader.implicitHeight)
 
     opacity: enabled ? 1 : 0.6
     //long notation to not make it overwritten by implementations
@@ -151,9 +153,7 @@ Item {
     Private.IconLoader {
         id: imageLoader
 
-        implicitWidth: internal.portrait
-            ? Math.min(theme.smallIconSize, root.height - (label.text ? label.height : 0))
-            : Math.min(theme.smallIconSize, root.height)
+        implicitWidth: theme.smallIconSize
         implicitHeight: implicitWidth
 
         anchors {

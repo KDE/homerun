@@ -77,8 +77,8 @@ FocusScope {
     //Plasma extension
     property Item currentTab
 
-    implicitWidth: layout.implicitWidth + tabbarScroller.anchors.leftMargin + tabbarScroller.anchors.rightMargin
-    implicitHeight: layout.implicitHeight + tabbarScroller.anchors.topMargin + tabbarScroller.anchors.bottomMargin
+    implicitWidth: layout.implicitWidth + layout.anchors.leftMargin + layout.anchors.rightMargin
+    implicitHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
 
     PlasmaCore.FrameSvgItem {
         id: backgroundFrame
@@ -88,12 +88,11 @@ FocusScope {
         prefix: "sunken"
     }
 
-    clip: true
     PlasmaCore.FrameSvgItem {
         id: buttonFrame
 
         visible: currentTab !== null
-        x: tabBarLayout.x + currentTab.x + backgroundFrame.margins.left
+        x: tabBarLayout.x + currentTab.x - buttonFrame.margins.left
         y: backgroundFrame.margins.top
         width: currentTab.width + buttonFrame.margins.left + buttonFrame.margins.right
         height: currentTab.height + buttonFrame.margins.top / 2 + buttonFrame.margins.bottom / 2
@@ -105,52 +104,24 @@ FocusScope {
                 duration: 250
             }
         }
-    }
-
-    onCurrentTabChanged: tabBarLayout.x = Math.min(0, -(currentTab.x + currentTab.width - tabbarScroller.width))
-
-    onWidthChanged: tabBarLayout.x = Math.min(0, -(currentTab.x + currentTab.width - tabbarScroller.width))
-
-    Item {
-        id: tabbarScroller
-        clip: true
-        anchors {
-            fill: parent
-            leftMargin: backgroundFrame.margins.left + buttonFrame.margins.left
-            topMargin: backgroundFrame.margins.top + buttonFrame.margins.top / 2
-            rightMargin: backgroundFrame.margins.right + buttonFrame.margins.right + (buttonsLayout.visible ? buttonsLayout.width : 0)
-            bottomMargin: backgroundFrame.margins.bottom + buttonFrame.margins.bottom / 2
-        }
-
-        Private.TabBarLayout {
-            id: tabBarLayout
-            width: Math.max(parent.width, implicitWidth)
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
+        Behavior on width {
+            PropertyAnimation {
+                easing.type: Easing.InQuad
+                duration: 250
             }
         }
     }
-    Row {
-        id: buttonsLayout
-        visible: tabBarLayout.width > root.width - backgroundFrame.margins.left - backgroundFrame.margins.right
-        height: Math.min(parent.height, theme.mediumIconSize)
+
+    Private.TabBarLayout {
+        id: tabBarLayout
         anchors {
+            left: parent.left
             right: parent.right
-            verticalCenter: parent.verticalCenter
-            rightMargin: Math.min(y, backgroundFrame.margins.right)
-        }
-        ToolButton {
-            height: parent.height
-            width: height
-            iconSource: "go-previous"
-            onClicked: tabBarLayout.x = Math.min(0, tabBarLayout.x + tabBarLayout.width/tabBarLayout.children.length)
-        }
-        ToolButton {
-            height: parent.height
-            width: height
-            iconSource: "go-next"
-            onClicked: tabBarLayout.x = Math.max(-tabBarLayout.width + tabbarScroller.width, tabBarLayout.x - tabBarLayout.width/tabBarLayout.children.length)
+            top: parent.top
+            leftMargin: backgroundFrame.margins.left + buttonFrame.margins.left
+            topMargin: backgroundFrame.margins.top + buttonFrame.margins.top / 2
+            rightMargin: backgroundFrame.margins.right + buttonFrame.margins.right
+            bottomMargin: backgroundFrame.margins.bottom + buttonFrame.margins.bottom / 2
         }
     }
 }
