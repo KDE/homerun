@@ -92,7 +92,9 @@ Item {
 
     signal clicked
 
-    implicitWidth: label.implicitWidth + (iconSource != null ? imageLoader.implicitWidth : 0)
+    property int iconSpacing: 4
+
+    implicitWidth: label.implicitWidth + (iconSource != null ? imageLoader.implicitWidth + iconSpacing : 0)
     implicitHeight: iconSource === null
         ? label.implicitHeight
         : Math.max(label.implicitHeight, imageLoader.implicitHeight)
@@ -129,26 +131,6 @@ Item {
         }
     }
 
-    Label {
-        id: label
-
-        objectName: "label"
-
-        anchors {
-            top: parent.top
-            left: iconSource == null ? parent.left : imageLoader.right
-            leftMargin: iconSource == null ? 0 : parent.parent.anchors.leftMargin
-            right: parent.right
-            bottom: parent.bottom
-        }
-
-        elide: Text.ElideRight
-        horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
-
-        color: root.checked ? theme.buttonTextColor : theme.textColor
-    }
-
     Private.IconLoader {
         id: imageLoader
 
@@ -159,6 +141,26 @@ Item {
             left: parent.left
             verticalCenter: parent.verticalCenter
         }
+    }
+
+    Label {
+        id: label
+
+        objectName: "label"
+
+        anchors {
+            top: parent.top
+            left: iconSource == null ? parent.left : imageLoader.right
+            leftMargin: iconSource == null ? 0 : iconSpacing
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        elide: Text.ElideRight
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
+
+        color: root.checked ? theme.buttonTextColor : theme.textColor
     }
 
     MouseArea {
