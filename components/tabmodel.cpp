@@ -85,9 +85,15 @@ public:
         m_group.writeEntry("name", m_name);
     }
 
+    void saveIconName()
+    {
+        m_group.writeEntry("icon", m_iconName);
+    }
+
     void save()
     {
         saveName();
+        saveIconName();
         saveSources();
         m_group.sync();
     }

@@ -279,10 +279,12 @@ void TabModelTest::testMoveRow()
         "\n"
         "[Tab1]\n"
         "name=one\n"
+        "icon=iconOne\n"
         "source=one\n"
         "\n"
         "[Tab2]\n"
         "name=two\n"
+        "icon=iconTwo\n"
         "source=two\n"
         ;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
@@ -306,7 +308,9 @@ void TabModelTest::testMoveRow()
 
     // Check config
     QCOMPARE(config->group("Tab2").readEntry("name"), QString("one"));
+    QCOMPARE(config->group("Tab2").readEntry("icon"), QString("iconOne"));
     QCOMPARE(config->group("Tab1").readEntry("name"), QString("two"));
+    QCOMPARE(config->group("Tab1").readEntry("icon"), QString("iconTwo"));
 
     // Check signals
     QVariantList args;
