@@ -274,19 +274,39 @@ void TabModel::appendRow()
     tab->save();
 }
 
-void TabModel::removeRow(int row)
-{
-    if (row < 0 || row >= m_tabList.count()) {
-        kWarning() << "Invalid row number" << row;
-        return;
+#define CHECK_ROW(row) \
+    if (row < 0 || row >= m_tabList.count()) { \
+        kWarning() << "Invalid row number" << row; \
+        return; \
     }
 
+void TabModel::removeRow(int row)
+{
+    CHECK_ROW(row)
     beginRemoveRows(QModelIndex(), row, row);
     Tab *tab = m_tabList.takeAt(row);
     Q_ASSERT(tab);
     tab->remove();
     delete tab;
     endRemoveRows();
+}
+
+void TabModel::moveRow(int from, int to)
+{
+    CHECK_ROW(from)
+    CHECK_ROW(to)
+    if (from == to) {
+        kWarning() << "Cannot move row to itself";
+        return;
+    }
+    beginMoveRows(QModelIndex(), from, from, QModelIndex(), to);
+    m_tabList.move(from, to);
+    for (int row = 0; row < m_tabList.count(); ++row) {
+        Tab *tab = m_tabList[row];
+        tab->m_group = KConfigGroup(m_config, QLatin1String(TAB_GROUP_PREFIX) + QString::number(row));
+        tab->save();
+    }
+    endMoveRows();
 }
 
 #include "tabmodel.moc"

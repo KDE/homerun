@@ -270,4 +270,61 @@ void TabModelTest::testRemoveRow()
     QCOMPARE(args[2].toInt(), 0);
 }
 
+void TabModelTest::testMoveRow()
+{
+    QString configText =
+        "[Tab0]\n"
+        "name=zero\n"
+        "source=zero\n"
+        "\n"
+        "[Tab1]\n"
+        "name=one\n"
+        "source=one\n"
+        "\n"
+        "[Tab2]\n"
+        "name=two\n"
+        "source=two\n"
+        ;
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    TabModel model;
+    model.setConfig(config);
+    QCOMPARE(model.rowCount(), 3);
+
+    QSignalSpy aboutSpy(&model, SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
+    QSignalSpy spy(&model, SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)));
+    model.moveRow(2, 1);
+
+    // Check model
+    QModelIndex index;
+    index = model.index(2, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("one"));
+    index = model.index(1, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("two"));
+
+    // Check config
+    QCOMPARE(config->group("Tab2").readEntry("name"), QString("one"));
+    QCOMPARE(config->group("Tab1").readEntry("name"), QString("two"));
+
+    // Check signals
+    QVariantList args;
+    QCOMPARE(aboutSpy.count(), 1);
+    args = aboutSpy.takeFirst();
+    QVERIFY(!args[0].value<QModelIndex>().isValid());
+    QCOMPARE(args[1].toInt(), 2);
+    QCOMPARE(args[2].toInt(), 2);
+    QVERIFY(!args[3].value<QModelIndex>().isValid());
+    QCOMPARE(args[4].toInt(), 1);
+
+    QCOMPARE(spy.count(), 1);
+    args = spy.takeFirst();
+    QVERIFY(!args[0].value<QModelIndex>().isValid());
+    QCOMPARE(args[1].toInt(), 2);
+    QCOMPARE(args[2].toInt(), 2);
+    QVERIFY(!args[3].value<QModelIndex>().isValid());
+    QCOMPARE(args[4].toInt(), 1);
+}
+
 #include "tabmodeltest.moc"

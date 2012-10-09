@@ -58,6 +58,8 @@ public:
 
     Q_INVOKABLE void removeRow(int row);
 
+    Q_INVOKABLE void moveRow(int from, int to);
+
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
 
