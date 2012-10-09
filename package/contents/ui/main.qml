@@ -76,7 +76,7 @@ Item {
         }
     }
 
-    PlasmaComponents.TabBar {
+    HomerunComponents.TabBar {
         id: filterTabBar
 
         anchors {
@@ -90,7 +90,7 @@ Item {
 
         Repeater {
             model: tabModel
-            PlasmaComponents.TabButton {
+            HomerunComponents.TabButton {
                 property string realText: model.display
                 text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
                 iconSource: model.decoration
@@ -276,7 +276,7 @@ Item {
             rightMargin: main.rightMargin
         }
 
-        PlasmaComponents.TabGroup {
+        HomerunComponents.TabGroup {
             id: tabGroup
             anchors.fill: parent
         }
