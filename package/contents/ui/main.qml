@@ -76,7 +76,7 @@ Item {
         }
     }
 
-    PlasmaComponents.TabBar {
+    HomerunComponents.TabBar {
         id: filterTabBar
 
         anchors {
@@ -85,113 +85,52 @@ Item {
             left: parent.left
             leftMargin: parent.leftMargin
             right: searchField.left
-            rightMargin: configureMode ? (addTabButton.width + 6) : 0
+            rightMargin: 6 + (configureMode ? addTabButton.width : 0)
         }
 
-        Repeater {
-            model: tabModel
-            PlasmaComponents.TabButton {
-                property string realText: model.display
-                text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
-                iconSource: model.decoration
-                property string searchPlaceholder: model.searchPlaceholder
-                property variant sources: model.sources
-                property int index: model.index
+        model: tabModel
 
-                PlasmaComponents.ToolButton {
-                    anchors {
-                        right: parent.right
-                        verticalCenter: parent.verticalCenter
-                    }
-                    height: parent.height - 2
-                    width: height
+        delegate: HomerunComponents.TabButton {
+            property string realText: model.display
+            text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
+            iconSource: model.decoration
+            property string searchPlaceholder: model.searchPlaceholder
+            property variant sources: model.sources
+            index: model.index
+
+            rightSide: [
+                TabSideButton {
+                    opacity: configureMode ? 1 : 0
+                    iconSource: "go-previous"
+                    onClicked: tabModel.moveRow(index, index - 1)
+                },
+                TabSideButton {
+                    opacity: configureMode ? 1 : 0
+                    iconSource: "go-next"
+                    onClicked: tabModel.moveRow(index, index + 1)
+                },
+                TabSideButton {
                     opacity: configureMode ? 1 : 0
                     iconSource: "list-remove"
-                    Behavior on opacity { NumberAnimation { duration: 250 }}
                     onClicked: tabModel.removeRow(index)
                 }
-            }
+            ]
         }
 
-        /**
-         * Use duck-typing to determine if an item is a tab and not a Repeater
-         * or something else.
-         */
-        function isTab(tab) {
-            return tab && tab["iconSource"] !== undefined;
-        }
-
-        layout.onChildrenChanged: {
-            // Workaround to make sure there is a current tab when tabModel
-            // is done loading
-            if (isTab(filterTabBar.currentTab)) {
-                return;
-            }
-            filterTabBar.currentTab = firstTab();
-        }
-
-        onCurrentTabChanged: {
-            if (!currentTab.tab) {
-                createTabContent(currentTab);
+        onCurrentItemChanged: {
+            if (!currentItem.tab) {
+                createTabContent(currentItem);
             }
             // Setting currentTab does not change the tab content, so do it ourselves
-            tabGroup.currentTab = currentTab.tab;
+            tabGroup.currentTab = currentItem.tab;
         }
 
-        function createTabContent(tab) {
-            tab.tab = tabContent.createObject(tabGroup, {
-                sources: tab.sources,
+        function createTabContent(tabButton) {
+            tabButton.tab = tabContent.createObject(tabGroup, {
+                sources: tabButton.sources,
                 sourceRegistry: sourceRegistry,
-                tabButton: tab,
+                tabButton: tabButton,
             });
-        }
-
-        function firstTab() {
-            for (var idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
-                var item = filterTabBar.layout.children[idx];
-                if (isTab(item)) {
-                    return item;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Return a list of all children which are actually tabs
-         */
-        function tabList() {
-            var lst = new Array();
-            for (var idx = 0; idx < filterTabBar.layout.children.length; ++idx) {
-                var item = filterTabBar.layout.children[idx];
-                if (isTab(item)) {
-                    lst.push(item);
-                }
-            }
-            return lst;
-        }
-
-        function goToFirstTab() {
-            currentTab = filterTabBar.firstTab();
-        }
-
-        function goToPreviousTab() {
-            var lst = tabList();
-            for (var idx = 1; idx < lst.length; ++idx) {
-                if (lst[idx] == filterTabBar.currentTab) {
-                    currentTab = lst[idx - 1];
-                    return;
-                }
-            }
-        }
-
-        function goToNextTab() {
-            var lst = tabList();
-            for (var idx = 0; idx < lst.length - 1; ++idx) {
-                if (lst[idx] == filterTabBar.currentTab) {
-                    currentTab = lst[idx + 1];
-                    return;
-                }
-            }
         }
     }
 
@@ -202,7 +141,6 @@ Item {
             left: filterTabBar.right
             top: filterTabBar.top
             bottom: filterTabBar.bottom
-            verticalCenter: filterTabBar.verticalCenter
         }
         opacity: configureMode ? 1 : 0
         iconSource: "list-add"
@@ -222,7 +160,7 @@ Item {
         width: parent.width / 4
 
         clearButtonShown: true
-        placeholderText: filterTabBar.currentTab.searchPlaceholder
+        placeholderText: filterTabBar.currentItem.searchPlaceholder
 
         KeyNavigation.tab: content
         KeyNavigation.backtab: content
@@ -276,7 +214,7 @@ Item {
             rightMargin: main.rightMargin
         }
 
-        PlasmaComponents.TabGroup {
+        HomerunComponents.TabGroup {
             id: tabGroup
             anchors.fill: parent
         }
@@ -340,19 +278,20 @@ Item {
     }
 
     function reset() {
-        filterTabBar.goToFirstTab();
-        filterTabBar.tabList().forEach(function(tab) {
-            if (tab.tab && tab.tab.reset) {
-                tab.tab.reset();
+        filterTabBar.currentIndex = 0;
+        for (idx = 0; idx < tabGroup.data.length; ++idx) {
+            var tabContent = tabGroup.data[idx];
+            if (tabContent && tabContent.reset) {
+                tabContent.reset();
             }
-        });
+        }
         searchField.text = "";
     }
 
     Keys.onPressed: {
         var lst = [
-            [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.goToPreviousTab],
-            [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.goToNextTab],
+            [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.decrementCurrentIndex],
+            [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.incrementCurrentIndex],
             [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
         ];
         if (event.modifiers == Qt.NoModifier || event.modifiers == Qt.ShiftModifier) {
