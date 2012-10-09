@@ -67,61 +67,72 @@ Properties:
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1
-import "private" as Private
 
-FocusScope {
+Item {
     id: root
-    default property alias content: tabBarLayout.data
-    property alias layout: tabBarLayout
 
-    //Plasma extension
-    property Item currentTab
+    height: frame.margins.top
+        + buttonFrame.margins.top
+        + theme.smallIconSize
+        + buttonFrame.margins.bottom
+        + frame.margins.bottom
 
-    implicitWidth: layout.implicitWidth + layout.anchors.leftMargin + layout.anchors.rightMargin
-    implicitHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
+    property alias model: listView.model
+    property alias delegate: listView.delegate
+    property alias currentIndex: listView.currentIndex
+    property alias currentItem: listView.currentItem
+
+    function incrementCurrentIndex() {
+        listView.incrementCurrentIndex();
+    }
+
+    function decrementCurrentIndex() {
+        listView.decrementCurrentIndex();
+    }
+
+    property alias buttonFrame: listView.buttonFrame
 
     PlasmaCore.FrameSvgItem {
-        id: backgroundFrame
+        id: frame
 
         anchors.fill: parent
         imagePath: "widgets/frame"
         prefix: "sunken"
-    }
 
-    PlasmaCore.FrameSvgItem {
-        id: buttonFrame
+        ListView {
+            id: listView
 
-        visible: currentTab !== null
-        x: tabBarLayout.x + currentTab.x - buttonFrame.margins.left
-        y: backgroundFrame.margins.top
-        width: currentTab.width + buttonFrame.margins.left + buttonFrame.margins.right
-        height: currentTab.height + buttonFrame.margins.top / 2 + buttonFrame.margins.bottom / 2
-        imagePath: "widgets/button"
-        prefix: "normal"
-        Behavior on x {
-            PropertyAnimation {
-                easing.type: Easing.InQuad
-                duration: 250
+            // Hack: make it possible for other elements to know the margins
+            // of the highlight item before it is created
+            property Item buttonFrame: PlasmaCore.FrameSvgItem {
+                imagePath: "widgets/button"
+                prefix: "normal"
+                visible: false
             }
-        }
-        Behavior on width {
-            PropertyAnimation {
-                easing.type: Easing.InQuad
-                duration: 250
-            }
-        }
-    }
 
-    Private.TabBarLayout {
-        id: tabBarLayout
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: parent.top
-            leftMargin: backgroundFrame.margins.left + buttonFrame.margins.left
-            topMargin: backgroundFrame.margins.top + buttonFrame.margins.top / 2
-            rightMargin: backgroundFrame.margins.right + buttonFrame.margins.right
-            bottomMargin: backgroundFrame.margins.bottom + buttonFrame.margins.bottom / 2
+            anchors {
+                left: parent.left
+                top: parent.top
+                right: parent.right
+                bottom: parent.bottom
+                leftMargin: frame.margins.left
+                topMargin: frame.margins.top
+                rightMargin: frame.margins.right
+                bottomMargin: frame.margins.bottom
+            }
+
+            orientation: ListView.Horizontal
+
+            highlightMoveDuration: 250
+            highlightResizeDuration: 250
+
+            highlight: PlasmaCore.FrameSvgItem {
+                imagePath: "widgets/button"
+                prefix: "normal"
+                height: parent ? parent.height : 0
+            }
+
+            currentIndex: 0
         }
     }
 }

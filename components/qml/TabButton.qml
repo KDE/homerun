@@ -84,7 +84,7 @@ Item {
 
     // Common Public API
     property Item tab
-    property bool checked: (internal.tabGroup == null) ? (internal.tabBar.currentTab == root) : (internal.tabGroup.currentTab == tab)
+    property int index
 
     property bool pressed: mouseArea.pressed == true && mouseArea.containsMouse
     property alias text: label.text
@@ -92,46 +92,22 @@ Item {
 
     property alias rightSide: rightSideItems.data
 
-    signal clicked
-
     property int iconSpacing: 4
 
+    property int topMargin: ListView.view.buttonFrame.margins.top
+    property int bottomMargin: ListView.view.buttonFrame.margins.bottom
+    property int leftMargin: ListView.view.buttonFrame.margins.left
+    property int rightMargin: ListView.view.buttonFrame.margins.right
+
+    width: ListView.view.width / ListView.view.count
+
     implicitWidth: label.implicitWidth + (iconSource != null ? imageLoader.implicitWidth + iconSpacing : 0)
-    implicitHeight: iconSource === null
+    implicitHeight: (iconSource === null
         ? label.implicitHeight
         : Math.max(label.implicitHeight, imageLoader.implicitHeight)
+        ) + topMargin + bottomMargin
 
     opacity: enabled ? 1 : 0.6
-    //long notation to not make it overwritten by implementations
-    Connections {
-        target: root
-        onPressedChanged: {
-            //TabBar is the granparent
-            internal.tabBar.currentTab = root
-            internal.tabBar.forceActiveFocus()
-        }
-        onVisibleChanged: root.parent.childrenChanged()
-    }
-
-    QtObject {
-        id: internal
-
-        property Item tabBar: Utils.findParent(root, "currentTab")
-        property Item tabGroup: Utils.findParent(tab, "currentTab")
-
-        function click() {
-            root.clicked()
-            if (internal.tabGroup) {
-                internal.tabGroup.currentTab = tab
-            }
-        }
-
-        Component.onCompleted: {
-            if (internal.tabGroup && internal.tabGroup.currentTab == tab) {
-                internal.tabGroup.currentTab = tab
-            }
-        }
-    }
 
     Private.IconLoader {
         id: imageLoader
@@ -141,6 +117,7 @@ Item {
 
         anchors {
             left: parent.left
+            leftMargin: leftMargin
             verticalCenter: parent.verticalCenter
         }
     }
@@ -153,7 +130,7 @@ Item {
         anchors {
             top: parent.top
             left: iconSource == null ? parent.left : imageLoader.right
-            leftMargin: iconSource == null ? 0 : iconSpacing
+            leftMargin: iconSource == null ? leftMargin : iconSpacing
             right: rightSideItems.left
             bottom: parent.bottom
         }
@@ -162,19 +139,14 @@ Item {
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
 
-        color: root.checked ? theme.buttonTextColor : theme.textColor
+        color: root.ListView.isCurrentItem ? theme.buttonTextColor : theme.textColor
     }
 
     MouseArea {
         id: mouseArea
 
         onClicked: {
-            root.clicked()
-            if (internal.tabGroup) {
-                internal.tabGroup.currentTab = tab
-            }
-            //TabBar is the granparent, done here too in case of no tabgroup
-            internal.tabBar.currentTab = root
+            root.ListView.view.currentIndex = root.index;
         }
 
         anchors {
