@@ -19,8 +19,8 @@
 #include "placesmodel.h"
 
 // Local
+#include <dirconfigurationwidget.h>
 #include <pathmodel.h>
-#include <sourceconfigurationwidget.h>
 #include <sourceid.h>
 
 // KDE
@@ -29,7 +29,6 @@
 #include <KDirModel>
 #include <KFilePlacesModel>
 #include <KLocale>
-#include <KUrlRequester>
 
 // Qt
 #include <QVBoxLayout>
@@ -280,35 +279,6 @@ int FavoritePlacesModel::count() const
 {
     return rowCount(QModelIndex());
 }
-
-//- DirConfigurationWidget ------------------------------------------
-class DirConfigurationWidget : public SourceConfigurationWidget
-{
-public:
-    DirConfigurationWidget(const SourceArguments &args)
-    {
-        m_requester = new KUrlRequester;
-
-        QVBoxLayout *layout = new QVBoxLayout(this);
-        layout->setMargin(0);
-        layout->addWidget(m_requester);
-
-        KUrl url = args.value("rootUrl");
-        if (url.isValid()) {
-            m_requester->setUrl(url);
-        }
-    }
-
-    SourceArguments arguments() const
-    {
-        SourceArguments args;
-        args.insert("rootUrl", m_requester->url().url());
-        return args;
-    }
-
-private:
-    KUrlRequester *m_requester;
-};
 
 //- DirSource -------------------------------------------------------
 DirSource::DirSource(QObject *parent)
