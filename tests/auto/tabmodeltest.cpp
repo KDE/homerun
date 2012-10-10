@@ -157,7 +157,7 @@ void TabModelTest::testLoadKeys()
     QCOMPARE(index.data(TabModel::SourcesRole).toStringList(), sources);
 }
 
-void TabModelTest::testSetText()
+void TabModelTest::testSetDataForRow()
 {
     QString configText =
         "[Tab0]\n"
@@ -179,11 +179,13 @@ void TabModelTest::testSetText()
 
     QSignalSpy spy(&model, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     model.setDataForRow(1, "display", "last");
+    model.setDataForRow(1, "decoration", "document-new");
 
     QModelIndex index = model.index(1, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("last"));
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), QString("document-new"));
 
-    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.count(), 2);
     QVariantList args = spy.takeFirst();
     QModelIndex topLeft = args[0].value<QModelIndex>();
     QModelIndex bottomRight = args[1].value<QModelIndex>();

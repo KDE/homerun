@@ -79,6 +79,25 @@ Item {
             spacing: 12
 
             PlasmaComponents.Label {
+                text: i18n("Tab Icon:")
+            }
+
+            PlasmaComponents.ToolButton {
+                flat: false
+                iconSource: main.tabIconSource
+                onClicked: {
+                    var name = iconDialog.getIcon();
+                    if (name != "") {
+                        main.tabIconSource = name;
+                    }
+                }
+
+                HomerunComponents.IconDialog {
+                    id: iconDialog
+                }
+            }
+
+            PlasmaComponents.Label {
                 text: i18n("Tab Label:")
             }
 

@@ -63,6 +63,17 @@ public:
         return true;
     }
 
+    bool setIconName(const QString &value)
+    {
+        if (m_iconName == value) {
+            return false;
+        }
+        m_iconName = value;
+        saveIconName();
+        m_group.sync();
+        return true;
+    }
+
     void saveSources()
     {
         Q_FOREACH(const QString &key, m_group.keyList()) {
@@ -248,6 +259,10 @@ void TabModel::setDataForRow(int row, const QByteArray &roleName, const QVariant
 
     if (roleName == "display") {
         if (!tab->setName(value.toString())) {
+            return;
+        }
+    } else if (roleName == "decoration") {
+        if (!tab->setIconName(value.toString())) {
             return;
         }
     } else {

@@ -73,6 +73,11 @@ Item {
                     tabModel.setDataForRow(tabButton.index, "display", tabText);
                 }
             }
+            onTabIconSourceChanged: {
+                if (configureMode) {
+                    tabModel.setDataForRow(tabButton.index, "decoration", tabIconSource);
+                }
+            }
         }
     }
 

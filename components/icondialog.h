@@ -16,28 +16,26 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+#ifndef ICONDIALOG_H
+#define ICONDIALOG_H
 
+// Local
+
+// Qt
 #include <QObject>
 
-class TabModelTest : public QObject
+// KDE
+
+/**
+ * A simplistic QML wrapper for KIconDialog
+ */
+class IconDialog : public QObject
 {
     Q_OBJECT
+public:
+    explicit IconDialog(QObject *parent = 0);
 
-private Q_SLOTS:
-    void initTestCase();
-
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
-
-    void testSetDataForRow();
-
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
+    Q_INVOKABLE QString getIcon();
 };
 
-#endif /* TABMODELTEST_H */
+#endif /* ICONDIALOG_H */
