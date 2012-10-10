@@ -96,6 +96,7 @@ Item {
         model: tabModel
 
         delegate: HomerunComponents.TabButton {
+            id: tabButtonMain
             property string realText: model.display
             text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
             iconSource: model.decoration
@@ -107,11 +108,13 @@ Item {
                 TabSideButton {
                     opacity: configureMode ? 1 : 0
                     iconSource: "go-previous"
+                    enabled: index > 0
                     onClicked: tabModel.moveRow(index, index - 1)
                 },
                 TabSideButton {
                     opacity: configureMode ? 1 : 0
                     iconSource: "go-next"
+                    enabled: index < tabButtonMain.ListView.view.count - 1
                     onClicked: tabModel.moveRow(index, index + 1)
                 },
                 TabSideButton {
