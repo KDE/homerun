@@ -35,6 +35,11 @@ IconDialog::IconDialog(QObject *parent)
 QString IconDialog::getIcon()
 {
     KIconDialog dialog(QApplication::activeWindow());
+    dialog.setup(
+        KIconLoader::Small /* group */,
+        KIconLoader::Category /* context */,
+        true /* strictIconSize */
+        );
     return dialog.openDialog();
 }
 
