@@ -1,6 +1,11 @@
 macro(homerun_add_unit_test _test)
     string(REGEX REPLACE "_x11$" "" _cpp "${_test}") # ${cpp} is ${_test} without the "_x11" prefix, if present
-    set(_src ${_cpp}.cpp ${ARGN})
+    string(REGEX MATCHALL "[a-z0-9_/]+\\.cpp" _src "${ARGN}")
+    string(REGEX MATCHALL "[a-z0-9_/]+\\.ui" _ui "${ARGN}")
+    if(_ui)
+        kde4_add_ui_files(_src ${_ui})
+    endif()
+    set(_src ${_cpp}.cpp ${_src})
     qt4_automoc(${_src})
     kde4_add_unit_test(${_test} ${_src})
     target_link_libraries(${_test}
@@ -19,6 +24,7 @@ include_directories(
     ${components_SOURCE_DIR}
     ${lib_SOURCE_DIR}
     ${lib_SOURCE_DIR}/private
+    ${CMAKE_BUILD_DIR}
     )
 
 # Tests which depend on X11 cannot be run on headless builders. If X11 is not
@@ -33,6 +39,7 @@ homerun_add_unit_test(tabmodeltest ${components_SOURCE_DIR}/tabmodel.cpp)
 homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/private/favoriteappsmodel.cpp)
 homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
+    ${lib_SOURCE_DIR}/private/dirconfigurationwidget.ui
     ${lib_SOURCE_DIR}/private/placesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
@@ -41,6 +48,7 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     )
 homerun_add_unit_test(placesmodeltest_x11
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
+    ${lib_SOURCE_DIR}/private/dirconfigurationwidget.ui
     ${lib_SOURCE_DIR}/private/placesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp

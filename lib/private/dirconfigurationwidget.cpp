@@ -20,8 +20,10 @@
 #include <dirconfigurationwidget.h>
 
 // Local
+#include <ui_dirconfigurationwidget.h>
 
 // KDE
+#include <KGlobalSettings>
 #include <KUrlRequester>
 
 // Qt
@@ -30,23 +32,34 @@
 using namespace Homerun;
 
 DirConfigurationWidget::DirConfigurationWidget(const SourceArguments &args)
+: m_ui(new Ui_DirConfigurationWidget)
 {
-    m_requester = new KUrlRequester;
+    m_ui->setupUi(this);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setMargin(0);
-    layout->addWidget(m_requester);
+    QFont helpFont = KGlobalSettings::smallestReadableFont();
+    m_ui->titleHelpLabel->setFont(helpFont);
 
     KUrl url = args.value("rootUrl");
     if (url.isValid()) {
-        m_requester->setUrl(url);
+        m_ui->urlRequester->setUrl(url);
     }
+
+    m_ui->titleLineEdit->setText(args.value("rootName"));
+}
+
+DirConfigurationWidget::~DirConfigurationWidget()
+{
+    delete m_ui;
 }
 
 SourceArguments DirConfigurationWidget::arguments() const
 {
     SourceArguments args;
-    args.insert("rootUrl", m_requester->url().url());
+    args.insert("rootUrl", m_ui->urlRequester->url().url());
+    QString title = m_ui->titleLineEdit->text();
+    if (!title.isEmpty()) {
+        args.insert("rootName", title);
+    }
     return args;
 }
 

@@ -27,7 +27,7 @@
 
 // KDE
 
-class KUrlRequester;
+class Ui_DirConfigurationWidget;
 
 /**
  * Configuration widget for the Dir source
@@ -37,10 +37,11 @@ class DirConfigurationWidget : public Homerun::SourceConfigurationWidget
     Q_OBJECT
 public:
     DirConfigurationWidget(const Homerun::SourceArguments &args);
+    ~DirConfigurationWidget();
     Homerun::SourceArguments arguments() const;
 
 private:
-    KUrlRequester *m_requester;
+    Ui_DirConfigurationWidget *m_ui;
 };
 
 #endif /* DIRCONFIGURATIONWIDGET_H */

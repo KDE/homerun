@@ -36,6 +36,7 @@ set(lib_SRCS ${lib_SRCS}
     )
 
 kde4_add_ui_files(lib_SRCS
+    private/dirconfigurationwidget.ui
     private/runnerconfigurationwidget.ui
     )
 
