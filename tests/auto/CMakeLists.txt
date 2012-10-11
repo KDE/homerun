@@ -1,11 +1,20 @@
 macro(homerun_add_unit_test _test)
     string(REGEX REPLACE "_x11$" "" _cpp "${_test}") # ${cpp} is ${_test} without the "_x11" prefix, if present
-    string(REGEX MATCHALL "[a-z0-9_/]+\\.cpp" _src "${ARGN}")
-    string(REGEX MATCHALL "[a-z0-9_/]+\\.ui" _ui "${ARGN}")
+
+    # Put all .ui files in _ui, put the rest in _src
+    set(_src ${_cpp}.cpp)
+    set(_ui "")
+    foreach(_name ${ARGN})
+        if(${_name} MATCHES "\\.ui$")
+            set(_ui ${_ui} ${_name})
+        else()
+            set(_src ${_src} ${_name})
+        endif()
+    endforeach()
+
     if(_ui)
         kde4_add_ui_files(_src ${_ui})
     endif()
-    set(_src ${_cpp}.cpp ${_src})
     qt4_automoc(${_src})
     kde4_add_unit_test(${_test} ${_src})
     target_link_libraries(${_test}
