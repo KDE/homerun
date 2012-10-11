@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Hello World
 Name[da]=Hej verden
+Name[et]=Tere, maailm
 Name[nl]=Hallo wereld
 Name[pt]=Olá Mundo
 Name[pt_BR]=Olá mundo
@@ -9,6 +10,7 @@ Name[uk]=Привіт, світе
 Name[x-test]=xxHello Worldxx
 Comment=An example of Homerun Source
 Comment[da]=Et eksempel på en Homerun-kilde
+Comment[et]=Homeruni allika näide
 Comment[nl]=Voorbeeld van een Homerun-bron
 Comment[pt]=Um exemplo de código do Homerun
 Comment[pt_BR]=Exemplo de código do Homerun

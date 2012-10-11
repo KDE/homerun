@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Recent Documents
 Name[da]=Nylige dokumenter
+Name[et]=Viimati kasutatud dokumendid
 Name[nl]=Recente documenten
 Name[pt]=Documentos Recentes
 Name[pt_BR]=Documentos recentes
@@ -9,6 +10,7 @@ Name[uk]=Нещодавні документи
 Name[x-test]=xxRecent Documentsxx
 Comment=List recently opened documents
 Comment[da]=Liste over nyligt åbnede dokumenter
+Comment[et]=Viimati avatud dokumentide nimekiri
 Comment[nl]=Recent geopende documenten tonen
 Comment[pt]=Listar os documentos abertos recentemente
 Comment[pt_BR]=Lista dos documentos abertos recentemente
