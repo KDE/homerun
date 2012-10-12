@@ -133,6 +133,42 @@ Item {
                     }
                 }
             }
+
+            function findFocusedViewIndex() {
+                for (var idx = 0; idx < repeater.count; ++idx) {
+                    var view = repeater.itemAt(idx);
+                    if (view.activeFocus) {
+                        return idx;
+                    }
+                }
+                return -1;
+            }
+
+            Keys.onPressed: {
+                console.log("Column.Keys.onPressed");
+                var delta = 0;
+                if (event.modifiers == Qt.NoModifier) {
+                    if (event.key == Qt.Key_Left || event.key == Qt.Key_Up) {
+                        delta = -1;
+                    } else if (event.key == Qt.Key_Right || event.key == Qt.Key_Down) {
+                        delta = 1;
+                    }
+                }
+                if (delta == 0) {
+                    return;
+                }
+                var idx = findFocusedViewIndex();
+                if (idx == -1) {
+                    console.log(multiMain + ": Error: no focused view!");
+                    return;
+                }
+                if (delta == -1 && idx > 0) {
+                    repeater.itemAt(idx - 1).forceActiveFocus();
+                } else if (delta == 1 && idx < repeater.count - 1) {
+                    repeater.itemAt(idx + 1).forceActiveFocus();
+                }
+                event.accepted = true;
+            }
         }
     }
 
@@ -232,6 +268,12 @@ Item {
             Component.onCompleted: {
                 view = createView(model.model, editorMain);
                 main.updateRunning();
+            }
+
+            onActiveFocusChanged: {
+                if (activeFocus) {
+                    view.forceActiveFocus();
+                }
             }
         }
     }
