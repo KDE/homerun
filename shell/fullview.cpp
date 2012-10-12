@@ -124,7 +124,8 @@ void FullView::toggle(int screen)
         if(screen < 0) {
             screen = w.screenNumber(QCursor::pos());
         }
-        const QRect rect = w.availableGeometry(screen);
+        QRect rect = w.availableGeometry(screen);
+        rect.setTop(rect.height() / 2);
         setGeometry(rect);
         show();
         KWindowSystem::forceActiveWindow(winId());
