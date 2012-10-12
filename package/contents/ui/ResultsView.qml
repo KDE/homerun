@@ -43,16 +43,14 @@ FocusScope {
 
     signal indexClicked(int index)
 
+    signal focusOtherViewRequested(int key, int x)
+
     function focusLastItem() {
         focusItemAt(gridView.count - 1);
     }
 
     function focusFirstItem() {
         focusItemAt(0);
-    }
-
-    function xForActiveItem() {
-        return gridView.currentItem.x;
     }
 
     function focusLastItemAtX(x) {
@@ -217,13 +215,13 @@ FocusScope {
                     moveCurrentIndexUp();
                 } else if (event.key == Qt.Key_Down) {
                     moveCurrentIndexDown();
+                } else {
+                    return;
                 }
-                if (currentIndex != oldIndex) {
-                    // Only accept the event if the index actually moved. Not accepting
-                    // it will cause parent items to move the focus to the next ResultsView,
-                    // which is what we want
-                    event.accepted = true;
+                if (currentIndex == oldIndex) {
+                    focusOtherViewRequested(event.key, currentItem.x);
                 }
+                event.accepted = true;
             }
         }
 

@@ -117,6 +117,27 @@ Item {
             property bool modelNeedsFiltering: false
             property variant favoriteModels
 
+            // Expose the same focus API as ResultsView. Used when focus changes
+            // from a single ResultsView source to a multi ResultsView source
+            // and vice-versa
+            signal focusOtherViewRequested(int key, int x)
+
+            function focusLastItem() {
+                lastView().focusLastItem();
+            }
+
+            function focusFirstItem() {
+                firstView().focusFirstItem();
+            }
+
+            function focusLastItemAtX(x) {
+                lastView().focusLastItemAtX(x);
+            }
+
+            function focusFirstItemAtX(x) {
+                firstView().focusFirstItemAtX(x);
+            }
+
             Repeater {
                 id: repeater
                 delegate: ResultsView {
@@ -131,15 +152,19 @@ Item {
                     onIndexClicked: {
                         handleTriggerResult(model.trigger(index));
                     }
+
+                    onFocusOtherViewRequested: {
+                        navigate(key, x);
+                    }
                 }
             }
 
-            Keys.onPressed: {
-                if (event.modifiers == Qt.NoModifier) {
-                    if (event.key == Qt.Key_Left || event.key == Qt.Key_Up || event.key == Qt.Key_Right || event.key == Qt.Key_Down) {
-                        navigate(event);
-                    }
-                }
+            function firstView() {
+                return repeater.itemAt(0);
+            }
+
+            function lastView() {
+                return repeater.itemAt(repeater.count - 1);
             }
 
             function findFocusedViewIndex() {
@@ -152,7 +177,7 @@ Item {
                 return -1;
             }
 
-            function navigate(event) {
+            function navigate(key, x) {
                 var idx = findFocusedViewIndex();
                 if (idx == -1) {
                     console.log(multiMain + ": Error: no focused view!");
@@ -160,18 +185,18 @@ Item {
                 }
                 var view = repeater.itemAt(idx);
                 var maxIdx = repeater.count - 1;
-                if (event.key == Qt.Key_Left && idx > 0) {
+                if (key == Qt.Key_Left && idx > 0) {
                     repeater.itemAt(idx - 1).focusLastItem();
-                } else if (event.key == Qt.Key_Right && idx < maxIdx) {
+                } else if (key == Qt.Key_Right && idx < maxIdx) {
                     repeater.itemAt(idx + 1).focusFirstItem();
-                } else if (event.key == Qt.Key_Up && idx > 0) {
-                    var x = view.xForActiveItem();
+                } else if (key == Qt.Key_Up && idx > 0) {
                     repeater.itemAt(idx - 1).focusLastItemAtX(x);
-                } else if (event.key == Qt.Key_Down && idx < maxIdx) {
-                    var x = view.xForActiveItem();
+                } else if (key == Qt.Key_Down && idx < maxIdx) {
                     repeater.itemAt(idx + 1).focusFirstItemAtX(x);
+                } else {
+                    // No view matches, forward the request
+                    focusOtherViewRequested(key, x);
                 }
-                event.accepted = true;
             }
         }
     }
@@ -229,8 +254,8 @@ Item {
         }
     }
 
-    ListView {
-        id: listView
+    Flickable {
+        id: centralFlickable
         anchors {
             top: parent.top
             bottom: parent.bottom
@@ -238,45 +263,64 @@ Item {
             right: scrollBar.left
         }
         clip: true
-        model: sourcesModel
-        delegate: SourceItem {
-            id: editorMain
-            width: parent ? parent.width : 0
-            configureMode: main.configureMode
-            sourceRegistry: main.sourceRegistry
-            sourceId: model.sourceId
-            property QtObject view
+        contentHeight: centralColumn.height
 
-            isFirst: model.index == 0
-            isLast: model.index == sourcesModel.count - 1
+        Column {
+            id: centralColumn
+            width: parent.width
 
-            onRemoveRequested: {
-                sourcesModel.remove(model.index);
-                main.updateSources();
-            }
-            onMoveRequested: {
-                sourcesModel.move(model.index, model.index + delta, 1);
-                main.updateSources();
-            }
+            Repeater {
+                id: repeater
+                model: sourcesModel
+                delegate: SourceItem {
+                    id: editorMain
+                    width: parent ? parent.width : 0
+                    configureMode: main.configureMode
+                    sourceRegistry: main.sourceRegistry
+                    sourceId: model.sourceId
+                    property QtObject view
 
-            onSourceIdChanged: {
-                model.model.destroy();
-                view.destroy();
-                var newModel = createModelForSource(sourceId, main);
-                sourcesModel.setProperty(model.index, "sourceId", sourceId);
-                sourcesModel.setProperty(model.index, "model", newModel);
-                view = createView(model.model, editorMain);
-                main.updateSources();
-            }
+                    isFirst: model.index == 0
+                    isLast: model.index == sourcesModel.count - 1
+                    property int repeaterIndex: model.index
 
-            Component.onCompleted: {
-                view = createView(model.model, editorMain);
-                main.updateRunning();
-            }
+                    onRemoveRequested: {
+                        sourcesModel.remove(model.index);
+                        main.updateSources();
+                    }
+                    onMoveRequested: {
+                        sourcesModel.move(model.index, model.index + delta, 1);
+                        main.updateSources();
+                    }
 
-            onActiveFocusChanged: {
-                if (activeFocus) {
-                    view.forceActiveFocus();
+                    onSourceIdChanged: {
+                        model.model.destroy();
+                        view.destroy();
+                        var newModel = createModelForSource(sourceId, main);
+                        sourcesModel.setProperty(model.index, "sourceId", sourceId);
+                        sourcesModel.setProperty(model.index, "model", newModel);
+                        view = createView(model.model, editorMain);
+                        main.updateSources();
+                    }
+
+                    Component.onCompleted: {
+                        view = createView(model.model, editorMain);
+                        main.updateRunning();
+                    }
+
+                    function navigate(key, x) {
+                        var idx = repeaterIndex;
+                        var maxIdx = repeater.count - 1;
+                        if (key == Qt.Key_Left && idx > 0) {
+                            repeater.itemAt(idx - 1).view.focusLastItem();
+                        } else if (key == Qt.Key_Right && idx < maxIdx) {
+                            repeater.itemAt(idx + 1).view.focusFirstItem();
+                        } else if (key == Qt.Key_Up && idx > 0) {
+                            repeater.itemAt(idx - 1).view.focusLastItemAtX(x);
+                        } else if (key == Qt.Key_Down && idx < maxIdx) {
+                            repeater.itemAt(idx + 1).view.focusFirstItemAtX(x);
+                        }
+                    }
                 }
             }
         }
@@ -284,7 +328,7 @@ Item {
 
     PlasmaComponents.ScrollBar {
         id: scrollBar
-        flickableItem: listView
+        flickableItem: centralFlickable
         anchors {
             right: parent.right
             top: parent.top
@@ -359,7 +403,9 @@ Item {
         }
 
         var component = isMultiViewModel ? multiResultsViewComponent : resultsViewComponent;
-        return component.createObject(parent, viewArgs);
+        var view = component.createObject(parent, viewArgs);
+        view.focusOtherViewRequested.connect(parent.navigate);
+        return view;
     }
 
     function fillSourcesModel() {
