@@ -273,18 +273,6 @@ Item {
         }
     }
 
-    function focusFirstView() {
-        var page = currentTabContent.currentPage;
-        if (!page) {
-            return;
-        }
-        var firstView = page.getFirstView();
-        if (!firstView) {
-            return;
-        }
-        firstView.forceActiveFocus();
-    }
-
     function reset() {
         filterTabBar.currentIndex = 0;
         for (idx = 0; idx < tabGroup.data.length; ++idx) {

@@ -261,11 +261,6 @@ Item {
         }
     }
 
-    function getFirstView() {
-        var lst = KeyboardUtils.findTabMeChildren(this);
-        return lst.length > 0 ? lst[0] : null;
-    }
-
     function updateRunning() {
         for (var idx = 0; idx < sourcesModel.count; ++idx) {
             if (sourcesModel.get(idx).model.running) {
