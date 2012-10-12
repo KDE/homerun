@@ -60,11 +60,17 @@ protected:
     virtual void resizeEvent(QResizeEvent *event);
     virtual void drawBackground(QPainter *painter, const QRectF&rect);
 
+private Q_SLOTS:
+    void logFocusedItem();
+
 private:
     void setupBackground();
     void resetAndHide();
 
     Plasma::FrameSvg *m_backgroundSvg;
+
+    QGraphicsItem *m_lastFocusedItem;
+    QTimer *m_focusPollTimer;
 };
 
 #endif

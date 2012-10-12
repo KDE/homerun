@@ -76,6 +76,12 @@ FullView::FullView()
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
 
     setupBackground();
+
+    m_lastFocusedItem = 0;
+    m_focusPollTimer = new QTimer(this);
+    m_focusPollTimer->setInterval(200);
+    connect(m_focusPollTimer, SIGNAL(timeout()), SLOT(logFocusedItem()));
+    m_focusPollTimer->start();
 }
 
 void FullView::setupBackground()
@@ -158,6 +164,15 @@ void FullView::updateGeometry()
 void FullView::drawBackground(QPainter *painter, const QRectF &/*rect*/)
 {
     m_backgroundSvg->paintFrame(painter);
+}
+
+void FullView::logFocusedItem()
+{
+    QGraphicsItem *item = scene()->focusItem();
+    if (item != m_lastFocusedItem) {
+        m_lastFocusedItem = item;
+        kWarning() << "Focused Item:" << m_lastFocusedItem;
+    }
 }
 
 #include "fullview.moc"
