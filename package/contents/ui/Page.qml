@@ -220,8 +220,8 @@ Item {
             }
 
             onSourceIdChanged: {
-                model.model.destroy()
-                view.destroy()
+                model.model.destroy();
+                view.destroy();
                 var newModel = createModelForSource(sourceId, main);
                 sourcesModel.setProperty(model.index, "sourceId", sourceId);
                 sourcesModel.setProperty(model.index, "model", newModel);
