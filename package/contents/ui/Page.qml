@@ -138,6 +138,15 @@ Item {
                 firstView().focusFirstItemAtX(x);
             }
 
+            function isEmpty() {
+                for (var idx = 0; idx < repeater.count; ++idx) {
+                    if (!repeater.itemAt(idx).isEmpty()) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
             Repeater {
                 id: repeater
                 delegate: ResultsView {
@@ -309,17 +318,38 @@ Item {
                     }
 
                     function navigate(key, x) {
-                        var idx = repeaterIndex;
                         var maxIdx = repeater.count - 1;
-                        if (key == Qt.Key_Left && idx > 0) {
-                            repeater.itemAt(idx - 1).view.focusLastItem();
-                        } else if (key == Qt.Key_Right && idx < maxIdx) {
-                            repeater.itemAt(idx + 1).view.focusFirstItem();
-                        } else if (key == Qt.Key_Up && idx > 0) {
-                            repeater.itemAt(idx - 1).view.focusLastItemAtX(x);
-                        } else if (key == Qt.Key_Down && idx < maxIdx) {
-                            repeater.itemAt(idx + 1).view.focusFirstItemAtX(x);
+                        var next = nextView();
+                        var prev = previousView();
+                        if (key == Qt.Key_Left && prev) {
+                            prev.focusLastItem();
+                        } else if (key == Qt.Key_Right && next) {
+                            next.focusFirstItem();
+                        } else if (key == Qt.Key_Up && prev) {
+                            prev.focusLastItemAtX(x);
+                        } else if (key == Qt.Key_Down && next) {
+                            next.focusFirstItemAtX(x);
                         }
+                    }
+
+                    function nextView() {
+                        for (var idx = repeaterIndex + 1; idx < repeater.count; ++idx) {
+                            var item = repeater.itemAt(idx);
+                            if (!item.view.isEmpty()) {
+                                return item.view;
+                            }
+                        }
+                        return null;
+                    }
+
+                    function previousView() {
+                        for (var idx = repeaterIndex - 1; idx >= 0; --idx) {
+                            var item = repeater.itemAt(idx);
+                            if (!item.view.isEmpty()) {
+                                return item.view;
+                            }
+                        }
+                        return null;
                     }
                 }
             }

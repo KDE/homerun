@@ -36,7 +36,7 @@ FocusScope {
      * RunnerModel.
      */
     property QtObject model
-    property alias count: gridView.count
+    property alias count: gridView.count // FIXME: Check if still used. Remove if not
     property bool tabMe: gridView.count > 0
 
     property bool configureMode: false
@@ -44,6 +44,10 @@ FocusScope {
     signal indexClicked(int index)
 
     signal focusOtherViewRequested(int key, int x)
+
+    function isEmpty() {
+        return gridView.count == 0;
+    }
 
     function focusLastItem() {
         focusItemAt(gridView.count - 1);
