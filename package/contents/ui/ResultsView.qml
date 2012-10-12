@@ -69,7 +69,7 @@ FocusScope {
         if (idx != -1) {
             focusItemAt(idx);
         } else {
-            focusFirstItem();
+            focusLastItem();
         }
     }
 
