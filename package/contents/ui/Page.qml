@@ -134,6 +134,14 @@ Item {
                 }
             }
 
+            Keys.onPressed: {
+                if (event.modifiers == Qt.NoModifier) {
+                    if (event.key == Qt.Key_Left || event.key == Qt.Key_Up || event.key == Qt.Key_Right || event.key == Qt.Key_Down) {
+                        navigate(event);
+                    }
+                }
+            }
+
             function findFocusedViewIndex() {
                 for (var idx = 0; idx < repeater.count; ++idx) {
                     var view = repeater.itemAt(idx);
@@ -144,28 +152,24 @@ Item {
                 return -1;
             }
 
-            Keys.onPressed: {
-                console.log("Column.Keys.onPressed");
-                var delta = 0;
-                if (event.modifiers == Qt.NoModifier) {
-                    if (event.key == Qt.Key_Left || event.key == Qt.Key_Up) {
-                        delta = -1;
-                    } else if (event.key == Qt.Key_Right || event.key == Qt.Key_Down) {
-                        delta = 1;
-                    }
-                }
-                if (delta == 0) {
-                    return;
-                }
+            function navigate(event) {
                 var idx = findFocusedViewIndex();
                 if (idx == -1) {
                     console.log(multiMain + ": Error: no focused view!");
                     return;
                 }
-                if (delta == -1 && idx > 0) {
-                    repeater.itemAt(idx - 1).forceActiveFocus();
-                } else if (delta == 1 && idx < repeater.count - 1) {
-                    repeater.itemAt(idx + 1).forceActiveFocus();
+                var view = repeater.itemAt(idx);
+                var maxIdx = repeater.count - 1;
+                if (event.key == Qt.Key_Left && idx > 0) {
+                    repeater.itemAt(idx - 1).focusLastItem();
+                } else if (event.key == Qt.Key_Right && idx < maxIdx) {
+                    repeater.itemAt(idx + 1).focusFirstItem();
+                } else if (event.key == Qt.Key_Up && idx > 0) {
+                    var x = view.xForActiveItem();
+                    repeater.itemAt(idx - 1).focusLastItemAtX(x);
+                } else if (event.key == Qt.Key_Down && idx < maxIdx) {
+                    var x = view.xForActiveItem();
+                    repeater.itemAt(idx + 1).focusFirstItemAtX(x);
                 }
                 event.accepted = true;
             }

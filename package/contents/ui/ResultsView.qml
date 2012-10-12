@@ -43,7 +43,46 @@ FocusScope {
 
     signal indexClicked(int index)
 
+    function focusLastItem() {
+        focusItemAt(gridView.count - 1);
+    }
+
+    function focusFirstItem() {
+        focusItemAt(0);
+    }
+
+    function xForActiveItem() {
+        return gridView.currentItem.x;
+    }
+
+    function focusLastItemAtX(x) {
+        for (var y = gridView.height - gridView.cellHeight / 2; y > 0; y -= gridView.cellHeight) {
+            var idx = gridView.indexAt(x, y);
+            if (idx != -1) {
+                focusItemAt(idx);
+                return;
+            }
+        }
+        focusLastItem();
+    }
+
+    function focusFirstItemAtX(x) {
+        var idx = gridView.indexAt(x, gridView.cellHeight / 2);
+        if (idx != -1) {
+            focusItemAt(idx);
+        } else {
+            focusFirstItem();
+        }
+    }
+
     //- Private -------------------------------------------------
+    function focusItemAt(idx) {
+        // Reset currentIndex so that the highlight is not animated from the
+        // previous position
+        gridView.currentIndex = -1;
+        gridView.currentIndex = idx;
+        forceActiveFocus();
+    }
     height: childrenRect.height
 
     opacity: configureMode ? 0.6 : 1
