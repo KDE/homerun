@@ -163,8 +163,15 @@ Item {
                     }
 
                     onFocusOtherViewRequested: {
-                        navigate(key, x);
+                        if (!main.navigate(repeater, index, key, x)) {
+                            // No view matches, forward the request
+                            multiMain.focusOtherViewRequested(key, x);
+                        }
                     }
+                }
+
+                function viewAt(idx) {
+                    return itemAt(idx);
                 }
             }
 
@@ -174,38 +181,6 @@ Item {
 
             function lastView() {
                 return repeater.itemAt(repeater.count - 1);
-            }
-
-            function findFocusedViewIndex() {
-                for (var idx = 0; idx < repeater.count; ++idx) {
-                    var view = repeater.itemAt(idx);
-                    if (view.activeFocus) {
-                        return idx;
-                    }
-                }
-                return -1;
-            }
-
-            function navigate(key, x) {
-                var idx = findFocusedViewIndex();
-                if (idx == -1) {
-                    console.log(multiMain + ": Error: no focused view!");
-                    return;
-                }
-                var view = repeater.itemAt(idx);
-                var maxIdx = repeater.count - 1;
-                if (key == Qt.Key_Left && idx > 0) {
-                    repeater.itemAt(idx - 1).focusLastItem();
-                } else if (key == Qt.Key_Right && idx < maxIdx) {
-                    repeater.itemAt(idx + 1).focusFirstItem();
-                } else if (key == Qt.Key_Up && idx > 0) {
-                    repeater.itemAt(idx - 1).focusLastItemAtX(x);
-                } else if (key == Qt.Key_Down && idx < maxIdx) {
-                    repeater.itemAt(idx + 1).focusFirstItemAtX(x);
-                } else {
-                    // No view matches, forward the request
-                    focusOtherViewRequested(key, x);
-                }
             }
         }
     }
@@ -289,10 +264,6 @@ Item {
                     sourceId: model.sourceId
                     property QtObject view
 
-                    isFirst: model.index == 0
-                    isLast: model.index == sourcesModel.count - 1
-                    property int repeaterIndex: model.index
-
                     onRemoveRequested: {
                         sourcesModel.remove(model.index);
                         main.updateSources();
@@ -318,39 +289,12 @@ Item {
                     }
 
                     function navigate(key, x) {
-                        var maxIdx = repeater.count - 1;
-                        var next = nextView();
-                        var prev = previousView();
-                        if (key == Qt.Key_Left && prev) {
-                            prev.focusLastItem();
-                        } else if (key == Qt.Key_Right && next) {
-                            next.focusFirstItem();
-                        } else if (key == Qt.Key_Up && prev) {
-                            prev.focusLastItemAtX(x);
-                        } else if (key == Qt.Key_Down && next) {
-                            next.focusFirstItemAtX(x);
-                        }
+                        main.navigate(repeater, model.index, key, x);
                     }
+                }
 
-                    function nextView() {
-                        for (var idx = repeaterIndex + 1; idx < repeater.count; ++idx) {
-                            var item = repeater.itemAt(idx);
-                            if (!item.view.isEmpty()) {
-                                return item.view;
-                            }
-                        }
-                        return null;
-                    }
-
-                    function previousView() {
-                        for (var idx = repeaterIndex - 1; idx >= 0; --idx) {
-                            var item = repeater.itemAt(idx);
-                            if (!item.view.isEmpty()) {
-                                return item.view;
-                            }
-                        }
-                        return null;
-                    }
+                function viewAt(idx) {
+                    return itemAt(idx).view;
                 }
             }
         }
@@ -461,5 +405,53 @@ Item {
             sourceId: sourceId,
             model: model,
         });
+    }
+
+    function navigate(repeater, currentIdx, key, x) {
+        function nextView() {
+            for (var idx = currentIdx + 1; idx < repeater.count; ++idx) {
+                var view = repeater.viewAt(idx);
+                if (!view.isEmpty()) {
+                    return view;
+                }
+            }
+            return null;
+        }
+
+        function previousView() {
+            for (var idx = currentIdx - 1; idx >= 0; --idx) {
+                var view = repeater.viewAt(idx);
+                if (!view.isEmpty()) {
+                    return view;
+                }
+            }
+            return null;
+        }
+        if (key == Qt.Key_Left) {
+            var view = previousView();
+            if (view) {
+                view.focusLastItem();
+                return true;
+            }
+        } else if (key == Qt.Key_Right) {
+            var view = nextView();
+            if (view) {
+                view.focusFirstItem();
+                return true;
+            }
+        } else if (key == Qt.Key_Up) {
+            var view = previousView();
+            if (view) {
+                view.focusLastItemAtX(x);
+                return true;
+            }
+        } else if (key == Qt.Key_Down) {
+            var view = nextView();
+            if (view) {
+                view.focusFirstItemAtX(x);
+                return true;
+            }
+        }
+        return false;
     }
 }
