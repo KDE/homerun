@@ -103,6 +103,7 @@ Item {
             onIndexClicked: {
                 handleTriggerResult(model.trigger(index));
             }
+            onCurrentItemChanged: main.scrollToItem(currentItem)
         }
     }
 
@@ -168,6 +169,8 @@ Item {
                             multiMain.focusOtherViewRequested(key, x);
                         }
                     }
+
+                    onCurrentItemChanged: main.scrollToItem(currentItem)
                 }
 
                 function viewAt(idx) {
@@ -453,5 +456,17 @@ Item {
             }
         }
         return false;
+    }
+
+    function scrollToItem(item) {
+        if (!item) {
+            return;
+        }
+        var y = centralColumn.mapFromItem(item, 0, 0).y;
+        if (y < centralFlickable.contentY) {
+            centralFlickable.contentY = y;
+        } else if (y + item.height > centralFlickable.contentY + centralFlickable.height) {
+            centralFlickable.contentY = y + item.height - centralFlickable.height;
+        }
     }
 }

@@ -41,6 +41,8 @@ FocusScope {
 
     property bool configureMode: false
 
+    property alias currentItem: gridView.currentItem
+
     signal indexClicked(int index)
 
     signal focusOtherViewRequested(int key, int x)
