@@ -70,7 +70,6 @@ private:
     Plasma::FrameSvg *m_backgroundSvg;
 
     QGraphicsItem *m_lastFocusedItem;
-    QTimer *m_focusPollTimer;
 };
 
 #endif

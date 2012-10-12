@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineOptions options;
     options.add("show <screen>", ki18n("Show on screen <screen>"), "-1");
+    options.add("log-focused-item", ki18n("Log focused item (for debug purposes)"));
     KCmdLineArgs::addCmdLineOptions(options);
     KUniqueApplication::addCmdLineOptions();
 

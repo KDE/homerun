@@ -36,6 +36,7 @@
 
 #include <kdeclarative.h>
 
+#include <KCmdLineArgs>
 #include <KDebug>
 #include <KStandardDirs>
 #include <KUrl>
@@ -47,6 +48,7 @@
 FullView::FullView()
 : QDeclarativeView()
 , m_backgroundSvg(new Plasma::FrameSvg(this))
+, m_lastFocusedItem(0)
 {
     new HomerunViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
@@ -77,11 +79,13 @@ FullView::FullView()
 
     setupBackground();
 
-    m_lastFocusedItem = 0;
-    m_focusPollTimer = new QTimer(this);
-    m_focusPollTimer->setInterval(200);
-    connect(m_focusPollTimer, SIGNAL(timeout()), SLOT(logFocusedItem()));
-    m_focusPollTimer->start();
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    if (args->isSet("log-focused-item")) {
+        QTimer *timer = new QTimer(this);
+        timer->setInterval(200);
+        connect(timer, SIGNAL(timeout()), SLOT(logFocusedItem()));
+        timer->start();
+    }
 }
 
 void FullView::setupBackground()
