@@ -237,6 +237,18 @@ Item {
         }
     }
 
+    function screenRegionChanged() {
+        // fit the containment to within the boundaries of the visible panels
+        // (so no panels should be covering any information)
+        // rect 0 is available screen region, rect 1 is for panels not 100% wide
+        screen = plasmoid.screen
+        region = plasmoid.availableScreenRegion(screen)[0]
+        main.y = region.y
+        main.x = region.x
+        main.height = region.height
+        main.width = region.width
+    }
+
     // Code
     Component.onCompleted: {
         isContainment = "plasmoid" in this;
@@ -245,15 +257,7 @@ Item {
             configureAction = plasmoid.action("configure");
             configureAction.enabled = true;
 
-            // fit the containment to within the boundaries of the visible panels
-            // (so no panels should be covering any information)
-            // rect 0 is available screen region, rect 1 is for panels not 100% wide
-            screen = plasmoid.screen
-            region = plasmoid.availableScreenRegion(screen)[0]
-            main.y = region.y
-            main.x = region.x
-            main.height = region.height
-            main.width = region.width
+            plasmoid.availableScreenRegionChanged.connect(screenRegionChanged)
 
             // Set config file only here so that when running homerunviewer with
             // a custom config file (with --config /path/to/customrc). Homerun
