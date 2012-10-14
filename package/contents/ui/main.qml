@@ -242,11 +242,21 @@ Item {
         // (so no panels should be covering any information)
         // rect 0 is available screen region, rect 1 is for panels not 100% wide
         screen = plasmoid.screen
-        region = plasmoid.availableScreenRegion(screen)[0]
-        main.y = region.y
-        main.x = region.x
-        main.height = region.height
-        main.width = region.width
+        var sourceRegion;
+
+        partialRegion = plasmoid.availableScreenRegion(screen)[1]
+
+        if (partialRegion === undefined) {
+            sourceRegion = plasmoid.availableScreenRegion(screen)[0]
+        } else {
+            sourceRegion = partialRegion;
+        }
+
+        main.y = sourceRegion.y
+        main.x = sourceRegion.x
+        main.height = sourceRegion.height
+        main.width = sourceRegion.width
+
     }
 
     // Code
