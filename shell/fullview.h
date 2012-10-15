@@ -70,6 +70,8 @@ private:
     Plasma::FrameSvg *m_backgroundSvg;
 
     QGraphicsItem *m_lastFocusedItem;
+
+    bool m_plainWindow;
 };
 
 #endif

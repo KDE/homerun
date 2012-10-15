@@ -49,7 +49,11 @@ FullView::FullView()
 : QDeclarativeView()
 , m_backgroundSvg(new Plasma::FrameSvg(this))
 , m_lastFocusedItem(0)
+, m_plainWindow(false)
 {
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    m_plainWindow = args->isSet("plain-window");
+
     new HomerunViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerObject("/HomerunViewer", this);
@@ -65,7 +69,9 @@ FullView::FullView()
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setResizeMode(SizeRootObjectToView);
 
-    setWindowFlags(Qt::FramelessWindowHint);
+    if (!m_plainWindow) {
+        setWindowFlags(Qt::FramelessWindowHint);
+    }
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_NoSystemBackground);
     setAutoFillBackground(false);
@@ -79,7 +85,6 @@ FullView::FullView()
 
     setupBackground();
 
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if (args->isSet("log-focused-item")) {
         QTimer *timer = new QTimer(this);
         timer->setInterval(200);
@@ -121,15 +126,16 @@ void FullView::toggle(int screen)
     if (isVisible()) {
         resetAndHide();
     } else {
-        KWindowSystem::setState(winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove);
-        Plasma::WindowEffects::overrideShadow(winId(), true);
+        if (!m_plainWindow) {
+            KWindowSystem::setState(winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove);
+            Plasma::WindowEffects::overrideShadow(winId(), true);
+        }
 
         QDesktopWidget w;
         if(screen < 0) {
             screen = w.screenNumber(QCursor::pos());
         }
         QRect rect = w.availableGeometry(screen);
-        rect.setTop(rect.height() / 2);
         setGeometry(rect);
         show();
         KWindowSystem::forceActiveWindow(winId());
@@ -138,14 +144,16 @@ void FullView::toggle(int screen)
 
 void FullView::resetAndHide()
 {
-    hide();
+    if (!m_plainWindow) {
+        hide();
+    }
     QMetaObject::invokeMethod(rootObject(), "reset");
 }
 
 void FullView::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {
-        hide();
+        resetAndHide();
         event->accept();
     }
 
