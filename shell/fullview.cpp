@@ -144,9 +144,11 @@ void FullView::toggle(int screen)
 
 void FullView::resetAndHide()
 {
-    if (!m_plainWindow) {
-        hide();
+    if (m_plainWindow) {
+        kWarning() << "ignored because we are running in plain window mode";
+        return;
     }
+    hide();
     QMetaObject::invokeMethod(rootObject(), "reset");
 }
 
