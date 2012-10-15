@@ -61,6 +61,9 @@ Item {
             onCloseRequested: {
                 main.closeRequested();
             }
+            onOpenSourceRequested: {
+                main.openSource(source);
+            }
         }
     }
 

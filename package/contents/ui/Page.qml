@@ -41,6 +41,7 @@ Item {
 
     signal sourcesUpdated(variant sources)
     signal closeRequested()
+    signal openSourceRequested(string source)
 
     //- Non visual elements ----------------------------------------
     ListModel {
@@ -48,14 +49,6 @@ Item {
     }
 
     //- Components -------------------------------------------------
-    Component {
-        id: runningConnectionComponent
-        Connections {
-            ignoreUnknownSignals: true
-            onRunningChanged: main.updateRunning()
-        }
-    }
-
     // Filter components
     Component {
         id: genericFilterComponent
@@ -72,16 +65,6 @@ Item {
                 return sourceModel.trigger(sourceIndex);
             }
 
-        }
-    }
-
-    Component {
-        id: openSourceConnectedConnectionComponent
-        Connections {
-            ignoreUnknownSignals: true
-            onOpenSourceRequested: {
-                openSource(source);
-            }
         }
     }
 
@@ -359,14 +342,18 @@ Item {
             return null;
         }
 
-        openSourceConnectedConnectionComponent.createObject(model);
+        if ("openSourceRequested" in model) {
+            model.openSourceRequested.connect(main.openSourceRequested);
+        }
 
         if ("query" in model) {
             // Model supports querying itself, bind the search criteria field to its "query" property
             queryBindingComponent.createObject(main, {"target": model});
         }
 
-        runningConnectionComponent.createObject(main, {"target": model});
+        if ("runningChanged" in model) {
+            model.runningChanged.connect(main.updateRunning);
+        }
         return model;
     }
 
