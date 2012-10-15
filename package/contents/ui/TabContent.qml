@@ -210,15 +210,19 @@ Item {
         var page = createPage(sources);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
+        if (activeFocus) {
+            focusFirstView();
+        }
     }
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            var item = KeyboardUtils.findFirstTabMeChildren(main);
-            if (item !== null) {
-                item.forceActiveFocus();
-            }
+            focusFirstView();
         }
+    }
+
+    function focusFirstView() {
+        currentPage.focusFirstView();
     }
 
     onSearchCriteriaChanged: {

@@ -322,6 +322,13 @@ Item {
     Component.onCompleted: fillSourcesModel()
 
     //- Code -------------------------------------------------------
+    function focusFirstView() {
+        if (repeater.count == 0) {
+            return;
+        }
+        repeater.viewAt(0).focusFirstItem();
+    }
+
     function handleTriggerResult(result) {
         if (result) {
             closeRequested();

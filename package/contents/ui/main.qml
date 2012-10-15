@@ -131,6 +131,7 @@ Item {
             }
             // Setting currentTab does not change the tab content, so do it ourselves
             tabGroup.currentTab = currentItem.tab;
+            tabGroup.currentTab.forceActiveFocus();
         }
 
         function createTabContent(tabButton) {
