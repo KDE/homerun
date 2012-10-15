@@ -184,7 +184,9 @@ void FullView::logFocusedItem()
     QGraphicsItem *item = scene()->focusItem();
     if (item != m_lastFocusedItem) {
         m_lastFocusedItem = item;
-        kWarning() << "Focused Item:" << m_lastFocusedItem;
+        QGraphicsObject *obj = qgraphicsitem_cast<QGraphicsObject *>(item);
+        QString name = obj ? obj->objectName() : QString("(not a QGraphicsObject)");
+        kWarning() << "Focused Item:" << m_lastFocusedItem << "objectName:" << name;
     }
 }
 
