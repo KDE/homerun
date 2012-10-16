@@ -101,7 +101,7 @@ FocusScope {
         id: highlight
         PlasmaComponents.Highlight {
             hover: true
-            opacity: gridView.currentItem.highlighted ? 1 : 0
+            opacity: (gridView.currentItem && gridView.currentItem.highlighted) ? 1 : 0
         }
     }
 
