@@ -225,7 +225,7 @@ FocusScope {
                     return;
                 }
                 if (currentIndex == oldIndex) {
-                    focusOtherViewRequested(event.key, currentItem.x);
+                    focusOtherViewRequested(event.key, currentItem ? currentItem.x : 0);
                 }
                 event.accepted = true;
             }
