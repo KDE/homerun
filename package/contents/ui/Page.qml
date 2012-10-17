@@ -22,7 +22,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
-Item {
+FocusScope {
     id: main
 
     //- Defined by outside world -----------------------------------
@@ -160,6 +160,12 @@ Item {
 
                 function viewAt(idx) {
                     return itemAt(idx);
+                }
+
+                onItemAdded: {
+                    if (repeater.count == 1) {
+                        item.focus = true;
+                    }
                 }
             }
 
@@ -299,6 +305,14 @@ Item {
                 function viewAt(idx) {
                     return itemAt(idx).view;
                 }
+
+                onItemAdded: {
+                    if (repeater.count == 1) {
+                        // Set focus on first view
+                        // Not perfect: what if this view is empty?
+                        item.view.focus = true;
+                    }
+                }
             }
         }
     }
@@ -322,13 +336,6 @@ Item {
     Component.onCompleted: fillSourcesModel()
 
     //- Code -------------------------------------------------------
-    function focusFirstView() {
-        if (repeater.count == 0) {
-            return;
-        }
-        repeater.viewAt(0).focusFirstItem();
-    }
-
     function handleTriggerResult(result) {
         if (result) {
             closeRequested();

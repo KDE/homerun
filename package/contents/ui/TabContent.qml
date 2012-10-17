@@ -27,7 +27,7 @@ import "KeyboardUtils.js" as KeyboardUtils
 
 import "TabContentInternal.js" as TabContentInternal
 
-Item {
+FocusScope {
     id: main
 
     //- Public ----------------------------------------------------
@@ -213,19 +213,6 @@ Item {
         var page = createPage(sources);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
-        if (activeFocus) {
-            focusFirstView();
-        }
-    }
-
-    onActiveFocusChanged: {
-        if (activeFocus) {
-            focusFirstView();
-        }
-    }
-
-    function focusFirstView() {
-        currentPage.focusFirstView();
     }
 
     onSearchCriteriaChanged: {
