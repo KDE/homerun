@@ -51,19 +51,12 @@ function goToLastPage() {
 }
 
 function goTo(index) {
-    var forceActiveFocus = false;
     if (currentIndex != -1) {
-        forceActiveFocus = pages[currentIndex].activeFocus;
         pages[currentIndex].opacity = 0;
-        pages[currentIndex].focus = false;
     }
     currentIndex = index;
     pages[index].opacity = 1;
     currentPage = pages[index];
-    currentPage.focus = true;
-    if (forceActiveFocus) {
-        currentPage.forceActiveFocus();
-    }
     _updateCanGoBackForward();
 
     //dumpPages();
