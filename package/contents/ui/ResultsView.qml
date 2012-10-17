@@ -182,6 +182,8 @@ FocusScope {
         model: main.model
         focus: true
 
+        objectName: "GridView:" + main.model.objectName
+
         /*
         // Focus debug help
         LogText {

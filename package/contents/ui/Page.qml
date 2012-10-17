@@ -43,6 +43,8 @@ Item {
     signal closeRequested()
     signal openSourceRequested(string source)
 
+    objectName: "Page:" + sources
+
     //- Non visual elements ----------------------------------------
     ListModel {
         id: sourcesModel
@@ -60,11 +62,11 @@ Item {
             property bool running: "running" in sourceModel ? sourceModel.running : false
             property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
 
+            objectName: "SortFilterModel:" + (sourceModel ? sourceModel.objectName : "")
             function trigger(index) {
                 var sourceIndex = mapRowToSource(index);
                 return sourceModel.trigger(sourceIndex);
             }
-
         }
     }
 

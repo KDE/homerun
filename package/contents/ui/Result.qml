@@ -46,6 +46,10 @@ Item {
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
 
+    // For the log-focused-item feature
+    // FIXME: currentText should be renamed to text and this property dropped
+    property alias text: resultLabel.text
+
     signal clicked
     signal favoriteClicked
 

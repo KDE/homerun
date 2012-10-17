@@ -185,15 +185,34 @@ void FullView::drawBackground(QPainter *painter, const QRectF &/*rect*/)
 void FullView::logFocusedItem()
 {
     QGraphicsItem *item = scene()->focusItem();
-    if (item != m_lastFocusedItem) {
-        m_lastFocusedItem = item;
-        QGraphicsObject *obj = qgraphicsitem_cast<QGraphicsObject *>(item);
-        if (obj) {
-            qmlInfo(obj) << "< Focused Item";
-            kWarning() << obj << "objectName:" << obj->objectName();
-        } else {
-            kWarning() << "Focused Item:" << m_lastFocusedItem << "(not a QGraphicsObject)";
+    if (item == m_lastFocusedItem) {
+        return;
+    }
+
+    m_lastFocusedItem = item;
+    if (!item) {
+        kWarning() << "No focused item";
+        return;
+    }
+
+    QGraphicsObject *obj = qgraphicsitem_cast<QGraphicsObject *>(item);
+    if (obj) {
+        QDebug out = kWarning() << obj;
+
+        // Log values of interesting properties if they are defined
+        out.nospace();
+        static const QList<QByteArray> keys = QList<QByteArray>() << "text" << "label";
+        Q_FOREACH(const QByteArray &key, keys) {
+            QVariant value = obj->property(key);
+            if (value.isValid()) {
+                out.nospace() << ", " << qPrintable(key) << '=' << value.toString();
+            }
         }
+
+        // Use qmlInfo to get file name and line number
+        qmlInfo(obj) << "<--- Focused Item";
+    } else {
+        kWarning() << "Focused Item:" << m_lastFocusedItem << "(not a QGraphicsObject)";
     }
 }
 
