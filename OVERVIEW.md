@@ -17,16 +17,15 @@ some sources, like the Dir source or the InstalledApps source, allow
 navigation. In this case each new level of navigation is created as a new page.
 
 The Page item handles the content of a page. It mainly contains a ListView
-whose items are SourceItem, there is one SourceItem per Source.
+whose items are made of a Column containing SourceItem and source views.
 
-A SourceItem is a thin decoration around one or more ResultsView. Unless user
-is configuring Homerun, SourceItem does not have any UI, it just shows the
-ResultsViews of its source.
+SourceItem is the thin box which appears in configuration mode and allows
+editing, reordering and removing a source.
 
-The model of a source usually directly provide the data to display, in w
-hich case the SourceItem contains only one ResultsView. Source model may a
-lso provide sub-models, in which case the SourceItem will contain one
-ResultsView per sub-model.
+The model of a source usually directly provides the data to display, in which
+case the ListView delegate contains only one ResultsView. Source model may
+also provide sub-models, in which case the delegate will a Column which contains
+one ResultsView per sub-model.
 
 A ResultsView is made of a grid view which contains one or more Result items.
 Each Result displays one element of the ResultsView model.
@@ -36,26 +35,31 @@ To sum up, the architecture looks like this:
 - main.qml
   - TabContent
     - Page
-      - SourceItem
+      - Column
+        - SourceItem
         - ResultsView
           - Result
           - ...
           - ...
           - ...
-      - SourceItem (The source associated with this item provides 2 sub-models)
+      - Column
+        - SourceItem (The source associated with this item provides 2 sub-models)
+        - Column
+          - ResultsView
+            - Result
+            - ...
+            - ...
+          - ResultsView
+            - Result
+            - ...
+      - Column
+        - SourceItem
         - ResultsView
           - Result
-          - ...
-          - ...
-        - ResultsView
-          - Result
-          - ...
-      - SourceItem
-        - ResultsView
-          - Result
-          - ...
+        - ...
     - Page (Only if first page contained a browsable source)
-      - SourceItem
+      -Column
+        - SourceItem
         - ResultsView
           - Result
           - ...

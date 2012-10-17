@@ -242,35 +242,50 @@ Item {
             Repeater {
                 id: repeater
                 model: sourcesModel
-                delegate: SourceItem {
-                    id: editorMain
+                delegate: Column {
+                    id: delegateMain
                     width: parent ? parent.width : 0
-                    configureMode: main.configureMode
-                    sourceRegistry: main.sourceRegistry
-                    sourceId: model.sourceId
+                    height: main.configureMode
+                        ? Math.min(implicitHeight, 200)
+                        : implicitHeight
+                    clip: main.configureMode
+
                     property QtObject view
+                    property string sourceId: model.sourceId
+                    property int viewIndex: model.index
+                    property QtObject viewModel: model.model
 
-                    onRemoveRequested: {
-                        sourcesModel.remove(model.index);
-                        main.updateSources();
-                    }
-                    onMoveRequested: {
-                        sourcesModel.move(model.index, model.index + delta, 1);
-                        main.updateSources();
-                    }
+                    SourceItem {
+                        width: parent.width
+                        configureMode: main.configureMode
+                        sourceRegistry: main.sourceRegistry
+                        sourceId: delegateMain.sourceId
 
-                    onSourceIdChanged: {
-                        model.model.destroy();
-                        view.destroy();
-                        var newModel = createModelForSource(sourceId, main);
-                        sourcesModel.setProperty(model.index, "sourceId", sourceId);
-                        sourcesModel.setProperty(model.index, "model", newModel);
-                        view = createView(model.model, editorMain);
-                        main.updateSources();
+                        isFirst: viewIndex == 0
+                        isLast: delegateMain.ListView.view ? (viewIndex == delegateMain.ListView.view.count - 1) : true
+
+                        onRemoveRequested: {
+                            sourcesModel.remove(delegateMain.viewIndex);
+                            main.updateSources();
+                        }
+                        onMoveRequested: {
+                            sourcesModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
+                            main.updateSources();
+                        }
+
+                        onSourceIdChanged: {
+                            delegateMain.view.model.destroy();
+                            delegateMain.view.destroy();
+                            var newModel = createModelForSource(sourceId, main);
+                            sourcesModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
+                            sourcesModel.setProperty(delegateMain.viewIndex, "model", newModel);
+                            delegateMain.view = createView(newModel, delegateMain);
+                            main.updateSources();
+                        }
                     }
 
                     Component.onCompleted: {
-                        view = createView(model.model, editorMain);
+                        view = createView(model.model, delegateMain);
                         main.updateRunning();
                     }
 

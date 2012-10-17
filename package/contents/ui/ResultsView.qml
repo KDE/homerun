@@ -90,6 +90,7 @@ FocusScope {
     height: childrenRect.height
 
     opacity: configureMode ? 0.6 : 1
+    visible: gridView.count > 0 || configureMode
 
     //FIXME: figure out sizing properly..
     property int iconWidth: 64
