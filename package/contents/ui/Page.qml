@@ -45,6 +45,8 @@ Item {
 
     objectName: "Page:" + sources
 
+    property Item previouslyFocusedItem
+
     //- Non visual elements ----------------------------------------
     ListModel {
         id: sourcesModel
@@ -88,7 +90,11 @@ Item {
             onIndexClicked: {
                 handleTriggerResult(model.trigger(index));
             }
-            onCurrentItemChanged: main.scrollToItem(currentItem)
+            onCurrentItemChanged: {
+                if (currentItem) {
+                    main.scrollToItem(currentItem);
+                }
+            }
         }
     }
 
@@ -155,7 +161,11 @@ Item {
                         }
                     }
 
-                    onCurrentItemChanged: main.scrollToItem(currentItem)
+                    onCurrentItemChanged: {
+                        if (currentItem) {
+                            main.scrollToItem(currentItem);
+                        }
+                    }
                 }
 
                 function viewAt(idx) {
@@ -241,6 +251,8 @@ Item {
             id: centralColumn
             width: parent.width
 
+            focus: true
+
             Repeater {
                 id: repeater
                 model: sourcesModel
@@ -319,14 +331,76 @@ Item {
         }
     }
 
+    Timer {
+        id: focusTimer
+        interval: 500
+        repeat: true
+        running: false
+        property int count: 0
+
+        onTriggered: {
+            var maxCount = 10;
+            console.log("focusTimer");
+            updateFocus();
+            if (main.focusedItem()) {
+                return;
+            }
+            console.log("focusTimer: Still no valid focus");
+            count += 1;
+            if (count >= maxCount) {
+                console.log("focusTimer: Giving up after " + maxCount + " tries");
+            } else {
+                start();
+            }
+        }
+    }
+
     Component.onCompleted: fillSourcesModel()
 
-    //- Code -------------------------------------------------------
-    function focusFirstView() {
-        if (repeater.count == 0) {
+    onActiveFocusChanged: {
+        if (!activeFocus) {
             return;
         }
-        repeater.viewAt(0).focusFirstItem();
+        updateFocus();
+        if (!focusedItem()) {
+            focusTimer.count = 0;
+            focusTimer.start();
+        }
+    }
+
+    //- Code -------------------------------------------------------
+    function focusedItem() {
+        for (row = 0; row < repeater.count; ++row) {
+            var view = repeater.viewAt(row);
+            console.log("focusedItem(): view[" + row +"].activeFocus=" + view.activeFocus);
+            if (view.activeFocus) {
+                return view.currentItem;
+            }
+        }
+        return null;
+    }
+
+    function updateFocus() {
+        console.log("Page.updateFocus: page=" + objectName);
+        if (main.currentItem) {
+            console.log("Page.updateFocus: focusing item " + main.currentItem.text);
+            main.currentItem.forceActiveFocus();
+            return;
+        }
+        if (repeater.count == 0) {
+            console.log("Page.updateFocus: no view yet");
+            return;
+        }
+        var row;
+        for (row = 0; row < repeater.count; ++row) {
+            var view = repeater.viewAt(row);
+            if (!view.isEmpty()) {
+                console.log("Page.updateFocus: Setting focus on first item of view @row=" + row);
+                view.focusFirstItem();
+                return;
+            }
+        }
+        console.log("Page.updateFocus: no non-empty views");
     }
 
     function handleTriggerResult(result) {

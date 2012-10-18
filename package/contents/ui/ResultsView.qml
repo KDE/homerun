@@ -81,11 +81,14 @@ FocusScope {
 
     //- Private -------------------------------------------------
     function focusItemAt(idx) {
+        if (idx < 0 || idx >= count) {
+            return;
+        }
         // Reset currentIndex so that the highlight is not animated from the
         // previous position
         gridView.currentIndex = -1;
         gridView.currentIndex = idx;
-        forceActiveFocus();
+        gridView.currentItem.forceActiveFocus();
     }
     height: childrenRect.height
 

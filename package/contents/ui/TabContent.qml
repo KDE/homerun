@@ -214,18 +214,15 @@ Item {
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
         if (activeFocus) {
-            focusFirstView();
+            page.forceActiveFocus();
         }
     }
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            focusFirstView();
+            console.log("TabContent.onActiveFocusChanged tabText=" + tabText);
+            currentPage.forceActiveFocus();
         }
-    }
-
-    function focusFirstView() {
-        currentPage.focusFirstView();
     }
 
     onSearchCriteriaChanged: {
@@ -261,6 +258,7 @@ Item {
         var page = createPage([source], { "showHeader": false });
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
+        page.forceActiveFocus();
     }
 
     Keys.onPressed: {
