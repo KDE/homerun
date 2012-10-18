@@ -87,6 +87,10 @@ FocusScope {
         }
     }
 
+    function triggerFirstItem() {
+        emitIndexClicked(0);
+    }
+
     //- Private -------------------------------------------------
     function focusItemAt(idx) {
         if (idx < 0 || idx >= count) {

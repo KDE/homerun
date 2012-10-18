@@ -280,6 +280,10 @@ Item {
         return pageComponent.createObject(pageContainer, args);
     }
 
+    function triggerFirstItem() {
+        currentPage.triggerFirstItem();
+    }
+
     function reset() {
         TabContentInternal.goTo(0);
         TabContentInternal.clearHistoryAfterCurrentPage();

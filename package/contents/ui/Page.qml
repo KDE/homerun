@@ -150,6 +150,16 @@ Item {
                 return null;
             }
 
+            function triggerFirstItem() {
+                for (var idx = 0; idx < repeater.count; ++idx) {
+                    var view = repeater.itemAt(idx);
+                    if (!view.isEmpty()) {
+                        view.triggerFirstItem();
+                        return;
+                    }
+                }
+            }
+
             Repeater {
                 id: repeater
                 delegate: ResultsView {
@@ -379,6 +389,16 @@ Item {
     }
 
     //- Code -------------------------------------------------------
+    function triggerFirstItem() {
+        for (var row = 0; row < repeater.count; ++row) {
+            var view = repeater.viewAt(row);
+            if (!view.isEmpty()) {
+                view.triggerFirstItem();
+                return;
+            }
+        }
+    }
+
     function focusedItem() {
         var row;
         for (row = 0; row < repeater.count; ++row) {

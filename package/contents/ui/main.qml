@@ -180,6 +180,8 @@ Item {
         KeyNavigation.down: content
 
         onTextChanged: currentTabContent.searchCriteria = text;
+
+        onAccepted: currentTabContent.triggerFirstItem()
     }
 
     // Config button
