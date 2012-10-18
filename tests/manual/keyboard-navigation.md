@@ -1,11 +1,18 @@
 # startup
 
-- Focus is on first item of first source
-- Typing letters gets added to the search field
+- Focus is on search field
+- Press enter => first item of current page is triggered
+
+# searchFieldAndTabs
+
+- Focus is on search field
+- Pressing tab or down => first item of current page is focused
+- Pressing tab (from any row) up (from first row) => search field is focused
 
 # tabs
 
-- Switching to another tab should focus first item of first source
+- Focus is on tab1
+- Press page-down => tab2 is current, first item of tab2 is focused
 
 # sourceNavigation
 
@@ -23,15 +30,12 @@
 # browsableSource
 
 - Go to a browsable source (Dir, FavoritePlaces, InstalledApps...)
-- Press Return to enter a folder => first item of folder content should
-  be focused
-- Press alt-left to go up one level => previously focused item is focused
+- Press Return to enter a folder => first item is focused
+- Press alt-left to go back => previously focused item is focused
+- Press alt-up to go up one level => first item is focused
 
-# filtering
+# searching
 
-- ensure an item is focused
-- enter a search criteria which does not match focused item
-  => item next to it should be focused
-- enter a search criteria which does not match any item of the source
-  => first matching item of next source should be focused. If there is none,
-  then last matching item of previous source should be focused.
+- Search field is focused
+- Enter a search criteria => current page is updated to reflect search
+- Press tab or down => first item is focused

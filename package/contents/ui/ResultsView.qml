@@ -79,6 +79,14 @@ FocusScope {
         }
     }
 
+    function focusedItem() {
+        if (currentItem && currentItem.activeFocus) {
+            return currentItem;
+        } else {
+            return null
+        }
+    }
+
     //- Private -------------------------------------------------
     function focusItemAt(idx) {
         if (idx < 0 || idx >= count) {

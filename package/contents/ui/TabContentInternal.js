@@ -50,27 +50,11 @@ function goToLastPage() {
     goTo(pages.length - 1);
 }
 
-function findFocusedItem(parent) {
-    var row;
-    for (row = 0; row < parent.children.length; ++row) {
-        var item = parent.children[row];
-        if (item.activeFocus) {
-            return item;
-        }
-        var out = findFocusedItem(item);
-        if (out) {
-            return out;
-        }
-    }
-    return null;
-}
-
 function goTo(index) {
     if (currentIndex != -1) {
         var oldPage = pages[currentIndex];
         oldPage.opacity = 0;
-        oldPage.previouslyFocusedItem = findFocusedItem(oldPage);
-        //console.log("previouslyFocusedItem=" + (oldPage.previouslyFocusedItem ? oldPage.previouslyFocusedItem.text : "-"));
+        oldPage.previouslyFocusedItem = oldPage.focusedItem();
     }
     currentIndex = index;
     pages[index].opacity = 1;

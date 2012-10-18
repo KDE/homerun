@@ -139,6 +139,17 @@ Item {
                 return true;
             }
 
+            function focusedItem() {
+                for (var idx = 0; idx < repeater.count; ++idx) {
+                    var view = repeater.itemAt(idx);
+                    var item = view.focusedItem();
+                    if (item) {
+                        return item;
+                    }
+                }
+                return null;
+            }
+
             Repeater {
                 id: repeater
                 delegate: ResultsView {
@@ -251,8 +262,6 @@ Item {
             id: centralColumn
             width: parent.width
 
-            focus: true
-
             Repeater {
                 id: repeater
                 model: sourcesModel
@@ -343,14 +352,15 @@ Item {
             console.log("focusTimer");
             updateFocus();
             if (main.focusedItem()) {
+                stop();
                 return;
             }
             console.log("focusTimer: Still no valid focus");
             count += 1;
             if (count >= maxCount) {
                 console.log("focusTimer: Giving up after " + maxCount + " tries");
+                stop();
             } else {
-                start();
             }
         }
     }
@@ -370,37 +380,29 @@ Item {
 
     //- Code -------------------------------------------------------
     function focusedItem() {
+        var row;
         for (row = 0; row < repeater.count; ++row) {
             var view = repeater.viewAt(row);
-            console.log("focusedItem(): view[" + row +"].activeFocus=" + view.activeFocus);
-            if (view.activeFocus) {
-                return view.currentItem;
+            var item = view.focusedItem();
+            if (item) {
+                return item;
             }
         }
         return null;
     }
 
     function updateFocus() {
-        console.log("Page.updateFocus: page=" + objectName);
-        if (main.currentItem) {
-            console.log("Page.updateFocus: focusing item " + main.currentItem.text);
-            main.currentItem.forceActiveFocus();
-            return;
-        }
         if (repeater.count == 0) {
-            console.log("Page.updateFocus: no view yet");
             return;
         }
         var row;
         for (row = 0; row < repeater.count; ++row) {
             var view = repeater.viewAt(row);
             if (!view.isEmpty()) {
-                console.log("Page.updateFocus: Setting focus on first item of view @row=" + row);
                 view.focusFirstItem();
                 return;
             }
         }
-        console.log("Page.updateFocus: no non-empty views");
     }
 
     function handleTriggerResult(result) {

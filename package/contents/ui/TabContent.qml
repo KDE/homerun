@@ -213,9 +213,6 @@ Item {
         var page = createPage(sources);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
-        if (activeFocus) {
-            page.forceActiveFocus();
-        }
     }
 
     onActiveFocusChanged: {

@@ -129,9 +129,11 @@ Item {
             if (!currentItem.tab) {
                 createTabContent(currentItem);
             }
-            // Setting currentTab does not change the tab content, so do it ourselves
+            var hadFocus = !searchField.activeFocus;
             tabGroup.currentTab = currentItem.tab;
-            tabGroup.currentTab.forceActiveFocus();
+            if (hadFocus) {
+                tabGroup.currentTab.forceActiveFocus();
+            }
         }
 
         function createTabContent(tabButton) {
@@ -168,11 +170,14 @@ Item {
 
         width: parent.width / 4
 
+        focus: true
+
         clearButtonShown: true
         placeholderText: filterTabBar.currentItem.searchPlaceholder
 
         KeyNavigation.tab: content
         KeyNavigation.backtab: content
+        KeyNavigation.down: content
 
         onTextChanged: currentTabContent.searchCriteria = text;
     }
@@ -230,6 +235,7 @@ Item {
 
         KeyNavigation.tab: searchField
         KeyNavigation.backtab: searchField
+        KeyNavigation.up: searchField
 
         onActiveFocusChanged: {
             if (activeFocus) {
@@ -284,7 +290,6 @@ Item {
         target: main
         onCurrentTabContentChanged: {
             searchField.text = currentTabContent.searchCriteria;
-            currentTabContent.forceActiveFocus();
         }
     }
 
@@ -297,6 +302,7 @@ Item {
             }
         }
         searchField.text = "";
+        searchField.forceActiveFocus();
     }
 
     Keys.onPressed: {
@@ -305,30 +311,6 @@ Item {
             [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.incrementCurrentIndex],
             [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
         ];
-        if (event.modifiers == Qt.NoModifier || event.modifiers == Qt.ShiftModifier) {
-            handleTypeAheadKeyEvent(event);
-        }
         KeyboardUtils.processShortcutList(lst, event);
-    }
-
-    function handleTypeAheadKeyEvent(event) {
-        switch (event.key) {
-        case Qt.Key_Tab:
-        case Qt.Key_Escape:
-            // Keys we don't want to handle as type-ahead
-            return;
-        case Qt.Key_Backspace:
-            // Erase last char
-            searchField.text = searchField.text.slice(0, -1);
-            event.accepted = true;
-            break;
-        default:
-            // Add the char to typeAhead
-            if (event.text != "") {
-                searchField.text += event.text;
-                event.accepted = true;
-            }
-            break;
-        }
     }
 }
