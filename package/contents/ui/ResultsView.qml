@@ -36,17 +36,76 @@ FocusScope {
      * RunnerModel.
      */
     property QtObject model
-    property alias count: gridView.count
+    property alias count: gridView.count // FIXME: Check if still used. Remove if not
     property bool tabMe: gridView.count > 0
 
     property bool configureMode: false
 
+    property alias currentItem: gridView.currentItem
+
     signal indexClicked(int index)
 
+    signal focusOtherViewRequested(int key, int x)
+
+    function isEmpty() {
+        return gridView.count == 0;
+    }
+
+    function focusLastItem() {
+        focusItemAt(gridView.count - 1);
+    }
+
+    function focusFirstItem() {
+        focusItemAt(0);
+    }
+
+    function focusLastItemAtX(x) {
+        for (var y = gridView.height - gridView.cellHeight / 2; y > 0; y -= gridView.cellHeight) {
+            var idx = gridView.indexAt(x, y);
+            if (idx != -1) {
+                focusItemAt(idx);
+                return;
+            }
+        }
+        focusLastItem();
+    }
+
+    function focusFirstItemAtX(x) {
+        var idx = gridView.indexAt(x, gridView.cellHeight / 2);
+        if (idx != -1) {
+            focusItemAt(idx);
+        } else {
+            focusLastItem();
+        }
+    }
+
+    function focusedItem() {
+        if (currentItem && currentItem.activeFocus) {
+            return currentItem;
+        } else {
+            return null
+        }
+    }
+
+    function triggerFirstItem() {
+        emitIndexClicked(0);
+    }
+
     //- Private -------------------------------------------------
+    function focusItemAt(idx) {
+        if (idx < 0 || idx >= count) {
+            return;
+        }
+        // Reset currentIndex so that the highlight is not animated from the
+        // previous position
+        gridView.currentIndex = -1;
+        gridView.currentIndex = idx;
+        gridView.currentItem.forceActiveFocus();
+    }
     height: childrenRect.height
 
     opacity: configureMode ? 0.6 : 1
+    visible: gridView.count > 0 || configureMode
 
     //FIXME: figure out sizing properly..
     property int iconWidth: 64
@@ -58,7 +117,7 @@ FocusScope {
         id: highlight
         PlasmaComponents.Highlight {
             hover: true
-            opacity: gridView.currentItem.highlighted ? 1 : 0
+            opacity: (gridView.currentItem && gridView.currentItem.highlighted) ? 1 : 0
         }
     }
 
@@ -138,6 +197,8 @@ FocusScope {
         model: main.model
         focus: true
 
+        objectName: "GridView:" + main.model.objectName
+
         /*
         // Focus debug help
         LogText {
@@ -178,11 +239,16 @@ FocusScope {
                     moveCurrentIndexUp();
                 } else if (event.key == Qt.Key_Down) {
                     moveCurrentIndexDown();
+                } else {
+                    return;
+                }
+                if (currentIndex == oldIndex) {
+                    // We didn't move, ask to move to another view
+                    focusOtherViewRequested(event.key, currentItem ? currentItem.x : 0);
                 }
                 if (currentIndex != oldIndex) {
-                    // Only accept the event if the index actually moved. Not accepting
-                    // it will cause parent items to move the focus to the next ResultsView,
-                    // which is what we want
+                    // Only accept the event if we moved. Otherwise one can't
+                    // press Up from the first row to focus the search field.
                     event.accepted = true;
                 }
             }
@@ -236,51 +302,17 @@ FocusScope {
 
     // Code
     onCountChanged: {
-        function focusFirstNotEmpty(lst, begin, end) {
-            for(var idx = begin; idx < end; ++idx) {
-                if (lst[idx].count > 0) {
-                    lst[idx].forceActiveFocus();
-                    return true;
-                }
-            }
-            return false;
-        }
-
         if (count == 0 && activeFocus) {
-            // When we had activeFocus but our count comes to 0 (for example because of filtering)
-            // try to put focus on another view. Look first for views after us. Then look at views
-            // before us.
-            var lst = KeyboardUtils.findTabMeChildren(main.parent);
-            var idx = lst.indexOf(main);
-            if (idx == -1) {
-                console.log("ERROR: Cannot find current view in tabMeChildren");
-                return;
-            }
-            if (focusFirstNotEmpty(lst, idx + 1, lst.length)) {
-                return;
-            }
-            focusFirstNotEmpty(lst, 0, idx);
-        }
-    }
+            // If we were focused but our count comes to 0 (for example because
+            // of filtering) try to move focus to another view.
 
-    KeyNavigation.backtab: {
-        var lst = KeyboardUtils.findTabMeChildren(main.parent);
-        for(var idx = 1; idx < lst.length; ++idx) {
-            if (lst[idx] == main) {
-                return lst[idx - 1];
+            // Ask for focus to move to view below us.
+            focusOtherViewRequested(Qt.Key_Down, 0);
+            if (activeFocus) {
+                // Didn't work, ask for focus to move to view above us.
+                focusOtherViewRequested(Qt.Key_Up, 0);
             }
         }
-        return null;
-    }
-
-    KeyNavigation.tab: {
-        var lst = KeyboardUtils.findTabMeChildren(main.parent);
-        for(var idx = 0; idx < lst.length - 1; ++idx) {
-            if (lst[idx] == main) {
-                return lst[idx + 1];
-            }
-        }
-        return null;
     }
 
     function favoriteModelForFavoriteId(favoriteId) {

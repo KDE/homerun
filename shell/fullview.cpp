@@ -31,11 +31,13 @@
 #include "homerunvieweradaptor.h"
 
 #include <QApplication>
+#include <QDeclarativeInfo>
 #include <QDesktopWidget>
 #include <QKeyEvent>
 
 #include <kdeclarative.h>
 
+#include <KCmdLineArgs>
 #include <KDebug>
 #include <KStandardDirs>
 #include <KUrl>
@@ -47,7 +49,12 @@
 FullView::FullView()
 : QDeclarativeView()
 , m_backgroundSvg(new Plasma::FrameSvg(this))
+, m_lastFocusedItem(0)
+, m_plainWindow(false)
 {
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    m_plainWindow = args->isSet("plain-window");
+
     new HomerunViewerAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerObject("/HomerunViewer", this);
@@ -63,7 +70,9 @@ FullView::FullView()
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setResizeMode(SizeRootObjectToView);
 
-    setWindowFlags(Qt::FramelessWindowHint);
+    if (!m_plainWindow) {
+        setWindowFlags(Qt::FramelessWindowHint);
+    }
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_NoSystemBackground);
     setAutoFillBackground(false);
@@ -76,6 +85,13 @@ FullView::FullView()
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
 
     setupBackground();
+
+    if (args->isSet("log-focused-item")) {
+        QTimer *timer = new QTimer(this);
+        timer->setInterval(200);
+        connect(timer, SIGNAL(timeout()), SLOT(logFocusedItem()));
+        timer->start();
+    }
 }
 
 void FullView::setupBackground()
@@ -111,14 +127,16 @@ void FullView::toggle(int screen)
     if (isVisible()) {
         resetAndHide();
     } else {
-        KWindowSystem::setState(winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove);
-        Plasma::WindowEffects::overrideShadow(winId(), true);
+        if (!m_plainWindow) {
+            KWindowSystem::setState(winId(), NET::SkipTaskbar | NET::SkipPager | NET::KeepAbove);
+            Plasma::WindowEffects::overrideShadow(winId(), true);
+        }
 
         QDesktopWidget w;
         if(screen < 0) {
             screen = w.screenNumber(QCursor::pos());
         }
-        const QRect rect = w.availableGeometry(screen);
+        QRect rect = w.availableGeometry(screen);
         setGeometry(rect);
         show();
         KWindowSystem::forceActiveWindow(winId());
@@ -127,6 +145,10 @@ void FullView::toggle(int screen)
 
 void FullView::resetAndHide()
 {
+    if (m_plainWindow) {
+        kWarning() << "ignored because we are running in plain window mode";
+        return;
+    }
     hide();
     QMetaObject::invokeMethod(rootObject(), "reset");
 }
@@ -134,7 +156,7 @@ void FullView::resetAndHide()
 void FullView::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape) {
-        hide();
+        resetAndHide();
         event->accept();
     }
 
@@ -158,6 +180,40 @@ void FullView::updateGeometry()
 void FullView::drawBackground(QPainter *painter, const QRectF &/*rect*/)
 {
     m_backgroundSvg->paintFrame(painter);
+}
+
+void FullView::logFocusedItem()
+{
+    QGraphicsItem *item = scene()->focusItem();
+    if (item == m_lastFocusedItem) {
+        return;
+    }
+
+    m_lastFocusedItem = item;
+    if (!item) {
+        kWarning() << "No focused item";
+        return;
+    }
+
+    QGraphicsObject *obj = qgraphicsitem_cast<QGraphicsObject *>(item);
+    if (obj) {
+        QDebug out = kWarning() << obj;
+
+        // Log values of interesting properties if they are defined
+        out.nospace();
+        static const QList<QByteArray> keys = QList<QByteArray>() << "text" << "label";
+        Q_FOREACH(const QByteArray &key, keys) {
+            QVariant value = obj->property(key);
+            if (value.isValid()) {
+                out.nospace() << ", " << qPrintable(key) << '=' << value.toString();
+            }
+        }
+
+        // Use qmlInfo to get file name and line number
+        qmlInfo(obj) << "<--- Focused Item";
+    } else {
+        kWarning() << "Focused Item:" << m_lastFocusedItem << "(not a QGraphicsObject)";
+    }
 }
 
 #include "fullview.moc"

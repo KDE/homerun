@@ -61,6 +61,9 @@ Item {
             onCloseRequested: {
                 main.closeRequested();
             }
+            onOpenSourceRequested: {
+                main.openSource(source);
+            }
         }
     }
 
@@ -214,10 +217,8 @@ Item {
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            var item = KeyboardUtils.findFirstTabMeChildren(main);
-            if (item !== null) {
-                item.forceActiveFocus();
-            }
+            console.log("TabContent.onActiveFocusChanged tabText=" + tabText);
+            currentPage.forceActiveFocus();
         }
     }
 
@@ -254,6 +255,7 @@ Item {
         var page = createPage([source], { "showHeader": false });
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
+        page.forceActiveFocus();
     }
 
     Keys.onPressed: {
@@ -276,6 +278,10 @@ Item {
         }
 
         return pageComponent.createObject(pageContainer, args);
+    }
+
+    function triggerFirstItem() {
+        currentPage.triggerFirstItem();
     }
 
     function reset() {

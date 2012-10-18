@@ -52,11 +52,16 @@ function goToLastPage() {
 
 function goTo(index) {
     if (currentIndex != -1) {
-        pages[currentIndex].opacity = 0;
+        var oldPage = pages[currentIndex];
+        oldPage.opacity = 0;
+        oldPage.previouslyFocusedItem = oldPage.focusedItem();
     }
     currentIndex = index;
     pages[index].opacity = 1;
     currentPage = pages[index];
+    if (currentPage.previouslyFocusedItem) {
+        currentPage.previouslyFocusedItem.forceActiveFocus();
+    }
     _updateCanGoBackForward();
 
     //dumpPages();

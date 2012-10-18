@@ -21,7 +21,7 @@ import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 
-Column {
+SlidingContainer {
     id: main
     property QtObject sourceRegistry
     property string sourceId
@@ -31,9 +31,7 @@ Column {
     property bool isFirst: false
     property bool isLast: false
 
-    height: configureMode ? Math.min(200, childrenRect.height) : childrenRect.height
-
-    clip: configureMode
+    show: configureMode
 
     signal removeRequested
     signal moveRequested(int delta)
@@ -43,15 +41,7 @@ Column {
         id: frame
         imagePath: "widgets/tooltip"
         width: parent.width
-        height: configureMode ? (label.height + margins.top + margins.bottom) : 0
-        opacity: configureMode ? 1 : 0
-
-        Behavior on height {
-            NumberAnimation {}
-        }
-        Behavior on opacity {
-            NumberAnimation {}
-        }
+        height: label.height + margins.top + margins.bottom
 
         PlasmaComponents.Label {
             id: label
