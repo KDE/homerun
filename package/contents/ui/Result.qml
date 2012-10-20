@@ -65,11 +65,7 @@ Item {
     property int padding: 5
     height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
 
-    opacity: 0
-
     Component.onCompleted: {
-        opacity = 1
-        itemMouseArea.clicked.connect(clicked)
         favoriteMouseArea.clicked.connect(favoriteClicked)
     }
 
@@ -81,13 +77,6 @@ Item {
 
     function showFeedback() {
         favoriteFeedbackComponent.createObject(favoriteIconItem);
-    }
-
-    Behavior on opacity {
-        NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutQuad
-        }
     }
 
     QtExtra.QIconItem {
