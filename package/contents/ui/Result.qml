@@ -66,6 +66,7 @@ Item {
     height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
 
     Component.onCompleted: {
+        itemMouseArea.clicked.connect(clicked)
         favoriteMouseArea.clicked.connect(favoriteClicked)
     }
 
