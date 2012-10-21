@@ -3,6 +3,7 @@ Type=ServiceType
 X-KDE-ServiceType=Homerun/Source
 Comment=Homerun source plugin
 Comment[da]=Kildeplugin til Homerun
+Comment[el]=Πρόσθετη πηγή Homerun
 Comment[et]=Homeruni allikaplugin
 Comment[nl]=Plug-in voor Homerun-bron
 Comment[pt]='Plugin' de código do Homerun
