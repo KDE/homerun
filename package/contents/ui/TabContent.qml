@@ -217,7 +217,6 @@ Item {
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            console.log("TabContent.onActiveFocusChanged tabText=" + tabText);
             currentPage.forceActiveFocus();
         }
     }
