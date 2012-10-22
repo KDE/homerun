@@ -266,11 +266,12 @@ FocusScope {
             left: parent.left
             right: parent.right
             verticalCenter: parent.verticalCenter
-            leftMargin: 2 * base.margins.left
+            // + 2 to avoid getting stuck with carret when focused
+            leftMargin: 2 * base.margins.left + 2
             rightMargin: 2 * base.margins.right
         }
         text: placeholderText
-        visible: textInput.text == "" && !textField.activeFocus
+        visible: textInput.text == "" || !textField.activeFocus
         // XXX: using textColor and low opacity for theming placeholderText
         color: theme.buttonTextColor
         opacity: 0.5
