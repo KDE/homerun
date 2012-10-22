@@ -13,7 +13,6 @@ serviceId=dolphin
 [Tab0]
 name=Home
 icon=go-home
-query=Search...
 source0=FavoriteApps
 source1=FavoritePlaces
 source2=RecentDocuments
@@ -21,7 +20,6 @@ source3=Runner
 
 [Tab1]
 name=Applications
-query=Search for applications...
 icon=applications-other
 source0=InstalledApps
 # For a grouped list of all apps
@@ -30,7 +28,6 @@ source1=Runner:whitelist=services,shell
 
 [Tab2]
 name=Documents
-query=Search for documents...
 icon=folder-documents
 source0=FavoritePlaces
 source1=RecentDocuments

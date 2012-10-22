@@ -100,7 +100,6 @@ Item {
             property string realText: model.display
             text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
             iconSource: model.decoration
-            property string searchPlaceholder: model.searchPlaceholder
             property variant sources: model.sources
             index: model.index
 
@@ -173,7 +172,7 @@ Item {
         focus: true
 
         clearButtonShown: true
-        placeholderText: filterTabBar.currentItem.searchPlaceholder
+        placeholderText: i18n("Type to search...")
 
         KeyNavigation.tab: content
         KeyNavigation.backtab: content

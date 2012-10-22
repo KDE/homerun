@@ -49,7 +49,6 @@ public:
 
     QString m_name;
     QString m_iconName;
-    QString m_searchPlaceholder;
     QStringList m_sources;
 
     bool setName(const QString &value)
@@ -124,12 +123,6 @@ public:
         tab->m_group = group;
         tab->m_sources = readSources(group);
         tab->m_iconName = group.readEntry("icon");
-        // We use "query" because it is automatically extracted as a
-        // translatable string by l10n-kde4/scripts/createdesktopcontext.pl
-        QByteArray placeHolder = group.readEntry("query", QByteArray());
-        if (!placeHolder.isEmpty()) {
-            tab->m_searchPlaceholder = i18n(placeHolder);
-        }
         return tab;
     }
 
@@ -149,7 +142,6 @@ TabModel::TabModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(SourcesRole, "sources");
-    roles.insert(SearchPlaceholderRole, "searchPlaceholder");
 
     setRoleNames(roles);
 }
@@ -226,8 +218,6 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
         return tab->m_iconName;
     case SourcesRole:
         return tab->m_sources;
-    case SearchPlaceholderRole:
-        return tab->m_searchPlaceholder;
     default:
         kWarning() << "Unhandled role" << role;
         return QVariant();
