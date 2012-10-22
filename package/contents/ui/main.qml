@@ -303,6 +303,7 @@ Item {
                 tabContent.reset();
             }
         }
+        configureMode = false;
         searchField.text = "";
         searchField.forceActiveFocus();
     }
