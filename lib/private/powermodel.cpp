@@ -133,9 +133,9 @@ bool PowerModel::trigger(int row)
 void PowerModel::suspend(const QString& type)
 {
     QDBusMessage msg = QDBusMessage::createMethodCall("org.kde.Solid.PowerManagement",
-                                                                                                    "/org/kde/Solid/PowerManagement",
-                                                                                                    "org.kde.Solid.PowerManagement",
-                                                                                                    type);
+                                                      "/org/kde/Solid/PowerManagement",
+                                                      "org.kde.Solid.PowerManagement",
+                                                      type);
     QDBusConnection::sessionBus().asyncCall(msg);
 }
 
