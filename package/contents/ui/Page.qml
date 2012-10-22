@@ -297,7 +297,7 @@ Item {
                         sourceId: delegateMain.sourceId
 
                         isFirst: viewIndex == 0
-                        isLast: delegateMain.ListView.view ? (viewIndex == delegateMain.ListView.view.count - 1) : true
+                        isLast: viewIndex == repeater.count - 1
 
                         onRemoveRequested: {
                             sourcesModel.remove(delegateMain.viewIndex);
