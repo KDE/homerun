@@ -43,18 +43,6 @@ namespace Homerun {
 PowerModel::PowerModel(QObject *parent)
 : QAbstractListModel(parent)
 {
-    PowerAction shutdown;
-    shutdown.name = i18nc("an action", "Shutdown");
-    shutdown.type = Shutdown;
-    shutdown.iconName = "system-shutdown";
-    m_powerList.append(shutdown);
-
-    PowerAction restart;
-    restart.name = i18nc("an action", "Restart");
-    restart.type = Restart;
-    restart.iconName = "system-reboot";
-    m_powerList.append(restart);
-
     PowerAction suspend;
     suspend.name = i18nc("an action", "Suspend");
     suspend.type = Suspend;
@@ -66,6 +54,19 @@ PowerModel::PowerModel(QObject *parent)
     hibernate.type = Hibernate;
     hibernate.iconName = "system-suspend-hibernate";
     m_powerList.append(hibernate);
+
+    PowerAction restart;
+    restart.name = i18nc("an action", "Restart");
+    restart.type = Restart;
+    restart.iconName = "system-reboot";
+    m_powerList.append(restart);
+
+    PowerAction shutdown;
+    shutdown.name = i18nc("an action", "Shutdown");
+    shutdown.type = Shutdown;
+    shutdown.iconName = "system-shutdown";
+    m_powerList.append(shutdown);
+
     emit countChanged();
 }
 

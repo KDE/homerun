@@ -41,13 +41,12 @@ SessionModel::SessionModel(QObject *parent)
 {
     //FIXME: instead of just hiding these things..it'd be awesome if we could grey them out and/or provide a reason why they're not there.
     //otherwise the user is hunting for the power buttons and for some reason it isn't where it should be.
-    const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
-    if (canLogout) {
-        SessionAction logout;
-        logout.name = i18nc("an action", "Logout");
-        logout.type = Logout;
-        logout.iconName = "system-log-out";
-        m_sessionList.append(logout);
+    if (KAuthorized::authorizeKAction("lock_screen")) {
+        SessionAction lock;
+        lock.name = i18nc("an action", "Lock");
+        lock.type = Lock;
+        lock.iconName = "system-lock-screen";
+        m_sessionList.append(lock);
     }
 
     if (KDisplayManager().isSwitchable() && KAuthorized::authorize(QLatin1String("switch_user"))) {
@@ -58,12 +57,13 @@ SessionModel::SessionModel(QObject *parent)
         m_sessionList.append(switchUser);
     }
 
-    if (KAuthorized::authorizeKAction("lock_screen")) {
-        SessionAction lock;
-        lock.name = i18nc("an action", "Lock");
-        lock.type = Lock;
-        lock.iconName = "system-lock-screen";
-        m_sessionList.append(lock);
+    const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
+    if (canLogout) {
+        SessionAction logout;
+        logout.name = i18nc("an action", "Logout");
+        logout.type = Logout;
+        logout.iconName = "system-log-out";
+        m_sessionList.append(logout);
     }
 
     emit countChanged();
