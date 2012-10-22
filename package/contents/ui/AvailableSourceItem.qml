@@ -27,55 +27,49 @@ Item {
 
     signal clicked
 
-    height: childrenRect.height
+    height: frame.height
 
-    property int padding: 6
+    PlasmaCore.FrameSvgItem {
+        id: frame
+        imagePath: "widgets/background"
+        width: parent.width
+        height: commentLabel.y + commentLabel.height + margins.bottom
 
-    PlasmaComponents.Label {
-        id: textLabel
-        anchors {
-            verticalCenter: addButton.verticalCenter
-            left: parent.left
-            right: addButton.left
-        }
-        font.weight: Font.Bold
-    }
-
-    PlasmaComponents.ToolButton {
-        id: addButton
-        anchors {
-            top: parent.top
-            topMargin: padding
-            right: parent.right
-        }
-        flat: false
-        iconSource: "list-add"
-        onClicked: main.clicked()
-    }
-
-    PlasmaComponents.Label {
-        id: commentLabel
-
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: addButton.bottom
+        PlasmaComponents.Label {
+            id: textLabel
+            anchors {
+                verticalCenter: addButton.verticalCenter
+                left: parent.left
+                leftMargin: frame.margins.left
+                right: addButton.left
+            }
+            font.weight: Font.Bold
+            elide: Text.ElideRight
         }
 
-        wrapMode: Text.Wrap
-    }
+        PlasmaComponents.ToolButton {
+            id: addButton
+            anchors {
+                top: parent.top
+                topMargin: frame.margins.top
+                right: parent.right
+                rightMargin: frame.margins.right
+            }
+            flat: false
+            iconSource: "list-add"
+            onClicked: main.clicked()
+        }
 
-    PlasmaCore.SvgItem {
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: commentLabel.bottom
-            topMargin: padding
+        PlasmaComponents.Label {
+            id: commentLabel
+            anchors {
+                left: parent.left
+                leftMargin: frame.margins.left
+                right: parent.right
+                rightMargin: frame.margins.right
+                top: addButton.bottom
+            }
+            wrapMode: Text.Wrap
         }
-        height: naturalSize.height
-        svg: PlasmaCore.Svg {
-            imagePath: "widgets/line"
-        }
-        elementId: "horizontal-line"
     }
 }

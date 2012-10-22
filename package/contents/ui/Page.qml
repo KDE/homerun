@@ -224,6 +224,7 @@ Item {
         }
         width: configureMode ? parent.width * 0.2 : 0
         opacity: configureMode ? 1 : 0
+        spacing: 6
         Behavior on width { NumberAnimation {} }
         Behavior on opacity { NumberAnimation {} }
 
