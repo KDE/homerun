@@ -232,9 +232,10 @@ Item {
             sortRole: "display"
         }
 
-        delegate: PlasmaComponents.Button {
+        delegate: AvailableSourceItem {
             width: parent.width - 24
             text: model.display
+            description: "Bla" //model.description
             onClicked: {
                 addSource(model.sourceId);
                 main.updateSources();
