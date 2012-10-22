@@ -224,6 +224,7 @@ Item {
         }
         width: configureMode ? parent.width * 0.2 : 0
         opacity: configureMode ? 1 : 0
+        spacing: 6
         Behavior on width { NumberAnimation {} }
         Behavior on opacity { NumberAnimation {} }
 
@@ -232,9 +233,10 @@ Item {
             sortRole: "display"
         }
 
-        delegate: PlasmaComponents.Button {
+        delegate: AvailableSourceItem {
             width: parent.width - 24
             text: model.display
+            comment: model.comment
             onClicked: {
                 addSource(model.sourceId);
                 main.updateSources();
