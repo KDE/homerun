@@ -68,6 +68,7 @@ struct SourceInfo
 {
     QString name;
     QString visibleName;
+    QString comment;
     AbstractSource *source;
     KService::Ptr service;
 
@@ -81,7 +82,8 @@ class AvailableSourcesModel : public QAbstractListModel
 {
 public:
     enum {
-        SourceIdRole = Qt::UserRole + 1
+        SourceIdRole = Qt::UserRole + 1,
+        CommentRole
     };
 
     AvailableSourcesModel(const QList<SourceInfo *> &sources, QObject *parent)
@@ -91,6 +93,7 @@ public:
         QHash<int, QByteArray> roles;
         roles.insert(Qt::DisplayRole, "display");
         roles.insert(SourceIdRole, "sourceId");
+        roles.insert(CommentRole, "comment");
         setRoleNames(roles);
     }
 
@@ -111,6 +114,8 @@ public:
             return sourceInfo->visibleName;
         case SourceIdRole:
             return sourceInfo->name;
+        case CommentRole:
+            return sourceInfo->comment;
         default:
             break;
         }
@@ -150,6 +155,7 @@ struct SourceRegistryPrivate
             sourceInfo->service = ptr;
             sourceInfo->name = pluginInfo.pluginName();
             sourceInfo->visibleName = pluginInfo.name();
+            sourceInfo->comment = pluginInfo.comment();
             registerSourceInfo(sourceInfo);
         }
     }
@@ -176,12 +182,13 @@ struct SourceRegistryPrivate
         source->init(q);
     }
 
-    void registerSource(const QString &name, AbstractSource *source, const QString &visibleName)
+    void registerSource(const QString &name, AbstractSource *source, const QString &visibleName, const QString &comment)
     {
         SourceInfo *info = new SourceInfo;
         info->name = name;
         info->visibleName = visibleName;
         info->source = source;
+        info->comment = comment;
         registerSourceInfo(info);
     }
 
@@ -233,28 +240,36 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
     d->registerSource("InstalledApps", new InstalledAppsSource(this),
-        i18n("Installed Applications")
+        i18n("Installed Applications"),
+        i18n("Browse installed applications by categories")
     );
     d->registerSource("GroupedInstalledApps", new GroupedInstalledAppsSource(this),
-        i18n("All Installed Applications")
+        i18n("All Installed Applications"),
+        i18n("List all installed applications in one flat, grouped list")
     );
     d->registerSource("Dir", new DirSource(this),
-        i18n("Folder")
+        i18n("Folder"),
+        i18n("List the content of a folder, let you browse into it")
     );
     d->registerSource("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this),
-        i18n("Favorite Places")
+        i18n("Favorite Places"),
+        i18n("Browse the content of your favorite places")
     );
     d->registerSource("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this),
-        i18n("Favorite Applications")
+        i18n("Favorite Applications"),
+        i18n("List your favorite applications")
     );
     d->registerSource("Power", new SimpleSource<PowerModel>(this),
-        i18n("Power Management")
+        i18n("Power Management"),
+        i18n("Provide buttons to suspend, hibernate, reboot or halt your computer")
     );
     d->registerSource("Session", new SimpleSource<SessionModel>(this),
-        i18n("Session")
+        i18n("Session"),
+        i18n("Provide buttons to lock the screen, log out, or switch to another user")
     );
     d->registerSource("Runner", new RunnerSource(this),
-        i18n("KRunner")
+        i18n("KRunner"),
+        i18n("Perform searchs using a selection of runners")
     );
 
     Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {

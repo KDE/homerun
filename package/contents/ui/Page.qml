@@ -235,7 +235,7 @@ Item {
         delegate: AvailableSourceItem {
             width: parent.width - 24
             text: model.display
-            description: "Bla" //model.description
+            comment: model.comment
             onClicked: {
                 addSource(model.sourceId);
                 main.updateSources();

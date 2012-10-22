@@ -23,7 +23,7 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 Item {
     id: main
     property alias text: textLabel.text
-    property alias description: descriptionLabel.text
+    property alias comment: commentLabel.text
 
     signal clicked
 
@@ -54,20 +54,22 @@ Item {
     }
 
     PlasmaComponents.Label {
-        id: descriptionLabel
+        id: commentLabel
 
         anchors {
             left: parent.left
             right: parent.right
             top: addButton.bottom
         }
+
+        wrapMode: Text.Wrap
     }
 
     PlasmaCore.SvgItem {
         anchors {
             left: parent.left
             right: parent.right
-            top: descriptionLabel.bottom
+            top: commentLabel.bottom
             topMargin: padding
         }
         height: naturalSize.height
