@@ -246,7 +246,7 @@ FocusScope {
                     // We didn't move, ask to move to another view
                     focusOtherViewRequested(event.key, currentItem ? currentItem.x : 0);
                 }
-                if (currentIndex != oldIndex) {
+                if (currentIndex != oldIndex || !activeFocus) {
                     // Only accept the event if we moved. Otherwise one can't
                     // press Up from the first row to focus the search field.
                     event.accepted = true;
