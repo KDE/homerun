@@ -31,7 +31,7 @@
 #include <KLocale>
 
 // Qt
-#include <QVBoxLayout>
+#include <QDir>
 
 namespace Homerun {
 
@@ -292,8 +292,7 @@ QAbstractItemModel *DirSource::createModel(const SourceArguments &args)
     KUrl url = args.value("url");
 
     if (!rootUrl.isValid()) {
-        kWarning() << "Missing 'rootUrl' argument. defaulting to '/'.";
-        rootUrl = KUrl("file:///");
+        rootUrl = KUrl::fromPath(QDir::homePath());
     }
 
     if (rootName.isEmpty()) {
