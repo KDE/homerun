@@ -65,8 +65,6 @@ SessionModel::SessionModel(QObject *parent)
         logout.iconName = "system-log-out";
         m_sessionList.append(logout);
     }
-
-    emit countChanged();
 }
 
 SessionModel::~SessionModel()

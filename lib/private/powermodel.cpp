@@ -66,8 +66,6 @@ PowerModel::PowerModel(QObject *parent)
     shutdown.type = Shutdown;
     shutdown.iconName = "system-shutdown";
     m_powerList.append(shutdown);
-
-    emit countChanged();
 }
 
 PowerModel::~PowerModel()
