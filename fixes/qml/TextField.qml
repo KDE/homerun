@@ -271,7 +271,7 @@ FocusScope {
             rightMargin: 2 * base.margins.right
         }
         text: placeholderText
-        visible: textInput.text == "" || !textField.activeFocus
+        visible: textInput.text == ""
         // XXX: using textColor and low opacity for theming placeholderText
         color: theme.buttonTextColor
         opacity: 0.5
