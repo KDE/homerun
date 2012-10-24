@@ -22,6 +22,7 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.fixes 0.1 as HomerunFixes
+import org.kde.homerun.components 0.1 as HomerunComponents
 
 Item {
     id: main
@@ -113,6 +114,17 @@ Item {
         verticalAlignment: Text.AlignTop
         wrapMode: Text.Wrap
         maximumLineCount: 2
+
+        effect: HomerunComponents.HaloEffect {
+        }
+        /*
+        effect: HomerunFixes.DropShadowEffect {
+            xOffset: 0
+            yOffset: 0
+            blurRadius: 10
+            color: "white"
+        }
+        */
     }
 
     QtExtra.QIconItem {

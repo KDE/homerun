@@ -22,6 +22,7 @@
 
 #include <QtDeclarative/qdeclarative.h>
 
+#include <haloeffect.h>
 #include <icondialog.h>
 #include <sourceregistry.h>
 #include <tabmodel.h>
@@ -29,6 +30,7 @@
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
+    qmlRegisterType<HaloEffect>(uri, 0, 1, "HaloEffect");
     qmlRegisterType<IconDialog>(uri, 0, 1, "IconDialog");
     qmlRegisterType<Homerun::SourceRegistry>(uri, 0, 1, "SourceRegistry");
     qmlRegisterType<TabModel>(uri, 0, 1, "TabModel");
