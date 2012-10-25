@@ -59,11 +59,14 @@ int main(int argc, char *argv[])
 
     KUniqueApplication app;
     app.disableSessionManagement();
-    app.setQuitOnLastWindowClosed(false);
 
     // Create view
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     KCmdLineArgs *kdeArgs = KCmdLineArgs::parsedArgs("kde");
+
+    if (!args->isSet("plain-window")) {
+        app.setQuitOnLastWindowClosed(false);
+    }
 
     FullView view;
 
