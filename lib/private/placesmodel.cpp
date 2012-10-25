@@ -74,6 +74,7 @@ DirModel::DirModel(QObject *parent)
     roles.insert(DirModel::FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
 
+    dirLister()->setDelayedMimeTypes(true);
     connect(dirLister(), SIGNAL(started(KUrl)), SLOT(emitRunningChanged()));
     connect(dirLister(), SIGNAL(completed()), SLOT(emitRunningChanged()));
 }
