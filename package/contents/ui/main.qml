@@ -312,6 +312,7 @@ Item {
             [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.decrementCurrentIndex],
             [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.incrementCurrentIndex],
             [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
+            [null,               "/", searchField.forceActiveFocus],
         ];
         KeyboardUtils.processShortcutList(lst, event);
     }

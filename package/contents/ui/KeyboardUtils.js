@@ -64,13 +64,34 @@ function findFirstTabMeChildren(item) {
 /**
  * Look for a callback to call for a key event.
  * Marks the event as accepted if a callback was found.
- * @param lst: a list of the form: [ [modifier, key, callback], [modifier, key, callback]... ]
- * @param event: the key event.
+ * @param lst a list of the form: [ [modifier, key, callback], [modifier, key, callback]... ].
+ *            Key can be either a Qt key code, for example Qt.Key_F1, or a one-char string,
+ *            for example "y".
+ * @param event the key event.
  */
 function processShortcutList(lst, event) {
-    event.accepted = lst.some(function(x) {
-        if (event.modifiers == x[0] && event.key == x[1]) {
-            x[2]();
+    function eventMatchesKey(event, key) {
+        var keyType = typeof(key);
+        if (keyType === "string") {
+            return event.text === key;
+        } else if (keyType === "number") {
+            return event.key === key;
+        } else {
+            console.log("KeyboardUtils.js:processShortcutList: Key " + key + " is of wrong type");
+            return false;
         }
+    }
+    event.accepted = lst.some(function(x) {
+        var modifiers = x[0];
+        var key = x[1];
+        var callback = x[2];
+        if (modifiers !== null && event.modifiers !== modifiers) {
+            return false;
+        }
+        if (eventMatchesKey(event, key)) {
+            callback();
+            return true;
+        }
+        return false;
     });
 }
