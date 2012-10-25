@@ -6,8 +6,6 @@ set(homerunviewer_SRCS
 qt4_add_dbus_adaptor(homerunviewer_SRCS org.kde.homerunviewer.xml
    fullview.h FullView)
 
-find_package(KDeclarative REQUIRED)
-
 kde4_add_executable(homerunviewer ${homerunviewer_SRCS})
 
 target_link_libraries(homerunviewer

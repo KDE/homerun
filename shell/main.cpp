@@ -22,7 +22,10 @@
 #include <KLocale>
 #include <KUniqueApplication>
 
-#include "fullview.h"
+#include <kdeclarative.h>
+
+#include <fullview.h>
+#include <homerun_config.h>
 
 int main(int argc, char *argv[])
 {
@@ -59,6 +62,9 @@ int main(int argc, char *argv[])
 
     KUniqueApplication app;
     app.disableSessionManagement();
+#ifdef HAVE_KDECLARATIVE_SETUPQMLJSDEBUGGER
+    KDeclarative::setupQmlJsDebugger();
+#endif
 
     // Create view
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

@@ -1,0 +1,2 @@
+/* Whether KDeclarative::setupQmlJsDebugger() exists */
+#cmakedefine HAVE_KDECLARATIVE_SETUPQMLJSDEBUGGER
