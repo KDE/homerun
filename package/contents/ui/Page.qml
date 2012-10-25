@@ -361,18 +361,18 @@ Item {
 
         onTriggered: {
             var maxCount = 10;
-            console.log("focusTimer");
+            console.log("Page.qml: focusTimer");
             updateFocus();
             if (main.focusedItem()) {
+                console.log("Page.qml: focusTimer: Focus has been set");
                 stop();
                 return;
             }
-            console.log("focusTimer: Still no valid focus");
+            console.log("Page.qml: focusTimer: Still no valid focus");
             count += 1;
             if (count >= maxCount) {
-                console.log("focusTimer: Giving up after " + maxCount + " tries");
+                console.log("Page.qml: focusTimer: Giving up after " + maxCount + " tries");
                 stop();
-            } else {
             }
         }
     }
