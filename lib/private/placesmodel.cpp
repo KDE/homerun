@@ -60,6 +60,11 @@ static QString sourceString(const KUrl &rootUrl, const QString &rootName, const 
     return sourceId.toString();
 }
 
+static inline KFileItem itemForIndex(const QModelIndex &index)
+{
+    return index.data(KDirModel::FileItemRole).value<KFileItem>();
+}
+
 //- DirModel ------------------------------------------------------
 DirModel::DirModel(QObject *parent)
 : KDirSortFilterProxyModel(parent)
@@ -108,12 +113,6 @@ void DirModel::initPathModel(const KUrl &openedUrl)
         sourceId.arguments()["url"] = url.url();
         m_pathModel->addPath(token, sourceId.toString());
     }
-}
-
-KFileItem DirModel::itemForIndex(const QModelIndex &index) const
-{
-    const QModelIndex sourceIndex = mapToSource(index);
-    return static_cast<KDirModel *>(sourceModel())->itemForIndex(sourceIndex);
 }
 
 KDirLister *DirModel::dirLister() const

@@ -60,8 +60,6 @@ public:
 
     Q_INVOKABLE bool trigger(int row);
 
-    KFileItem itemForIndex(const QModelIndex &index) const;
-
     KDirLister *dirLister() const;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
