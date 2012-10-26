@@ -249,90 +249,86 @@ Item {
         }
     }
 
-    Flickable {
-        id: centralFlickable
+    PlasmaExtras.ScrollArea {
+        id: centralScrollArea
         anchors {
             top: parent.top
             bottom: parent.bottom
             left: availableScrollArea.right
-            right: scrollBar.left
+            right: parent.right
         }
-        clip: true
-        contentHeight: centralColumn.height
 
-        Column {
-            id: centralColumn
-            width: parent.width
+        Flickable {
+            id: centralFlickable
+            anchors.fill: parent
+            clip: true
+            contentHeight: centralColumn.height
+            //contentWidth: width
 
-            Repeater {
-                id: repeater
-                model: sourcesModel
-                delegate: Column {
-                    id: delegateMain
-                    width: parent ? parent.width : 0
-                    height: main.configureMode
-                        ? Math.min(implicitHeight, 200)
-                        : implicitHeight
-                    clip: main.configureMode
+            Column {
+                id: centralColumn
+                width: parent.width
 
-                    property QtObject view
-                    property string sourceId: model.sourceId
-                    property int viewIndex: model.index
-                    property QtObject viewModel: model.model
+                Repeater {
+                    id: repeater
+                    model: sourcesModel
+                    delegate: Column {
+                        id: delegateMain
+                        width: parent ? parent.width : 0
+                        height: main.configureMode
+                            ? Math.min(implicitHeight, 200)
+                            : implicitHeight
+                        clip: main.configureMode
 
-                    SourceItem {
-                        width: parent.width
-                        configureMode: main.configureMode
-                        sourceRegistry: main.sourceRegistry
-                        sourceId: delegateMain.sourceId
+                        property QtObject view
+                        property string sourceId: model.sourceId
+                        property int viewIndex: model.index
+                        property QtObject viewModel: model.model
 
-                        isFirst: viewIndex == 0
-                        isLast: viewIndex == repeater.count - 1
+                        SourceItem {
+                            width: parent.width
+                            configureMode: main.configureMode
+                            sourceRegistry: main.sourceRegistry
+                            sourceId: delegateMain.sourceId
 
-                        onRemoveRequested: {
-                            sourcesModel.remove(delegateMain.viewIndex);
-                            main.updateSources();
+                            isFirst: viewIndex == 0
+                            isLast: viewIndex == repeater.count - 1
+
+                            onRemoveRequested: {
+                                sourcesModel.remove(delegateMain.viewIndex);
+                                main.updateSources();
+                            }
+                            onMoveRequested: {
+                                sourcesModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
+                                main.updateSources();
+                            }
+
+                            onSourceIdChanged: {
+                                delegateMain.view.model.destroy();
+                                delegateMain.view.destroy();
+                                var newModel = createModelForSource(sourceId, main);
+                                sourcesModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
+                                sourcesModel.setProperty(delegateMain.viewIndex, "model", newModel);
+                                delegateMain.view = createView(newModel, delegateMain);
+                                main.updateSources();
+                            }
                         }
-                        onMoveRequested: {
-                            sourcesModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
-                            main.updateSources();
+
+                        Component.onCompleted: {
+                            view = createView(model.model, delegateMain);
+                            main.updateRunning();
                         }
 
-                        onSourceIdChanged: {
-                            delegateMain.view.model.destroy();
-                            delegateMain.view.destroy();
-                            var newModel = createModelForSource(sourceId, main);
-                            sourcesModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
-                            sourcesModel.setProperty(delegateMain.viewIndex, "model", newModel);
-                            delegateMain.view = createView(newModel, delegateMain);
-                            main.updateSources();
+                        function navigate(key, x) {
+                            main.navigate(repeater, model.index, key, x);
                         }
                     }
 
-                    Component.onCompleted: {
-                        view = createView(model.model, delegateMain);
-                        main.updateRunning();
+                    function viewAt(idx) {
+                        return itemAt(idx).view;
                     }
-
-                    function navigate(key, x) {
-                        main.navigate(repeater, model.index, key, x);
-                    }
-                }
-
-                function viewAt(idx) {
-                    return itemAt(idx).view;
                 }
             }
-        }
-    }
-
-    PlasmaComponents.ScrollBar {
-        id: scrollBar
-        flickableItem: centralFlickable
-        anchors {
-            right: parent.right
-            top: parent.top
-            bottom: parent.bottom
         }
     }
 
