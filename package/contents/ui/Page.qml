@@ -236,7 +236,7 @@ Item {
         }
 
         delegate: AvailableSourceItem {
-            width: ListView.view.width - 24
+            width: ListView.view.width
             text: model.display
             comment: model.comment
             onClicked: {
@@ -244,21 +244,17 @@ Item {
                 main.updateSources();
             }
         }
+    }
 
-        PlasmaCore.SvgItem {
-            anchors {
-                right: parent.right
-                rightMargin: 12
-                top: parent.top
-                bottom: parent.bottom
-            }
-            width: naturalSize.width
-            z: 1000
-            svg: PlasmaCore.Svg {
-                imagePath: "widgets/scrollwidget"
-            }
-            elementId: "border-right"
+    PlasmaComponents.ScrollBar {
+        flickableItem: availableSourcesView
+        id: availableScrollBar
+        anchors {
+            left: availableSourcesView.right
+            top: parent.top
+            bottom: parent.bottom
         }
+        opacity: configureMode ? 1 : 0
     }
 
     Flickable {
@@ -266,7 +262,7 @@ Item {
         anchors {
             top: parent.top
             bottom: parent.bottom
-            left: availableSourcesView.right
+            left: availableScrollBar.right
             right: scrollBar.left
         }
         clip: true
