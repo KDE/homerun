@@ -228,8 +228,9 @@ Item {
         Behavior on width { NumberAnimation {} }
         Behavior on opacity { NumberAnimation {} }
 
-        flickableItem: ListView {
+        ListView {
             spacing: 6
+            anchors.fill: parent
 
             model: HomerunFixes.SortFilterModel {
                 sourceModel: sourceRegistry.availableSourcesModel()
