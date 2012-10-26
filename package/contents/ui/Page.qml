@@ -263,7 +263,6 @@ Item {
             anchors.fill: parent
             clip: true
             contentHeight: centralColumn.height
-            //contentWidth: width
 
             Column {
                 id: centralColumn
