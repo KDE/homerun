@@ -102,6 +102,8 @@ public:
 
     void save()
     {
+        // In case a deleted group is reused
+        m_group.writeEntry("deleted", false);
         saveName();
         saveIconName();
         saveSources();
@@ -128,6 +130,7 @@ public:
 
     void remove()
     {
+        m_group.deleteGroup();
         m_group.writeEntry("deleted", true);
         m_group.sync();
     }

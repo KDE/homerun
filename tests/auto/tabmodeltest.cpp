@@ -340,6 +340,10 @@ void TabModelTest::testMoveRow()
     // Check config
     QMap<QString, QString> afterFrom = getEntries(config, from);
     QMap<QString, QString> afterTo = getEntries(config, to);
+    QCOMPARE(afterFrom["deleted"], QString("false"));
+    afterFrom.remove("deleted");
+    QCOMPARE(afterTo["deleted"], QString("false"));
+    afterTo.remove("deleted");
     QCOMPARE(beforeFrom, afterTo);
     QCOMPARE(beforeTo, afterFrom);
 
