@@ -236,7 +236,7 @@ Item {
         }
 
         delegate: AvailableSourceItem {
-            width: parent.width - 24
+            width: ListView.view.width - 24
             text: model.display
             comment: model.comment
             onClicked: {
