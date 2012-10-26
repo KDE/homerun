@@ -110,9 +110,6 @@ public:
 
     static Tab *createFromGroup(const KConfigGroup &group)
     {
-        if (group.readEntry("deleted", false)) {
-            return 0;
-        }
         Tab *tab = new Tab;
 
         // (read "name" as QByteArray because i18n() wants a char* as argument)
@@ -158,6 +155,10 @@ QStringList TabModel::tabGroupList() const
     QStringList list;
     Q_FOREACH(const QString &groupName, m_config->groupList()) {
         if (groupName.startsWith(TAB_GROUP_PREFIX)) {
+            KConfigGroup group = m_config->group(groupName);
+            if (group.readEntry("deleted", false)) {
+                continue;
+            }
             list << groupName;
         }
     }
