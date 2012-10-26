@@ -19,6 +19,7 @@
 
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.plasma.extras 0.1 as PlasmaExtraComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
@@ -215,8 +216,8 @@ Item {
         opacity: running ? 0.5 : 0
     }
 
-    ListView {
-        id: availableSourcesView
+    PlasmaExtraComponents.ScrollArea {
+        id: availableScrollArea
         anchors {
             left: parent.left
             top: parent.top
@@ -224,37 +225,27 @@ Item {
         }
         width: configureMode ? parent.width * 0.2 : 0
         opacity: configureMode ? 1 : 0
-        spacing: 6
         Behavior on width { NumberAnimation {} }
         Behavior on opacity { NumberAnimation {} }
 
-        clip: true
+        flickableItem: ListView {
+            spacing: 6
 
-        model: HomerunFixes.SortFilterModel {
-            sourceModel: sourceRegistry.availableSourcesModel()
-            sortRole: "display"
-        }
+            model: HomerunFixes.SortFilterModel {
+                sourceModel: sourceRegistry.availableSourcesModel()
+                sortRole: "display"
+            }
 
-        delegate: AvailableSourceItem {
-            width: ListView.view.width
-            text: model.display
-            comment: model.comment
-            onClicked: {
-                addSource(model.sourceId);
-                main.updateSources();
+            delegate: AvailableSourceItem {
+                width: ListView.view.width
+                text: model.display
+                comment: model.comment
+                onClicked: {
+                    addSource(model.sourceId);
+                    main.updateSources();
+                }
             }
         }
-    }
-
-    PlasmaComponents.ScrollBar {
-        flickableItem: availableSourcesView
-        id: availableScrollBar
-        anchors {
-            left: availableSourcesView.right
-            top: parent.top
-            bottom: parent.bottom
-        }
-        opacity: configureMode ? 1 : 0
     }
 
     Flickable {
@@ -262,7 +253,7 @@ Item {
         anchors {
             top: parent.top
             bottom: parent.bottom
-            left: availableScrollBar.right
+            left: availableScrollArea.right
             right: scrollBar.left
         }
         clip: true
