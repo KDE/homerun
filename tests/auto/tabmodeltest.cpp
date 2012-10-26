@@ -252,14 +252,17 @@ void TabModelTest::testRemoveRow()
     model.setConfig(config);
     QCOMPARE(model.rowCount(), 2);
 
+    // Remove row
     QSignalSpy aboutRemovedSpy(&model, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)));
     QSignalSpy removedSpy(&model, SIGNAL(rowsRemoved(QModelIndex, int, int)));
     model.removeRow(0);
     QCOMPARE(model.rowCount(), 1);
 
-    QVERIFY(!config->hasGroup("Tab0"));
-    QVERIFY(config->hasGroup("Tab1"));
+    // Check config file
+    QVERIFY(config->group("Tab0").readEntry("deleted", false));
+    QVERIFY(!config->group("Tab1").readEntry("deleted", false));
 
+    // Check signals
     QCOMPARE(aboutRemovedSpy.count(), 1);
     QVariantList args = aboutRemovedSpy.takeFirst();
     QVERIFY(!args[0].value<QModelIndex>().isValid());
@@ -271,6 +274,11 @@ void TabModelTest::testRemoveRow()
     QVERIFY(!args[0].value<QModelIndex>().isValid());
     QCOMPARE(args[1].toInt(), 0);
     QCOMPARE(args[2].toInt(), 0);
+
+    // Load again
+    TabModel model2;
+    model2.setConfig(config);
+    QCOMPARE(model2.rowCount(), 1);
 }
 
 void TabModelTest::testMoveRow_data()

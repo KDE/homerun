@@ -110,6 +110,9 @@ public:
 
     static Tab *createFromGroup(const KConfigGroup &group)
     {
+        if (group.readEntry("deleted", false)) {
+            return 0;
+        }
         Tab *tab = new Tab;
 
         // (read "name" as QByteArray because i18n() wants a char* as argument)
@@ -128,9 +131,8 @@ public:
 
     void remove()
     {
-        KConfig *config = m_group.config();
-        m_group.deleteGroup();
-        config->sync();
+        m_group.writeEntry("deleted", true);
+        m_group.sync();
     }
 };
 
