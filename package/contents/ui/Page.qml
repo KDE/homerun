@@ -228,6 +228,8 @@ Item {
         Behavior on width { NumberAnimation {} }
         Behavior on opacity { NumberAnimation {} }
 
+        clip: true
+
         model: HomerunFixes.SortFilterModel {
             sourceModel: sourceRegistry.availableSourcesModel()
             sortRole: "display"
