@@ -59,7 +59,7 @@ public:
     void setConfigFileName(const QString &name);
 
     //// Config API
-    Q_INVOKABLE QAbstractItemModel *availableSourcesModel() const;
+    Q_INVOKABLE QObject *availableSourcesModel() const;
 
     Q_INVOKABLE QString visibleNameForSource(const QString &sourceString) const;
 

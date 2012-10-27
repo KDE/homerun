@@ -349,7 +349,7 @@ void SourceRegistry::setConfigFileName(const QString &name)
     configFileNameChanged(name);
 }
 
-QAbstractItemModel *SourceRegistry::availableSourcesModel() const
+QObject *SourceRegistry::availableSourcesModel() const
 {
     return d->m_availableSourcesModel;
 }
