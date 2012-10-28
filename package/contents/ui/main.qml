@@ -89,7 +89,7 @@ Item {
             topMargin: main.topMargin
             left: parent.left
             leftMargin: parent.leftMargin
-            right: searchField.left
+            right: configureMode ? configButton.left : searchField.left
             rightMargin: 6 + (configureMode ? addTabButton.width : 0)
         }
 
@@ -168,6 +168,7 @@ Item {
         }
 
         width: parent.width / 4
+        opacity: configureMode ? 0 : 1
 
         focus: true
 
