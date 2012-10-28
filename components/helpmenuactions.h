@@ -16,27 +16,39 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef ABOUTAPPLICATIONDIALOG_H
-#define ABOUTAPPLICATIONDIALOG_H
+#ifndef HELPMENUACTIONS_H
+#define HELPMENUACTIONS_H
 
 // Local
 
 // Qt
-#include <QObject>
 
 // KDE
+#include <KHelpMenu>
 
 /**
- * QML Wrapper for KAboutApplicationDialog
+ * Wrapper exposing KHelpMenu actions
  */
-class AboutApplicationDialog : public QObject
+class HelpMenuActions : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(ActionId)
 public:
-    explicit AboutApplicationDialog(QObject *parent = 0);
-    ~AboutApplicationDialog();
+    explicit HelpMenuActions(QObject *parent = 0);
+    ~HelpMenuActions();
 
-    Q_INVOKABLE void open();
+    enum ActionId {
+        AboutApplication = KHelpMenu::menuAboutApp,
+        ReportBug = KHelpMenu::menuReportBug,
+    };
+
+    Q_INVOKABLE QString text(ActionId);
+    Q_INVOKABLE void trigger(ActionId);
+
+private:
+    KHelpMenu *m_menu;
+
+    QAction *action(ActionId);
 };
 
-#endif /* ABOUTAPPLICATIONDIALOG_H */
+#endif /* HELPMENUACTIONS_H */

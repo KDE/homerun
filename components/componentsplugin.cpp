@@ -22,7 +22,7 @@
 
 #include <QtDeclarative/qdeclarative.h>
 
-#include <aboutapplicationdialog.h>
+#include <helpmenuactions.h>
 #include <icondialog.h>
 #include <sourceregistry.h>
 #include <tabmodel.h>
@@ -30,7 +30,7 @@
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
-    qmlRegisterType<AboutApplicationDialog>(uri, 0, 1, "AboutApplicationDialog");
+    qmlRegisterType<HelpMenuActions>(uri, 0, 1, "HelpMenuActions");
     qmlRegisterType<IconDialog>(uri, 0, 1, "IconDialog");
     qmlRegisterType<Homerun::SourceRegistry>(uri, 0, 1, "SourceRegistry");
     qmlRegisterType<TabModel>(uri, 0, 1, "TabModel");

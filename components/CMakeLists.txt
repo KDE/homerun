@@ -2,7 +2,7 @@ project(components)
 
 set(components_SRCS
     componentsplugin.cpp
-    aboutapplicationdialog.cpp
+    helpmenuactions.cpp
     icondialog.cpp
     tabmodel.cpp
     )

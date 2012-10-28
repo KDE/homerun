@@ -212,15 +212,18 @@ Item {
                     onClicked: configureMode = !configureMode;
                 }
                 PlasmaComponents.MenuItem {
-                    text: i18n("About Homerun")
-                    onClicked: aboutDialog.open()
+                    text: helpMenuActions.text(HomerunComponents.HelpMenuActions.AboutApplication)
+                    onClicked: helpMenuActions.trigger(HomerunComponents.HelpMenuActions.AboutApplication)
                 }
-
+                PlasmaComponents.MenuItem {
+                    text: helpMenuActions.text(HomerunComponents.HelpMenuActions.ReportBug)
+                    onClicked: helpMenuActions.trigger(HomerunComponents.HelpMenuActions.ReportBug)
+                }
             }
         }
 
-        HomerunComponents.AboutApplicationDialog {
-            id: aboutDialog
+        HomerunComponents.HelpMenuActions {
+            id: helpMenuActions
         }
     }
 

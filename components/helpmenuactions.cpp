@@ -17,35 +17,52 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 // Self
-#include <aboutapplicationdialog.h>
+#include <helpmenuactions.h>
 
 // Local
 
 // KDE
-#include <KAboutApplicationDialog>
 #include <KAboutData>
 #include <KComponentData>
 #include <KGlobal>
 
 // Qt
+#include <QAction>
 #include <QApplication>
 
-AboutApplicationDialog::AboutApplicationDialog(QObject *parent)
+HelpMenuActions::HelpMenuActions(QObject *parent)
 : QObject(parent)
+, m_menu(0)
 {
 }
 
-AboutApplicationDialog::~AboutApplicationDialog()
+HelpMenuActions::~HelpMenuActions()
 {
+    delete m_menu;
 }
 
-void AboutApplicationDialog::open()
+QString HelpMenuActions::text(HelpMenuActions::ActionId actionId)
 {
-    KAboutApplicationDialog *dialog = new KAboutApplicationDialog(
-        KGlobal::mainComponent().aboutData(),
-        QApplication::activeWindow());
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->open();
+    QAction *act = action(actionId);
+    Q_ASSERT(act);
+    return act->text();
 }
 
-#include <aboutapplicationdialog.moc>
+void HelpMenuActions::trigger(HelpMenuActions::ActionId actionId)
+{
+    QAction *act = action(actionId);
+    Q_ASSERT(act);
+    act->trigger();
+}
+
+QAction *HelpMenuActions::action(HelpMenuActions::ActionId actionId)
+{
+    if (!m_menu) {
+        m_menu = new KHelpMenu(QApplication::activeWindow(), KGlobal::mainComponent().aboutData());
+        // Call menu() to cause the actions to be created
+        m_menu->menu();
+    }
+    return m_menu->action(static_cast<KHelpMenu::MenuId>(actionId));
+}
+
+#include <helpmenuactions.moc>
