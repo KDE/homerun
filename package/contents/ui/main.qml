@@ -211,7 +211,16 @@ Item {
                     text: configureMode ? i18n("End Configure") : i18n("Configure");
                     onClicked: configureMode = !configureMode;
                 }
+                PlasmaComponents.MenuItem {
+                    text: i18n("About Homerun")
+                    onClicked: aboutDialog.open()
+                }
+
             }
+        }
+
+        HomerunComponents.AboutApplicationDialog {
+            id: aboutDialog
         }
     }
 

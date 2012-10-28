@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         // catalogName: we use the same catalog as the one loaded when homerun is used as a containment
         "plasma_applet_org.kde.homerun",
         // programName
-        ki18n("KDE Homerun"),
+        ki18n("Homerun"),
         // version
         "0.0.0");
     aboutData.setLicense(KAboutData::License_GPL);
