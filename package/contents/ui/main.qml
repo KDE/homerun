@@ -212,6 +212,9 @@ Item {
                     onClicked: configureMode = !configureMode;
                 }
                 PlasmaComponents.MenuItem {
+                    separator: true
+                }
+                PlasmaComponents.MenuItem {
                     text: helpMenuActions.text(HomerunComponents.HelpMenuActions.AboutApplication)
                     onClicked: helpMenuActions.trigger(HomerunComponents.HelpMenuActions.AboutApplication)
                 }
