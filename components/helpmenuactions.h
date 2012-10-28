@@ -39,7 +39,9 @@ public:
 
     enum ActionId {
         AboutApplication = KHelpMenu::menuAboutApp,
+        AboutKDE = KHelpMenu::menuAboutKDE,
         ReportBug = KHelpMenu::menuReportBug,
+        SwitchLanguage = KHelpMenu::menuSwitchLanguage,
     };
 
     Q_INVOKABLE QString text(ActionId);
