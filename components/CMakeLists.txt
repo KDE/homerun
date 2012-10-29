@@ -1,6 +1,7 @@
 project(components)
 
 set(components_SRCS
+    ${CMAKE_SOURCE_DIR}/internal/aboutdata.cpp
     componentsplugin.cpp
     helpmenuactions.cpp
     icondialog.cpp
@@ -12,6 +13,7 @@ qt4_automoc(${components_SRCS})
 include_directories(
     ${lib_SOURCE_DIR}
     ${lib_SOURCE_DIR}/private
+    ${CMAKE_SOURCE_DIR}/internal
     )
 
 kde4_add_library(componentsplugin SHARED ${components_SRCS})

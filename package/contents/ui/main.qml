@@ -216,7 +216,9 @@ Item {
                     separator: true
                 }
                 PlasmaComponents.MenuItem {
-                    text: helpMenuActions.text(HomerunComponents.HelpMenuActions.AboutApplication)
+                    // We do not use helpMenuActions.text(HomerunComponents.HelpMenuActions.AboutApplication)
+                    // because it returns Plasma when running as a containment
+                    text: i18n("About %1", "Homerun")
                     onClicked: helpMenuActions.trigger(HomerunComponents.HelpMenuActions.AboutApplication)
                 }
                 PlasmaComponents.MenuItem {

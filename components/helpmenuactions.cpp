@@ -23,22 +23,25 @@
 
 // KDE
 #include <KAboutData>
-#include <KComponentData>
-#include <KGlobal>
 
 // Qt
 #include <QAction>
 #include <QApplication>
 
+// Local
+#include <aboutdata.h>
+
 HelpMenuActions::HelpMenuActions(QObject *parent)
 : QObject(parent)
 , m_menu(0)
+, m_aboutData(0)
 {
 }
 
 HelpMenuActions::~HelpMenuActions()
 {
     delete m_menu;
+    delete m_aboutData;
 }
 
 QString HelpMenuActions::text(HelpMenuActions::ActionId actionId)
@@ -58,7 +61,8 @@ void HelpMenuActions::trigger(HelpMenuActions::ActionId actionId)
 QAction *HelpMenuActions::action(HelpMenuActions::ActionId actionId)
 {
     if (!m_menu) {
-        m_menu = new KHelpMenu(QApplication::activeWindow(), KGlobal::mainComponent().aboutData());
+        m_aboutData = HomerunInternal::createAboutData();
+        m_menu = new KHelpMenu(QApplication::activeWindow(), m_aboutData);
         // Call menu() to cause the actions to be created
         m_menu->menu();
     }

@@ -1,7 +1,12 @@
 set(homerunviewer_SRCS
+    ${CMAKE_SOURCE_DIR}/internal/aboutdata.cpp
     fullview.cpp
     main.cpp
-)
+    )
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}/internal
+    )
 
 qt4_add_dbus_adaptor(homerunviewer_SRCS org.kde.homerunviewer.xml
    fullview.h FullView)

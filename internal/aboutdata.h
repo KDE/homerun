@@ -16,42 +16,25 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef HELPMENUACTIONS_H
-#define HELPMENUACTIONS_H
+#ifndef ABOUTDATA_H
+#define ABOUTDATA_H
 
 // Local
 
 // Qt
 
 // KDE
-#include <KHelpMenu>
+
+class KAboutData;
+
+namespace HomerunInternal
+{
 
 /**
- * Wrapper exposing KHelpMenu actions
+ * Create a KAboutData for Homerun
  */
-class HelpMenuActions : public QObject
-{
-    Q_OBJECT
-    Q_ENUMS(ActionId)
-public:
-    explicit HelpMenuActions(QObject *parent = 0);
-    ~HelpMenuActions();
+KAboutData *createAboutData();
 
-    enum ActionId {
-        AboutApplication = KHelpMenu::menuAboutApp,
-        AboutKDE = KHelpMenu::menuAboutKDE,
-        ReportBug = KHelpMenu::menuReportBug,
-        SwitchLanguage = KHelpMenu::menuSwitchLanguage,
-    };
+} // namespace
 
-    Q_INVOKABLE QString text(ActionId);
-    Q_INVOKABLE void trigger(ActionId);
-
-private:
-    KHelpMenu *m_menu;
-    KAboutData *m_aboutData;
-
-    QAction *action(ActionId);
-};
-
-#endif /* HELPMENUACTIONS_H */
+#endif /* ABOUTDATA_H */

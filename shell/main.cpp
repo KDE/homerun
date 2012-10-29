@@ -16,37 +16,28 @@
  *   Free Software Foundation, Inc.,
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+// KDE
 #include <KAboutData>
 #include <KCmdLineArgs>
 #include <KDebug>
 #include <KLocale>
 #include <KUniqueApplication>
-
 #include <kdeclarative.h>
 
+// Qt
+#include <QScopedPointer>
+
+// Local
+#include <aboutdata.h>
 #include <fullview.h>
 #include <homerun_config.h>
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData(
-        // appName
-        "homerunviewer",
-        // catalogName: we use the same catalog as the one loaded when homerun is used as a containment
-        "plasma_applet_org.kde.homerun",
-        // programName
-        ki18n("Homerun"),
-        // version
-        "0.0.0");
-    aboutData.setLicense(KAboutData::License_GPL);
-    aboutData.setCopyrightStatement(ki18n("(C) 2012 Blue Systems"));
-    aboutData.setProgramIconName("homerun");
-
-    aboutData.addAuthor(ki18n("Shaun Reich"), ki18n("Developer"), "shaun.reich@blue-systems.com");
-    aboutData.addAuthor(ki18n("Aurélien Gâteau"), ki18n("Developer"), "agateau@kde.org");
+    QScopedPointer<KAboutData> aboutData(HomerunInternal::createAboutData());
 
     // Define cmdline options
-    KCmdLineArgs::init(argc, argv, &aboutData);
+    KCmdLineArgs::init(argc, argv, aboutData.data());
     KCmdLineOptions options;
     options.add("show <screen>", ki18n("Show on screen <screen>"), "-1");
     options.add("log-focused-item", ki18n("Log focused item (for debug purposes)"));
