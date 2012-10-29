@@ -5,6 +5,29 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE
 # Packaging
 set(HOMERUN_VERSION "0.1.0")
 
+set(HOMERUN_SOURCE_VERSION "")
+set(HOMERUN_SOURCE_DATE "")
+if(EXISTS ${CMAKE_SOURCE_DIR}/.git)
+    execute_process(COMMAND git log --pretty=%h HEAD^..
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE HOMERUN_SOURCE_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND git log --pretty=%ci HEAD^..
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE HOMERUN_SOURCE_DATE
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+elseif(EXISTS ${CMAKE_SOURCE_DIR}/.bzr)
+    execute_process(COMMAND bzr log -r-1
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE _bzr_out
+        )
+    string(REGEX MATCH "git commit: ([^\n]+)" _match "${_bzr_out}")
+    set(HOMERUN_SOURCE_VERSION "${CMAKE_MATCH_1}")
+    # Note: we skip day-of-week string
+    string(REGEX MATCH "timestamp: [a-zA-Z]+ ([^\n]+)" _match "${_bzr_out}")
+    set(HOMERUN_SOURCE_DATE "${CMAKE_MATCH_1}")
+endif()
+
 # Dependencies
 find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
 include(KDE4Defaults)

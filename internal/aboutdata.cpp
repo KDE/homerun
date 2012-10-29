@@ -32,19 +32,34 @@ namespace HomerunInternal
 
 KAboutData *createAboutData()
 {
+    QByteArray version = HOMERUN_VERSION;
+    QByteArray sourceVersion = HOMERUN_SOURCE_VERSION;
+    QByteArray sourceDate = HOMERUN_SOURCE_DATE;
+
+    if (!sourceVersion.isEmpty()) {
+        version += "+" + sourceVersion;
+    }
+
     KAboutData *aboutData = new KAboutData(
         "homerun",
         // catalogName: we use the same catalog as the one loaded when homerun is used as a containment
         "plasma_applet_org.kde.homerun",
         // programName
         ki18nc("Program name", "Homerun"),
-        HOMERUN_VERSION);
+        version);
     aboutData->setLicense(KAboutData::License_GPL);
     aboutData->setCopyrightStatement(ki18n("(C) 2012 Blue Systems"));
     aboutData->setProgramIconName("homerun");
 
     aboutData->addAuthor(ki18n("Shaun Reich"), ki18n("Developer"), "shaun.reich@blue-systems.com");
     aboutData->addAuthor(ki18n("Aurélien Gâteau"), ki18n("Developer"), "agateau@kde.org");
+
+    if (!sourceDate.isEmpty()) {
+        aboutData->setOtherText(
+            ki18n("Nightly build using source from: %1")
+            .subs(QString(sourceDate))
+        );
+    }
 
     return aboutData;
 }
