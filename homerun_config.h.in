@@ -1,2 +1,4 @@
 /* Whether KDeclarative::setupQmlJsDebugger() exists */
 #cmakedefine HAVE_KDECLARATIVE_SETUPQMLJSDEBUGGER
+
+#define HOMERUN_VERSION "@HOMERUN_VERSION@"

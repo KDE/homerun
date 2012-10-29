@@ -20,6 +20,7 @@
 #include <aboutdata.h>
 
 // Local
+#include <homerun_config.h>
 
 // KDE
 #include <KAboutData>
@@ -37,8 +38,7 @@ KAboutData *createAboutData()
         "plasma_applet_org.kde.homerun",
         // programName
         ki18nc("Program name", "Homerun"),
-        // version
-        "0.0.0");
+        HOMERUN_VERSION);
     aboutData->setLicense(KAboutData::License_GPL);
     aboutData->setCopyrightStatement(ki18n("(C) 2012 Blue Systems"));
     aboutData->setProgramIconName("homerun");

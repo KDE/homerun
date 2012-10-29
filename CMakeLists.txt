@@ -2,6 +2,9 @@ project(homerun)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
+# Packaging
+set(HOMERUN_VERSION "0.1.0")
+
 # Dependencies
 find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
 include(KDE4Defaults)
