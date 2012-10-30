@@ -36,7 +36,6 @@ FocusScope {
      * RunnerModel.
      */
     property QtObject model
-    property alias count: gridView.count // FIXME: Check if still used. Remove if not
 
     property bool configureMode: false
 
