@@ -22,7 +22,7 @@ elseif(EXISTS ${CMAKE_SOURCE_DIR}/.bzr)
         OUTPUT_VARIABLE _bzr_out
         )
     string(REGEX MATCH "git commit: ([^\n]+)" _match "${_bzr_out}")
-    set(HOMERUN_SOURCE_VERSION "${CMAKE_MATCH_1}")
+    string(SUBSTRING "${CMAKE_MATCH_1}" 0 8 HOMERUN_SOURCE_VERSION)
     # Note: we skip day-of-week string
     string(REGEX MATCH "timestamp: [a-zA-Z]+ ([^\n]+)" _match "${_bzr_out}")
     set(HOMERUN_SOURCE_DATE "${CMAKE_MATCH_1}")
