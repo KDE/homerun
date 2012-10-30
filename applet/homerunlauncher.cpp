@@ -33,6 +33,7 @@
 #include <Plasma/Containment>
 
 #include <KSharedConfig>
+#include <KShortcut>
 #include <KLocale>
 #include <KStandardDirs>
 #include <KIO/NetAccess>
@@ -46,11 +47,12 @@ HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
 {
     setHasConfigurationInterface(true);
     KGlobal::locale()->insertCatalog("plasma_applet_org.kde.homerun");
-//    resize(contentSizeHint());
 }
 
 void HomerunLauncher::init()
 {
+    setGlobalShortcut(KShortcut(Qt::ALT | Qt::Key_F1));
+
     QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
 
