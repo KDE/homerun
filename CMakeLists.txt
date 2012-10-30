@@ -28,6 +28,9 @@ elseif(EXISTS ${CMAKE_SOURCE_DIR}/.bzr)
     set(HOMERUN_SOURCE_DATE "${CMAKE_MATCH_1}")
 endif()
 
+message("HOMERUN_SOURCE_VERSION: ${HOMERUN_SOURCE_VERSION}")
+message("HOMERUN_SOURCE_DATE: ${HOMERUN_SOURCE_DATE}")
+
 # Dependencies
 find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
 include(KDE4Defaults)
