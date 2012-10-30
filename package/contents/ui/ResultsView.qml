@@ -37,7 +37,6 @@ FocusScope {
      */
     property QtObject model
     property alias count: gridView.count // FIXME: Check if still used. Remove if not
-    property bool tabMe: gridView.count > 0
 
     property bool configureMode: false
 

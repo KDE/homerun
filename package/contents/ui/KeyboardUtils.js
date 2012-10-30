@@ -32,42 +32,12 @@ function setTabOrder(lst) {
 }
 
 /**
- * Return a list of all children of item (including item itself) which have the
- * boolean property "tabMe" set to true
- */
-function findTabMeChildren(item) {
-    var lst = new Array();
-    if (item.tabMe === true) {
-        lst.push(item);
-    } else {
-        for (var idx = 0; idx < item.children.length; ++idx) {
-            var childLst = findTabMeChildren(item.children[idx]);
-            lst = lst.concat(childLst);
-        };
-    }
-    return lst;
-}
-
-function findFirstTabMeChildren(item) {
-    if (item.tabMe === true) {
-        return item;
-    }
-    for (var idx = 0; idx < item.children.length; ++idx) {
-        var child = findFirstTabMeChildren(item.children[idx]);
-        if (child !== null) {
-            return child;
-        }
-    }
-    return null;
-}
-
-/**
  * Look for a callback to call for a key event.
  * Marks the event as accepted if a callback was found.
- * @param lst a list of the form: [ [modifier, key, callback], [modifier, key, callback]... ].
+ * @param type:list<variant> lst a list of the form: [ [modifier, key, callback], [modifier, key, callback]... ].
  *            Key can be either a Qt key code, for example Qt.Key_F1, or a one-char string,
  *            for example "y".
- * @param event the key event.
+ * @param type:event event the key event.
  */
 function processShortcutList(lst, event) {
     function eventMatchesKey(event, key) {
