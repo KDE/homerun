@@ -17,29 +17,21 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#include "homerunlauncher.h"
-#include <QtCore/QSizeF>
-#include <QtGui/QPainter>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsLinearLayout>
+// Qt
+#include <QGraphicsLinearLayout>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusInterface>
 
-#include <Plasma/PushButton>
+// KDE
+#include <KRun>
+#include <KStandardDirs>
+#include <KShortcut>
 #include <Plasma/IconWidget>
 #include <Plasma/Containment>
 
-#include <KSharedConfig>
-#include <KShortcut>
-#include <KLocale>
-#include <KStandardDirs>
-#include <KIO/NetAccess>
-#include <KMessageBox>
-#include <KToolInvocation>
-#include <KRun>
+// Local
+#include <homerunlauncher.h>
 
 HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
     : Plasma::Applet(parent, args),
