@@ -106,8 +106,6 @@ Item {
             leftMargin: main.padding
         }
 
-        clip: true
-        smooth: true
         elide: Text.ElideRight
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignTop
