@@ -91,7 +91,7 @@ FocusScope {
 
     //- Private -------------------------------------------------
     function focusItemAt(idx) {
-        if (idx < 0 || idx >= count) {
+        if (idx < 0 || idx >= gridView.count) {
             return;
         }
         // Reset currentIndex so that the highlight is not animated from the
