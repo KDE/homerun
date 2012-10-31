@@ -299,20 +299,6 @@ FocusScope {
     }
 
     // Code
-    onCountChanged: {
-        if (count == 0 && activeFocus) {
-            // If we were focused but our count comes to 0 (for example because
-            // of filtering) try to move focus to another view.
-
-            // Ask for focus to move to view below us.
-            focusOtherViewRequested(Qt.Key_Down, 0);
-            if (activeFocus) {
-                // Didn't work, ask for focus to move to view above us.
-                focusOtherViewRequested(Qt.Key_Up, 0);
-            }
-        }
-    }
-
     function favoriteModelForFavoriteId(favoriteId) {
         if (favoriteId === undefined || favoriteId === "") {
             return null;
