@@ -7,8 +7,9 @@ set(HOMERUN_VERSION "0.1.0")
 
 set(HOMERUN_SOURCE_VERSION "")
 set(HOMERUN_SOURCE_DATE "")
+
 if(EXISTS ${CMAKE_SOURCE_DIR}/.git)
-    message("Found .git dir")
+    message(STATUS "Extracting source information using git log")
     execute_process(COMMAND git log --pretty=%h HEAD^..
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE HOMERUN_SOURCE_VERSION
@@ -17,22 +18,9 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/.git)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE HOMERUN_SOURCE_DATE
         OUTPUT_STRIP_TRAILING_WHITESPACE)
-elseif(EXISTS ${CMAKE_SOURCE_DIR}/.bzr)
-    message("Found .bzr dir")
-    execute_process(COMMAND bzr log -r-1
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE _bzr_out
-        )
-    message("Output of bzr log -r-1: ${_bzr_out}")
-    string(REGEX MATCH "git commit: ([^\n]+)" _match "${_bzr_out}")
-    string(SUBSTRING "${CMAKE_MATCH_1}" 0 8 HOMERUN_SOURCE_VERSION)
-    # Note: we skip day-of-week string
-    string(REGEX MATCH "timestamp: [a-zA-Z]+ ([^\n]+)" _match "${_bzr_out}")
-    set(HOMERUN_SOURCE_DATE "${CMAKE_MATCH_1}")
 endif()
-
-message("HOMERUN_SOURCE_VERSION: ${HOMERUN_SOURCE_VERSION}")
-message("HOMERUN_SOURCE_DATE: ${HOMERUN_SOURCE_DATE}")
+message(STATUS "Source version: ${HOMERUN_SOURCE_VERSION}")
+message(STATUS "Source date: ${HOMERUN_SOURCE_DATE}")
 
 # Dependencies
 find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
