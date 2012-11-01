@@ -40,7 +40,10 @@
 #include <KUrl>
 #include <KWindowSystem>
 
+#include <Plasma/Applet>
 #include <Plasma/FrameSvg>
+#include <Plasma/Package>
+#include <Plasma/PackageStructure>
 #include <Plasma/WindowEffects>
 
 FullView::FullView()
@@ -69,8 +72,14 @@ FullView::FullView()
     viewport()->setAutoFillBackground(false);
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
 
-    KUrl source = KGlobal::dirs()->locate("data", "plasma/plasmoids/org.kde.homerun/contents/ui/main.qml");
-    setSource(source);
+    // note: in libplasma2 this becomes simpler:
+    // Plasma::Package package = Plasma::PluginLoader::loadPackage("Plasma/Applet");
+    // package.setPath("org.kde.homerun");
+    // setSource(package.filePath("mainscript");
+    Plasma::PackageStructure::Ptr structure = Plasma::Applet::packageStructure();
+    const QString homerunPath = KGlobal::dirs()->locate("data", structure->defaultPackageRoot() + "/org.kde.homerun/");
+    Plasma::Package package(homerunPath, structure);
+    setSource(package.filePath("mainscript"));
 
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
 
