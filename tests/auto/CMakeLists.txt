@@ -56,7 +56,7 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
     ${lib_SOURCE_DIR}/sourceid.cpp
     )
-homerun_add_unit_test(placesmodeltest_x11
+homerun_add_unit_test(dirmodeltest_x11
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.ui
     ${lib_SOURCE_DIR}/private/dirmodel.cpp

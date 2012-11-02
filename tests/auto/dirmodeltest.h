@@ -16,12 +16,12 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef PLACESMODELTEST_H
-#define PLACESMODELTEST_H
+#ifndef DIRMODELTEST_H
+#define DIRMODELTEST_H
 
 #include <QObject>
 
-class PlacesModelTest : public QObject
+class DirModelTest : public QObject
 {
     Q_OBJECT
 
@@ -35,4 +35,4 @@ private Q_SLOTS:
     void testSortOrder();
 };
 
-#endif /* PLACESMODELTEST_H */
+#endif /* DIRMODELTEST_H */

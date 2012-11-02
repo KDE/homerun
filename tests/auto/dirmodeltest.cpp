@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#include "placesmodeltest.h"
+#include "dirmodeltest.h"
 
 // Local
 #include <dirmodel.h>
@@ -36,7 +36,7 @@
 
 using namespace Homerun;
 
-QTEST_KDEMAIN(PlacesModelTest, GUI)
+QTEST_KDEMAIN(DirModelTest, GUI)
 
 static void touch(const QString &path)
 {
@@ -44,16 +44,16 @@ static void touch(const QString &path)
     file.open(QIODevice::WriteOnly);
 }
 
-void PlacesModelTest::initTestCase()
+void DirModelTest::initTestCase()
 {
     QString dir = KGlobal::dirs()->localxdgdatadir();
     QFile file(dir + "/user-places.xbel");
     file.remove();
 }
 
-void PlacesModelTest::testDirModelSortOrder()
+void DirModelTest::testDirModelSortOrder()
 {
-    KTempDir tempDir("placesmodeltest");
+    KTempDir tempDir("dirmodeltest");
     QDir dir(tempDir.name());
     QStringList dirNames = QStringList() << "aaa" << "Abc" << "Hello";
     QStringList fileNames = QStringList() << "foo" << "Goo" << "hoo" << "img1" << "img2" << "img10";
@@ -82,9 +82,9 @@ void PlacesModelTest::testDirModelSortOrder()
     }
 }
 
-void PlacesModelTest::testDirModelFavoriteId()
+void DirModelTest::testDirModelFavoriteId()
 {
-    KTempDir tempDir("placesmodeltest");
+    KTempDir tempDir("dirmodeltest");
     QDir dir(tempDir.name());
     dir.mkdir("adir");
     touch(dir.absoluteFilePath("afile"));
@@ -111,10 +111,10 @@ void PlacesModelTest::testDirModelFavoriteId()
     }
 }
 
-void PlacesModelTest::testSortOrder()
+void DirModelTest::testSortOrder()
 {
     // Create sandbox
-    KTempDir tempDir("placesmodeltest");
+    KTempDir tempDir("dirmodeltest");
     QDir dir(tempDir.name());
     QStringList dirNames = QStringList() << "aaa" << "Abc" << "Hello";
     QStringList fileNames = QStringList() << "foo" << "Goo" << "hoo" << "img1" << "img2" << "img10";
@@ -145,4 +145,4 @@ void PlacesModelTest::testSortOrder()
     }
 }
 
-#include <placesmodeltest.moc>
+#include <dirmodeltest.moc>
