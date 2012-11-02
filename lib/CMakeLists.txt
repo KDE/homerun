@@ -23,6 +23,7 @@ set(lib_SRCS
 # Private classes
 set(lib_SRCS ${lib_SRCS}
     private/dirconfigurationwidget.cpp
+    private/dirmodel.cpp
     private/favoriteappsmodel.cpp
     private/groupedinstalledappsmodel.cpp
     private/placesmodel.cpp

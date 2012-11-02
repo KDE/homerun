@@ -21,6 +21,7 @@
 
 // Local
 #include <abstractsource.h>
+#include <dirmodel.h>
 #include <favoriteappsmodel.h>
 #include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>

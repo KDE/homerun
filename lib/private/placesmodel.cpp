@@ -19,23 +19,18 @@
 #include "placesmodel.h"
 
 // Local
-#include <dirconfigurationwidget.h>
-#include <pathmodel.h>
+#include <dirmodel.h>
 #include <sourceid.h>
 
 // KDE
 #include <KDebug>
-#include <KDirLister>
-#include <KDirModel>
-#include <KFilePlacesModel>
 #include <KLocale>
 
 // Qt
-#include <QDir>
 
 namespace Homerun {
 
-static KUrl urlFromFavoriteId(const QString &favoriteId)
+KUrl FavoritePlacesModel::urlFromFavoriteId(const QString &favoriteId)
 {
     if (!favoriteId.startsWith("place:")) {
         kWarning() << "Wrong favoriteId" << favoriteId;
@@ -44,151 +39,9 @@ static KUrl urlFromFavoriteId(const QString &favoriteId)
     return KUrl(favoriteId.mid(6));
 }
 
-static QString favoriteIdFromUrl(const KUrl &url)
+QString FavoritePlacesModel::favoriteIdFromUrl(const KUrl &url)
 {
     return "place:" + url.url();
-}
-
-static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
-{
-    SourceId sourceId;
-    sourceId.setName("Dir");
-    sourceId.arguments()
-        .add("rootUrl", rootUrl.url())
-        .add("rootName", rootName)
-        .add("url", url.url());
-    return sourceId.toString();
-}
-
-static inline KFileItem itemForIndex(const QModelIndex &index)
-{
-    return index.data(KDirModel::FileItemRole).value<KFileItem>();
-}
-
-//- DirModel ------------------------------------------------------
-DirModel::DirModel(QObject *parent)
-: KDirSortFilterProxyModel(parent)
-, m_pathModel(new PathModel(this))
-{
-    setSourceModel(new KDirModel(this));
-    setSortFoldersFirst(true);
-
-    QHash<int, QByteArray> roles;
-    roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::DecorationRole, "decoration");
-    roles.insert(DirModel::FavoriteIdRole, "favoriteId");
-    setRoleNames(roles);
-
-    dirLister()->setDelayedMimeTypes(true);
-    connect(dirLister(), SIGNAL(started(KUrl)), SLOT(emitRunningChanged()));
-    connect(dirLister(), SIGNAL(completed()), SLOT(emitRunningChanged()));
-}
-
-void DirModel::init(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
-{
-    m_rootUrl = rootUrl;
-    m_rootName = rootName;
-    initPathModel(url);
-    dirLister()->openUrl(url);
-}
-
-void DirModel::initPathModel(const KUrl &openedUrl)
-{
-    SourceId sourceId;
-    sourceId.setName("Dir");
-    sourceId.arguments()
-        .add("rootUrl", m_rootUrl.url())
-        .add("rootName", m_rootName)
-        .add("url", m_rootUrl.url());
-
-    m_pathModel->addPath(m_rootName, sourceId.toString());
-
-    QString relativePath = KUrl::relativeUrl(m_rootUrl, openedUrl);
-    if (relativePath == "./") {
-        return;
-    }
-    KUrl url = m_rootUrl;
-    Q_FOREACH(const QString &token, relativePath.split('/')) {
-        url.addPath(token);
-        sourceId.arguments()["url"] = url.url();
-        m_pathModel->addPath(token, sourceId.toString());
-    }
-}
-
-KDirLister *DirModel::dirLister() const
-{
-    return static_cast<KDirModel *>(sourceModel())->dirLister();
-}
-
-QVariant DirModel::data(const QModelIndex &index, int role) const
-{
-    if (role != FavoriteIdRole) {
-        return QSortFilterProxyModel::data(index, role);
-    }
-    if (index.row() < 0 || index.row() >= rowCount()) {
-        return QVariant();
-    }
-
-    KFileItem item = itemForIndex(index);
-    if (item.isDir()) {
-        return favoriteIdFromUrl(item.url());
-    } else {
-        return QString();
-    }
-}
-
-int DirModel::count() const
-{
-    return rowCount(QModelIndex());
-}
-
-QString DirModel::name() const
-{
-    return m_rootName;
-}
-
-bool DirModel::running() const
-{
-    return !dirLister()->isFinished();
-}
-
-PathModel *DirModel::pathModel() const
-{
-    return m_pathModel;
-}
-
-QString DirModel::query() const
-{
-    return filterRegExp().pattern();
-}
-
-void DirModel::setQuery(const QString &value)
-{
-    if (value == query()) {
-        return;
-    }
-    setFilterRegExp(QRegExp(value, Qt::CaseInsensitive));
-    queryChanged(value);
-}
-
-void DirModel::emitRunningChanged()
-{
-    runningChanged(running());
-}
-
-bool DirModel::trigger(int row)
-{
-    bool closed = false;
-    QModelIndex idx = index(row, 0);
-
-    KFileItem item = itemForIndex(idx);
-    if (item.isDir()) {
-        openSourceRequested(sourceString(m_rootUrl, m_rootName, item.url()));
-    } else {
-        item.run();
-        closed = true;
-    }
-    return closed;
 }
 
 //- FavoritePlacesModel ------------------------------------------------
@@ -265,7 +118,7 @@ bool FavoritePlacesModel::trigger(int row)
     KUrl theUrl = idx.data(KFilePlacesModel::UrlRole).value<QUrl>();
     theUrl.adjustPath(KUrl::AddTrailingSlash);
     QString rootName = idx.data(Qt::DisplayRole).toString();
-    openSourceRequested(sourceString(theUrl, rootName, theUrl));
+    openSourceRequested(DirModel::sourceString(theUrl, rootName, theUrl));
 
     return false;
 }
@@ -278,47 +131,6 @@ QString FavoritePlacesModel::name() const
 int FavoritePlacesModel::count() const
 {
     return rowCount(QModelIndex());
-}
-
-//- DirSource -------------------------------------------------------
-DirSource::DirSource(QObject *parent)
-: AbstractSource(parent)
-{}
-
-QAbstractItemModel *DirSource::createModel(const SourceArguments &args)
-{
-    KUrl rootUrl = args.value("rootUrl");
-    QString rootName = args.value("rootName");
-    KUrl url = args.value("url");
-
-    if (!rootUrl.isValid()) {
-        rootUrl = KUrl::fromPath(QDir::homePath());
-    }
-
-    if (rootName.isEmpty()) {
-        rootName = rootUrl.fileName();
-        if (rootName.isEmpty()) {
-            rootName = rootUrl.prettyUrl();
-        }
-    }
-    if (!url.isValid()) {
-        url = rootUrl;
-    }
-    url.adjustPath(KUrl::RemoveTrailingSlash);
-
-    DirModel *model = new DirModel;
-    model->init(rootUrl, rootName, url);
-    return model;
-}
-
-bool DirSource::isConfigurable() const
-{
-    return true;
-}
-
-SourceConfigurationWidget *DirSource::createConfigurationWidget(const SourceArguments &args)
-{
-    return new DirConfigurationWidget(args);
 }
 
 } // namespace Homerun

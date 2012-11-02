@@ -19,7 +19,7 @@
 #include "placesmodeltest.h"
 
 // Local
-#include <placesmodel.h>
+#include <dirmodel.h>
 
 // Qt
 #include <QDir>
