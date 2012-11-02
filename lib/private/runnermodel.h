@@ -117,6 +117,7 @@ private Q_SLOTS:
 
 private:
     void createManager();
+    void loadRunners();
 
     Plasma::RunnerManager *m_manager;
     QTimer *m_startQueryTimer;

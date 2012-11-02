@@ -231,13 +231,9 @@ void RunnerModel::setAllowedRunners(const QStringList &list)
     if (existingList.toSet() == list.toSet()) {
         return;
     }
+    m_pendingRunnersList = list;
     if (m_manager) {
-        m_manager->setAllowedRunners(list);
-
-        //automagically enter single runner mode if there's only 1 allowed runner
-        m_manager->setSingleMode(list.count() == 1);
-    } else {
-        m_pendingRunnersList = list;
+        loadRunners();
     }
 }
 
@@ -282,9 +278,7 @@ void RunnerModel::createManager()
                 this, SLOT(queryHasFinished()));
 
         if (!m_pendingRunnersList.isEmpty()) {
-            m_manager->setAllowedRunners(m_pendingRunnersList);
-            m_manager->setSingleMode(m_pendingRunnersList.count() == 1);
-            m_pendingRunnersList.clear();
+            loadRunners();
         }
         //connect(m_manager, SIGNAL(queryFinished()), this, SLOT(queryFinished()));
     }
@@ -348,6 +342,15 @@ void RunnerModel::queryHasFinished()
 void RunnerModel::trigger(const Plasma::QueryMatch& match)
 {
     m_manager->run(match);
+}
+
+void RunnerModel::loadRunners()
+{
+    kWarning();
+    Q_ASSERT(m_manager);
+    m_manager->setAllowedRunners(m_pendingRunnersList);
+    m_manager->setSingleMode(m_pendingRunnersList.count() == 1);
+    m_pendingRunnersList.clear();
 }
 
 //- RunnerSource ------------------------------
