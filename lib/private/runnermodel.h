@@ -27,6 +27,8 @@
 #include <QStringList>
 
 // KDE
+#include <KConfig>
+#include <KConfigGroup>
 #include <Plasma/QueryMatch>
 
 class QTimer;
@@ -120,6 +122,8 @@ private:
     void loadRunners();
 
     Plasma::RunnerManager *m_manager;
+    KConfig m_config;
+    KConfigGroup m_configGroup;
     QTimer *m_startQueryTimer;
     QTimer *m_runningChangedTimeout;
 
