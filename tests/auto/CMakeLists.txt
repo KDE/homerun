@@ -50,7 +50,7 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.ui
     ${lib_SOURCE_DIR}/private/dirmodel.cpp
-    ${lib_SOURCE_DIR}/private/placesmodel.cpp
+    ${lib_SOURCE_DIR}/private/favoriteplacesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
@@ -60,7 +60,7 @@ homerun_add_unit_test(dirmodeltest_x11
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.ui
     ${lib_SOURCE_DIR}/private/dirmodel.cpp
-    ${lib_SOURCE_DIR}/private/placesmodel.cpp
+    ${lib_SOURCE_DIR}/private/favoriteplacesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp

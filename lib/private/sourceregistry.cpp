@@ -25,7 +25,7 @@
 #include <favoriteappsmodel.h>
 #include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
-#include <placesmodel.h>
+#include <favoriteplacesmodel.h>
 #include <powermodel.h>
 #include <runnermodel.h>
 #include <installedappsmodel.h>

@@ -22,7 +22,7 @@
 // Local
 #include <dirconfigurationwidget.h>
 #include <pathmodel.h>
-#include <placesmodel.h>
+#include <favoriteplacesmodel.h>
 #include <sourceid.h>
 
 // KDE

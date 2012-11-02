@@ -20,7 +20,7 @@
 #include <favoriteplacesmodeltest.h>
 
 // Local
-#include <placesmodel.h>
+#include <favoriteplacesmodel.h>
 
 // KDE
 #include <KGlobal>
