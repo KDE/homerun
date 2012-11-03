@@ -67,6 +67,8 @@ private:
     QList<Tab*> m_tabList;
 
     QStringList tabGroupList() const;
+
+    void writeGeneralTabsEntry();
 };
 
 #endif /* TABMODEL_H */

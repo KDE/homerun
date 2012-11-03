@@ -1,3 +1,6 @@
+[General]
+tabs=Tab0,Tab1,Tab2,Tab3
+
 [PackageManagement]
 categoryInstaller=muon-discover-category
 

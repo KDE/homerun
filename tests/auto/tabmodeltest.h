@@ -38,6 +38,8 @@ private Q_SLOTS:
     void testRemoveRow();
     void testMoveRow_data();
     void testMoveRow();
+
+    void testLoadLegacy();
 };
 
 #endif /* TABMODELTEST_H */

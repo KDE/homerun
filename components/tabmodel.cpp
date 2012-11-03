@@ -155,7 +155,13 @@ TabModel::~TabModel()
 
 QStringList TabModel::tabGroupList() const
 {
-    QStringList list;
+    KConfigGroup group (m_config, "General");
+    QStringList list = group.readEntry("tabs", QStringList());
+    if (!list.isEmpty()) {
+        return list;
+    }
+
+    // Create "tabs" key if it does not exist
     Q_FOREACH(const QString &groupName, m_config->groupList()) {
         if (groupName.startsWith(TAB_GROUP_PREFIX)) {
             KConfigGroup group = m_config->group(groupName);
@@ -166,6 +172,9 @@ QStringList TabModel::tabGroupList() const
         }
     }
     list.sort();
+    group.writeEntry("tabs", list);
+    const_cast<TabModel *>(this)->m_config->sync();
+
     return list;
 }
 
@@ -289,6 +298,7 @@ void TabModel::appendRow()
     endInsertRows();
 
     tab->save();
+    writeGeneralTabsEntry();
 }
 
 #define CHECK_ROW(row) \
@@ -305,6 +315,7 @@ void TabModel::removeRow(int row)
     Q_ASSERT(tab);
     tab->remove();
     delete tab;
+    writeGeneralTabsEntry();
     endRemoveRows();
 }
 
@@ -320,12 +331,19 @@ void TabModel::moveRow(int from, int to)
     int modelTo = to + (to > from ? 1 : 0);
     beginMoveRows(QModelIndex(), from, from, QModelIndex(), modelTo);
     m_tabList.move(from, to);
-    for (int row = 0; row < m_tabList.count(); ++row) {
-        Tab *tab = m_tabList[row];
-        tab->m_group = KConfigGroup(m_config, QLatin1String(TAB_GROUP_PREFIX) + QString::number(row));
-        tab->save();
-    }
+    writeGeneralTabsEntry();
     endMoveRows();
+}
+
+void TabModel::writeGeneralTabsEntry()
+{
+    QStringList lst;
+    Q_FOREACH(const Tab *tab, m_tabList) {
+        lst << tab->m_group.name();
+    }
+    KConfigGroup group(m_config, "General");
+    group.writeEntry("tabs", lst);
+    m_config->sync();
 }
 
 #include "tabmodel.moc"
