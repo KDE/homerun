@@ -56,8 +56,6 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 
-    Q_INVOKABLE void setSourcesForRow(int row, const QVariant &sources);
-
     Q_INVOKABLE void setDataForRow(int row, const QByteArray &role, const QVariant &value);
 
     Q_INVOKABLE void appendRow();

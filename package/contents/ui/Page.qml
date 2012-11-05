@@ -41,7 +41,6 @@ Item {
     // Defined for pages with a single view on a browsable model
     property QtObject pathModel: tabSourceModel.count == 1 ? tabSourceModel.get(0).model.pathModel : null
 
-    signal sourcesUpdated(variant sources)
     signal closeRequested()
     signal openSourceRequested(string sourceId, variant sourceArguments)
 
@@ -467,29 +466,6 @@ Item {
         view.focusOtherViewRequested.connect(parent.navigate);
         return view;
     }
-
-    /* FIXME
-    function updateSources() {
-        var lst = new Array();
-        for (var idx = 0; idx < tabSourceModel.count; ++idx) {
-            var item = tabSourceModel.get(idx);
-            lst.push(item.sourceId);
-        }
-        sourcesUpdated(lst);
-    }
-
-    function addSource(source) {
-        var model = createModelForSource(source, main);
-        if (!model) {
-            console.log("addSource() could not create model for source: " + source);
-            return;
-        }
-        tabSourceModel.append({
-            source: source,
-            model: model,
-        });
-    }
-    */
 
     function navigate(repeater, currentIdx, key, x) {
         function nextView() {

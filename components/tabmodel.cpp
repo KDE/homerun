@@ -318,22 +318,6 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void TabModel::setSourcesForRow(int row, const QVariant &value)
-{
-    /*
-    Tab *tab = m_tabList.value(row);
-    if (!tab) {
-        kWarning() << "Invalid row number" << row;
-        return;
-    }
-    QStringList sources = value.toStringList();
-    tab->m_sources = sources;
-
-    QModelIndex idx = index(row, 0);
-    dataChanged(idx, idx);
-    */
-}
-
 void TabModel::setDataForRow(int row, const QByteArray &roleName, const QVariant &value)
 {
     Tab *tab = m_tabList.value(row);

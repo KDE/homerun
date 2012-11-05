@@ -47,7 +47,6 @@ Item {
     signal closeRequested
     signal updateTabOrderRequested
     signal setSearchFieldRequested(string text)
-    //signal sourcesUpdated(variant sources)
 
     //- Private ---------------------------------------------------
     Component {
@@ -55,11 +54,6 @@ Item {
         Page {
             anchors.fill: parent
             configureMode: main.configureMode
-            /*
-            onSourcesUpdated: {
-                main.sourcesUpdated(sources);
-            }
-            */
             onCloseRequested: {
                 main.closeRequested();
             }

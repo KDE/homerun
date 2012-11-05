@@ -66,11 +66,6 @@ Item {
             configureMode: main.configureMode
             onCloseRequested: isContainment ? reset() : main.closeRequested()
             onSetSearchFieldRequested: searchField.text = text
-            /*
-            onSourcesUpdated: {
-                tabModel.setSourcesForRow(tabButton.index, sources);
-            }
-            */
             onTabTextChanged: {
                 if (configureMode) {
                     tabModel.setDataForRow(tabButton.index, "display", tabText);
