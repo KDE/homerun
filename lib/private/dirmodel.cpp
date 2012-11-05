@@ -83,14 +83,8 @@ void DirModel::init(const KUrl &rootUrl, const QString &rootName, const KUrl &ur
 
 void DirModel::initPathModel(const KUrl &openedUrl)
 {
-    SourceId sourceId;
-    sourceId.setName("Dir");
-    sourceId.arguments()
-        .add("rootUrl", m_rootUrl.url())
-        .add("rootName", m_rootName)
-        .add("url", m_rootUrl.url());
-
-    m_pathModel->addPath(m_rootName, sourceId.toString());
+    QVariantMap args = sourceArguments(m_rootUrl, m_rootName, m_rootUrl);
+    m_pathModel->addPath(m_rootName, SOURCE_ID, args);
 
     QString relativePath = KUrl::relativeUrl(m_rootUrl, openedUrl);
     if (relativePath == "./") {
@@ -99,8 +93,8 @@ void DirModel::initPathModel(const KUrl &openedUrl)
     KUrl url = m_rootUrl;
     Q_FOREACH(const QString &token, relativePath.split('/')) {
         url.addPath(token);
-        sourceId.arguments()["url"] = url.url();
-        m_pathModel->addPath(token, sourceId.toString());
+        args["url"] = url.url();
+        m_pathModel->addPath(token, SOURCE_ID, args);
     }
 }
 
