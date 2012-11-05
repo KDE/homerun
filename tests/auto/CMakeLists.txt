@@ -49,6 +49,11 @@ homerun_add_unit_test(tabmodeltest
     ${lib_SOURCE_DIR}/sourceid.cpp
     )
 
+homerun_add_unit_test(sourcemodeltest
+    ${components_SOURCE_DIR}/sourcemodel.cpp
+    ${lib_SOURCE_DIR}/private/abstractsourceregistry.cpp
+    )
+
 # X11-dependent tests
 homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/private/favoriteappsmodel.cpp)
 homerun_add_unit_test(favoriteplacesmodeltest_x11
