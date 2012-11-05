@@ -16,36 +16,31 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+// Self
+#include <abstractsourceregistry.h>
 
-#include <QObject>
+// Local
 
-class MockRegistry;
+// KDE
 
-class TabModelTest : public QObject
+// Qt
+
+namespace Homerun
 {
-    Q_OBJECT
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
+AbstractSourceRegistry::AbstractSourceRegistry(QObject *parent)
+: QObject(parent)
+{}
 
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
+AbstractSourceRegistry::~AbstractSourceRegistry()
+{
+}
 
-    void testSetDataForRow();
+QObject *AbstractSourceRegistry::createModelForSource(const QString &/*sourceId*/, const KConfigGroup &/*configGroup*/, QObject * /*parent*/)
+{
+    return 0;
+}
 
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
+} // namespace Homerun
 
-    void testLoadLegacy();
-
-private:
-    MockRegistry *m_registry;
-};
-
-#endif /* TABMODELTEST_H */
+#include <abstractsourceregistry.moc>

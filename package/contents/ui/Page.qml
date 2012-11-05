@@ -29,13 +29,7 @@ Item {
     //- Defined by outside world -----------------------------------
     property QtObject sourceRegistry
 
-    /**
-     * A list of sourcesList
-     * A sourcesList can be either:
-     * - ["config", string sourceId, [string groupName, string subGroupName]]
-     * - ["dynamic", string sourceId, variantmap sourceArguments]
-     */
-    property variant sources
+    property QtObject tabSourceModel
     property bool configureMode
 
     property string searchCriteria
@@ -45,20 +39,13 @@ Item {
 
     //- Read-only properties ---------------------------------------
     // Defined for pages with a single view on a browsable model
-    property QtObject pathModel: sourcesModel.count == 1 ? sourcesModel.get(0).model.pathModel : null
+    property QtObject pathModel: tabSourceModel.count == 1 ? tabSourceModel.get(0).model.pathModel : null
 
     signal sourcesUpdated(variant sources)
     signal closeRequested()
     signal openSourceRequested(string sourceId, variant sourceArguments)
 
-    objectName: "Page:" + sources
-
     property Item previouslyFocusedItem
-
-    //- Non visual elements ----------------------------------------
-    ListModel {
-        id: sourcesModel
-    }
 
     //- Components -------------------------------------------------
     // Filter components
@@ -249,8 +236,7 @@ Item {
                 text: model.display
                 comment: model.comment
                 onClicked: {
-                    addSourceRequested(model.sourceId);
-                    addSource(["config", model.sourceId, );
+                    addSource(model.sourceId);
                     main.updateSources();
                 }
             }
@@ -278,7 +264,7 @@ Item {
 
                 Repeater {
                     id: repeater
-                    model: sourcesModel
+                    model: tabSourceModel
                     delegate: Column {
                         id: delegateMain
                         width: parent ? parent.width : 0
@@ -302,11 +288,11 @@ Item {
                             isLast: viewIndex == repeater.count - 1
 
                             onRemoveRequested: {
-                                sourcesModel.remove(delegateMain.viewIndex);
+                                tabSourceModel.remove(delegateMain.viewIndex);
                                 main.updateSources();
                             }
                             onMoveRequested: {
-                                sourcesModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
+                                tabSourceModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
                                 main.updateSources();
                             }
 
@@ -315,15 +301,17 @@ Item {
                                 delegateMain.view.model.destroy();
                                 delegateMain.view.destroy();
                                 var newModel = createModelForSource(sourceId, main);
-                                sourcesModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
-                                sourcesModel.setProperty(delegateMain.viewIndex, "model", newModel);
+                                tabSourceModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
+                                tabSourceModel.setProperty(delegateMain.viewIndex, "model", newModel);
                                 delegateMain.view = createView(newModel, delegateMain);
+                                connectModel
                                 main.updateSources();
                             }
                             */
                         }
 
                         Component.onCompleted: {
+                            connectModel(model.model);
                             view = createView(model.model, delegateMain);
                             main.updateRunning();
                         }
@@ -371,8 +359,6 @@ Item {
             }
         }
     }
-
-    Component.onCompleted: fillSourcesModel()
 
     onActiveFocusChanged: {
         if (!activeFocus) {
@@ -429,8 +415,8 @@ Item {
     }
 
     function updateRunning() {
-        for (var idx = 0; idx < sourcesModel.count; ++idx) {
-            if (sourcesModel.get(idx).model.running) {
+        for (var idx = 0; idx < tabSourceModel.count; ++idx) {
+            if (tabSourceModel.get(idx).model.running) {
                 busyIndicator.running = true;
                 return;
             }
@@ -446,12 +432,7 @@ Item {
         return genericFilterComponent.createObject(model, {"sourceModel": model});
     }
 
-    function createModelForSource(source, parent) {
-        var model = sourceRegistry.createModelForSource(source, parent);
-        if (!model) {
-            return null;
-        }
-
+    function connectModel(model) {
         if ("openSourceRequested" in model) {
             model.openSourceRequested.connect(main.openSourceRequested);
         }
@@ -464,7 +445,6 @@ Item {
         if ("runningChanged" in model) {
             model.runningChanged.connect(main.updateRunning);
         }
-        return model;
     }
 
     function createView(model, parent) {
@@ -489,14 +469,11 @@ Item {
         return view;
     }
 
-    function fillSourcesModel() {
-        sources.forEach(addSource);
-    }
-
+    /* FIXME
     function updateSources() {
         var lst = new Array();
-        for (var idx = 0; idx < sourcesModel.count; ++idx) {
-            var item = sourcesModel.get(idx);
+        for (var idx = 0; idx < tabSourceModel.count; ++idx) {
+            var item = tabSourceModel.get(idx);
             lst.push(item.sourceId);
         }
         sourcesUpdated(lst);
@@ -508,11 +485,12 @@ Item {
             console.log("addSource() could not create model for source: " + source);
             return;
         }
-        sourcesModel.append({
+        tabSourceModel.append({
             source: source,
             model: model,
         });
     }
+    */
 
     function navigate(repeater, currentIdx, key, x) {
         function nextView() {

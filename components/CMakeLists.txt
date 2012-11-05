@@ -5,6 +5,7 @@ set(components_SRCS
     componentsplugin.cpp
     helpmenuactions.cpp
     icondialog.cpp
+    sourcemodel.cpp
     tabmodel.cpp
     )
 

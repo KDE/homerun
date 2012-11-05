@@ -16,36 +16,38 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+#ifndef ABSTRACTSOURCEREGISTRY_H
+#define ABSTRACTSOURCEREGISTRY_H
 
+// Local
+#include <homerun_export.h>
+
+// Qt
 #include <QObject>
 
-class MockRegistry;
+// KDE
 
-class TabModelTest : public QObject
+class KConfigGroup;
+
+namespace Homerun
+{
+
+/**
+ * Defines the API of the SourceRegistry. Make it possible to mock the
+ * SourceRegistry in unit-tests.
+ */
+class HOMERUN_EXPORT AbstractSourceRegistry : public QObject
 {
     Q_OBJECT
+public:
+    AbstractSourceRegistry(QObject *parent = 0);
+    ~AbstractSourceRegistry();
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
-
-    void testSetDataForRow();
-
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
-
-    void testLoadLegacy();
-
-private:
-    MockRegistry *m_registry;
+    // Cannot be pure virtual because AbstractSourceRegistry needs to be
+    // declared as a QML component to be usable in TabModel.
+    virtual QObject *createModelForSource(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent);
 };
 
-#endif /* TABMODELTEST_H */
+} // namespace Homerun
+
+#endif /* ABSTRACTSOURCEREGISTRY_H */

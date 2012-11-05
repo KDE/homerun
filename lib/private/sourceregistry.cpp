@@ -276,7 +276,7 @@ struct SourceRegistryPrivate
 
 //- SourceRegistry --------------------------------------------
 SourceRegistry::SourceRegistry(QObject *parent)
-: QObject(parent)
+: AbstractSourceRegistry(parent)
 , d(new SourceRegistryPrivate)
 {
     d->q = this;
@@ -370,8 +370,38 @@ QObject *SourceRegistry::createModelForSource(const QVariant &sourceVariant, QOb
         kWarning() << "Invalid type in sourceList" << sourceList;
         return 0;
     }
+    if (!model) {
+        kWarning() << "Failed to create model";
+        return 0;
+    }
 
     model->setObjectName(type + ":" + id);
+
+    // If the model already has a parent, then don't change it.
+    // This is used by singleton sources to keep their model alive.
+    if (!model->parent()) {
+        model->setParent(parent);
+    }
+
+    return model;
+}
+
+QObject *SourceRegistry::createModelForSource(const QString &sourceId, const KConfigGroup &group, QObject *parent)
+{
+    // Get source
+    AbstractSource *source = d->sourceByName(sourceId);
+    if (!source) {
+        kWarning() << "Invalid sourceId in group (sourceId=" << sourceId << ")";
+        return 0;
+    }
+
+    // Create model
+    QAbstractItemModel *model = source->createModel(group);
+    if (!model) {
+        kWarning() << "Failed to create model from group";
+        return 0;
+    }
+    model->setObjectName(sourceId);
 
     // If the model already has a parent, then don't change it.
     // This is used by singleton sources to keep their model alive.

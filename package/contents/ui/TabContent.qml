@@ -33,7 +33,7 @@ Item {
     //- Public ----------------------------------------------------
     // Defined by outside world
     property QtObject sourceRegistry
-    property variant sources
+    property QtObject tabSourceModel
     property string tabIconSource
     property string tabText
     property string searchCriteria
@@ -212,7 +212,7 @@ Item {
 
     // Scripting
     Component.onCompleted: {
-        var page = createPage(sources);
+        var page = createPage(tabSourceModel);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -255,8 +255,18 @@ Item {
         }
     }
 
+    Component {
+        id: dynamicTabSourceModelComponent
+        ListModel {
+        }
+    }
+
     function openSource(source) {
-        var page = createPage([source], { "showHeader": false });
+        var tabSourceModel = dynamicTabSourceModelComponent.createObject(main);
+        tabSourceModel.append({
+            model: sourceRegistry.createModelForSource(source, tabSourceModel)
+        })
+        var page = createPage(tabSourceModel, { "showHeader": false });
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
         page.forceActiveFocus();
@@ -270,10 +280,10 @@ Item {
             ], event);
     }
 
-    function createPage(sources, viewExtraArgs /*= {}*/) {
+    function createPage(sourceModel, viewExtraArgs /*= {}*/) {
         var args = {
             sourceRegistry: sourceRegistry,
-            sources: sources,
+            tabSourceModel: sourceModel,
         };
         if (viewExtraArgs !== undefined) {
             for (var key in viewExtraArgs) {

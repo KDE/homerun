@@ -21,6 +21,7 @@ set(lib_SRCS
 
 # Private classes
 set(lib_SRCS ${lib_SRCS}
+    private/abstractsourceregistry.cpp
     private/dirconfigurationwidget.cpp
     private/dirmodel.cpp
     private/favoriteappsmodel.cpp

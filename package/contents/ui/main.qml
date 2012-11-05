@@ -47,6 +47,7 @@ Item {
     HomerunComponents.TabModel {
         id: tabModel
         configFileName: main.configFileName
+        sourceRegistry: sourceRegistry
     }
 
     HomerunComponents.SourceRegistry {
@@ -102,7 +103,7 @@ Item {
             property string realText: model.display
             text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
             iconSource: model.decoration
-            property variant sources: model.sources
+            property QtObject tabSourceModel: model.sourceModel
             index: model.index
 
             rightSide: [
@@ -138,11 +139,8 @@ Item {
         }
 
         function createTabContent(tabButton) {
-            for (var idx = 0; idx < tabButton.sources.length; ++idx) {
-                console.log("main.qml:createTabContent() source=" + tabButton.sources[idx]);
-            }
             tabButton.tab = tabContent.createObject(tabGroup, {
-                sources: tabButton.sources,
+                tabSourceModel: tabButton.tabSourceModel,
                 sourceRegistry: sourceRegistry,
                 tabButton: tabButton,
             });

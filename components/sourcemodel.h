@@ -16,36 +16,46 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+#ifndef SOURCEMODEL_H
+#define SOURCEMODEL_H
 
-#include <QObject>
+// Local
 
-class MockRegistry;
+// Qt
+#include <QAbstractListModel>
 
-class TabModelTest : public QObject
+// KDE
+#include <KConfigGroup>
+
+class TabModel;
+
+class SourceModelItem;
+
+/**
+ *
+ */
+class SourceModel : public QAbstractListModel
 {
     Q_OBJECT
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
+public:
+    explicit SourceModel(const KConfigGroup &tabGroup, TabModel *tabModel);
+    ~SourceModel();
 
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
+    enum {
+        SourceIdRole = Qt::UserRole + 1,
+        ModelRole,
+    };
 
-    void testSetDataForRow();
+    int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
 
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
-
-    void testLoadLegacy();
+    void reload();
 
 private:
-    MockRegistry *m_registry;
+    TabModel *m_tabModel;
+    KConfigGroup m_tabGroup;
+    QList<SourceModelItem *> m_list;
 };
 
-#endif /* TABMODELTEST_H */
+#endif /* SOURCEMODEL_H */

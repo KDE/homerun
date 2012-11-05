@@ -25,6 +25,8 @@
 
 // Local
 #include <sourceid.h>
+#include <sourcemodel.h>
+#include <sourceregistry.h>
 
 #define MIGRATE_V1_CONFIG_FILE_FORMAT
 
@@ -50,40 +52,22 @@ static QStringList takeLegacySources(const KConfigGroup &group_)
     QMap<QString, QString> map = group.entryMap();
     auto it = map.constBegin(), end = map.constEnd();
     for (; it != end; ++it) {
-        if (!it.key().startsWith(TAB_V1_SOURCE_KEY_PREFIX)) {
+        QString key = it.key();
+        if (!key.startsWith(TAB_V1_SOURCE_KEY_PREFIX)) {
             continue;
         }
-
+        bool ok;
+        QString num = key.mid(qstrlen(TAB_V1_SOURCE_KEY_PREFIX));
+        num.toInt(&ok);
+        if (!ok) {
+            continue;
+        }
         sources << it.value();
         group.deleteEntry(it.key());
     }
     return sources;
 }
 #endif
-
-/**
- * Returns a QList<sourceList>
- * Where sourceList is a QList<"config", $sourceId, QList<$groupNames> >
- */
-QVariantList readSources(const KConfigGroup &tabGroup)
-{
-    QStringList names = tabGroup.readEntry(TAB_SOURCES_KEY, QStringList());
-    QVariantList lst;
-
-    QString tabGroupName = tabGroup.name();
-
-    Q_FOREACH(const QString &name, names) {
-        KConfigGroup sourceGroup(&tabGroup, name);
-        QString sourceId = sourceGroup.readEntry(SOURCE_SOURCEID_KEY);
-
-        QVariantList sourceList;
-        sourceList.append(QLatin1String("config"));
-        sourceList.append(sourceId);
-        sourceList.append(QStringList() << tabGroupName << name);
-        lst.append(QVariant(sourceList));
-    }
-    return lst;
-}
 
 class Tab
 {
@@ -92,7 +76,17 @@ public:
 
     QString m_name;
     QString m_iconName;
-    QVariantList m_sources;
+    SourceModel *m_sourceModel;
+
+    Tab()
+    : m_sourceModel(0)
+    {
+    }
+
+    ~Tab()
+    {
+        delete m_sourceModel;
+    }
 
     bool setName(const QString &value)
     {
@@ -171,7 +165,7 @@ public:
         m_group.sync();
     }
 
-    static Tab *createFromGroup(const KConfigGroup &group)
+    static Tab *createFromGroup(const KConfigGroup &group, TabModel *tabModel)
     {
         Tab *tab = new Tab;
 
@@ -184,13 +178,13 @@ public:
         }
 
         tab->m_group = group;
-        tab->m_sources = readSources(group);
+        tab->m_sourceModel = new SourceModel(group, tabModel);
 #ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-        if (tab->m_sources.isEmpty()) {
+        if (tab->m_sourceModel->rowCount() == 0) {
             QStringList sourceIds = takeLegacySources(group);
             tab->saveSources(sourceIds);
             tab->m_group.sync();
-            tab->m_sources = readSources(group);
+            tab->m_sourceModel->reload();
         }
 #endif
         tab->m_iconName = group.readEntry("icon");
@@ -208,11 +202,12 @@ public:
 
 TabModel::TabModel(QObject *parent)
 : QAbstractListModel(parent)
+, m_sourceRegistry(0)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
-    roles.insert(SourcesRole, "sources");
+    roles.insert(SourceModelRole, "sourceModel");
 
     setRoleNames(roles);
 }
@@ -258,7 +253,7 @@ void TabModel::setConfig(const KSharedConfig::Ptr &ptr)
     QStringList list = tabGroupList();
     Q_FOREACH(const QString &groupName, list) {
         KConfigGroup group = m_config->group(groupName);
-        Tab *tab = Tab::createFromGroup(group);
+        Tab *tab = Tab::createFromGroup(group, this);
         if (tab) {
             m_tabList << tab;
         }
@@ -278,6 +273,19 @@ void TabModel::setConfigFileName(const QString &name)
         return;
     }
     setConfig(KSharedConfig::openConfig(name));
+}
+
+AbstractSourceRegistry *TabModel::sourceRegistry() const
+{
+    return m_sourceRegistry;
+}
+
+void TabModel::setSourceRegistry(AbstractSourceRegistry *registry)
+{
+    if (m_sourceRegistry != registry) {
+        m_sourceRegistry = registry;
+        sourceRegistryChanged();
+    }
 }
 
 int TabModel::rowCount(const QModelIndex &parent) const
@@ -302,8 +310,8 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
         return tab->m_name;
     case Qt::DecorationRole:
         return tab->m_iconName;
-    case SourcesRole:
-        return tab->m_sources;
+    case SourceModelRole:
+        return qVariantFromValue(static_cast<QObject *>(tab->m_sourceModel));
     default:
         kWarning() << "Unhandled role" << role;
         return QVariant();

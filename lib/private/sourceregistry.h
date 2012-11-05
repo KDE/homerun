@@ -21,6 +21,7 @@
 
 // Local
 #include <homerun_export.h>
+#include <abstractsourceregistry.h>
 
 // Qt
 
@@ -38,7 +39,7 @@ class SourceRegistryPrivate;
  * The source registry. This class is responsible for loading source plugins
  * and instantiating source models.
  */
-class HOMERUN_EXPORT SourceRegistry : public QObject
+class HOMERUN_EXPORT SourceRegistry : public AbstractSourceRegistry
 {
     Q_OBJECT
     Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels CONSTANT)
@@ -48,6 +49,8 @@ public:
     ~SourceRegistry();
 
     Q_INVOKABLE QObject *createModelForSource(const QVariant &sourceListsVariant, QObject *parent);
+
+    QObject *createModelForSource(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent); // reimp
     KSharedConfig::Ptr config() const;
 
     QVariantMap favoriteModels() const;
