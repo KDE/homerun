@@ -283,7 +283,7 @@ SourceRegistry::SourceRegistry(QObject *parent)
     }
     */
 
-    //d->listSourcePlugins();
+    d->listSourcePlugins();
 }
 
 SourceRegistry::~SourceRegistry()
