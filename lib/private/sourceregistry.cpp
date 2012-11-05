@@ -26,8 +26,8 @@
 
 //#include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
-/*
 #include <favoriteplacesmodel.h>
+/*
 #include <powermodel.h>
 #include <runnermodel.h>
 #include <installedappsmodel.h>
@@ -283,9 +283,9 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_availableSourcesModel = new AvailableSourcesModel(d->m_sourceInfos, this);
 
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
-    /*
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
+    /*
     d->registerSource("InstalledApps", new InstalledAppsSource(this),
         i18n("Installed Applications"),
         i18n("Browse installed applications by categories")
@@ -299,12 +299,10 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Folder"),
         i18n("List the content of a folder and let you browse into sub-folders")
     );
-    /*
     d->registerSource("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this),
         i18n("Favorite Places"),
         i18n("Browse the content of your favorite places")
     );
-    */
     d->registerSource("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this),
         i18n("Favorite Applications"),
         i18n("List applications marked as favorite")

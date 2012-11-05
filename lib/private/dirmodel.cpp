@@ -114,9 +114,7 @@ QVariant DirModel::data(const QModelIndex &index, int role) const
 
     KFileItem item = itemForIndex(index);
     if (item.isDir()) {
-        //FIXME
-        //return FavoritePlacesModel::favoriteIdFromUrl(item.url());
-        return QString();
+        return FavoritePlacesModel::favoriteIdFromUrl(item.url());
     } else {
         return QString();
     }

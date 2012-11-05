@@ -62,7 +62,7 @@ public:
     static QString favoriteIdFromUrl(const KUrl &url);
 
 Q_SIGNALS:
-    void openSourceRequested(const QString &source);
+    void openSourceRequested(const QString &sourceId, const QVariantMap &sourceArguments);
     void countChanged();
 
 private:
