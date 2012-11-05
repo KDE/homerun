@@ -48,9 +48,9 @@ public:
     explicit SourceRegistry(QObject *parent = 0);
     ~SourceRegistry();
 
-    Q_INVOKABLE QObject *createModelForSource(const QVariant &sourceListsVariant, QObject *parent);
+    Q_INVOKABLE QObject *createModelFromArguments(const QString &sourceId, const QVariantMap &sourceArguments, QObject *parent);
 
-    QObject *createModelForSource(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent); // reimp
+    QObject *createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent); // reimp
     KSharedConfig::Ptr config() const;
 
     QVariantMap favoriteModels() const;

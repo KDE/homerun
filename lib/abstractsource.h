@@ -50,14 +50,14 @@ public:
     /**
      * You must reimplement this method to create a source from a config group
      */
-    virtual QAbstractItemModel *createModel(const KConfigGroup &group) = 0;
+    virtual QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group) = 0;
 
     /**
      * If you want your source to be usable from other sources using the openSourceRequested() signal,
      * you must reimplement this method as well.
      * It returns a null pointer by default.
      */
-    virtual QAbstractItemModel *createModelForArguments(const QVariantMap &args);
+    virtual QAbstractItemModel *createModelFromArguments(const QVariantMap &args);
 
     virtual bool isConfigurable() const;
 
@@ -79,7 +79,7 @@ public:
     : AbstractSource(parent, args)
     {}
 
-    QAbstractItemModel *createModel(const KConfigGroup &/*group*/)
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &/*group*/)
     {
         return new T;
     }

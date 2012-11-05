@@ -45,7 +45,7 @@ public:
 
     // Cannot be pure virtual because AbstractSourceRegistry needs to be
     // declared as a QML component to be usable in TabModel.
-    virtual QObject *createModelForSource(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent);
+    virtual QObject *createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent);
 };
 
 } // namespace Homerun

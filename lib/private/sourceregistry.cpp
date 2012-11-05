@@ -58,7 +58,7 @@ public:
     , m_model(model)
     {}
 
-    QAbstractItemModel *createModel(const KConfigGroup &/* group */)
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &/* group */)
     {
         return m_model;
     }
@@ -229,49 +229,6 @@ struct SourceRegistryPrivate
         }
         return sourceByName(sourceId.name());
     }
-
-    QObject *createModelForConfigGroup(AbstractSource *source, const QVariant &groupVariant)
-    {
-        KConfigGroup group = configGroupForVariant(groupVariant);
-        QAbstractItemModel *model = source->createModel(group);
-        if (!model) {
-            kWarning() << "Failed to create model from group";
-            return 0;
-        }
-        return model;
-    }
-
-    QObject *createModelForArguments(AbstractSource *source, const QVariant &argumentsVariant)
-    {
-        if (!argumentsVariant.canConvert<QVariantMap>()) {
-            kWarning() << "Invalid type for source arguments:" << argumentsVariant;
-            return 0;
-        }
-        QVariantMap arguments = argumentsVariant.value<QVariantMap>();
-
-        QAbstractItemModel *model = source->createModelForArguments(arguments);
-        if (!model) {
-            kWarning() << "Failed to create model from" << arguments;
-            return 0;
-        }
-        return model;
-    }
-
-    KConfigGroup configGroupForVariant(const QVariant &variant) const
-    {
-        if (!variant.canConvert<QStringList>()) {
-            kWarning() << "Invalid groupVariant" << variant << ". Should be a string list";
-            return KConfigGroup();
-        }
-        QStringList lst = variant.value<QStringList>();
-        if (lst.count() != 2) {
-            kWarning() << "Invalid group name list" << lst << ". There should be two items";
-            return KConfigGroup();
-        }
-
-        KConfigGroup tabGroup = m_config->group(lst.at(0));
-        return tabGroup.group(lst.at(1));
-    }
 };
 
 //- SourceRegistry --------------------------------------------
@@ -335,45 +292,22 @@ SourceRegistry::~SourceRegistry()
     delete d;
 }
 
-QObject *SourceRegistry::createModelForSource(const QVariant &sourceVariant, QObject *parent)
+QObject *SourceRegistry::createModelFromArguments(const QString &sourceId, const QVariantMap &sourceArguments, QObject *parent)
 {
-    if (!sourceVariant.canConvert<QVariantList>()) {
-        kWarning() << "Invalid sourceVariant" << sourceVariant;
-        return 0;
-    }
-    QVariantList sourceList = sourceVariant.value<QVariantList>();
-    if (sourceList.count() != 3) {
-        kWarning() << "sourceList should contain 3 items" << sourceList;
-        return 0;
-    }
-
-    QString type = sourceList.at(0).toString();
-    QString id = sourceList.at(1).toString();
-    QVariant extra = sourceList.at(2);
-
     // Get source
-    AbstractSource *source = d->sourceByName(id);
+    AbstractSource *source = d->sourceByName(sourceId);
     if (!source) {
-        kWarning() << "Invalid sourceId in group (sourceId=" << id << ")";
+        kWarning() << "Invalid sourceId in group (sourceId=" << sourceId << ")";
         return 0;
     }
 
     // Create model
-    QObject *model = 0;
-    if (type == "config") {
-        model = d->createModelForConfigGroup(source, extra);
-    } else if (type == "dynamic") {
-        model = d->createModelForArguments(source, extra);
-    } else {
-        kWarning() << "Invalid type in sourceList" << sourceList;
-        return 0;
-    }
+    QAbstractItemModel *model = source->createModelFromArguments(sourceArguments);
     if (!model) {
         kWarning() << "Failed to create model";
         return 0;
     }
-
-    model->setObjectName(type + ":" + id);
+    model->setObjectName(sourceId);
 
     // If the model already has a parent, then don't change it.
     // This is used by singleton sources to keep their model alive.
@@ -384,7 +318,7 @@ QObject *SourceRegistry::createModelForSource(const QVariant &sourceVariant, QOb
     return model;
 }
 
-QObject *SourceRegistry::createModelForSource(const QString &sourceId, const KConfigGroup &group, QObject *parent)
+QObject *SourceRegistry::createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &group, QObject *parent)
 {
     // Get source
     AbstractSource *source = d->sourceByName(sourceId);
@@ -394,9 +328,9 @@ QObject *SourceRegistry::createModelForSource(const QString &sourceId, const KCo
     }
 
     // Create model
-    QAbstractItemModel *model = source->createModel(group);
+    QAbstractItemModel *model = source->createModelFromConfigGroup(group);
     if (!model) {
-        kWarning() << "Failed to create model from group";
+        kWarning() << "Failed to create model from group" << group.name();
         return 0;
     }
     model->setObjectName(sourceId);
@@ -477,6 +411,9 @@ bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
 
 QObject *SourceRegistry::createConfigurationDialog(const QVariant &sourceListVariant)
 {
+    return 0;
+    // FIXME
+    /*
     QVariantList sourceList = sourceListVariant.value<QVariantList>();
     Q_ASSERT(sourceList.count() == 3);
     QString sourceId = sourceList.at(1).toString();
@@ -488,6 +425,7 @@ QObject *SourceRegistry::createConfigurationDialog(const QVariant &sourceListVar
         return 0;
     }
     return new SourceConfigurationDialog(source, group, QApplication::activeWindow());
+    */
 }
 
 } // namespace Homerun

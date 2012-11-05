@@ -43,7 +43,7 @@ AbstractSource::~AbstractSource()
     delete d;
 }
 
-QAbstractItemModel *AbstractSource::createModelForArguments(const QVariantMap &)
+QAbstractItemModel *AbstractSource::createModelFromArguments(const QVariantMap &)
 {
     return 0;
 }

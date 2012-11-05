@@ -40,7 +40,7 @@ Q_DECLARE_METATYPE(QModelIndex)
 class MockRegistry : public Homerun::AbstractSourceRegistry
 {
 public:
-    QObject *createModelForSource(const QString &sourceId, const KConfigGroup &/*configGroup*/, QObject *parent)
+    QObject *createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &/*configGroup*/, QObject *parent)
     {
         if (sourceId == "broken") {
             return 0;

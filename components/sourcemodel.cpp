@@ -108,7 +108,7 @@ void SourceModel::reload()
         KConfigGroup sourceGroup(&m_tabGroup, name);
         QString sourceId = sourceGroup.readEntry(SOURCE_SOURCEID_KEY);
 
-        QObject *model = registry->createModelForSource(sourceId, sourceGroup, this);
+        QObject *model = registry->createModelFromConfigGroup(sourceId, sourceGroup, this);
         if (!model) {
             continue;
         }

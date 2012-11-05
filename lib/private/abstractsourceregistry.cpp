@@ -36,7 +36,7 @@ AbstractSourceRegistry::~AbstractSourceRegistry()
 {
 }
 
-QObject *AbstractSourceRegistry::createModelForSource(const QString &/*sourceId*/, const KConfigGroup &/*configGroup*/, QObject * /*parent*/)
+QObject *AbstractSourceRegistry::createModelFromConfigGroup(const QString &/*sourceId*/, const KConfigGroup &/*configGroup*/, QObject * /*parent*/)
 {
     return 0;
 }

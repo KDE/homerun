@@ -64,7 +64,7 @@ Item {
                 main.closeRequested();
             }
             onOpenSourceRequested: {
-                main.openSource(["dynamic", sourceId, sourceArguments]);
+                main.openSource(sourceId, sourceArguments);
             }
         }
     }
@@ -177,7 +177,7 @@ Item {
                     text: "› " + model.display
                     onClicked: {
                         if (!checked) {
-                            openSource(["dynamic", model.sourceId, model.sourceArguments]);
+                            openSource(model.sourceId, model.sourceArguments);
                         }
                     }
                 }
@@ -251,7 +251,7 @@ Item {
             sourceArgs = item.sourceArguments;
         }
         if (sourceId !== null) {
-            openSource(["dynamic", sourceId, sourceArguments]);
+            openSource(sourceId, sourceArguments);
         }
     }
 
@@ -261,10 +261,10 @@ Item {
         }
     }
 
-    function openSource(source) {
+    function openSource(sourceId, sourceArguments) {
         var tabSourceModel = dynamicTabSourceModelComponent.createObject(main);
         tabSourceModel.append({
-            model: sourceRegistry.createModelForSource(source, tabSourceModel)
+            model: sourceRegistry.createModelFromArguments(sourceId, sourceArguments, tabSourceModel)
         })
         var page = createPage(tabSourceModel, { "showHeader": false });
         TabContentInternal.addPage(page);

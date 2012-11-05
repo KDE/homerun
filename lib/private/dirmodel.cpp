@@ -179,7 +179,7 @@ DirSource::DirSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
-QAbstractItemModel *DirSource::createModelForArguments(const QVariantMap &args)
+QAbstractItemModel *DirSource::createModelFromArguments(const QVariantMap &args)
 {
     KUrl rootUrl = args.value("rootUrl").toString();
     QString rootName = args.value("rootName").toString();
@@ -187,7 +187,7 @@ QAbstractItemModel *DirSource::createModelForArguments(const QVariantMap &args)
     return createModel(rootUrl, rootName, url);
 }
 
-QAbstractItemModel *DirSource::createModel(const KConfigGroup &group)
+QAbstractItemModel *DirSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
     KUrl rootUrl = group.readEntry("rootUrl", KUrl());
     QString rootName = group.readEntry("rootName", QString());

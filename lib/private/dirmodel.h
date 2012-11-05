@@ -96,8 +96,8 @@ class DirSource : public AbstractSource
 {
 public:
     DirSource(QObject *parent);
-    QAbstractItemModel *createModel(const KConfigGroup &group);
-    QAbstractItemModel *createModelForArguments(const QVariantMap &args);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
+    QAbstractItemModel *createModelFromArguments(const QVariantMap &args);
     bool isConfigurable() const;
     SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
 
