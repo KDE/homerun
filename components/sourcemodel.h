@@ -55,10 +55,14 @@ public:
 
     void reload();
 
+    Q_INVOKABLE void appendSource(const QString &sourceId);
+
 private:
     Homerun::AbstractSourceRegistry *m_sourceRegistry;
     KConfigGroup m_tabGroup;
     QList<SourceModelItem *> m_list;
+
+    void writeSourcesEntry();
 };
 
 #endif /* SOURCEMODEL_H */

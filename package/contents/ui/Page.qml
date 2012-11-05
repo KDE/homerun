@@ -236,8 +236,7 @@ Item {
                 text: model.display
                 comment: model.comment
                 onClicked: {
-                    addSource(model.sourceId);
-                    main.updateSources();
+                    tabSourceModel.appendSource(sourceId);
                 }
             }
         }

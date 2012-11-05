@@ -54,12 +54,21 @@ void SourceModelTest::cleanupTestCase()
     delete m_registry;
 }
 
-
 void SourceModelTest::testAppendSource()
 {
     KConfig config(QString(), KConfig::SimpleConfig);
     KConfigGroup group(&config, "Tab0");
     SourceModel model(m_registry, group, 0);
+
+    QCOMPARE(model.rowCount(), 0);
+    model.appendSource("foo");
+
+    QCOMPARE(model.rowCount(), 1);
+
+    QCOMPARE(group.readEntry("sources", QStringList()), QStringList() << "Source0");
+
+    KConfigGroup sourceGroup(&group, "Source0");
+    QCOMPARE(sourceGroup.readEntry("sourceId"), QString("foo"));
 }
 
 #include <sourcemodeltest.moc>

@@ -31,6 +31,7 @@ using namespace Homerun;
 
 static const char *TAB_SOURCES_KEY = "sources";
 
+static const char *SOURCE_GROUP_PREFIX = "Source";
 static const char *SOURCE_SOURCEID_KEY = "sourceId";
 
 class SourceModelItem
@@ -39,12 +40,12 @@ public:
     SourceModelItem(const QString &sourceId, QObject* model, const KConfigGroup &group)
     : m_sourceId(sourceId)
     , m_model(model)
-    , m_configGroup(group)
+    , m_group(group)
     {}
 
     QString m_sourceId;
     QObject *m_model;
-    KConfigGroup m_configGroup;
+    KConfigGroup m_group;
 };
 
 
@@ -112,6 +113,40 @@ void SourceModel::reload()
         SourceModelItem *item = new SourceModelItem(sourceId, model, sourceGroup);
         m_list << item;
     }
+}
+
+void SourceModel::appendSource(const QString &sourceId)
+{
+    KConfigGroup sourceGroup;
+    for (int idx = 0; ; ++idx) {
+        sourceGroup = KConfigGroup(&m_tabGroup, SOURCE_GROUP_PREFIX + QString::number(idx));
+        if (!sourceGroup.exists()) {
+            break;
+        }
+    }
+
+    QObject *model = m_sourceRegistry->createModelFromConfigGroup(sourceId, sourceGroup, this);
+    if (!model) {
+        kWarning() << "Failed to create model for " << sourceId;
+        return;
+    }
+    beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
+    SourceModelItem *item = new SourceModelItem(sourceId, model, sourceGroup);
+    m_list << item;
+    item->m_group.writeEntry(SOURCE_SOURCEID_KEY, sourceId);
+    item->m_group.sync();
+    writeSourcesEntry();
+    endInsertRows();
+}
+
+void SourceModel::writeSourcesEntry()
+{
+    QStringList lst;
+    Q_FOREACH(const SourceModelItem *item, m_list) {
+        lst << item->m_group.name();
+    }
+    m_tabGroup.writeEntry(TAB_SOURCES_KEY, lst);
+    m_tabGroup.sync();
 }
 
 #include <sourcemodel.moc>
