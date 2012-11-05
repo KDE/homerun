@@ -294,10 +294,12 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("All Installed Applications"),
         i18n("List all installed applications in a flat list, grouped by categories")
     );
+    */
     d->registerSource("Dir", new DirSource(this),
         i18n("Folder"),
         i18n("List the content of a folder and let you browse into sub-folders")
     );
+    /*
     d->registerSource("FavoritePlaces", new SingletonSource(d->m_favoriteModels.value("place"), this),
         i18n("Favorite Places"),
         i18n("Browse the content of your favorite places")
