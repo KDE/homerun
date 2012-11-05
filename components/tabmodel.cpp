@@ -23,24 +23,74 @@
 #include <KDebug>
 #include <KLocale>
 
-static const char *SOURCE_KEY_PREFIX = "source";
-static const char *TAB_GROUP_PREFIX = "Tab";
+// Local
+#include <sourceid.h>
 
-/**
- * Return values for all keys of a group which start with @p prefix
- */
-static QStringList readSources(const KConfigGroup &group)
+#define MIGRATE_V1_CONFIG_FILE_FORMAT
+
+using namespace Homerun;
+
+static const char *TAB_GROUP_PREFIX = "Tab";
+static const char *TAB_SOURCES_KEY = "sources";
+
+static const char *SOURCE_GROUP_PREFIX = "Source";
+static const char *SOURCE_SOURCEID_KEY = "sourceId";
+
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+static const char *TAB_V1_SOURCE_KEY_PREFIX = "source";
+#endif
+
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+static QStringList takeLegacySources(const KConfigGroup &group_)
 {
-    QStringList lst;
+    QStringList sources;
+
+    KConfigGroup group(group_);
+
     QMap<QString, QString> map = group.entryMap();
     auto it = map.constBegin(), end = map.constEnd();
     for (; it != end; ++it) {
-        if (it.key().startsWith(SOURCE_KEY_PREFIX)) {
-            lst << it.value();
+        if (!it.key().startsWith(TAB_V1_SOURCE_KEY_PREFIX)) {
+            continue;
         }
+
+        sources << it.value();
+        group.deleteEntry(it.key());
+    }
+    return sources;
+}
+#endif
+
+/**
+ * Read sources from groups, convert them to a list of SourceId string.
+ * Should be converted to expose groups later.
+ */
+QStringList readSources(const KConfigGroup &group)
+{
+    QStringList lst;
+
+    QStringList groupNames = group.readEntry(TAB_SOURCES_KEY, QStringList());
+    Q_FOREACH(const QString &groupName, groupNames) {
+        SourceId sourceId;
+        KConfigGroup sourceGroup(&group, groupName);
+        QMap<QString, QString> entries = sourceGroup.entryMap();
+        QString name = entries.take(SOURCE_SOURCEID_KEY);
+        if (name.isEmpty()) {
+            kWarning() << "Empty sourceId for source" << group.name();
+            continue;
+        }
+        sourceId.setName(name);
+
+        auto it = entries.constBegin(), end = entries.constEnd();
+        for (; it != end; ++it) {
+            sourceId.arguments().add(it.key(), it.value());
+        }
+
+        lst << sourceId.toString();
     }
     return lst;
 }
+
 
 class Tab
 {
@@ -75,19 +125,36 @@ public:
 
     void saveSources()
     {
-        Q_FOREACH(const QString &key, m_group.keyList()) {
-            if (key.startsWith(SOURCE_KEY_PREFIX)) {
-                m_group.deleteEntry(key);
+        // Delete all source groups
+        Q_FOREACH(const QString &name, m_group.groupList()) {
+            if (name.startsWith(SOURCE_GROUP_PREFIX)) {
+                KConfigGroup(&m_group, name).deleteGroup();
             }
         }
+
+        // Write new source groups
+        QStringList sourceGroupNames;
         int num = 0;
         Q_FOREACH(const QString &source, m_sources) {
-            QString key = QLatin1String(SOURCE_KEY_PREFIX) + QString::number(num);
-            m_group.writeEntry(key, source);
+            bool ok;
+            QString groupName = QLatin1String(SOURCE_GROUP_PREFIX) + QString::number(num);
+            SourceId sourceId = SourceId::fromString(source, &ok);
+            Q_ASSERT(ok);
+
+            KConfigGroup sourceGroup(&m_group, groupName);
+            sourceGroup.writeEntry(SOURCE_SOURCEID_KEY, sourceId.name());
+
+            const SourceArguments &args = sourceId.arguments();
+            auto it = args.constBegin(), end = args.constEnd();
+            for (; it != end; ++it) {
+                sourceGroup.writeEntry(it.key(), it.value());
+            }
+
             ++num;
+            sourceGroupNames << groupName;
         }
 
-        m_group.sync();
+        m_group.writeEntry(TAB_SOURCES_KEY, sourceGroupNames);
     }
 
     void saveName()
@@ -124,6 +191,13 @@ public:
 
         tab->m_group = group;
         tab->m_sources = readSources(group);
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+        if (tab->m_sources.isEmpty()) {
+            tab->m_sources = takeLegacySources(group);
+            tab->saveSources();
+            tab->m_group.sync();
+        }
+#endif
         tab->m_iconName = group.readEntry("icon");
         return tab;
     }
@@ -157,6 +231,7 @@ QStringList TabModel::tabGroupList() const
 {
     KConfigGroup group (m_config, "General");
     QStringList list = group.readEntry("tabs", QStringList());
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
     if (!list.isEmpty()) {
         return list;
     }
@@ -174,6 +249,7 @@ QStringList TabModel::tabGroupList() const
     list.sort();
     group.writeEntry("tabs", list);
     const_cast<TabModel *>(this)->m_config->sync();
+#endif
 
     return list;
 }
