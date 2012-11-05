@@ -27,7 +27,10 @@
 // KDE
 #include <KConfigGroup>
 
-class TabModel;
+namespace Homerun
+{
+class AbstractSourceRegistry;
+}
 
 class SourceModelItem;
 
@@ -39,7 +42,7 @@ class SourceModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit SourceModel(const KConfigGroup &tabGroup, TabModel *tabModel);
+    explicit SourceModel(Homerun::AbstractSourceRegistry *registry, const KConfigGroup &tabGroup, QObject *parent);
     ~SourceModel();
 
     enum {
@@ -53,7 +56,7 @@ public:
     void reload();
 
 private:
-    TabModel *m_tabModel;
+    Homerun::AbstractSourceRegistry *m_sourceRegistry;
     KConfigGroup m_tabGroup;
     QList<SourceModelItem *> m_list;
 };

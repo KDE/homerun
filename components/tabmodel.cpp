@@ -178,7 +178,7 @@ public:
         }
 
         tab->m_group = group;
-        tab->m_sourceModel = new SourceModel(group, tabModel);
+        tab->m_sourceModel = new SourceModel(tabModel->sourceRegistry(), group, tabModel);
 #ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
         if (tab->m_sourceModel->rowCount() == 0) {
             QStringList sourceIds = takeLegacySources(group);

@@ -21,7 +21,6 @@
 
 // Local
 #include <abstractsourceregistry.h>
-#include <tabmodel.h>
 
 // KDE
 #include <KDebug>
@@ -49,11 +48,12 @@ public:
 };
 
 
-SourceModel::SourceModel(const KConfigGroup &tabGroup, TabModel *tabModel)
-: QAbstractListModel(tabModel)
-, m_tabModel(tabModel)
+SourceModel::SourceModel(AbstractSourceRegistry *registry, const KConfigGroup &tabGroup, QObject *parent)
+: QAbstractListModel(parent)
+, m_sourceRegistry(registry)
 , m_tabGroup(tabGroup)
 {
+    Q_ASSERT(registry);
     QHash<int, QByteArray> roles;
     roles.insert(SourceIdRole, "sourceId");
     roles.insert(ModelRole, "model");
@@ -98,9 +98,6 @@ void SourceModel::reload()
     qDeleteAll(m_list);
     m_list.clear();
 
-    AbstractSourceRegistry *registry = m_tabModel->sourceRegistry();
-    Q_ASSERT(registry);
-
     QString tabGroupName = m_tabGroup.name();
 
     QStringList names = m_tabGroup.readEntry(TAB_SOURCES_KEY, QStringList());
@@ -108,7 +105,7 @@ void SourceModel::reload()
         KConfigGroup sourceGroup(&m_tabGroup, name);
         QString sourceId = sourceGroup.readEntry(SOURCE_SOURCEID_KEY);
 
-        QObject *model = registry->createModelFromConfigGroup(sourceId, sourceGroup, this);
+        QObject *model = m_sourceRegistry->createModelFromConfigGroup(sourceId, sourceGroup, this);
         if (!model) {
             continue;
         }
