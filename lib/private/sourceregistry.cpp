@@ -23,13 +23,16 @@
 #include <abstractsource.h>
 #include <dirmodel.h>
 #include <favoriteappsmodel.h>
-#include <groupedinstalledappsmodel.h>
+
+//#include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
+/*
 #include <favoriteplacesmodel.h>
 #include <powermodel.h>
 #include <runnermodel.h>
 #include <installedappsmodel.h>
 #include <sessionmodel.h>
+*/
 #include <sourceid.h>
 #include <sourceconfigurationdialog.h>
 
@@ -55,7 +58,7 @@ public:
     , m_model(model)
     {}
 
-    QAbstractItemModel *createModel(const SourceArguments &/* args */)
+    QAbstractItemModel *createModel(const KConfigGroup &/* group */)
     {
         return m_model;
     }
@@ -180,7 +183,6 @@ struct SourceRegistryPrivate
             return;
         }
         sourceInfo->source = source;
-        source->init(q);
     }
 
     void registerSource(const QString &name, AbstractSource *source, const QString &visibleName, const QString &comment)
@@ -227,6 +229,49 @@ struct SourceRegistryPrivate
         }
         return sourceByName(sourceId.name());
     }
+
+    QObject *createModelForConfigGroup(AbstractSource *source, const QVariant &groupVariant)
+    {
+        KConfigGroup group = configGroupForVariant(groupVariant);
+        QAbstractItemModel *model = source->createModel(group);
+        if (!model) {
+            kWarning() << "Failed to create model from group";
+            return 0;
+        }
+        return model;
+    }
+
+    QObject *createModelForArguments(AbstractSource *source, const QVariant &argumentsVariant)
+    {
+        if (!argumentsVariant.canConvert<QVariantMap>()) {
+            kWarning() << "Invalid type for source arguments:" << argumentsVariant;
+            return 0;
+        }
+        QVariantMap arguments = argumentsVariant.value<QVariantMap>();
+
+        QAbstractItemModel *model = source->createModelForArguments(arguments);
+        if (!model) {
+            kWarning() << "Failed to create model from" << arguments;
+            return 0;
+        }
+        return model;
+    }
+
+    KConfigGroup configGroupForVariant(const QVariant &variant) const
+    {
+        if (!variant.canConvert<QStringList>()) {
+            kWarning() << "Invalid groupVariant" << variant << ". Should be a string list";
+            return KConfigGroup();
+        }
+        QStringList lst = variant.value<QStringList>();
+        if (lst.count() != 2) {
+            kWarning() << "Invalid group name list" << lst << ". There should be two items";
+            return KConfigGroup();
+        }
+
+        KConfigGroup tabGroup = m_config->group(lst.at(0));
+        return tabGroup.group(lst.at(1));
+    }
 };
 
 //- SourceRegistry --------------------------------------------
@@ -238,6 +283,7 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_availableSourcesModel = new AvailableSourcesModel(d->m_sourceInfos, this);
 
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
+    /*
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
     d->registerSource("InstalledApps", new InstalledAppsSource(this),
@@ -256,10 +302,12 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Favorite Places"),
         i18n("Browse the content of your favorite places")
     );
+    */
     d->registerSource("FavoriteApps", new SingletonSource(d->m_favoriteModels.value("app"), this),
         i18n("Favorite Applications"),
         i18n("List applications marked as favorite")
     );
+    /*
     d->registerSource("Power", new SimpleSource<PowerModel>(this),
         i18n("Power Management"),
         i18n("Provide buttons to suspend, hibernate, reboot or halt your computer")
@@ -276,8 +324,9 @@ SourceRegistry::SourceRegistry(QObject *parent)
     Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
         sourceInfo->source->init(this);
     }
+    */
 
-    d->listSourcePlugins();
+    //d->listSourcePlugins();
 }
 
 SourceRegistry::~SourceRegistry()
@@ -286,26 +335,41 @@ SourceRegistry::~SourceRegistry()
     delete d;
 }
 
-QObject *SourceRegistry::createModelForSource(const QString &sourceString, QObject *parent)
+QObject *SourceRegistry::createModelForSource(const QVariant &sourceVariant, QObject *parent)
 {
-    bool ok;
-    SourceId sourceId = SourceId::fromString(sourceString, &ok);
-    if (!ok) {
-        kWarning() << "Invalid sourceString" << sourceString;
+    if (!sourceVariant.canConvert<QVariantList>()) {
+        kWarning() << "Invalid sourceVariant" << sourceVariant;
+        return 0;
+    }
+    QVariantList sourceList = sourceVariant.value<QVariantList>();
+    if (sourceList.count() != 3) {
+        kWarning() << "sourceList should contain 3 items" << sourceList;
         return 0;
     }
 
-    AbstractSource *source = d->sourceByName(sourceId.name());
+    QString type = sourceList.at(0).toString();
+    QString id = sourceList.at(1).toString();
+    QVariant extra = sourceList.at(2);
+
+    // Get source
+    AbstractSource *source = d->sourceByName(id);
     if (!source) {
+        kWarning() << "Invalid sourceId in group (sourceId=" << id << ")";
         return 0;
     }
 
-    QAbstractItemModel *model = source->createModel(sourceId.arguments());
-    if (!model) {
-        kWarning() << "Failed to create model from" << sourceString;
+    // Create model
+    QObject *model = 0;
+    if (type == "config") {
+        model = d->createModelForConfigGroup(source, extra);
+    } else if (type == "dynamic") {
+        model = d->createModelForArguments(source, extra);
+    } else {
+        kWarning() << "Invalid type in sourceList" << sourceList;
         return 0;
     }
-    model->setObjectName(sourceString);
+
+    model->setObjectName(type + ":" + id);
 
     // If the model already has a parent, then don't change it.
     // This is used by singleton sources to keep their model alive.
@@ -381,20 +445,19 @@ bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
     return source->isConfigurable();
 }
 
-QObject *SourceRegistry::createConfigurationDialog(const QString &sourceString)
+QObject *SourceRegistry::createConfigurationDialog(const QVariant &sourceListVariant)
 {
-    bool ok;
-    SourceId sourceId = SourceId::fromString(sourceString, &ok);
-    if (!ok) {
-        kWarning() << "Invalid sourceString" << sourceString;
-        return 0;
-    }
-    AbstractSource *source = d->sourceByName(sourceId.name());
+    QVariantList sourceList = sourceListVariant.value<QVariantList>();
+    Q_ASSERT(sourceList.count() == 3);
+    QString sourceId = sourceList.at(1).toString();
+    KConfigGroup group = d->configGroupForVariant(sourceList.at(2));
+
+    AbstractSource *source = d->sourceByName(sourceId);
     if (!source) {
-        kWarning() << "No source for" << sourceString;
+        kWarning() << "No source for" << sourceId;
         return 0;
     }
-    return new SourceConfigurationDialog(source, sourceId, QApplication::activeWindow());
+    return new SourceConfigurationDialog(source, group, QApplication::activeWindow());
 }
 
 } // namespace Homerun

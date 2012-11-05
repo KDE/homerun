@@ -22,15 +22,36 @@
 // Local
 
 // KDE
+#include <KConfigGroup>
 
 // Qt
 
 namespace Homerun
 {
 
-SourceConfigurationWidget::SourceConfigurationWidget(QWidget *parent)
-: QWidget(parent)
+struct SourceConfigurationWidgetPrivate
 {
+    SourceConfigurationWidgetPrivate(const KConfigGroup &group)
+    : m_group(group)
+    {}
+
+    KConfigGroup m_group;
+};
+
+SourceConfigurationWidget::SourceConfigurationWidget(const KConfigGroup &group, QWidget *parent)
+: QWidget(parent)
+, d(new SourceConfigurationWidgetPrivate(group))
+{
+}
+
+SourceConfigurationWidget::~SourceConfigurationWidget()
+{
+    delete d;
+}
+
+KConfigGroup SourceConfigurationWidget::configGroup() const
+{
+    return d->m_group;
 }
 
 } // namespace

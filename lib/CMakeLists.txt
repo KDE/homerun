@@ -14,7 +14,6 @@ set(lib_VERSION ${lib_VERSION_MAJOR}.${lib_VERSION_MINOR}.${lib_VERSION_PATCH})
 
 set(lib_SRCS
     abstractsource.cpp
-    abstractsourceregistry.cpp
     pathmodel.cpp
     sourceconfigurationwidget.cpp
     sourceid.cpp
@@ -25,20 +24,20 @@ set(lib_SRCS ${lib_SRCS}
     private/dirconfigurationwidget.cpp
     private/dirmodel.cpp
     private/favoriteappsmodel.cpp
-    private/groupedinstalledappsmodel.cpp
-    private/favoriteplacesmodel.cpp
-    private/powermodel.cpp
-    private/runnermodel.cpp
-    private/runnerconfigurationwidget.cpp
-    private/installedappsmodel.cpp
-    private/sessionmodel.cpp
+    #private/groupedinstalledappsmodel.cpp
+    #private/favoriteplacesmodel.cpp
+    #private/powermodel.cpp
+    #private/runnermodel.cpp
+    #private/runnerconfigurationwidget.cpp
+    #private/installedappsmodel.cpp
+    #private/sessionmodel.cpp
     private/sourceconfigurationdialog.cpp
     private/sourceregistry.cpp
     )
 
 kde4_add_ui_files(lib_SRCS
     private/dirconfigurationwidget.ui
-    private/runnerconfigurationwidget.ui
+    #private/runnerconfigurationwidget.ui
     )
 
 # Build

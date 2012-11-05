@@ -26,6 +26,7 @@
 #include <sourceid.h>
 
 // KDE
+#include <KConfigGroup>
 #include <KDebug>
 #include <KDirModel>
 #include <KDirLister>
@@ -36,21 +37,21 @@
 namespace Homerun
 {
 
+static const char *SOURCE_ID = "Dir";
+
 static inline KFileItem itemForIndex(const QModelIndex &index)
 {
     return index.data(KDirModel::FileItemRole).value<KFileItem>();
 }
 
 //- DirModel ------------------------------------------------------
-QString DirModel::sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
+QVariantMap DirModel::sourceArguments(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
 {
-    SourceId sourceId;
-    sourceId.setName("Dir");
-    sourceId.arguments()
-        .add("rootUrl", rootUrl.url())
-        .add("rootName", rootName)
-        .add("url", url.url());
-    return sourceId.toString();
+    QVariantMap map;
+    map.insert("rootUrl", rootUrl.url());
+    map.insert("rootName", rootName);
+    map.insert("url", url.url());
+    return map;
 }
 
 
@@ -119,7 +120,9 @@ QVariant DirModel::data(const QModelIndex &index, int role) const
 
     KFileItem item = itemForIndex(index);
     if (item.isDir()) {
-        return FavoritePlacesModel::favoriteIdFromUrl(item.url());
+        //FIXME
+        //return FavoritePlacesModel::favoriteIdFromUrl(item.url());
+        return QString();
     } else {
         return QString();
     }
@@ -171,7 +174,7 @@ bool DirModel::trigger(int row)
 
     KFileItem item = itemForIndex(idx);
     if (item.isDir()) {
-        openSourceRequested(sourceString(m_rootUrl, m_rootName, item.url()));
+        openSourceRequested(SOURCE_ID, sourceArguments(m_rootUrl, m_rootName, item.url()));
     } else {
         item.run();
         closed = true;
@@ -184,12 +187,26 @@ DirSource::DirSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
-QAbstractItemModel *DirSource::createModel(const SourceArguments &args)
+QAbstractItemModel *DirSource::createModelForArguments(const QVariantMap &args)
 {
-    KUrl rootUrl = args.value("rootUrl");
-    QString rootName = args.value("rootName");
-    KUrl url = args.value("url");
+    KUrl rootUrl = args.value("rootUrl").toString();
+    QString rootName = args.value("rootName").toString();
+    KUrl url = args.value("url").toString();
+    return createModel(rootUrl, rootName, url);
+}
 
+QAbstractItemModel *DirSource::createModel(const KConfigGroup &group)
+{
+    KUrl rootUrl = group.readEntry("rootUrl", KUrl());
+    QString rootName = group.readEntry("rootName", QString());
+    return createModel(rootUrl, rootName, KUrl());
+}
+
+QAbstractItemModel *DirSource::createModel(const KUrl &rootUrl_, const QString &rootName_, const KUrl &url_)
+{
+    KUrl rootUrl = rootUrl_;
+    QString rootName = rootName_;
+    KUrl url = url_;
     if (!rootUrl.isValid()) {
         rootUrl = KUrl::fromPath(QDir::homePath());
     }
@@ -215,9 +232,9 @@ bool DirSource::isConfigurable() const
     return true;
 }
 
-SourceConfigurationWidget *DirSource::createConfigurationWidget(const SourceArguments &args)
+SourceConfigurationWidget *DirSource::createConfigurationWidget(const KConfigGroup &group)
 {
-    return new DirConfigurationWidget(args);
+    return new DirConfigurationWidget(group);
 }
 
 } // namespace Homerun

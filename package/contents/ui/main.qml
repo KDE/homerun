@@ -65,9 +65,11 @@ Item {
             configureMode: main.configureMode
             onCloseRequested: isContainment ? reset() : main.closeRequested()
             onSetSearchFieldRequested: searchField.text = text
+            /*
             onSourcesUpdated: {
                 tabModel.setSourcesForRow(tabButton.index, sources);
             }
+            */
             onTabTextChanged: {
                 if (configureMode) {
                     tabModel.setDataForRow(tabButton.index, "display", tabText);
@@ -136,6 +138,9 @@ Item {
         }
 
         function createTabContent(tabButton) {
+            for (var idx = 0; idx < tabButton.sources.length; ++idx) {
+                console.log("main.qml:createTabContent() source=" + tabButton.sources[idx]);
+            }
             tabButton.tab = tabContent.createObject(tabGroup, {
                 sources: tabButton.sources,
                 sourceRegistry: sourceRegistry,

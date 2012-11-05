@@ -30,14 +30,12 @@ namespace Homerun {
 
 struct AbstractSourcePrivate
 {
-    AbstractSourceRegistry *m_registry;
 };
 
 AbstractSource::AbstractSource(QObject *parent, const QVariantList &/*args*/)
 : QObject(parent)
 , d(new AbstractSourcePrivate)
 {
-    d->m_registry = 0;
 }
 
 AbstractSource::~AbstractSource()
@@ -45,14 +43,9 @@ AbstractSource::~AbstractSource()
     delete d;
 }
 
-void AbstractSource::init(AbstractSourceRegistry *registry)
+QAbstractItemModel *AbstractSource::createModelForArguments(const QVariantMap &)
 {
-    d->m_registry = registry;
-}
-
-AbstractSourceRegistry *AbstractSource::registry() const
-{
-    return d->m_registry;
+    return 0;
 }
 
 bool AbstractSource::isConfigurable() const
@@ -60,7 +53,7 @@ bool AbstractSource::isConfigurable() const
     return false;
 }
 
-SourceConfigurationWidget *AbstractSource::createConfigurationWidget(const SourceArguments &)
+SourceConfigurationWidget *AbstractSource::createConfigurationWidget(const KConfigGroup &)
 {
     return 0;
 }

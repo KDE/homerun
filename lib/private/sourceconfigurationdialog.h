@@ -27,6 +27,8 @@
 // KDE
 #include <KDialog>
 
+class KConfigGroup;
+
 namespace Homerun
 {
 
@@ -40,13 +42,12 @@ class SourceConfigurationDialog : public KDialog
 {
     Q_OBJECT
 public:
-    explicit SourceConfigurationDialog(AbstractSource *source, const SourceId &sourceId, QWidget *parent);
+    explicit SourceConfigurationDialog(AbstractSource *source, const KConfigGroup &group, QWidget *parent);
     ~SourceConfigurationDialog();
 
-    Q_INVOKABLE QString sourceId() const;
+    Q_INVOKABLE void save();
 
 private:
-    QString m_sourceName;
     SourceConfigurationWidget *m_sourceWidget;
 };
 

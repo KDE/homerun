@@ -28,8 +28,12 @@
 
 // KDE
 
+class KConfigGroup;
+
 namespace Homerun
 {
+
+struct SourceConfigurationWidgetPrivate;
 
 /**
  * Used by configurable sources to provide a configuration widget.
@@ -38,8 +42,15 @@ class HOMERUN_EXPORT SourceConfigurationWidget : public QWidget
 {
     Q_OBJECT
 public:
-    SourceConfigurationWidget(QWidget *parent = 0);
-    virtual SourceArguments arguments() const = 0;
+    SourceConfigurationWidget(const KConfigGroup &group, QWidget *parent = 0);
+    ~SourceConfigurationWidget();
+
+    virtual void save() = 0;
+
+    KConfigGroup configGroup() const;
+
+private:
+    SourceConfigurationWidgetPrivate *const d;
 };
 
 } // namespace

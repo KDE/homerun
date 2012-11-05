@@ -62,35 +62,28 @@ static QStringList takeLegacySources(const KConfigGroup &group_)
 #endif
 
 /**
- * Read sources from groups, convert them to a list of SourceId string.
- * Should be converted to expose groups later.
+ * Returns a QList<sourceList>
+ * Where sourceList is a QList<"config", $sourceId, QList<$groupNames> >
  */
-QStringList readSources(const KConfigGroup &group)
+QVariantList readSources(const KConfigGroup &tabGroup)
 {
-    QStringList lst;
+    QStringList names = tabGroup.readEntry(TAB_SOURCES_KEY, QStringList());
+    QVariantList lst;
 
-    QStringList groupNames = group.readEntry(TAB_SOURCES_KEY, QStringList());
-    Q_FOREACH(const QString &groupName, groupNames) {
-        SourceId sourceId;
-        KConfigGroup sourceGroup(&group, groupName);
-        QMap<QString, QString> entries = sourceGroup.entryMap();
-        QString name = entries.take(SOURCE_SOURCEID_KEY);
-        if (name.isEmpty()) {
-            kWarning() << "Empty sourceId for source" << group.name();
-            continue;
-        }
-        sourceId.setName(name);
+    QString tabGroupName = tabGroup.name();
 
-        auto it = entries.constBegin(), end = entries.constEnd();
-        for (; it != end; ++it) {
-            sourceId.arguments().add(it.key(), it.value());
-        }
+    Q_FOREACH(const QString &name, names) {
+        KConfigGroup sourceGroup(&tabGroup, name);
+        QString sourceId = sourceGroup.readEntry(SOURCE_SOURCEID_KEY);
 
-        lst << sourceId.toString();
+        QVariantList sourceList;
+        sourceList.append(QLatin1String("config"));
+        sourceList.append(sourceId);
+        sourceList.append(QStringList() << tabGroupName << name);
+        lst.append(QVariant(sourceList));
     }
     return lst;
 }
-
 
 class Tab
 {
@@ -99,7 +92,7 @@ public:
 
     QString m_name;
     QString m_iconName;
-    QStringList m_sources;
+    QVariantList m_sources;
 
     bool setName(const QString &value)
     {
@@ -123,7 +116,8 @@ public:
         return true;
     }
 
-    void saveSources()
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+    void saveSources(const QStringList &sourceIds)
     {
         // Delete all source groups
         Q_FOREACH(const QString &name, m_group.groupList()) {
@@ -135,7 +129,7 @@ public:
         // Write new source groups
         QStringList sourceGroupNames;
         int num = 0;
-        Q_FOREACH(const QString &source, m_sources) {
+        Q_FOREACH(const QString &source, sourceIds) {
             bool ok;
             QString groupName = QLatin1String(SOURCE_GROUP_PREFIX) + QString::number(num);
             SourceId sourceId = SourceId::fromString(source, &ok);
@@ -156,6 +150,7 @@ public:
 
         m_group.writeEntry(TAB_SOURCES_KEY, sourceGroupNames);
     }
+#endif
 
     void saveName()
     {
@@ -173,7 +168,6 @@ public:
         m_group.writeEntry("deleted", false);
         saveName();
         saveIconName();
-        saveSources();
         m_group.sync();
     }
 
@@ -193,9 +187,10 @@ public:
         tab->m_sources = readSources(group);
 #ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
         if (tab->m_sources.isEmpty()) {
-            tab->m_sources = takeLegacySources(group);
-            tab->saveSources();
+            QStringList sourceIds = takeLegacySources(group);
+            tab->saveSources(sourceIds);
             tab->m_group.sync();
+            tab->m_sources = readSources(group);
         }
 #endif
         tab->m_iconName = group.readEntry("icon");
@@ -317,6 +312,7 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
 
 void TabModel::setSourcesForRow(int row, const QVariant &value)
 {
+    /*
     Tab *tab = m_tabList.value(row);
     if (!tab) {
         kWarning() << "Invalid row number" << row;
@@ -324,10 +320,10 @@ void TabModel::setSourcesForRow(int row, const QVariant &value)
     }
     QStringList sources = value.toStringList();
     tab->m_sources = sources;
-    tab->saveSources();
 
     QModelIndex idx = index(row, 0);
     dataChanged(idx, idx);
+    */
 }
 
 void TabModel::setDataForRow(int row, const QByteArray &roleName, const QVariant &value)

@@ -27,13 +27,12 @@
 #include <QVariant>
 
 // KDE
+#include <KSharedConfig>
 
 class QAbstractItemModel;
 
 namespace Homerun {
 
-class AbstractSourceRegistry;
-class SourceArguments;
 class SourceConfigurationWidget;
 
 class AbstractSourcePrivate;
@@ -48,15 +47,21 @@ public:
     AbstractSource(QObject *parent, const QVariantList &args = QVariantList());
     ~AbstractSource();
 
-    virtual void init(AbstractSourceRegistry *registry);
+    /**
+     * You must reimplement this method to create a source from a config group
+     */
+    virtual QAbstractItemModel *createModel(const KConfigGroup &group) = 0;
 
-    AbstractSourceRegistry *registry() const;
-
-    virtual QAbstractItemModel *createModel(const SourceArguments &args) = 0;
+    /**
+     * If you want your source to be usable from other sources using the openSourceRequested() signal,
+     * you must reimplement this method as well.
+     * It returns a null pointer by default.
+     */
+    virtual QAbstractItemModel *createModelForArguments(const QVariantMap &args);
 
     virtual bool isConfigurable() const;
 
-    virtual SourceConfigurationWidget *createConfigurationWidget(const SourceArguments &args);
+    virtual SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
 
 private:
     AbstractSourcePrivate * const d;
@@ -74,7 +79,7 @@ public:
     : AbstractSource(parent, args)
     {}
 
-    QAbstractItemModel *createModel(const SourceArguments &/*args*/)
+    QAbstractItemModel *createModel(const KConfigGroup &/*group*/)
     {
         return new T;
     }

@@ -31,20 +31,21 @@
 
 using namespace Homerun;
 
-DirConfigurationWidget::DirConfigurationWidget(const SourceArguments &args)
-: m_ui(new Ui_DirConfigurationWidget)
+DirConfigurationWidget::DirConfigurationWidget(const KConfigGroup &group)
+: SourceConfigurationWidget(group)
+, m_ui(new Ui_DirConfigurationWidget)
 {
     m_ui->setupUi(this);
 
     QFont helpFont = KGlobalSettings::smallestReadableFont();
     m_ui->titleHelpLabel->setFont(helpFont);
 
-    KUrl url = args.value("rootUrl");
+    KUrl url = group.readEntry("rootUrl", KUrl());
     if (url.isValid()) {
         m_ui->urlRequester->setUrl(url);
     }
 
-    m_ui->titleLineEdit->setText(args.value("rootName"));
+    m_ui->titleLineEdit->setText(group.readEntry("rootName", QString()));
 }
 
 DirConfigurationWidget::~DirConfigurationWidget()
@@ -52,15 +53,13 @@ DirConfigurationWidget::~DirConfigurationWidget()
     delete m_ui;
 }
 
-SourceArguments DirConfigurationWidget::arguments() const
+void DirConfigurationWidget::save()
 {
-    SourceArguments args;
-    args.insert("rootUrl", m_ui->urlRequester->url().url());
+    KUrl url = m_ui->urlRequester->url().url();
     QString title = m_ui->titleLineEdit->text();
-    if (!title.isEmpty()) {
-        args.insert("rootName", title);
-    }
-    return args;
+
+    configGroup().writeEntry("rootUrl", url);
+    configGroup().writeEntry("rootName", title);
 }
 
 #include <dirconfigurationwidget.moc>

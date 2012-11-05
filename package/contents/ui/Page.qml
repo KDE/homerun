@@ -28,6 +28,13 @@ Item {
 
     //- Defined by outside world -----------------------------------
     property QtObject sourceRegistry
+
+    /**
+     * A list of sourcesList
+     * A sourcesList can be either:
+     * - ["config", string sourceId, [string groupName, string subGroupName]]
+     * - ["dynamic", string sourceId, variantmap sourceArguments]
+     */
     property variant sources
     property bool configureMode
 
@@ -42,7 +49,7 @@ Item {
 
     signal sourcesUpdated(variant sources)
     signal closeRequested()
-    signal openSourceRequested(string source)
+    signal openSourceRequested(string sourceId, variant sourceArguments)
 
     objectName: "Page:" + sources
 
@@ -242,7 +249,8 @@ Item {
                 text: model.display
                 comment: model.comment
                 onClicked: {
-                    addSource(model.sourceId);
+                    addSourceRequested(model.sourceId);
+                    addSource(["config", model.sourceId, );
                     main.updateSources();
                 }
             }
@@ -302,6 +310,7 @@ Item {
                                 main.updateSources();
                             }
 
+                            /*
                             onSourceIdChanged: {
                                 delegateMain.view.model.destroy();
                                 delegateMain.view.destroy();
@@ -311,6 +320,7 @@ Item {
                                 delegateMain.view = createView(newModel, delegateMain);
                                 main.updateSources();
                             }
+                            */
                         }
 
                         Component.onCompleted: {
@@ -492,14 +502,14 @@ Item {
         sourcesUpdated(lst);
     }
 
-    function addSource(sourceId) {
-        var model = createModelForSource(sourceId, main);
+    function addSource(source) {
+        var model = createModelForSource(source, main);
         if (!model) {
-            console.log("addSource() could not create model for source: " + sourceId);
+            console.log("addSource() could not create model for source: " + source);
             return;
         }
         sourcesModel.append({
-            sourceId: sourceId,
+            source: source,
             model: model,
         });
     }

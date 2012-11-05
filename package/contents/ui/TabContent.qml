@@ -47,7 +47,7 @@ Item {
     signal closeRequested
     signal updateTabOrderRequested
     signal setSearchFieldRequested(string text)
-    signal sourcesUpdated(variant sources)
+    //signal sourcesUpdated(variant sources)
 
     //- Private ---------------------------------------------------
     Component {
@@ -55,14 +55,16 @@ Item {
         Page {
             anchors.fill: parent
             configureMode: main.configureMode
+            /*
             onSourcesUpdated: {
                 main.sourcesUpdated(sources);
             }
+            */
             onCloseRequested: {
                 main.closeRequested();
             }
             onOpenSourceRequested: {
-                main.openSource(source);
+                main.openSource(["dynamic", sourceId, sourceArguments]);
             }
         }
     }
@@ -175,7 +177,7 @@ Item {
                     text: "› " + model.display
                     onClicked: {
                         if (!checked) {
-                            openSource(model.source);
+                            openSource(["dynamic", model.sourceId, model.sourceArguments]);
                         }
                     }
                 }
@@ -239,14 +241,17 @@ Item {
 
     function goUp() {
         var count = breadcrumbRepeater.count;
-        var source;
+        var sourceId;
+        var sourceArgs;
         if (count >= 2) {
             // count - 1 is the breadcrumb for the current content
             // count - 2 is the breadcrumb for the content up
-            source = breadcrumbRepeater.itemAt(count - 2).source;
+            var item = breadcrumbRepeater.itemAt(count - 2);
+            sourceId = item.sourceId;
+            sourceArgs = item.sourceArguments;
         }
-        if (source !== null) {
-            openSource(source);
+        if (sourceId !== null) {
+            openSource(["dynamic", sourceId, sourceArguments]);
         }
     }
 
