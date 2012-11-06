@@ -1,5 +1,9 @@
 # Features of a Homerun-friendly model
 
+Homerun models make heavy use of Qt introspection and duck-typing. This
+document describes the mandatory and optional roles, properties and signals of a
+Homerun model.
+
 ## Roles
 ### string display
 - mandatory: yes
@@ -67,12 +71,14 @@ Triggers the action associated with the item at row "row". Returns true if you
 want Homerun to close, false otherwise.
 
 ## Signals
-## openSourceRequested(QString source)
+## openSourceRequested(QString sourceId, const QVariantMap &arguments)
 - mandatory: no
 
 Emitted by a model when it wants another source to be opened by the view. This
 is used for example to open a browsable model in a subdir.
 
+Note: If you want to be able to access your model this way, you need to
+implement AbstractSource::createModelFromArguments().
 
 
 # Features of a Homerun-friendly favorite model
