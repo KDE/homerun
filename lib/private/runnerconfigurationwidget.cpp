@@ -25,12 +25,14 @@
 // KDE
 #include <KDebug>
 #include <KPluginInfo>
-#include <KServiceTypeTrader>
+#include <Plasma/RunnerManager>
 
 // Qt
 #include <QListWidgetItem>
 
 Q_DECLARE_METATYPE(KPluginInfo)
+
+static const char *WHITELIST_KEY = "whitelist";
 
 namespace Homerun
 {
@@ -50,18 +52,22 @@ RunnerConfigurationWidget::RunnerConfigurationWidget(const KConfigGroup &group)
     setupUi(this);
     m_searchLine->setListWidget(m_listWidget);
 
-    // Config group names taken from RunnerManager::RunnerManager() and
-    // RunnerManagerPrivate::loadRunners()
-    KConfigGroup managerGroup = KConfigGroup(&group, "PlasmaRunnerManager");
-    KConfigGroup pluginGroup = KConfigGroup(&managerGroup, "Plugins");
+    // A runner is enabled if there is either a whitelist and it is part of it
+    // or if there is no whitelist and its EnabledByDefault key is true
 
-    KService::List offers = KServiceTypeTrader::self()->query("Plasma/Runner");
-    Q_FOREACH(const KService::Ptr &service, offers) {
-        KPluginInfo info(service);
-        info.setConfig(pluginGroup);
-        info.load();
+    QStringList whiteList = group.readEntry(WHITELIST_KEY, QStringList());
+    bool hasWhiteList = !whiteList.isEmpty();
+
+    KPluginInfo::List list = Plasma::RunnerManager::listRunnerInfo();
+    Q_FOREACH(const KPluginInfo &info, list) {
         QListWidgetItem *item = createWidgetItem(info);
-        item->setCheckState(info.isPluginEnabled() ? Qt::Checked : Qt::Unchecked);
+        bool selected;
+        if (hasWhiteList) {
+            selected = whiteList.contains(info.pluginName());
+        } else {
+            selected = info.isPluginEnabledByDefault();
+        }
+        item->setCheckState(selected ? Qt::Checked : Qt::Unchecked);
         m_listWidget->addItem(item);
     }
     m_listWidget->sortItems();
@@ -69,11 +75,28 @@ RunnerConfigurationWidget::RunnerConfigurationWidget(const KConfigGroup &group)
 
 void RunnerConfigurationWidget::save()
 {
+    QStringList whiteList;
+    bool hasChanges = false;
+
+    // Only write a whiteList if the selected runner list is not the same as
+    // the list of all EnabledByDefault runners
+
     for (int idx = 0; idx < m_listWidget->count(); ++idx) {
         QListWidgetItem *item = m_listWidget->item(idx);
         KPluginInfo info = item->data(Qt::UserRole).value<KPluginInfo>();
-        info.setPluginEnabled(item->checkState() == Qt::Checked);
-        info.save();
+
+        bool selected = item->checkState() == Qt::Checked;
+        if (selected != info.isPluginEnabledByDefault()) {
+            hasChanges = true;
+        }
+        if (selected) {
+            whiteList << info.pluginName();
+        }
+    }
+    if (hasChanges) {
+        configGroup().writeEntry(WHITELIST_KEY, whiteList);
+    } else {
+        configGroup().deleteEntry(WHITELIST_KEY);
     }
 }
 

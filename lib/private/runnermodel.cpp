@@ -24,6 +24,7 @@
 
 // KDE
 #include <KDebug>
+#include <KPluginInfo>
 #include <Plasma/AbstractRunner>
 #include <Plasma/RunnerManager>
 
@@ -31,12 +32,7 @@
 #include <QStandardItemModel>
 #include <QTimer>
 
-#define MIGRATE_V1_CONFIG_FILE_FORMAT
-
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-#include <KPluginInfo>
-#include <KServiceTypeTrader>
-#endif
+static const char *WHITELIST_KEY = "whitelist";
 
 namespace Homerun {
 
@@ -170,10 +166,9 @@ bool RunnerSubModel::trigger(int row)
 
 //--------------------------------------------------------------------
 
-RunnerModel::RunnerModel(const KConfigGroup &configGroup, QObject *parent)
+RunnerModel::RunnerModel(QObject *parent)
 : QAbstractListModel(parent)
 , m_manager(0)
-, m_configGroup(configGroup)
 , m_startQueryTimer(new QTimer(this))
 , m_runningChangedTimeout(new QTimer(this))
 , m_running(false)
@@ -278,7 +273,7 @@ void RunnerModel::startQuery()
 void RunnerModel::createManager()
 {
     if (!m_manager) {
-        m_manager = new Plasma::RunnerManager(m_configGroup, this);
+        m_manager = new Plasma::RunnerManager(this);
         connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)),
                 this, SLOT(matchesChanged(QList<Plasma::QueryMatch>)));
         connect(m_manager, SIGNAL(queryFinished()),
@@ -354,7 +349,14 @@ void RunnerModel::trigger(const Plasma::QueryMatch& match)
 void RunnerModel::loadRunners()
 {
     Q_ASSERT(m_manager);
-    m_manager->setAllowedRunners(m_pendingRunnersList);
+    if (m_pendingRunnersList.count() > 0) {
+        KPluginInfo::List list = Plasma::RunnerManager::listRunnerInfo();
+        Q_FOREACH(const KPluginInfo &info, list) {
+            if (m_pendingRunnersList.contains(info.pluginName())) {
+                m_manager->loadRunner(info.service());
+            }
+        }
+    }
     m_manager->setSingleMode(m_pendingRunnersList.count() == 1);
     m_pendingRunnersList.clear();
 }
@@ -364,37 +366,12 @@ RunnerSource::RunnerSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-static void migrateV1Config(const KConfigGroup &group_)
-{
-    KConfigGroup group(group_);
-    if (!group.hasKey("whitelist")) {
-        return;
-    }
-    QStringList lst = group.readEntry("whitelist", QStringList());
-
-    KConfigGroup managerGroup = KConfigGroup(&group, "PlasmaRunnerManager");
-    KConfigGroup pluginGroup = KConfigGroup(&managerGroup, "Plugins");
-
-    KService::List offers = KServiceTypeTrader::self()->query("Plasma/Runner");
-    Q_FOREACH(const KService::Ptr &service, offers) {
-        KPluginInfo info(service);
-        info.setPluginEnabled(lst.contains(info.pluginName()));
-        info.save(pluginGroup);
-    }
-    pluginGroup.sync();
-
-    group.deleteEntry("whitelist");
-    group.sync();
-}
-#endif
-
 QAbstractItemModel *RunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-    migrateV1Config(group);
-#endif
-    return new RunnerModel(group);
+    RunnerModel *model = new RunnerModel;
+    QStringList lst = group.readEntry(WHITELIST_KEY, QStringList());
+    model->setAllowedRunners(lst);
+    return model;
 };
 
 bool RunnerSource::isConfigurable() const
