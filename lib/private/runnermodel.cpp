@@ -21,7 +21,6 @@
 
 // Local
 #include <runnerconfigurationwidget.h>
-#include <sourceid.h>
 
 // KDE
 #include <KDebug>
@@ -366,13 +365,12 @@ RunnerSource::RunnerSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
-QAbstractItemModel *RunnerSource::createModel(const SourceArguments &arguments)
+QAbstractItemModel *RunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
     RunnerModel *model = new RunnerModel;
-    QString allowed = arguments.value("whitelist");
+    QStringList allowed = group.readEntry("whitelist", QStringList());
     if (!allowed.isEmpty()) {
-        QStringList runners = allowed.split(',');
-        model->setAllowedRunners(runners);
+        model->setAllowedRunners(allowed);
     }
     return model;
 };
@@ -382,9 +380,9 @@ bool RunnerSource::isConfigurable() const
     return true;
 }
 
-SourceConfigurationWidget *RunnerSource::createConfigurationWidget(const SourceArguments &args)
+SourceConfigurationWidget *RunnerSource::createConfigurationWidget(const KConfigGroup &group)
 {
-    return new RunnerConfigurationWidget(args);
+    return new RunnerConfigurationWidget(group);
 }
 
 } // namespace Homerun

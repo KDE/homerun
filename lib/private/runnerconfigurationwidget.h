@@ -37,9 +37,9 @@ class RunnerConfigurationWidget : public SourceConfigurationWidget, private Ui_R
 {
     Q_OBJECT
 public:
-    explicit RunnerConfigurationWidget(const SourceArguments &);
+    explicit RunnerConfigurationWidget(const KConfigGroup &);
 
-    SourceArguments arguments() const; // reimp
+    void save(); // reimp
 };
 
 } // namespace

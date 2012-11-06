@@ -30,7 +30,9 @@
 #include <favoriteplacesmodel.h>
 /*
 #include <powermodel.h>
+*/
 #include <runnermodel.h>
+/*
 #include <installedappsmodel.h>
 #include <sessionmodel.h>
 */
@@ -274,11 +276,13 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Session"),
         i18n("Provide buttons to lock the screen, log out, or switch to another user")
     );
+    */
     d->registerSource("Runner", new RunnerSource(this),
         i18n("KRunner"),
         i18n("Perform searchs using a selection of runners")
     );
 
+    /*
     Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
         sourceInfo->source->init(this);
     }

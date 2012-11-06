@@ -41,12 +41,13 @@ static QListWidgetItem *createWidgetItem(const KPluginInfo &info)
     return item;
 }
 
-RunnerConfigurationWidget::RunnerConfigurationWidget(const SourceArguments &args)
+RunnerConfigurationWidget::RunnerConfigurationWidget(const KConfigGroup &group)
+: SourceConfigurationWidget(group)
 {
     setupUi(this);
     m_searchLine->setListWidget(m_listWidget);
 
-    QStringList selectedRunners = args.value("whitelist").split(',');
+    QStringList selectedRunners = group.readEntry("whitelist", QStringList());
 
     KService::List offers = KServiceTypeTrader::self()->query("Plasma/Runner");
     Q_FOREACH(const KService::Ptr &service, offers) {
@@ -59,7 +60,7 @@ RunnerConfigurationWidget::RunnerConfigurationWidget(const SourceArguments &args
     m_listWidget->sortItems();
 }
 
-SourceArguments RunnerConfigurationWidget::arguments() const
+void RunnerConfigurationWidget::save()
 {
     QStringList runners;
 
@@ -69,11 +70,9 @@ SourceArguments RunnerConfigurationWidget::arguments() const
             runners << item->data(Qt::UserRole).toString();
         }
     }
-    SourceArguments args;
-    args.insert("whitelist", runners.join(","));
-    return args;
+    configGroup().writeEntry("whitelist", runners);
 }
 
-}
+} // namespace Homerun
 
 #include <runnerconfigurationwidget.moc>

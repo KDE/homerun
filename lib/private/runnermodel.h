@@ -137,8 +137,8 @@ class RunnerSource : public AbstractSource
 {
 public:
     RunnerSource(QObject *parent);
-    QAbstractItemModel *createModel(const SourceArguments &arguments);
-    SourceConfigurationWidget *createConfigurationWidget(const SourceArguments &args);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
+    SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
     bool isConfigurable() const;
 };
 
