@@ -550,11 +550,11 @@ void TabModelTest::testLoadLegacy()
         << (QStringList() << "zero0" << "zero1")
         << (QStringList() << "one")
         << (QStringList() << "three")
-        << (QStringList())
+        << (QStringList() << "broken")
         ;
     for (int row = 0; row < model.rowCount(); ++row) {
         QStringList lst = getSources(model.index(row, 0));
-        QCOMPARE(expectedSourceLists.at(row), lst);
+        QCOMPARE(lst, expectedSourceLists.at(row));
     }
 }
 

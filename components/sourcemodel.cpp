@@ -38,15 +38,35 @@ static const char *SOURCE_SOURCEID_KEY = "sourceId";
 class SourceModelItem
 {
 public:
-    SourceModelItem(const QString &sourceId, QObject* model, const KConfigGroup &group)
+    SourceModelItem(AbstractSourceRegistry *registry, const QString &sourceId, const KConfigGroup &group, QObject *parent)
     : m_sourceId(sourceId)
-    , m_model(model)
     , m_group(group)
+    , m_sourceRegistry(registry)
+    , m_model(0)
+    , m_parent(parent)
     {}
 
+    QObject *model() const
+    {
+        if (!m_model) {
+            m_model = m_sourceRegistry->createModelFromConfigGroup(m_sourceId, m_group, m_parent);
+        }
+        return m_model;
+    }
+
+    void deleteModel()
+    {
+        delete m_model;
+        m_model = 0;
+    }
+
     QString m_sourceId;
-    QObject *m_model;
     KConfigGroup m_group;
+
+private:
+    AbstractSourceRegistry *m_sourceRegistry;
+    mutable QObject *m_model;
+    QObject *m_parent;
 };
 
 
@@ -89,7 +109,7 @@ QVariant SourceModel::data(const QModelIndex &index, int role) const
     case SourceIdRole:
         return item->m_sourceId;
     case ModelRole:
-        return QVariant::fromValue(item->m_model);
+        return QVariant::fromValue(item->model());
     case ConfigGroupRole:
         return QVariant::fromValue(&item->m_group);
     default:
@@ -109,12 +129,7 @@ void SourceModel::reload()
     Q_FOREACH(const QString &name, names) {
         KConfigGroup sourceGroup(&m_tabGroup, name);
         QString sourceId = sourceGroup.readEntry(SOURCE_SOURCEID_KEY);
-
-        QObject *model = m_sourceRegistry->createModelFromConfigGroup(sourceId, sourceGroup, this);
-        if (!model) {
-            continue;
-        }
-        SourceModelItem *item = new SourceModelItem(sourceId, model, sourceGroup);
+        SourceModelItem *item = new SourceModelItem(m_sourceRegistry, sourceId, sourceGroup, this);
         m_list << item;
     }
 }
@@ -129,13 +144,8 @@ void SourceModel::appendSource(const QString &sourceId)
         }
     }
 
-    QObject *model = m_sourceRegistry->createModelFromConfigGroup(sourceId, sourceGroup, this);
-    if (!model) {
-        kWarning() << "Failed to create model for " << sourceId;
-        return;
-    }
     beginInsertRows(QModelIndex(), m_list.count(), m_list.count());
-    SourceModelItem *item = new SourceModelItem(sourceId, model, sourceGroup);
+    SourceModelItem *item = new SourceModelItem(m_sourceRegistry, sourceId, sourceGroup, this);
     m_list << item;
     item->m_group.writeEntry(SOURCE_SOURCEID_KEY, sourceId);
     item->m_group.sync();
@@ -160,13 +170,9 @@ void SourceModel::recreateModel(int row)
         kWarning() << "Invalid row" << row;
         return;
     }
-    QObject *model = m_sourceRegistry->createModelFromConfigGroup(item->m_sourceId, item->m_group, this);
-    if (!model) {
-        kWarning() << "Failed to create model from row" << row;
-        return;
-    }
-    delete item->m_model;
-    item->m_model = model;
+    // Just delete the model: next time the model property is accessed, the
+    // model will be recreated
+    item->deleteModel();
 
     QModelIndex idx = index(row, 0);
     dataChanged(idx, idx);
