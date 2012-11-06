@@ -31,6 +31,13 @@
 #include <QStandardItemModel>
 #include <QTimer>
 
+#define MIGRATE_V1_CONFIG_FILE_FORMAT
+
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+#include <KPluginInfo>
+#include <KServiceTypeTrader>
+#endif
+
 namespace Homerun {
 
 RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, QObject *parent)
@@ -357,8 +364,36 @@ RunnerSource::RunnerSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+static void migrateV1Config(const KConfigGroup &group_)
+{
+    KConfigGroup group(group_);
+    if (!group.hasKey("whitelist")) {
+        return;
+    }
+    QStringList lst = group.readEntry("whitelist", QStringList());
+
+    KConfigGroup managerGroup = KConfigGroup(&group, "PlasmaRunnerManager");
+    KConfigGroup pluginGroup = KConfigGroup(&managerGroup, "Plugins");
+
+    KService::List offers = KServiceTypeTrader::self()->query("Plasma/Runner");
+    Q_FOREACH(const KService::Ptr &service, offers) {
+        KPluginInfo info(service);
+        info.setPluginEnabled(lst.contains(info.pluginName()));
+        info.save(pluginGroup);
+    }
+    pluginGroup.sync();
+
+    group.deleteEntry("whitelist");
+    group.sync();
+}
+#endif
+
 QAbstractItemModel *RunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+    migrateV1Config(group);
+#endif
     return new RunnerModel(group);
 };
 
