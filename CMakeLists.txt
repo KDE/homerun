@@ -10,11 +10,11 @@ set(HOMERUN_SOURCE_DATE "")
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/.git)
     message(STATUS "Extracting source information using git log")
-    execute_process(COMMAND git log --pretty=%h HEAD^..
+    execute_process(COMMAND git show --pretty=%h HEAD
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE HOMERUN_SOURCE_VERSION
         OUTPUT_STRIP_TRAILING_WHITESPACE)
-    execute_process(COMMAND git log --pretty=%ci HEAD^..
+    execute_process(COMMAND git show --pretty=%ci HEAD
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         OUTPUT_VARIABLE HOMERUN_SOURCE_DATE
         OUTPUT_STRIP_TRAILING_WHITESPACE)
