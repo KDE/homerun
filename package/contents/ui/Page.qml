@@ -294,23 +294,27 @@ Item {
                                 main.updateSources();
                             }
 
-                            /*
-                            onSourceIdChanged: {
-                                delegateMain.view.model.destroy();
-                                delegateMain.view.destroy();
-                                var newModel = createModelForSource(sourceId, main);
-                                tabSourceModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
-                                tabSourceModel.setProperty(delegateMain.viewIndex, "model", newModel);
-                                delegateMain.view = createView(newModel, delegateMain);
-                                connectModel
-                                main.updateSources();
+                            onConfigureRequested: {
+                                var row = delegateMain.viewIndex;
+                                var dlg = sourceRegistry.createConfigurationDialog(sourceId, model.configGroup);
+                                if (!dlg.exec()) {
+                                    return;
+                                }
+                                dlg.save();
+                                tabSourceModel.recreateModel(row);
                             }
-                            */
                         }
 
-                        Component.onCompleted: {
+                        onViewModelChanged: {
+                            createViewForRow();
+                        }
+
+                        function createViewForRow() {
                             connectModel(model.model);
-                            view = createView(model.model, delegateMain);
+                            if (view) {
+                                view.destroy();
+                            }
+                            view = main.createView(model.model, delegateMain);
                             main.updateRunning();
                         }
 

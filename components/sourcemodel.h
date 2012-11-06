@@ -48,6 +48,7 @@ public:
     enum {
         SourceIdRole = Qt::UserRole + 1,
         ModelRole,
+        ConfigGroupRole,
     };
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
@@ -56,6 +57,7 @@ public:
     void reload();
 
     Q_INVOKABLE void appendSource(const QString &sourceId);
+    Q_INVOKABLE void recreateModel(int row);
 
 private:
     Homerun::AbstractSourceRegistry *m_sourceRegistry;

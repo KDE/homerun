@@ -21,6 +21,7 @@
 
 // Local
 #include <abstractsource.h>
+#include <customtypes.h>
 #include <dirmodel.h>
 #include <favoriteappsmodel.h>
 
@@ -409,23 +410,19 @@ bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
     return source->isConfigurable();
 }
 
-QObject *SourceRegistry::createConfigurationDialog(const QVariant &sourceListVariant)
+QObject *SourceRegistry::createConfigurationDialog(const QString &sourceId, const QVariant &configGroupVariant) const
 {
-    return 0;
-    // FIXME
-    /*
-    QVariantList sourceList = sourceListVariant.value<QVariantList>();
-    Q_ASSERT(sourceList.count() == 3);
-    QString sourceId = sourceList.at(1).toString();
-    KConfigGroup group = d->configGroupForVariant(sourceList.at(2));
-
     AbstractSource *source = d->sourceByName(sourceId);
     if (!source) {
         kWarning() << "No source for" << sourceId;
         return 0;
     }
-    return new SourceConfigurationDialog(source, group, QApplication::activeWindow());
-    */
+
+    KConfigGroup *sourceGroup = configGroupVariant.value<KConfigGroup*>();
+    Q_ASSERT(sourceGroup);
+    Q_ASSERT(sourceGroup->isValid());
+
+    return new SourceConfigurationDialog(source, *sourceGroup, QApplication::activeWindow());
 }
 
 } // namespace Homerun

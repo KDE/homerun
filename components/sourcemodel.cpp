@@ -21,6 +21,7 @@
 
 // Local
 #include <abstractsourceregistry.h>
+#include <customtypes.h>
 
 // KDE
 #include <KDebug>
@@ -58,6 +59,7 @@ SourceModel::SourceModel(AbstractSourceRegistry *registry, const KConfigGroup &t
     QHash<int, QByteArray> roles;
     roles.insert(SourceIdRole, "sourceId");
     roles.insert(ModelRole, "model");
+    roles.insert(ConfigGroupRole, "configGroup");
     setRoleNames(roles);
     reload();
 }
@@ -87,7 +89,9 @@ QVariant SourceModel::data(const QModelIndex &index, int role) const
     case SourceIdRole:
         return item->m_sourceId;
     case ModelRole:
-        return qVariantFromValue(item->m_model);
+        return QVariant::fromValue(item->m_model);
+    case ConfigGroupRole:
+        return QVariant::fromValue(&item->m_group);
     default:
         break;
     }
@@ -147,6 +151,25 @@ void SourceModel::writeSourcesEntry()
     }
     m_tabGroup.writeEntry(TAB_SOURCES_KEY, lst);
     m_tabGroup.sync();
+}
+
+void SourceModel::recreateModel(int row)
+{
+    SourceModelItem *item = m_list.value(row);
+    if (!item) {
+        kWarning() << "Invalid row" << row;
+        return;
+    }
+    QObject *model = m_sourceRegistry->createModelFromConfigGroup(item->m_sourceId, item->m_group, this);
+    if (!model) {
+        kWarning() << "Failed to create model from row" << row;
+        return;
+    }
+    delete item->m_model;
+    item->m_model = model;
+
+    QModelIndex idx = index(row, 0);
+    dataChanged(idx, idx);
 }
 
 #include <sourcemodel.moc>

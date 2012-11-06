@@ -16,37 +16,14 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-// Self
-#include <sourceconfigurationdialog.h>
-
-// Local
-#include <abstractsource.h>
-#include <sourceconfigurationwidget.h>
+#ifndef CUSTOMTYPES_H
+#define CUSTOMTYPES_H
 
 // KDE
+#include <KConfigGroup>
 
-// Qt
+// We use KConfigGroup* and not KConfigGroup because if using the later, one
+// gets an invalid group from the QVariant
+Q_DECLARE_METATYPE(KConfigGroup*)
 
-namespace Homerun
-{
-
-SourceConfigurationDialog::SourceConfigurationDialog(AbstractSource *source, const KConfigGroup &group, QWidget *parent)
-: KDialog(parent)
-, m_sourceWidget(source->createConfigurationWidget(group))
-{
-    setMainWidget(m_sourceWidget);
-}
-
-SourceConfigurationDialog::~SourceConfigurationDialog()
-{
-}
-
-void SourceConfigurationDialog::save()
-{
-    m_sourceWidget->save();
-    m_sourceWidget->configGroup().sync();
-}
-
-} // namespace
-
-#include <sourceconfigurationdialog.moc>
+#endif /* CUSTOMTYPES_H */

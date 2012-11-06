@@ -67,7 +67,7 @@ public:
 
     Q_INVOKABLE bool isSourceConfigurable(const QString &sourceId) const;
 
-    Q_INVOKABLE QObject *createConfigurationDialog(const QVariant &sourceListVariant);
+    Q_INVOKABLE QObject *createConfigurationDialog(const QString &sourceId, const QVariant &groupVariant) const;
 
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
