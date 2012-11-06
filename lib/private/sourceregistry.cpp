@@ -28,14 +28,12 @@
 //#include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
 #include <favoriteplacesmodel.h>
-/*
 #include <powermodel.h>
-*/
 #include <runnermodel.h>
 /*
 #include <installedappsmodel.h>
-#include <sessionmodel.h>
 */
+#include <sessionmodel.h>
 #include <sourceid.h>
 #include <sourceconfigurationdialog.h>
 
@@ -267,7 +265,6 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Favorite Applications"),
         i18n("List applications marked as favorite")
     );
-    /*
     d->registerSource("Power", new SimpleSource<PowerModel>(this),
         i18n("Power Management"),
         i18n("Provide buttons to suspend, hibernate, reboot or halt your computer")
@@ -276,7 +273,6 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Session"),
         i18n("Provide buttons to lock the screen, log out, or switch to another user")
     );
-    */
     d->registerSource("Runner", new RunnerSource(this),
         i18n("KRunner"),
         i18n("Perform searchs using a selection of runners")

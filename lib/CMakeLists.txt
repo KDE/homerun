@@ -27,11 +27,11 @@ set(lib_SRCS ${lib_SRCS}
     private/favoriteappsmodel.cpp
     #private/groupedinstalledappsmodel.cpp
     private/favoriteplacesmodel.cpp
-    #private/powermodel.cpp
+    private/powermodel.cpp
     private/runnermodel.cpp
     private/runnerconfigurationwidget.cpp
     #private/installedappsmodel.cpp
-    #private/sessionmodel.cpp
+    private/sessionmodel.cpp
     private/sourceconfigurationdialog.cpp
     private/sourceregistry.cpp
     )
