@@ -8,17 +8,17 @@ set(HOMERUN_VERSION "0.1.0")
 set(HOMERUN_SOURCE_VERSION "")
 set(HOMERUN_SOURCE_DATE "")
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/.git)
-    message(STATUS "Extracting source information using git log")
-    execute_process(COMMAND git show --pretty=%h HEAD
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE HOMERUN_SOURCE_VERSION
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    execute_process(COMMAND git show --pretty=%ci HEAD
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE HOMERUN_SOURCE_DATE
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif()
+#if(EXISTS ${CMAKE_SOURCE_DIR}/.git)
+#    message(STATUS "Extracting source information using git log")
+#    execute_process(COMMAND git show --pretty=%h HEAD
+#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#        OUTPUT_VARIABLE HOMERUN_SOURCE_VERSION
+#        OUTPUT_STRIP_TRAILING_WHITESPACE)
+#    execute_process(COMMAND git show --pretty=%ci HEAD
+#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#        OUTPUT_VARIABLE HOMERUN_SOURCE_DATE
+#        OUTPUT_STRIP_TRAILING_WHITESPACE)
+#endif()
 message(STATUS "Source version: ${HOMERUN_SOURCE_VERSION}")
 message(STATUS "Source date: ${HOMERUN_SOURCE_DATE}")
 
