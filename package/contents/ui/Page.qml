@@ -289,7 +289,7 @@ Item {
                                 tabSourceModel.remove(delegateMain.viewIndex);
                             }
                             onMoveRequested: {
-                                tabSourceModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
+                                tabSourceModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta);
                             }
 
                             onConfigureRequested: {

@@ -172,18 +172,37 @@ void SourceModel::recreateModel(int row)
     dataChanged(idx, idx);
 }
 
+#define CHECK_ROW(row) \
+    if (row < 0 || row >= m_list.count()) { \
+        kWarning() << "Invalid row number" << row; \
+        return; \
+    }
+
 void SourceModel::remove(int row)
 {
-    if (row < 0 || row >= m_list.count()) {
-        kWarning() << "Invalid row" << row;
-        return;
-    }
+    CHECK_ROW(row)
     beginRemoveRows(QModelIndex(), row, row);
     SourceModelItem *item = m_list.takeAt(row);
     item->m_group.deleteGroup();
     delete item;
     writeSourcesEntry();
     endRemoveRows();
+}
+
+void SourceModel::move(int from, int to)
+{
+    CHECK_ROW(from)
+    CHECK_ROW(to)
+    if (from == to) {
+        kWarning() << "Cannot move row to itself";
+        return;
+    }
+    // See beginMoveRows() doc for an explanation on modelTo
+    int modelTo = to + (to > from ? 1 : 0);
+    beginMoveRows(QModelIndex(), from, from, QModelIndex(), modelTo);
+    m_list.move(from, to);
+    writeSourcesEntry();
+    endMoveRows();
 }
 
 #include <sourcemodel.moc>
