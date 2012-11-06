@@ -16,24 +16,29 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-// Self
-#include <abstractsourceregistry.h>
+#ifndef SOURCEMODELTEST_H
+#define SOURCEMODELTEST_H
 
-namespace Homerun
-{
+// Local
 
-struct AbstractSourceRegistryPrivate
+// Qt
+#include <QObject>
+
+// KDE
+
+class MockRegistry;
+
+class SourceModelTest : public QObject
 {
+    Q_OBJECT
+
+private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
+    void testAppendSource();
+
+private:
+    MockRegistry *m_registry;
 };
 
-AbstractSourceRegistry::AbstractSourceRegistry()
-: d(new AbstractSourceRegistryPrivate)
-{
-}
-
-AbstractSourceRegistry::~AbstractSourceRegistry()
-{
-    delete d;
-}
-
-} // namespace
+#endif /* SOURCEMODELTEST_H */

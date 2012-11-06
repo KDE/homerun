@@ -21,16 +21,18 @@
 
 // Local
 #include <runnerconfigurationwidget.h>
-#include <sourceid.h>
 
 // KDE
 #include <KDebug>
+#include <KPluginInfo>
 #include <Plasma/AbstractRunner>
 #include <Plasma/RunnerManager>
 
 // Qt
 #include <QStandardItemModel>
 #include <QTimer>
+
+static const char *WHITELIST_KEY = "whitelist";
 
 namespace Homerun {
 
@@ -167,12 +169,10 @@ bool RunnerSubModel::trigger(int row)
 RunnerModel::RunnerModel(QObject *parent)
 : QAbstractListModel(parent)
 , m_manager(0)
-, m_config(QString(), KConfig::SimpleConfig)
 , m_startQueryTimer(new QTimer(this))
 , m_runningChangedTimeout(new QTimer(this))
 , m_running(false)
 {
-    m_configGroup = KConfigGroup(&m_config, "RunnerModel");
     m_startQueryTimer->setSingleShot(true);
     m_startQueryTimer->setInterval(10);
     connect(m_startQueryTimer, SIGNAL(timeout()), this, SLOT(startQuery()));
@@ -273,7 +273,7 @@ void RunnerModel::startQuery()
 void RunnerModel::createManager()
 {
     if (!m_manager) {
-        m_manager = new Plasma::RunnerManager(m_configGroup, this);
+        m_manager = new Plasma::RunnerManager(this);
         connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)),
                 this, SLOT(matchesChanged(QList<Plasma::QueryMatch>)));
         connect(m_manager, SIGNAL(queryFinished()),
@@ -349,14 +349,14 @@ void RunnerModel::trigger(const Plasma::QueryMatch& match)
 void RunnerModel::loadRunners()
 {
     Q_ASSERT(m_manager);
-    KConfigGroup grp0(&m_configGroup, "PlasmaRunnerManager");
-    KConfigGroup grp(&grp0, "Plugins");
-    grp.deleteGroup();
-    Q_FOREACH(const QString &runner, m_pendingRunnersList) {
-        grp.writeEntry(runner + "Enabled", true);
+    if (m_pendingRunnersList.count() > 0) {
+        KPluginInfo::List list = Plasma::RunnerManager::listRunnerInfo();
+        Q_FOREACH(const KPluginInfo &info, list) {
+            if (m_pendingRunnersList.contains(info.pluginName())) {
+                m_manager->loadRunner(info.service());
+            }
+        }
     }
-    m_configGroup.sync();
-    m_manager->setAllowedRunners(m_pendingRunnersList);
     m_manager->setSingleMode(m_pendingRunnersList.count() == 1);
     m_pendingRunnersList.clear();
 }
@@ -366,14 +366,11 @@ RunnerSource::RunnerSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
-QAbstractItemModel *RunnerSource::createModel(const SourceArguments &arguments)
+QAbstractItemModel *RunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
     RunnerModel *model = new RunnerModel;
-    QString allowed = arguments.value("whitelist");
-    if (!allowed.isEmpty()) {
-        QStringList runners = allowed.split(',');
-        model->setAllowedRunners(runners);
-    }
+    QStringList lst = group.readEntry(WHITELIST_KEY, QStringList());
+    model->setAllowedRunners(lst);
     return model;
 };
 
@@ -382,9 +379,9 @@ bool RunnerSource::isConfigurable() const
     return true;
 }
 
-SourceConfigurationWidget *RunnerSource::createConfigurationWidget(const SourceArguments &args)
+SourceConfigurationWidget *RunnerSource::createConfigurationWidget(const KConfigGroup &group)
 {
-    return new RunnerConfigurationWidget(args);
+    return new RunnerConfigurationWidget(group);
 }
 
 } // namespace Homerun

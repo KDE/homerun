@@ -28,7 +28,8 @@ Item {
 
     //- Defined by outside world -----------------------------------
     property QtObject sourceRegistry
-    property variant sources
+
+    property QtObject tabSourceModel
     property bool configureMode
 
     property string searchCriteria
@@ -38,20 +39,12 @@ Item {
 
     //- Read-only properties ---------------------------------------
     // Defined for pages with a single view on a browsable model
-    property QtObject pathModel: sourcesModel.count == 1 ? sourcesModel.get(0).model.pathModel : null
+    property QtObject pathModel: tabSourceModel.count == 1 ? tabSourceModel.get(0).model.pathModel : null
 
-    signal sourcesUpdated(variant sources)
     signal closeRequested()
-    signal openSourceRequested(string source)
-
-    objectName: "Page:" + sources
+    signal openSourceRequested(string sourceId, variant sourceArguments)
 
     property Item previouslyFocusedItem
-
-    //- Non visual elements ----------------------------------------
-    ListModel {
-        id: sourcesModel
-    }
 
     //- Components -------------------------------------------------
     // Filter components
@@ -242,8 +235,7 @@ Item {
                 text: model.display
                 comment: model.comment
                 onClicked: {
-                    addSource(model.sourceId);
-                    main.updateSources();
+                    tabSourceModel.appendSource(sourceId);
                 }
             }
         }
@@ -270,7 +262,7 @@ Item {
 
                 Repeater {
                     id: repeater
-                    model: sourcesModel
+                    model: tabSourceModel
                     delegate: Column {
                         id: delegateMain
                         width: parent ? parent.width : 0
@@ -294,27 +286,33 @@ Item {
                             isLast: viewIndex == repeater.count - 1
 
                             onRemoveRequested: {
-                                sourcesModel.remove(delegateMain.viewIndex);
-                                main.updateSources();
+                                tabSourceModel.remove(delegateMain.viewIndex);
                             }
                             onMoveRequested: {
-                                sourcesModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
-                                main.updateSources();
+                                tabSourceModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta);
                             }
 
-                            onSourceIdChanged: {
-                                delegateMain.view.model.destroy();
-                                delegateMain.view.destroy();
-                                var newModel = createModelForSource(sourceId, main);
-                                sourcesModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
-                                sourcesModel.setProperty(delegateMain.viewIndex, "model", newModel);
-                                delegateMain.view = createView(newModel, delegateMain);
-                                main.updateSources();
+                            onConfigureRequested: {
+                                var row = delegateMain.viewIndex;
+                                var dlg = sourceRegistry.createConfigurationDialog(sourceId, model.configGroup);
+                                if (!dlg.exec()) {
+                                    return;
+                                }
+                                dlg.save();
+                                tabSourceModel.recreateModel(row);
                             }
                         }
 
-                        Component.onCompleted: {
-                            view = createView(model.model, delegateMain);
+                        onViewModelChanged: {
+                            createViewForRow();
+                        }
+
+                        function createViewForRow() {
+                            connectModel(model.model);
+                            if (view) {
+                                view.destroy();
+                            }
+                            view = main.createView(model.model, delegateMain);
                             main.updateRunning();
                         }
 
@@ -361,8 +359,6 @@ Item {
             }
         }
     }
-
-    Component.onCompleted: fillSourcesModel()
 
     onActiveFocusChanged: {
         if (!activeFocus) {
@@ -419,8 +415,8 @@ Item {
     }
 
     function updateRunning() {
-        for (var idx = 0; idx < sourcesModel.count; ++idx) {
-            if (sourcesModel.get(idx).model.running) {
+        for (var idx = 0; idx < tabSourceModel.count; ++idx) {
+            if (tabSourceModel.get(idx).model.running) {
                 busyIndicator.running = true;
                 return;
             }
@@ -436,12 +432,7 @@ Item {
         return genericFilterComponent.createObject(model, {"sourceModel": model});
     }
 
-    function createModelForSource(source, parent) {
-        var model = sourceRegistry.createModelForSource(source, parent);
-        if (!model) {
-            return null;
-        }
-
+    function connectModel(model) {
         if ("openSourceRequested" in model) {
             model.openSourceRequested.connect(main.openSourceRequested);
         }
@@ -454,7 +445,6 @@ Item {
         if ("runningChanged" in model) {
             model.runningChanged.connect(main.updateRunning);
         }
-        return model;
     }
 
     function createView(model, parent) {
@@ -477,31 +467,6 @@ Item {
         var view = component.createObject(parent, viewArgs);
         view.focusOtherViewRequested.connect(parent.navigate);
         return view;
-    }
-
-    function fillSourcesModel() {
-        sources.forEach(addSource);
-    }
-
-    function updateSources() {
-        var lst = new Array();
-        for (var idx = 0; idx < sourcesModel.count; ++idx) {
-            var item = sourcesModel.get(idx);
-            lst.push(item.sourceId);
-        }
-        sourcesUpdated(lst);
-    }
-
-    function addSource(sourceId) {
-        var model = createModelForSource(sourceId, main);
-        if (!model) {
-            console.log("addSource() could not create model for source: " + sourceId);
-            return;
-        }
-        sourcesModel.append({
-            sourceId: sourceId,
-            model: model,
-        });
     }
 
     function navigate(repeater, currentIdx, key, x) {

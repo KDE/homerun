@@ -16,32 +16,50 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef RUNNERCONFIGURATIONWIDGET_H
-#define RUNNERCONFIGURATIONWIDGET_H
+#ifndef SOURCEID_H
+#define SOURCEID_H
 
 // Local
-#include <sourceconfigurationwidget.h>
-#include <ui_runnerconfigurationwidget.h>
 
 // Qt
+#include <QHash>
+#include <QString>
 
 // KDE
 
-namespace Homerun
-{
-
 /**
- * A configuration widget for the Runner source
+ * The arguments of a source. Used within a SourceId instance.
  */
-class RunnerConfigurationWidget : public SourceConfigurationWidget, private Ui_RunnerConfigurationWidget
+class SourceArguments : public QHash<QString, QString>
 {
-    Q_OBJECT
 public:
-    explicit RunnerConfigurationWidget(const KConfigGroup &);
+    SourceArguments &add(const QString &key, const QString &value);
 
-    void save(); // reimp
+    QString toString() const;
+
+    static SourceArguments fromString(const QString &, bool *ok);
 };
 
-} // namespace
+/**
+ * Represents a source and its optional arguments
+ */
+class SourceId
+{
+public:
+    void setName(const QString &);
+    QString name() const;
+    SourceArguments &arguments();
+    const SourceArguments &arguments() const;
 
-#endif /* RUNNERCONFIGURATIONWIDGET_H */
+    QString toString() const;
+
+    static SourceId fromString(const QString &, bool *ok);
+
+    bool isValid() const;
+
+private:
+    QString m_name;
+    SourceArguments m_arguments;
+};
+
+#endif /* SOURCEID_H */

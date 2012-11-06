@@ -16,55 +16,39 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef SOURCEID_H
-#define SOURCEID_H
+#ifndef ABSTRACTSOURCEREGISTRY_H
+#define ABSTRACTSOURCEREGISTRY_H
 
 // Local
 #include <homerun_export.h>
 
 // Qt
-#include <QHash>
-#include <QString>
+#include <QObject>
 
 // KDE
 
-namespace Homerun {
+class KConfigGroup;
+
+namespace Homerun
+{
 
 /**
- * The arguments of a source. Used within a SourceId instance.
+ * Defines the API of the SourceRegistry. Make it possible to mock the
+ * SourceRegistry in unit-tests.
+ *
+ * Methods of this class cannot be pure virtual because AbstractSourceRegistry
+ * needs to be declared as a QML component to be usable in TabModel.
  */
-class HOMERUN_EXPORT SourceArguments : public QHash<QString, QString>
+class HOMERUN_EXPORT AbstractSourceRegistry : public QObject
 {
+    Q_OBJECT
 public:
-    SourceArguments &add(const QString &key, const QString &value);
+    AbstractSourceRegistry(QObject *parent = 0);
+    ~AbstractSourceRegistry();
 
-    QString toString() const;
-
-    static SourceArguments fromString(const QString &, bool *ok);
-};
-
-/**
- * Represents a source and its optional arguments
- */
-class HOMERUN_EXPORT SourceId
-{
-public:
-    void setName(const QString &);
-    QString name() const;
-    SourceArguments &arguments();
-    const SourceArguments &arguments() const;
-
-    QString toString() const;
-
-    static SourceId fromString(const QString &, bool *ok);
-
-    bool isValid() const;
-
-private:
-    QString m_name;
-    SourceArguments m_arguments;
+    virtual QObject *createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent);
 };
 
 } // namespace Homerun
 
-#endif /* SOURCEID_H */
+#endif /* ABSTRACTSOURCEREGISTRY_H */

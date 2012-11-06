@@ -42,7 +42,7 @@ public:
     explicit PathModel(QObject *parent = 0);
     ~PathModel();
 
-    void addPath(const QString &label, const QString &source);
+    void addPath(const QString &label, const QString &sourceId, const QVariantMap &sourceArguments);
 
     int count() const;
 

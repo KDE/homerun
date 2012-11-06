@@ -19,6 +19,8 @@
 #include "tabmodeltest.h"
 
 // Local
+#include <abstractsourceregistry.h>
+#include <sourcemodel.h>
 #include <tabmodel.h>
 
 // KDE
@@ -29,10 +31,45 @@
 
 // Qt
 #include <QSignalSpy>
+#include <QStandardItemModel>
 
 QTEST_KDEMAIN(TabModelTest, NoGUI)
 
 Q_DECLARE_METATYPE(QModelIndex)
+
+class MockRegistry : public Homerun::AbstractSourceRegistry
+{
+public:
+    QObject *createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &/*configGroup*/, QObject *parent)
+    {
+        if (sourceId == "broken") {
+            return 0;
+        }
+        return new QStandardItemModel(parent);
+    }
+};
+
+static QStringList getSources(const QModelIndex &index)
+{
+    QAbstractItemModel *tabSourceModel = qobject_cast<QAbstractItemModel *>(
+        index.data(TabModel::SourceModelRole).value<QObject *>()
+        );
+    if (!tabSourceModel) {
+        kError() << "No tab model";
+        return QStringList();
+    }
+    QStringList lst;
+    for (int row = 0; row < tabSourceModel->rowCount(); ++row) {
+        lst << tabSourceModel->index(row, 0).data(SourceModel::SourceIdRole).toString();
+    }
+    return lst;
+}
+
+static QStringList getTabList(const KSharedConfig::Ptr config)
+{
+    KConfigGroup group(config, "General");
+    return group.readEntry("tabs", QStringList());
+}
 
 static KTemporaryFile *generateTestFile(const QString &content)
 {
@@ -46,36 +83,66 @@ static KTemporaryFile *generateTestFile(const QString &content)
 void TabModelTest::initTestCase()
 {
     qRegisterMetaType<QModelIndex>("QModelIndex");
+    m_registry = new MockRegistry();
+}
+
+void TabModelTest::cleanupTestCase()
+{
+    delete m_registry;
 }
 
 void TabModelTest::testTabOrder()
 {
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
+        "[General]\n"
+        "tabs=Tab0,Tab1,Tab2,Tab3,Tab4,Tab5,Tab6\n"
         "[Tab0]\n"
         "name=tab0\n"
-        "source0=foo\n"
+        "sources=Source0\n"
+        "[Tab0][Source0]\n"
+        "sourceId=foo\n"
+        "\n"
         "[Tab5]\n"
         "name=tab5\n"
-        "source0=foo\n"
+        "sources=Source0\n"
+        "[Tab5][Source0]\n"
+        "sourceId=foo\n"
+        "\n"
         "[Tab4]\n"
         "name=tab4\n"
-        "source0=foo\n"
+        "sources=Source0\n"
+        "[Tab4][Source0]\n"
+        "sourceId=foo\n"
+        "\n"
         "[Tab2]\n"
         "name=tab2\n"
-        "source0=foo\n"
+        "sources=Source0\n"
+        "[Tab2][Source0]\n"
+        "sourceId=foo\n"
+        "\n"
         "[Tab3]\n"
         "name=tab3\n"
-        "source0=foo\n"
+        "sources=Source0\n"
+        "[Tab3][Source0]\n"
+        "sourceId=foo\n"
+        "\n"
         "[Tab6]\n"
         "name=tab6\n"
-        "source0=foo\n"
+        "sources=Source0\n"
+        "[Tab6][Source0]\n"
+        "sourceId=foo\n"
+        "\n"
         "[Tab1]\n"
         "name=tab1\n"
-        "source0=foo\n"
+        "sources=Source0\n"
+        "[Tab1][Source0]\n"
+        "sourceId=foo\n"
+        "\n"
         ));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
     TabModel model;
+    model.setSourceRegistry(m_registry);
     model.setConfig(config);
 
     QCOMPARE(model.rowCount(), 7);
@@ -94,40 +161,59 @@ void TabModelTest::testLoadKeys_data()
     QTest::addColumn<QStringList>("sources");
 
     QTest::newRow("name+icon")
-        <<  "[Tab0]\n"
+        <<  "[General]\n"
+            "tabs=Tab0\n"
+            "[Tab0]\n"
             "name=tab0\n"
             "icon=icon0\n"
-            "source0=foo\n"
+            "sources=Source0\n"
+            "[Tab0][Source0]\n"
+            "sourceId=foo\n"
         << "tab0"
         << "icon0"
         << (QStringList() << "foo");
 
     QTest::newRow("name-only")
-        <<  "[Tab0]\n"
+        <<  "[General]\n"
+            "tabs=Tab0\n"
+            "[Tab0]\n"
             "name=tab0\n"
-            "source0=foo\n"
+            "sources=Source0\n"
+            "[Tab0][Source0]\n"
+            "sourceId=foo\n"
         << "tab0"
         << QString()
         << (QStringList() << "foo");
 
     QTest::newRow("unnamed")
-        <<  "[Tab0]\n"
-            "source0=foo\n"
+        <<  "[General]\n"
+            "tabs=Tab0\n"
+            "[Tab0]\n"
+            "sources=Source0\n"
+            "[Tab0][Source0]\n"
+            "sourceId=foo\n"
         << ""
         << QString()
         << (QStringList() << "foo");
 
     QTest::newRow("multi-sources")
-        <<  "[Tab0]\n"
+        <<  "[General]\n"
+            "tabs=Tab0\n"
+            "[Tab0]\n"
             "name=tab0\n"
-            "source0=foo\n"
-            "source1=bar\n"
+            "sources=Source0,Source1\n"
+            "[Tab0][Source0]\n"
+            "sourceId=foo\n"
+            "[Tab0][Source1]\n"
+            "sourceId=bar\n"
         << "tab0"
         << QString()
         << (QStringList() << "foo" << "bar");
 
     QTest::newRow("no-sources")
-        <<  "[Tab0]\n"
+        <<  "[General]\n"
+            "tabs=Tab0\n"
+            "[Tab0]\n"
             "name=tab0\n"
         << "tab0"
         << QString()
@@ -147,6 +233,7 @@ void TabModelTest::testLoadKeys()
 
     // Load it
     TabModel model;
+    model.setSourceRegistry(m_registry);
     model.setConfig(config);
 
     QCOMPARE(model.rowCount(), 1);
@@ -154,25 +241,34 @@ void TabModelTest::testLoadKeys()
     QModelIndex index = model.index(0, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
     QCOMPARE(index.data(Qt::DecorationRole).toString(), iconName);
-    QCOMPARE(index.data(TabModel::SourcesRole).toStringList(), sources);
+    QStringList lst = getSources(index);
+    QCOMPARE(sources, lst);
 }
 
 void TabModelTest::testSetDataForRow()
 {
     QString configText =
+        "[General]\n"
+        "tabs=Tab0,Tab1\n"
+        ""
         "[Tab0]\n"
         "name=first\n"
-        "source=foo\n"
+        "sources=Source0\n"
+        "[Tab0][Source0]\n"
+        "sourceId=foo\n"
         ""
         "[Tab1]\n"
         "name=second\n"
-        "source=bar\n"
+        "sources=Source0\n"
+        "[Tab1][Source0]\n"
+        "sourceId=bar\n"
         ;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
 
     // Load it
     TabModel model;
+    model.setSourceRegistry(m_registry);
     model.setConfig(config);
 
     QCOMPARE(model.rowCount(), 2);
@@ -198,15 +294,22 @@ void TabModelTest::testSetDataForRow()
 void TabModelTest::testAppendRow()
 {
     QString configText =
+        "[General]\n"
+        "tabs=Tab0\n"
+        ""
         "[Tab0]\n"
         "name=first\n"
-        "source=foo\n"
+        "sources=Source0\n"
+        ""
+        "[Tab0][Source0]\n"
+        "sourceId=foo\n"
         ;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
 
     // Load it
     TabModel model;
+    model.setSourceRegistry(m_registry);
     model.setConfig(config);
     QCOMPARE(model.rowCount(), 1);
 
@@ -219,6 +322,7 @@ void TabModelTest::testAppendRow()
     QVERIFY(config->group("Tab1").hasKey("name"));
     QString name = config->group("Tab1").readEntry("name");
     QCOMPARE(name, QString());
+    QCOMPARE(getTabList(config), QStringList() << "Tab0" << "Tab1");
 
     QCOMPARE(aboutInsertedSpy.count(), 1);
     QVariantList args = aboutInsertedSpy.takeFirst();
@@ -236,6 +340,9 @@ void TabModelTest::testAppendRow()
 void TabModelTest::testRemoveRow()
 {
     QString configText =
+        "[General]\n"
+        "tabs=Tab0,Tab1\n"
+        "\n"
         "[Tab0]\n"
         "name=first\n"
         "source=foo\n"
@@ -249,6 +356,7 @@ void TabModelTest::testRemoveRow()
 
     // Load it
     TabModel model;
+    model.setSourceRegistry(m_registry);
     model.setConfig(config);
     QCOMPARE(model.rowCount(), 2);
 
@@ -261,6 +369,7 @@ void TabModelTest::testRemoveRow()
     // Check config file
     QVERIFY(config->group("Tab0").readEntry("deleted", false));
     QVERIFY(!config->group("Tab1").readEntry("deleted", false));
+    QCOMPARE(getTabList(config), QStringList() << "Tab1");
 
     // Check signals
     QCOMPARE(aboutRemovedSpy.count(), 1);
@@ -277,6 +386,7 @@ void TabModelTest::testRemoveRow()
 
     // Load again
     TabModel model2;
+    model2.setSourceRegistry(m_registry);
     model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 1);
 }
@@ -290,9 +400,9 @@ void TabModelTest::testMoveRow_data()
     QTest::newRow("1to2") << 1 << 2;
 }
 
-static QMap<QString, QString> getEntries(KSharedConfig::Ptr config, int row)
+static QMap<QString, QString> getEntries(KSharedConfig::Ptr config, const QString &tabName)
 {
-    return config->group("Tab" + QString::number(row)).entryMap();
+    return config->group(tabName).entryMap();
 }
 
 void TabModelTest::testMoveRow()
@@ -301,30 +411,42 @@ void TabModelTest::testMoveRow()
     QFETCH(int, to);
 
     QString configText =
+        "[General]\n"
+        "tabs=Tab0,Tab1,Tab2\n"
+        "\n"
         "[Tab0]\n"
         "name=zero\n"
-        "source0=zero\n"
+        "source0=tab0-0\n"
+        "source1=tab0-1\n"
+        "source2=tab0-2\n"
         "\n"
         "[Tab1]\n"
         "name=one\n"
         "icon=iconOne\n"
-        "source0=one\n"
+        "source0=tab1-0\n"
+        "source1=tab1-1\n"
         "\n"
         "[Tab2]\n"
         "name=two\n"
         "icon=iconTwo\n"
-        "source0=two\n"
+        "source0=tab2-0\n"
         ;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
 
     // Load it
     TabModel model;
+    model.setSourceRegistry(m_registry);
     model.setConfig(config);
     QCOMPARE(model.rowCount(), 3);
 
-    QMap<QString, QString> beforeFrom = getEntries(config, from);
-    QMap<QString, QString> beforeTo = getEntries(config, to);
+    QStringList beforeTabs = getTabList(config);
+    QMap<QString, QString> beforeFrom = getEntries(config, beforeTabs.at(from));
+    QMap<QString, QString> beforeTo = getEntries(config, beforeTabs.at(to));
+    QStringList beforeFromSources = getSources(model.index(from, 0));
+    QVERIFY(!beforeFromSources.isEmpty());
+    QStringList beforeToSources = getSources(model.index(to, 0));
+    QVERIFY(!beforeToSources.isEmpty());
 
     QSignalSpy aboutSpy(&model, SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
     QSignalSpy spy(&model, SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)));
@@ -334,18 +456,16 @@ void TabModelTest::testMoveRow()
     QModelIndex index;
     index = model.index(to, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeFrom.value("name"));
+    QCOMPARE(getSources(index), beforeFromSources);
     index = model.index(from, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeTo.value("name"));
+    QCOMPARE(getSources(index), beforeToSources);
 
     // Check config
-    QMap<QString, QString> afterFrom = getEntries(config, from);
-    QMap<QString, QString> afterTo = getEntries(config, to);
-    QCOMPARE(afterFrom["deleted"], QString("false"));
-    afterFrom.remove("deleted");
-    QCOMPARE(afterTo["deleted"], QString("false"));
-    afterTo.remove("deleted");
-    QCOMPARE(beforeFrom, afterTo);
-    QCOMPARE(beforeTo, afterFrom);
+    QStringList afterTabs = getTabList(config);
+    QStringList expectedTabs = beforeTabs;
+    expectedTabs.swap(from, to);
+    QCOMPARE(afterTabs, expectedTabs);
 
     // Check signals
     int modelTo = to + (to > from ? 1 : 0);
@@ -365,6 +485,77 @@ void TabModelTest::testMoveRow()
     QCOMPARE(args[2].toInt(), from);
     QVERIFY(!args[3].value<QModelIndex>().isValid());
     QCOMPARE(args[4].toInt(), modelTo);
+
+    // Reload config
+    TabModel model2;
+    model2.setSourceRegistry(m_registry);
+    model2.setConfig(config);
+    QMap<QString, QString> afterFrom = getEntries(config, afterTabs.at(from));
+    QMap<QString, QString> afterTo = getEntries(config, afterTabs.at(to));
+    QCOMPARE(beforeFrom, afterTo);
+    QCOMPARE(beforeTo, afterFrom);
+    QStringList afterFromSources = getSources(model2.index(from, 0));
+    QStringList afterToSources = getSources(model2.index(to, 0));
+    QCOMPARE(beforeFromSources, afterToSources);
+    QCOMPARE(beforeToSources, afterFromSources);
+}
+
+void TabModelTest::testLoadLegacy()
+{
+    QString configText =
+        "[General]\n"
+        "\n"
+        "[Tab0]\n"
+        "name=zero\n"
+        "source0=zero0\n"
+        "source1=zero1\n"
+        "\n"
+        "[Tab1]\n"
+        "name=one\n"
+        "icon=iconOne\n"
+        "source0=one\n"
+        "\n"
+        "[Tab2]\n"
+        "deleted=true\n"
+        "\n"
+        "[Tab3]\n"
+        "name=three\n"
+        "icon=iconThree\n"
+        "source0=three:arg1=value1\n"
+        "\n"
+        "[Tab4]\n"
+        "name=migrated-but-broken-sources\n"
+        "sources=Source0\n"
+        "\n"
+        "[Tab4][Source0]\n"
+        "sourceId=broken\n"
+        ;
+
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    TabModel model;
+    model.setSourceRegistry(m_registry);
+    model.setConfig(config);
+    QCOMPARE(model.rowCount(), 4);
+
+    QStringList tabList = getTabList(config);
+    QCOMPARE(tabList, QStringList() << "Tab0" << "Tab1" << "Tab3" << "Tab4");
+
+
+    QVector<QStringList> expectedSourceLists;
+
+    expectedSourceLists
+        << (QStringList() << "zero0" << "zero1")
+        << (QStringList() << "one")
+        << (QStringList() << "three")
+        << (QStringList() << "broken")
+        ;
+    for (int row = 0; row < model.rowCount(); ++row) {
+        QStringList lst = getSources(model.index(row, 0));
+        QCOMPARE(lst, expectedSourceLists.at(row));
+    }
 }
 
 #include "tabmodeltest.moc"

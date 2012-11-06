@@ -30,10 +30,9 @@
 namespace Homerun
 {
 
-SourceConfigurationDialog::SourceConfigurationDialog(AbstractSource *source, const SourceId &sourceId, QWidget *parent)
+SourceConfigurationDialog::SourceConfigurationDialog(AbstractSource *source, const KConfigGroup &group, QWidget *parent)
 : KDialog(parent)
-, m_sourceName(sourceId.name())
-, m_sourceWidget(source->createConfigurationWidget(sourceId.arguments()))
+, m_sourceWidget(source->createConfigurationWidget(group))
 {
     setMainWidget(m_sourceWidget);
 }
@@ -42,12 +41,10 @@ SourceConfigurationDialog::~SourceConfigurationDialog()
 {
 }
 
-QString SourceConfigurationDialog::sourceId() const
+void SourceConfigurationDialog::save()
 {
-    SourceId id;
-    id.setName(m_sourceName);
-    id.arguments() = m_sourceWidget->arguments();
-    return id.toString();
+    m_sourceWidget->save();
+    m_sourceWidget->configGroup().sync();
 }
 
 } // namespace

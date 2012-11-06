@@ -23,24 +23,54 @@
 #include <KDebug>
 #include <KLocale>
 
-static const char *SOURCE_KEY_PREFIX = "source";
-static const char *TAB_GROUP_PREFIX = "Tab";
+// Local
+#include <sourcemodel.h>
+#include <sourceregistry.h>
 
-/**
- * Return values for all keys of a group which start with @p prefix
- */
-static QStringList readSources(const KConfigGroup &group)
+#define MIGRATE_V1_CONFIG_FILE_FORMAT
+
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+#include <sourceid.h>
+#endif
+
+using namespace Homerun;
+
+static const char *TAB_GROUP_PREFIX = "Tab";
+static const char *TAB_SOURCES_KEY = "sources";
+
+static const char *SOURCE_GROUP_PREFIX = "Source";
+static const char *SOURCE_SOURCEID_KEY = "sourceId";
+
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+static const char *TAB_V1_SOURCE_KEY_PREFIX = "source";
+#endif
+
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+static QStringList takeLegacySources(const KConfigGroup &group_)
 {
-    QStringList lst;
+    QStringList sources;
+
+    KConfigGroup group(group_);
+
     QMap<QString, QString> map = group.entryMap();
     auto it = map.constBegin(), end = map.constEnd();
     for (; it != end; ++it) {
-        if (it.key().startsWith(SOURCE_KEY_PREFIX)) {
-            lst << it.value();
+        QString key = it.key();
+        if (!key.startsWith(TAB_V1_SOURCE_KEY_PREFIX)) {
+            continue;
         }
+        bool ok;
+        QString num = key.mid(qstrlen(TAB_V1_SOURCE_KEY_PREFIX));
+        num.toInt(&ok);
+        if (!ok) {
+            continue;
+        }
+        sources << it.value();
+        group.deleteEntry(it.key());
     }
-    return lst;
+    return sources;
 }
+#endif
 
 class Tab
 {
@@ -49,7 +79,17 @@ public:
 
     QString m_name;
     QString m_iconName;
-    QStringList m_sources;
+    SourceModel *m_sourceModel;
+
+    Tab()
+    : m_sourceModel(0)
+    {
+    }
+
+    ~Tab()
+    {
+        delete m_sourceModel;
+    }
 
     bool setName(const QString &value)
     {
@@ -73,22 +113,41 @@ public:
         return true;
     }
 
-    void saveSources()
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+    void saveSources(const QStringList &sourceIds)
     {
-        Q_FOREACH(const QString &key, m_group.keyList()) {
-            if (key.startsWith(SOURCE_KEY_PREFIX)) {
-                m_group.deleteEntry(key);
+        // Delete all source groups
+        Q_FOREACH(const QString &name, m_group.groupList()) {
+            if (name.startsWith(SOURCE_GROUP_PREFIX)) {
+                KConfigGroup(&m_group, name).deleteGroup();
             }
         }
+
+        // Write new source groups
+        QStringList sourceGroupNames;
         int num = 0;
-        Q_FOREACH(const QString &source, m_sources) {
-            QString key = QLatin1String(SOURCE_KEY_PREFIX) + QString::number(num);
-            m_group.writeEntry(key, source);
+        Q_FOREACH(const QString &source, sourceIds) {
+            bool ok;
+            QString groupName = QLatin1String(SOURCE_GROUP_PREFIX) + QString::number(num);
+            SourceId sourceId = SourceId::fromString(source, &ok);
+            Q_ASSERT(ok);
+
+            KConfigGroup sourceGroup(&m_group, groupName);
+            sourceGroup.writeEntry(SOURCE_SOURCEID_KEY, sourceId.name());
+
+            const SourceArguments &args = sourceId.arguments();
+            auto it = args.constBegin(), end = args.constEnd();
+            for (; it != end; ++it) {
+                sourceGroup.writeEntry(it.key(), it.value());
+            }
+
             ++num;
+            sourceGroupNames << groupName;
         }
 
-        m_group.sync();
+        m_group.writeEntry(TAB_SOURCES_KEY, sourceGroupNames);
     }
+#endif
 
     void saveName()
     {
@@ -106,11 +165,10 @@ public:
         m_group.writeEntry("deleted", false);
         saveName();
         saveIconName();
-        saveSources();
         m_group.sync();
     }
 
-    static Tab *createFromGroup(const KConfigGroup &group)
+    static Tab *createFromGroup(const KConfigGroup &group, TabModel *tabModel)
     {
         Tab *tab = new Tab;
 
@@ -123,7 +181,15 @@ public:
         }
 
         tab->m_group = group;
-        tab->m_sources = readSources(group);
+        tab->m_sourceModel = new SourceModel(tabModel->sourceRegistry(), group, tabModel);
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+        if (tab->m_sourceModel->rowCount() == 0) {
+            QStringList sourceIds = takeLegacySources(group);
+            tab->saveSources(sourceIds);
+            tab->m_group.sync();
+            tab->m_sourceModel->reload();
+        }
+#endif
         tab->m_iconName = group.readEntry("icon");
         return tab;
     }
@@ -139,11 +205,12 @@ public:
 
 TabModel::TabModel(QObject *parent)
 : QAbstractListModel(parent)
+, m_sourceRegistry(0)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
-    roles.insert(SourcesRole, "sources");
+    roles.insert(SourceModelRole, "sourceModel");
 
     setRoleNames(roles);
 }
@@ -155,7 +222,14 @@ TabModel::~TabModel()
 
 QStringList TabModel::tabGroupList() const
 {
-    QStringList list;
+    KConfigGroup group (m_config, "General");
+    QStringList list = group.readEntry("tabs", QStringList());
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+    if (!list.isEmpty()) {
+        return list;
+    }
+
+    // Create "tabs" key if it does not exist
     Q_FOREACH(const QString &groupName, m_config->groupList()) {
         if (groupName.startsWith(TAB_GROUP_PREFIX)) {
             KConfigGroup group = m_config->group(groupName);
@@ -166,6 +240,10 @@ QStringList TabModel::tabGroupList() const
         }
     }
     list.sort();
+    group.writeEntry("tabs", list);
+    const_cast<TabModel *>(this)->m_config->sync();
+#endif
+
     return list;
 }
 
@@ -178,7 +256,7 @@ void TabModel::setConfig(const KSharedConfig::Ptr &ptr)
     QStringList list = tabGroupList();
     Q_FOREACH(const QString &groupName, list) {
         KConfigGroup group = m_config->group(groupName);
-        Tab *tab = Tab::createFromGroup(group);
+        Tab *tab = Tab::createFromGroup(group, this);
         if (tab) {
             m_tabList << tab;
         }
@@ -198,6 +276,19 @@ void TabModel::setConfigFileName(const QString &name)
         return;
     }
     setConfig(KSharedConfig::openConfig(name));
+}
+
+AbstractSourceRegistry *TabModel::sourceRegistry() const
+{
+    return m_sourceRegistry;
+}
+
+void TabModel::setSourceRegistry(AbstractSourceRegistry *registry)
+{
+    if (m_sourceRegistry != registry) {
+        m_sourceRegistry = registry;
+        sourceRegistryChanged();
+    }
 }
 
 int TabModel::rowCount(const QModelIndex &parent) const
@@ -222,27 +313,12 @@ QVariant TabModel::data(const QModelIndex &index, int role) const
         return tab->m_name;
     case Qt::DecorationRole:
         return tab->m_iconName;
-    case SourcesRole:
-        return tab->m_sources;
+    case SourceModelRole:
+        return qVariantFromValue(static_cast<QObject *>(tab->m_sourceModel));
     default:
         kWarning() << "Unhandled role" << role;
         return QVariant();
     }
-}
-
-void TabModel::setSourcesForRow(int row, const QVariant &value)
-{
-    Tab *tab = m_tabList.value(row);
-    if (!tab) {
-        kWarning() << "Invalid row number" << row;
-        return;
-    }
-    QStringList sources = value.toStringList();
-    tab->m_sources = sources;
-    tab->saveSources();
-
-    QModelIndex idx = index(row, 0);
-    dataChanged(idx, idx);
 }
 
 void TabModel::setDataForRow(int row, const QByteArray &roleName, const QVariant &value)
@@ -289,6 +365,7 @@ void TabModel::appendRow()
     endInsertRows();
 
     tab->save();
+    writeGeneralTabsEntry();
 }
 
 #define CHECK_ROW(row) \
@@ -305,6 +382,7 @@ void TabModel::removeRow(int row)
     Q_ASSERT(tab);
     tab->remove();
     delete tab;
+    writeGeneralTabsEntry();
     endRemoveRows();
 }
 
@@ -320,12 +398,19 @@ void TabModel::moveRow(int from, int to)
     int modelTo = to + (to > from ? 1 : 0);
     beginMoveRows(QModelIndex(), from, from, QModelIndex(), modelTo);
     m_tabList.move(from, to);
-    for (int row = 0; row < m_tabList.count(); ++row) {
-        Tab *tab = m_tabList[row];
-        tab->m_group = KConfigGroup(m_config, QLatin1String(TAB_GROUP_PREFIX) + QString::number(row));
-        tab->save();
-    }
+    writeGeneralTabsEntry();
     endMoveRows();
+}
+
+void TabModel::writeGeneralTabsEntry()
+{
+    QStringList lst;
+    Q_FOREACH(const Tab *tab, m_tabList) {
+        lst << tab->m_group.name();
+    }
+    KConfigGroup group(m_config, "General");
+    group.writeEntry("tabs", lst);
+    m_config->sync();
 }
 
 #include "tabmodel.moc"

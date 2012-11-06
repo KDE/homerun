@@ -33,7 +33,7 @@ Item {
     //- Public ----------------------------------------------------
     // Defined by outside world
     property QtObject sourceRegistry
-    property variant sources
+    property QtObject tabSourceModel
     property string tabIconSource
     property string tabText
     property string searchCriteria
@@ -47,7 +47,6 @@ Item {
     signal closeRequested
     signal updateTabOrderRequested
     signal setSearchFieldRequested(string text)
-    signal sourcesUpdated(variant sources)
 
     //- Private ---------------------------------------------------
     Component {
@@ -55,14 +54,11 @@ Item {
         Page {
             anchors.fill: parent
             configureMode: main.configureMode
-            onSourcesUpdated: {
-                main.sourcesUpdated(sources);
-            }
             onCloseRequested: {
                 main.closeRequested();
             }
             onOpenSourceRequested: {
-                main.openSource(source);
+                main.openSource(sourceId, sourceArguments);
             }
         }
     }
@@ -175,7 +171,7 @@ Item {
                     text: "› " + model.display
                     onClicked: {
                         if (!checked) {
-                            openSource(model.source);
+                            openSource(model.sourceId, model.sourceArguments);
                         }
                     }
                 }
@@ -210,7 +206,7 @@ Item {
 
     // Scripting
     Component.onCompleted: {
-        var page = createPage(sources);
+        var page = createPage(tabSourceModel);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -239,19 +235,32 @@ Item {
 
     function goUp() {
         var count = breadcrumbRepeater.count;
-        var source;
+        var sourceId;
+        var sourceArgs;
         if (count >= 2) {
             // count - 1 is the breadcrumb for the current content
             // count - 2 is the breadcrumb for the content up
-            source = breadcrumbRepeater.itemAt(count - 2).source;
+            var item = breadcrumbRepeater.itemAt(count - 2);
+            sourceId = item.sourceId;
+            sourceArgs = item.sourceArguments;
         }
-        if (source !== null) {
-            openSource(source);
+        if (sourceId !== null) {
+            openSource(sourceId, sourceArguments);
         }
     }
 
-    function openSource(source) {
-        var page = createPage([source], { "showHeader": false });
+    Component {
+        id: dynamicTabSourceModelComponent
+        ListModel {
+        }
+    }
+
+    function openSource(sourceId, sourceArguments) {
+        var tabSourceModel = dynamicTabSourceModelComponent.createObject(main);
+        tabSourceModel.append({
+            model: sourceRegistry.createModelFromArguments(sourceId, sourceArguments, tabSourceModel)
+        })
+        var page = createPage(tabSourceModel, { "showHeader": false });
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
         page.forceActiveFocus();
@@ -265,10 +274,10 @@ Item {
             ], event);
     }
 
-    function createPage(sources, viewExtraArgs /*= {}*/) {
+    function createPage(sourceModel, viewExtraArgs /*= {}*/) {
         var args = {
             sourceRegistry: sourceRegistry,
-            sources: sources,
+            tabSourceModel: sourceModel,
         };
         if (viewExtraArgs !== undefined) {
             for (var key in viewExtraArgs) {

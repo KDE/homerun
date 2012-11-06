@@ -16,38 +16,31 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef ABSTRACTSOURCEREGISTRY_H
-#define ABSTRACTSOURCEREGISTRY_H
+// Self
+#include <abstractsourceregistry.h>
 
-#include <homerun_export.h>
-
-// Qt
-#include <QObject>
+// Local
 
 // KDE
-#include <KSharedConfig>
+
+// Qt
 
 namespace Homerun
 {
 
-class AbstractSourceRegistryPrivate;
+AbstractSourceRegistry::AbstractSourceRegistry(QObject *parent)
+: QObject(parent)
+{}
 
-/**
- * Interface to Homerun source registry. Makes it possible for sources to create
- * other models by their name and access homerun configuration.
- */
-class HOMERUN_EXPORT AbstractSourceRegistry
+AbstractSourceRegistry::~AbstractSourceRegistry()
 {
-public:
-    AbstractSourceRegistry();
-    virtual ~AbstractSourceRegistry();
-    virtual QObject *createModelForSource(const QString &sourceString, QObject *parent) = 0;
-    virtual KSharedConfig::Ptr config() const = 0;
+}
 
-private:
-    AbstractSourceRegistryPrivate *const d;
-};
+QObject *AbstractSourceRegistry::createModelFromConfigGroup(const QString &/*sourceId*/, const KConfigGroup &/*configGroup*/, QObject * /*parent*/)
+{
+    return 0;
+}
 
-} // namespace
+} // namespace Homerun
 
-#endif /* ABSTRACTSOURCEREGISTRY_H */
+#include <abstractsourceregistry.moc>

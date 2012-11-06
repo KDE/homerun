@@ -21,12 +21,12 @@
 
 // Local
 #include <homerun_export.h>
-
 #include <abstractsourceregistry.h>
 
 // Qt
 
 // KDE
+#include <KSharedConfig>
 
 class QAbstractItemModel;
 
@@ -39,7 +39,7 @@ class SourceRegistryPrivate;
  * The source registry. This class is responsible for loading source plugins
  * and instantiating source models.
  */
-class HOMERUN_EXPORT SourceRegistry : public QObject, public AbstractSourceRegistry
+class HOMERUN_EXPORT SourceRegistry : public AbstractSourceRegistry
 {
     Q_OBJECT
     Q_PROPERTY(QVariantMap favoriteModels READ favoriteModels CONSTANT)
@@ -48,8 +48,10 @@ public:
     explicit SourceRegistry(QObject *parent = 0);
     ~SourceRegistry();
 
-    Q_INVOKABLE QObject *createModelForSource(const QString &sourceString, QObject *parent); // reimp
-    KSharedConfig::Ptr config() const; //reimp
+    Q_INVOKABLE QObject *createModelFromArguments(const QString &sourceId, const QVariantMap &sourceArguments, QObject *parent);
+
+    QObject *createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent); // reimp
+    KSharedConfig::Ptr config() const;
 
     QVariantMap favoriteModels() const;
 
@@ -61,11 +63,11 @@ public:
     //// Config API
     Q_INVOKABLE QObject *availableSourcesModel() const;
 
-    Q_INVOKABLE QString visibleNameForSource(const QString &sourceString) const;
+    Q_INVOKABLE QString visibleNameForSource(const QString &sourceId) const;
 
-    Q_INVOKABLE bool isSourceConfigurable(const QString &sourceString) const;
+    Q_INVOKABLE bool isSourceConfigurable(const QString &sourceId) const;
 
-    Q_INVOKABLE QObject *createConfigurationDialog(const QString &sourceString);
+    Q_INVOKABLE QObject *createConfigurationDialog(const QString &sourceId, const QVariant &groupVariant) const;
 
 Q_SIGNALS:
     void configFileNameChanged(const QString &);

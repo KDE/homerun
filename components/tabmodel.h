@@ -23,6 +23,9 @@
 
 #include <KSharedConfig>
 
+namespace Homerun {
+class AbstractSourceRegistry;
+}
 class Tab;
 
 /**
@@ -32,10 +35,11 @@ class TabModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
+    Q_PROPERTY(Homerun::AbstractSourceRegistry *sourceRegistry READ sourceRegistry WRITE setSourceRegistry NOTIFY sourceRegistryChanged)
 
 public:
     enum {
-        SourcesRole = Qt::UserRole + 1,
+        SourceModelRole = Qt::UserRole + 1,
     };
 
     TabModel(QObject *parent = 0);
@@ -46,10 +50,11 @@ public:
     QString configFileName() const;
     void setConfigFileName(const QString &name);
 
+    Homerun::AbstractSourceRegistry *sourceRegistry() const;
+    void setSourceRegistry(Homerun::AbstractSourceRegistry *registry);
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const; // reimp
-
-    Q_INVOKABLE void setSourcesForRow(int row, const QVariant &sources);
 
     Q_INVOKABLE void setDataForRow(int row, const QByteArray &role, const QVariant &value);
 
@@ -61,12 +66,16 @@ public:
 
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
+    void sourceRegistryChanged();
 
 private:
     KSharedConfig::Ptr m_config;
     QList<Tab*> m_tabList;
+    Homerun::AbstractSourceRegistry *m_sourceRegistry;
 
     QStringList tabGroupList() const;
+
+    void writeGeneralTabsEntry();
 };
 
 #endif /* TABMODEL_H */

@@ -122,8 +122,6 @@ private:
     void loadRunners();
 
     Plasma::RunnerManager *m_manager;
-    KConfig m_config;
-    KConfigGroup m_configGroup;
     QTimer *m_startQueryTimer;
     QTimer *m_runningChangedTimeout;
 
@@ -137,8 +135,8 @@ class RunnerSource : public AbstractSource
 {
 public:
     RunnerSource(QObject *parent);
-    QAbstractItemModel *createModel(const SourceArguments &arguments);
-    SourceConfigurationWidget *createConfigurationWidget(const SourceArguments &args);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
+    SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
     bool isConfigurable() const;
 };
 

@@ -21,12 +21,15 @@
 
 #include <QObject>
 
+class MockRegistry;
+
 class TabModelTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
     void initTestCase();
+    void cleanupTestCase();
 
     void testTabOrder();
     void testLoadKeys();
@@ -38,6 +41,11 @@ private Q_SLOTS:
     void testRemoveRow();
     void testMoveRow_data();
     void testMoveRow();
+
+    void testLoadLegacy();
+
+private:
+    MockRegistry *m_registry;
 };
 
 #endif /* TABMODELTEST_H */

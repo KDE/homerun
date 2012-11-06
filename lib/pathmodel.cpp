@@ -28,7 +28,8 @@
 namespace Homerun {
 
 enum {
-    SourceRole = Qt::UserRole + 1,
+    SourceIdRole = Qt::UserRole + 1,
+    SourceArgumentsRole
 };
 
 struct PathModelPrivate
@@ -41,7 +42,8 @@ PathModel::PathModel(QObject *parent)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
-    roles.insert(SourceRole, "source");
+    roles.insert(SourceIdRole, "sourceId");
+    roles.insert(SourceArgumentsRole, "sourceArguments");
     setRoleNames(roles);
     connect(this, SIGNAL(modelReset()), SIGNAL(countChanged()));
     connect(this, SIGNAL(rowsInserted(QModelIndex, int, int)), SIGNAL(countChanged()));
@@ -53,10 +55,11 @@ PathModel::~PathModel()
     delete d;
 }
 
-void PathModel::addPath(const QString &label, const QString &source)
+void PathModel::addPath(const QString &label, const QString &sourceId, const QVariantMap &sourceArguments)
 {
     QStandardItem *item = new QStandardItem(label);
-    item->setData(source, SourceRole);
+    item->setData(sourceId, SourceIdRole);
+    item->setData(sourceArguments, SourceArgumentsRole);
     appendRow(item);
 }
 

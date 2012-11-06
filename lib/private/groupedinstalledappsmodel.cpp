@@ -22,18 +22,20 @@
 // Local
 #include <abstractsourceregistry.h>
 #include <installedappsmodel.h>
-#include <sourceid.h>
 
 // KDE
+#include <KConfigGroup>
 #include <KDebug>
 
 // Qt
 
 namespace Homerun {
 
-GroupedInstalledAppsModel::GroupedInstalledAppsModel(QObject *parent)
+GroupedInstalledAppsModel::GroupedInstalledAppsModel(const QString &installer, QObject *parent)
 : QAbstractListModel(parent)
+, m_installer(installer)
 {
+    loadRootEntries();
 }
 
 GroupedInstalledAppsModel::~GroupedInstalledAppsModel()
@@ -109,20 +111,9 @@ QVariant GroupedInstalledAppsModel::data(const QModelIndex &index, int role) con
     }
 }
 
-void GroupedInstalledAppsModel::init(AbstractSourceRegistry *registry)
-{
-    m_registry = registry;
-    loadRootEntries();
-}
-
 InstalledAppsModel *GroupedInstalledAppsModel::createInstalledAppsModel(KServiceGroup::Ptr group)
 {
-    Q_ASSERT(m_registry);
-    SourceId sourceId;
-    sourceId.setName("InstalledApps");
-    sourceId.arguments().add("entryPath", group->entryPath());
-    QObject *model = m_registry->createModelForSource(sourceId.toString(), this);
-    return static_cast<InstalledAppsModel *>(model);
+    return new InstalledAppsModel(group->entryPath(), m_installer, this);
 }
 
 //- GroupedInstalledAppsSource --------------------------------------
@@ -130,11 +121,11 @@ GroupedInstalledAppsSource::GroupedInstalledAppsSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
-QAbstractItemModel *GroupedInstalledAppsSource::createModel(const SourceArguments &/*args*/)
+QAbstractItemModel *GroupedInstalledAppsSource::createModelFromConfigGroup(const KConfigGroup &)
 {
-    GroupedInstalledAppsModel *model = new GroupedInstalledAppsModel;
-    model->init(registry());
-    return model;
+    KConfigGroup group(config(), "PackageManagement");
+    QString installer = group.readEntry("categoryInstaller");
+    return new GroupedInstalledAppsModel(installer);
 }
 
 } // namespace Homerun

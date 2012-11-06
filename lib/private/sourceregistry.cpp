@@ -21,8 +21,10 @@
 
 // Local
 #include <abstractsource.h>
+#include <customtypes.h>
 #include <dirmodel.h>
 #include <favoriteappsmodel.h>
+
 #include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
 #include <favoriteplacesmodel.h>
@@ -30,7 +32,6 @@
 #include <runnermodel.h>
 #include <installedappsmodel.h>
 #include <sessionmodel.h>
-#include <sourceid.h>
 #include <sourceconfigurationdialog.h>
 
 // KDE
@@ -55,7 +56,7 @@ public:
     , m_model(model)
     {}
 
-    QAbstractItemModel *createModel(const SourceArguments &/* args */)
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &/* group */)
     {
         return m_model;
     }
@@ -67,7 +68,7 @@ private:
 //- SourceInfo ------------------------------------------------
 struct SourceInfo
 {
-    QString name;
+    QString id;
     QString visibleName;
     QString comment;
     AbstractSource *source;
@@ -114,7 +115,7 @@ public:
         case Qt::DisplayRole:
             return sourceInfo->visibleName;
         case SourceIdRole:
-            return sourceInfo->name;
+            return sourceInfo->id;
         case CommentRole:
             return sourceInfo->comment;
         default:
@@ -134,7 +135,7 @@ struct SourceRegistryPrivate
     QHash<QString, QAbstractItemModel*> m_favoriteModels;
 
     QList<SourceInfo *> m_sourceInfos;
-    QHash<QString, SourceInfo *> m_sourceInfoByName;
+    QHash<QString, SourceInfo *> m_sourceInfoById;
 
     AvailableSourcesModel *m_availableSourcesModel;
     KSharedConfig::Ptr m_config;
@@ -154,7 +155,7 @@ struct SourceRegistryPrivate
             }
             SourceInfo *sourceInfo = new SourceInfo;
             sourceInfo->service = ptr;
-            sourceInfo->name = pluginInfo.pluginName();
+            sourceInfo->id = pluginInfo.pluginName();
             sourceInfo->visibleName = pluginInfo.name();
             sourceInfo->comment = pluginInfo.comment();
             registerSourceInfo(sourceInfo);
@@ -168,25 +169,25 @@ struct SourceRegistryPrivate
         KPluginLoader loader(*sourceInfo->service);
         KPluginFactory *factory = loader.factory();
         if (!factory) {
-            kWarning() << "Failed to load plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->name << ")";
+            kWarning() << "Failed to load plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->id << ")";
             kWarning() << loader.errorString();
             return;
         }
 
-        // Create and register the source
+        // Create the source
         AbstractSource *source = factory->create<AbstractSource>();
         if (!source) {
-            kWarning() << "Failed to create source from plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->name << ")";
+            kWarning() << "Failed to create source from plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->id << ")";
             return;
         }
+        source->setConfig(m_config);
         sourceInfo->source = source;
-        source->init(q);
     }
 
-    void registerSource(const QString &name, AbstractSource *source, const QString &visibleName, const QString &comment)
+    void registerSource(const QString &id, AbstractSource *source, const QString &visibleName, const QString &comment)
     {
         SourceInfo *info = new SourceInfo;
-        info->name = name;
+        info->id = id;
         info->visibleName = visibleName;
         info->source = source;
         info->comment = comment;
@@ -196,14 +197,14 @@ struct SourceRegistryPrivate
     void registerSourceInfo(SourceInfo *info)
     {
         m_sourceInfos << info;
-        m_sourceInfoByName.insert(info->name, info);
+        m_sourceInfoById.insert(info->id, info);
     }
 
-    AbstractSource *sourceByName(const QString &name)
+    AbstractSource *sourceById(const QString &id)
     {
-        SourceInfo *sourceInfo = m_sourceInfoByName.value(name);
+        SourceInfo *sourceInfo = m_sourceInfoById.value(id);
         if (!sourceInfo) {
-            kWarning() << "No source named" << name;
+            kWarning() << "No source named" << id;
             return 0;
         }
         if (sourceInfo->source) {
@@ -211,27 +212,16 @@ struct SourceRegistryPrivate
         }
         loadPluginForSourceInfo(sourceInfo);
         if (!sourceInfo->source) {
-            kWarning() << "Failed to load source for" << name;
+            kWarning() << "Failed to load source for" << id;
             return 0;
         }
         return sourceInfo->source;
-    }
-
-    AbstractSource *sourceBySourceString(const QString &sourceString)
-    {
-        bool ok;
-        SourceId sourceId = SourceId::fromString(sourceString, &ok);
-        if (!ok) {
-            kWarning() << "Invalid sourceString" << sourceString;
-            return 0;
-        }
-        return sourceByName(sourceId.name());
     }
 };
 
 //- SourceRegistry --------------------------------------------
 SourceRegistry::SourceRegistry(QObject *parent)
-: QObject(parent)
+: AbstractSourceRegistry(parent)
 , d(new SourceRegistryPrivate)
 {
     d->q = this;
@@ -273,10 +263,6 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Perform searchs using a selection of runners")
     );
 
-    Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
-        sourceInfo->source->init(this);
-    }
-
     d->listSourcePlugins();
 }
 
@@ -286,26 +272,48 @@ SourceRegistry::~SourceRegistry()
     delete d;
 }
 
-QObject *SourceRegistry::createModelForSource(const QString &sourceString, QObject *parent)
+QObject *SourceRegistry::createModelFromArguments(const QString &sourceId, const QVariantMap &sourceArguments, QObject *parent)
 {
-    bool ok;
-    SourceId sourceId = SourceId::fromString(sourceString, &ok);
-    if (!ok) {
-        kWarning() << "Invalid sourceString" << sourceString;
-        return 0;
-    }
-
-    AbstractSource *source = d->sourceByName(sourceId.name());
+    // Get source
+    AbstractSource *source = d->sourceById(sourceId);
     if (!source) {
+        kWarning() << "Invalid sourceId in group (sourceId=" << sourceId << ")";
         return 0;
     }
 
-    QAbstractItemModel *model = source->createModel(sourceId.arguments());
+    // Create model
+    QAbstractItemModel *model = source->createModelFromArguments(sourceArguments);
     if (!model) {
-        kWarning() << "Failed to create model from" << sourceString;
+        kWarning() << "Failed to create model";
         return 0;
     }
-    model->setObjectName(sourceString);
+    model->setObjectName(sourceId);
+
+    // If the model already has a parent, then don't change it.
+    // This is used by singleton sources to keep their model alive.
+    if (!model->parent()) {
+        model->setParent(parent);
+    }
+
+    return model;
+}
+
+QObject *SourceRegistry::createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &group, QObject *parent)
+{
+    // Get source
+    AbstractSource *source = d->sourceById(sourceId);
+    if (!source) {
+        kWarning() << "Invalid sourceId in group (sourceId=" << sourceId << ")";
+        return 0;
+    }
+
+    // Create model
+    QAbstractItemModel *model = source->createModelFromConfigGroup(group);
+    if (!model) {
+        kWarning() << "Failed to create model from group" << group.name();
+        return 0;
+    }
+    model->setObjectName(sourceId);
 
     // If the model already has a parent, then don't change it.
     // This is used by singleton sources to keep their model alive.
@@ -347,6 +355,12 @@ void SourceRegistry::setConfigFileName(const QString &name)
         return;
     }
     d->m_config = KSharedConfig::openConfig(name);
+    Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
+        AbstractSource *source = sourceInfo->source;
+        if (source) {
+            source->setConfig(d->m_config);
+        }
+    }
     configFileNameChanged(name);
 }
 
@@ -355,46 +369,39 @@ QObject *SourceRegistry::availableSourcesModel() const
     return d->m_availableSourcesModel;
 }
 
-QString SourceRegistry::visibleNameForSource(const QString &sourceString) const
+QString SourceRegistry::visibleNameForSource(const QString &sourceId) const
 {
-    bool ok;
-    SourceId sourceId = SourceId::fromString(sourceString, &ok);
-    if (!ok) {
-        kWarning() << "Invalid sourceString" << sourceString;
-        return QString();
-    }
-    SourceInfo *info = d->m_sourceInfoByName.value(sourceId.name());
+    SourceInfo *info = d->m_sourceInfoById.value(sourceId);
     if (!info) {
-        kWarning() << "No source for" << sourceString;
+        kWarning() << "No source for" << sourceId;
         return QString();
     }
     return info->visibleName;
 }
 
-bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
+bool SourceRegistry::isSourceConfigurable(const QString &sourceId) const
 {
-    AbstractSource *source = d->sourceBySourceString(sourceString);
+    AbstractSource *source = d->sourceById(sourceId);
     if (!source) {
-        kWarning() << "No source for" << sourceString;
+        kWarning() << "No source for" << sourceId;
         return false;
     }
     return source->isConfigurable();
 }
 
-QObject *SourceRegistry::createConfigurationDialog(const QString &sourceString)
+QObject *SourceRegistry::createConfigurationDialog(const QString &sourceId, const QVariant &configGroupVariant) const
 {
-    bool ok;
-    SourceId sourceId = SourceId::fromString(sourceString, &ok);
-    if (!ok) {
-        kWarning() << "Invalid sourceString" << sourceString;
-        return 0;
-    }
-    AbstractSource *source = d->sourceByName(sourceId.name());
+    AbstractSource *source = d->sourceById(sourceId);
     if (!source) {
-        kWarning() << "No source for" << sourceString;
+        kWarning() << "No source for" << sourceId;
         return 0;
     }
-    return new SourceConfigurationDialog(source, sourceId, QApplication::activeWindow());
+
+    KConfigGroup *sourceGroup = configGroupVariant.value<KConfigGroup*>();
+    Q_ASSERT(sourceGroup);
+    Q_ASSERT(sourceGroup->isValid());
+
+    return new SourceConfigurationDialog(source, *sourceGroup, QApplication::activeWindow());
 }
 
 } // namespace Homerun

@@ -35,7 +35,7 @@ SlidingContainer {
 
     signal removeRequested
     signal moveRequested(int delta)
-    signal sourceIdChanged(string sourceId)
+    signal configureRequested
 
     PlasmaCore.FrameSvgItem {
         id: frame
@@ -64,13 +64,7 @@ SlidingContainer {
                 id: configureButton
                 iconSource: "configure"
                 visible: sourceId ? sourceRegistry.isSourceConfigurable(sourceId) : false
-                onClicked: {
-                    var dlg = sourceRegistry.createConfigurationDialog(sourceId);
-                    if (dlg.exec()) {
-                        sourceIdChanged(dlg.sourceId());
-                    }
-                    dlg.destroy();
-                }
+                onClicked: main.configureRequested()
             }
 
             PlasmaComponents.ToolButton {

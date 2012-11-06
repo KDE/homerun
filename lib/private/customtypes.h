@@ -16,32 +16,14 @@
  * Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#ifndef RUNNERCONFIGURATIONWIDGET_H
-#define RUNNERCONFIGURATIONWIDGET_H
-
-// Local
-#include <sourceconfigurationwidget.h>
-#include <ui_runnerconfigurationwidget.h>
-
-// Qt
+#ifndef CUSTOMTYPES_H
+#define CUSTOMTYPES_H
 
 // KDE
+#include <KConfigGroup>
 
-namespace Homerun
-{
+// We use KConfigGroup* and not KConfigGroup because if using the later, one
+// gets an invalid group from the QVariant
+Q_DECLARE_METATYPE(KConfigGroup*)
 
-/**
- * A configuration widget for the Runner source
- */
-class RunnerConfigurationWidget : public SourceConfigurationWidget, private Ui_RunnerConfigurationWidget
-{
-    Q_OBJECT
-public:
-    explicit RunnerConfigurationWidget(const KConfigGroup &);
-
-    void save(); // reimp
-};
-
-} // namespace
-
-#endif /* RUNNERCONFIGURATIONWIDGET_H */
+#endif /* CUSTOMTYPES_H */

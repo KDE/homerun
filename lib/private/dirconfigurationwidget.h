@@ -21,7 +21,6 @@
 
 // Local
 #include <sourceconfigurationwidget.h>
-#include <sourceid.h>
 
 // Qt
 
@@ -36,9 +35,10 @@ class DirConfigurationWidget : public Homerun::SourceConfigurationWidget
 {
     Q_OBJECT
 public:
-    DirConfigurationWidget(const Homerun::SourceArguments &args);
+    DirConfigurationWidget(const KConfigGroup &group);
     ~DirConfigurationWidget();
-    Homerun::SourceArguments arguments() const;
+
+    void save(); // reimp
 
 private:
     Ui_DirConfigurationWidget *m_ui;

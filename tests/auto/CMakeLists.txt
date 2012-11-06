@@ -33,7 +33,7 @@ include_directories(
     ${components_SOURCE_DIR}
     ${lib_SOURCE_DIR}
     ${lib_SOURCE_DIR}/private
-    ${CMAKE_BUILD_DIR}
+    ${lib_BINARY_DIR}
     )
 
 # Tests which depend on X11 cannot be run on headless builders. If X11 is not
@@ -42,7 +42,17 @@ include_directories(
 # tests, binaries of X11-dependent tests must be suffixed with "_x11".
 
 # X11-independent tests
-homerun_add_unit_test(tabmodeltest ${components_SOURCE_DIR}/tabmodel.cpp)
+homerun_add_unit_test(tabmodeltest
+    ${components_SOURCE_DIR}/tabmodel.cpp
+    ${components_SOURCE_DIR}/sourcemodel.cpp
+    ${components_SOURCE_DIR}/sourceid.cpp
+    ${lib_SOURCE_DIR}/private/abstractsourceregistry.cpp
+    )
+
+homerun_add_unit_test(sourcemodeltest
+    ${components_SOURCE_DIR}/sourcemodel.cpp
+    ${lib_SOURCE_DIR}/private/abstractsourceregistry.cpp
+    )
 
 # X11-dependent tests
 homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/private/favoriteappsmodel.cpp)
@@ -54,7 +64,6 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
-    ${lib_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(dirmodeltest_x11
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
@@ -64,7 +73,6 @@ homerun_add_unit_test(dirmodeltest_x11
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
-    ${lib_SOURCE_DIR}/sourceid.cpp
     )
 
 # Definition of the "check" target

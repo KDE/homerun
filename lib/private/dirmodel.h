@@ -73,12 +73,12 @@ public:
 
     void setQuery(const QString &query);
 
-    static QString sourceString(const KUrl &rootUrl, const QString &rootName, const KUrl &url);
+    static QVariantMap sourceArguments(const KUrl &rootUrl, const QString &rootName, const KUrl &url);
 
 Q_SIGNALS:
     void countChanged();
     void runningChanged(bool);
-    void openSourceRequested(const QString &source);
+    void openSourceRequested(const QString &sourceId, const QVariantMap &sourceArguments);
     void queryChanged(const QString &);
 
 private Q_SLOTS:
@@ -96,9 +96,13 @@ class DirSource : public AbstractSource
 {
 public:
     DirSource(QObject *parent);
-    QAbstractItemModel *createModel(const SourceArguments &args);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
+    QAbstractItemModel *createModelFromArguments(const QVariantMap &args);
     bool isConfigurable() const;
-    SourceConfigurationWidget *createConfigurationWidget(const SourceArguments &args);
+    SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
+
+private:
+    QAbstractItemModel *createModel(const KUrl &rootUrl, const QString &rootName, const KUrl &url);
 };
 
 } // namespace Homerun

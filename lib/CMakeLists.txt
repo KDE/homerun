@@ -14,14 +14,13 @@ set(lib_VERSION ${lib_VERSION_MAJOR}.${lib_VERSION_MINOR}.${lib_VERSION_PATCH})
 
 set(lib_SRCS
     abstractsource.cpp
-    abstractsourceregistry.cpp
     pathmodel.cpp
     sourceconfigurationwidget.cpp
-    sourceid.cpp
     )
 
 # Private classes
 set(lib_SRCS ${lib_SRCS}
+    private/abstractsourceregistry.cpp
     private/dirconfigurationwidget.cpp
     private/dirmodel.cpp
     private/favoriteappsmodel.cpp

@@ -20,7 +20,6 @@
 
 // Local
 #include <dirmodel.h>
-#include <sourceid.h>
 
 // KDE
 #include <KDebug>
@@ -118,7 +117,7 @@ bool FavoritePlacesModel::trigger(int row)
     KUrl theUrl = idx.data(KFilePlacesModel::UrlRole).value<QUrl>();
     theUrl.adjustPath(KUrl::AddTrailingSlash);
     QString rootName = idx.data(Qt::DisplayRole).toString();
-    openSourceRequested(DirModel::sourceString(theUrl, rootName, theUrl));
+    openSourceRequested("Dir", DirModel::sourceArguments(theUrl, rootName, theUrl));
 
     return false;
 }

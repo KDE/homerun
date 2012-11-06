@@ -47,6 +47,7 @@ Item {
     HomerunComponents.TabModel {
         id: tabModel
         configFileName: main.configFileName
+        sourceRegistry: sourceRegistry
     }
 
     HomerunComponents.SourceRegistry {
@@ -65,9 +66,6 @@ Item {
             configureMode: main.configureMode
             onCloseRequested: isContainment ? reset() : main.closeRequested()
             onSetSearchFieldRequested: searchField.text = text
-            onSourcesUpdated: {
-                tabModel.setSourcesForRow(tabButton.index, sources);
-            }
             onTabTextChanged: {
                 if (configureMode) {
                     tabModel.setDataForRow(tabButton.index, "display", tabText);
@@ -100,7 +98,7 @@ Item {
             property string realText: model.display
             text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
             iconSource: model.decoration
-            property variant sources: model.sources
+            property QtObject tabSourceModel: model.sourceModel
             index: model.index
 
             rightSide: [
@@ -137,7 +135,7 @@ Item {
 
         function createTabContent(tabButton) {
             tabButton.tab = tabContent.createObject(tabGroup, {
-                sources: tabButton.sources,
+                tabSourceModel: tabButton.tabSourceModel,
                 sourceRegistry: sourceRegistry,
                 tabButton: tabButton,
             });
