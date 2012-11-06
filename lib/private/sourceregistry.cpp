@@ -68,7 +68,7 @@ private:
 //- SourceInfo ------------------------------------------------
 struct SourceInfo
 {
-    QString name;
+    QString id;
     QString visibleName;
     QString comment;
     AbstractSource *source;
@@ -115,7 +115,7 @@ public:
         case Qt::DisplayRole:
             return sourceInfo->visibleName;
         case SourceIdRole:
-            return sourceInfo->name;
+            return sourceInfo->id;
         case CommentRole:
             return sourceInfo->comment;
         default:
@@ -135,7 +135,7 @@ struct SourceRegistryPrivate
     QHash<QString, QAbstractItemModel*> m_favoriteModels;
 
     QList<SourceInfo *> m_sourceInfos;
-    QHash<QString, SourceInfo *> m_sourceInfoByName;
+    QHash<QString, SourceInfo *> m_sourceInfoById;
 
     AvailableSourcesModel *m_availableSourcesModel;
     KSharedConfig::Ptr m_config;
@@ -155,7 +155,7 @@ struct SourceRegistryPrivate
             }
             SourceInfo *sourceInfo = new SourceInfo;
             sourceInfo->service = ptr;
-            sourceInfo->name = pluginInfo.pluginName();
+            sourceInfo->id = pluginInfo.pluginName();
             sourceInfo->visibleName = pluginInfo.name();
             sourceInfo->comment = pluginInfo.comment();
             registerSourceInfo(sourceInfo);
@@ -169,25 +169,25 @@ struct SourceRegistryPrivate
         KPluginLoader loader(*sourceInfo->service);
         KPluginFactory *factory = loader.factory();
         if (!factory) {
-            kWarning() << "Failed to load plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->name << ")";
+            kWarning() << "Failed to load plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->id << ")";
             kWarning() << loader.errorString();
             return;
         }
 
-        // Create and register the source
+        // Create the source
         AbstractSource *source = factory->create<AbstractSource>();
         if (!source) {
-            kWarning() << "Failed to create source from plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->name << ")";
+            kWarning() << "Failed to create source from plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->id << ")";
             return;
         }
         source->setConfig(m_config);
         sourceInfo->source = source;
     }
 
-    void registerSource(const QString &name, AbstractSource *source, const QString &visibleName, const QString &comment)
+    void registerSource(const QString &id, AbstractSource *source, const QString &visibleName, const QString &comment)
     {
         SourceInfo *info = new SourceInfo;
-        info->name = name;
+        info->id = id;
         info->visibleName = visibleName;
         info->source = source;
         info->comment = comment;
@@ -197,14 +197,14 @@ struct SourceRegistryPrivate
     void registerSourceInfo(SourceInfo *info)
     {
         m_sourceInfos << info;
-        m_sourceInfoByName.insert(info->name, info);
+        m_sourceInfoById.insert(info->id, info);
     }
 
-    AbstractSource *sourceByName(const QString &name)
+    AbstractSource *sourceById(const QString &id)
     {
-        SourceInfo *sourceInfo = m_sourceInfoByName.value(name);
+        SourceInfo *sourceInfo = m_sourceInfoById.value(id);
         if (!sourceInfo) {
-            kWarning() << "No source named" << name;
+            kWarning() << "No source named" << id;
             return 0;
         }
         if (sourceInfo->source) {
@@ -212,7 +212,7 @@ struct SourceRegistryPrivate
         }
         loadPluginForSourceInfo(sourceInfo);
         if (!sourceInfo->source) {
-            kWarning() << "Failed to load source for" << name;
+            kWarning() << "Failed to load source for" << id;
             return 0;
         }
         return sourceInfo->source;
@@ -275,7 +275,7 @@ SourceRegistry::~SourceRegistry()
 QObject *SourceRegistry::createModelFromArguments(const QString &sourceId, const QVariantMap &sourceArguments, QObject *parent)
 {
     // Get source
-    AbstractSource *source = d->sourceByName(sourceId);
+    AbstractSource *source = d->sourceById(sourceId);
     if (!source) {
         kWarning() << "Invalid sourceId in group (sourceId=" << sourceId << ")";
         return 0;
@@ -301,7 +301,7 @@ QObject *SourceRegistry::createModelFromArguments(const QString &sourceId, const
 QObject *SourceRegistry::createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &group, QObject *parent)
 {
     // Get source
-    AbstractSource *source = d->sourceByName(sourceId);
+    AbstractSource *source = d->sourceById(sourceId);
     if (!source) {
         kWarning() << "Invalid sourceId in group (sourceId=" << sourceId << ")";
         return 0;
@@ -371,7 +371,7 @@ QObject *SourceRegistry::availableSourcesModel() const
 
 QString SourceRegistry::visibleNameForSource(const QString &sourceId) const
 {
-    SourceInfo *info = d->m_sourceInfoByName.value(sourceId);
+    SourceInfo *info = d->m_sourceInfoById.value(sourceId);
     if (!info) {
         kWarning() << "No source for" << sourceId;
         return QString();
@@ -381,7 +381,7 @@ QString SourceRegistry::visibleNameForSource(const QString &sourceId) const
 
 bool SourceRegistry::isSourceConfigurable(const QString &sourceId) const
 {
-    AbstractSource *source = d->sourceByName(sourceId);
+    AbstractSource *source = d->sourceById(sourceId);
     if (!source) {
         kWarning() << "No source for" << sourceId;
         return false;
@@ -391,7 +391,7 @@ bool SourceRegistry::isSourceConfigurable(const QString &sourceId) const
 
 QObject *SourceRegistry::createConfigurationDialog(const QString &sourceId, const QVariant &configGroupVariant) const
 {
-    AbstractSource *source = d->sourceByName(sourceId);
+    AbstractSource *source = d->sourceById(sourceId);
     if (!source) {
         kWarning() << "No source for" << sourceId;
         return 0;
