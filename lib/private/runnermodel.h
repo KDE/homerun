@@ -90,7 +90,7 @@ class RunnerModel : public QAbstractListModel
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
 
 public:
-    explicit RunnerModel(QObject *parent = 0);
+    RunnerModel(const KConfigGroup &configGroup, QObject *parent = 0);
     ~RunnerModel();
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
@@ -122,7 +122,6 @@ private:
     void loadRunners();
 
     Plasma::RunnerManager *m_manager;
-    KConfig m_config;
     KConfigGroup m_configGroup;
     QTimer *m_startQueryTimer;
     QTimer *m_runningChangedTimeout;

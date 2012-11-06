@@ -163,15 +163,14 @@ bool RunnerSubModel::trigger(int row)
 
 //--------------------------------------------------------------------
 
-RunnerModel::RunnerModel(QObject *parent)
+RunnerModel::RunnerModel(const KConfigGroup &configGroup, QObject *parent)
 : QAbstractListModel(parent)
 , m_manager(0)
-, m_config(QString(), KConfig::SimpleConfig)
+, m_configGroup(configGroup)
 , m_startQueryTimer(new QTimer(this))
 , m_runningChangedTimeout(new QTimer(this))
 , m_running(false)
 {
-    m_configGroup = KConfigGroup(&m_config, "RunnerModel");
     m_startQueryTimer->setSingleShot(true);
     m_startQueryTimer->setInterval(10);
     connect(m_startQueryTimer, SIGNAL(timeout()), this, SLOT(startQuery()));
@@ -348,13 +347,6 @@ void RunnerModel::trigger(const Plasma::QueryMatch& match)
 void RunnerModel::loadRunners()
 {
     Q_ASSERT(m_manager);
-    KConfigGroup grp0(&m_configGroup, "PlasmaRunnerManager");
-    KConfigGroup grp(&grp0, "Plugins");
-    grp.deleteGroup();
-    Q_FOREACH(const QString &runner, m_pendingRunnersList) {
-        grp.writeEntry(runner + "Enabled", true);
-    }
-    m_configGroup.sync();
     m_manager->setAllowedRunners(m_pendingRunnersList);
     m_manager->setSingleMode(m_pendingRunnersList.count() == 1);
     m_pendingRunnersList.clear();
@@ -367,12 +359,7 @@ RunnerSource::RunnerSource(QObject *parent)
 
 QAbstractItemModel *RunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
-    RunnerModel *model = new RunnerModel;
-    QStringList allowed = group.readEntry("whitelist", QStringList());
-    if (!allowed.isEmpty()) {
-        model->setAllowedRunners(allowed);
-    }
-    return model;
+    return new RunnerModel(group);
 };
 
 bool RunnerSource::isConfigurable() const

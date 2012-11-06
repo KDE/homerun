@@ -23,11 +23,14 @@
 #include <sourceid.h>
 
 // KDE
+#include <KDebug>
 #include <KPluginInfo>
 #include <KServiceTypeTrader>
 
 // Qt
 #include <QListWidgetItem>
+
+Q_DECLARE_METATYPE(KPluginInfo)
 
 namespace Homerun
 {
@@ -37,7 +40,7 @@ static QListWidgetItem *createWidgetItem(const KPluginInfo &info)
     QListWidgetItem *item = new QListWidgetItem(info.name());
     item->setIcon(KIcon(info.icon()));
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-    item->setData(Qt::UserRole, info.pluginName());
+    item->setData(Qt::UserRole, QVariant::fromValue(info));
     return item;
 }
 
@@ -47,14 +50,18 @@ RunnerConfigurationWidget::RunnerConfigurationWidget(const KConfigGroup &group)
     setupUi(this);
     m_searchLine->setListWidget(m_listWidget);
 
-    QStringList selectedRunners = group.readEntry("whitelist", QStringList());
+    // Config group names taken from RunnerManager::RunnerManager() and
+    // RunnerManagerPrivate::loadRunners()
+    KConfigGroup managerGroup = KConfigGroup(&group, "PlasmaRunnerManager");
+    KConfigGroup pluginGroup = KConfigGroup(&managerGroup, "Plugins");
 
     KService::List offers = KServiceTypeTrader::self()->query("Plasma/Runner");
     Q_FOREACH(const KService::Ptr &service, offers) {
         KPluginInfo info(service);
+        info.setConfig(pluginGroup);
+        info.load();
         QListWidgetItem *item = createWidgetItem(info);
-        bool selected = selectedRunners.contains(info.pluginName());
-        item->setCheckState(selected ? Qt::Checked : Qt::Unchecked);
+        item->setCheckState(info.isPluginEnabled() ? Qt::Checked : Qt::Unchecked);
         m_listWidget->addItem(item);
     }
     m_listWidget->sortItems();
@@ -62,15 +69,12 @@ RunnerConfigurationWidget::RunnerConfigurationWidget(const KConfigGroup &group)
 
 void RunnerConfigurationWidget::save()
 {
-    QStringList runners;
-
     for (int idx = 0; idx < m_listWidget->count(); ++idx) {
         QListWidgetItem *item = m_listWidget->item(idx);
-        if (item->checkState() == Qt::Checked) {
-            runners << item->data(Qt::UserRole).toString();
-        }
+        KPluginInfo info = item->data(Qt::UserRole).value<KPluginInfo>();
+        info.setPluginEnabled(item->checkState() == Qt::Checked);
+        info.save();
     }
-    configGroup().writeEntry("whitelist", runners);
 }
 
 } // namespace Homerun
