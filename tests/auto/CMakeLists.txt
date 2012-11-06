@@ -45,8 +45,8 @@ include_directories(
 homerun_add_unit_test(tabmodeltest
     ${components_SOURCE_DIR}/tabmodel.cpp
     ${components_SOURCE_DIR}/sourcemodel.cpp
+    ${components_SOURCE_DIR}/sourceid.cpp
     ${lib_SOURCE_DIR}/private/abstractsourceregistry.cpp
-    ${lib_SOURCE_DIR}/sourceid.cpp
     )
 
 homerun_add_unit_test(sourcemodeltest
@@ -64,7 +64,6 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
-    ${lib_SOURCE_DIR}/sourceid.cpp
     )
 homerun_add_unit_test(dirmodeltest_x11
     ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
@@ -74,7 +73,6 @@ homerun_add_unit_test(dirmodeltest_x11
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
-    ${lib_SOURCE_DIR}/sourceid.cpp
     )
 
 # Definition of the "check" target

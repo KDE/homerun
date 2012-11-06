@@ -16,7 +16,6 @@ set(lib_SRCS
     abstractsource.cpp
     pathmodel.cpp
     sourceconfigurationwidget.cpp
-    sourceid.cpp
     )
 
 # Private classes

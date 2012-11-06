@@ -20,7 +20,6 @@
 #define SOURCEID_H
 
 // Local
-#include <homerun_export.h>
 
 // Qt
 #include <QHash>
@@ -28,12 +27,10 @@
 
 // KDE
 
-namespace Homerun {
-
 /**
  * The arguments of a source. Used within a SourceId instance.
  */
-class HOMERUN_EXPORT SourceArguments : public QHash<QString, QString>
+class SourceArguments : public QHash<QString, QString>
 {
 public:
     SourceArguments &add(const QString &key, const QString &value);
@@ -46,7 +43,7 @@ public:
 /**
  * Represents a source and its optional arguments
  */
-class HOMERUN_EXPORT SourceId
+class SourceId
 {
 public:
     void setName(const QString &);
@@ -64,7 +61,5 @@ private:
     QString m_name;
     SourceArguments m_arguments;
 };
-
-} // namespace Homerun
 
 #endif /* SOURCEID_H */
