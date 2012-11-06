@@ -30,9 +30,7 @@
 #include <favoriteplacesmodel.h>
 #include <powermodel.h>
 #include <runnermodel.h>
-/*
 #include <installedappsmodel.h>
-*/
 #include <sessionmodel.h>
 #include <sourceid.h>
 #include <sourceconfigurationdialog.h>
@@ -244,11 +242,11 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->m_favoriteModels.insert("app", new FavoriteAppsModel(this));
     d->m_favoriteModels.insert("place", new FavoritePlacesModel(this));
 
-    /*
     d->registerSource("InstalledApps", new InstalledAppsSource(this),
         i18n("Installed Applications"),
         i18n("Browse installed applications by categories")
     );
+    /*
     d->registerSource("GroupedInstalledApps", new GroupedInstalledAppsSource(this),
         i18n("All Installed Applications"),
         i18n("List all installed applications in a flat list, grouped by categories")

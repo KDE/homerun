@@ -30,7 +30,7 @@ set(lib_SRCS ${lib_SRCS}
     private/powermodel.cpp
     private/runnermodel.cpp
     private/runnerconfigurationwidget.cpp
-    #private/installedappsmodel.cpp
+    private/installedappsmodel.cpp
     private/sessionmodel.cpp
     private/sourceconfigurationdialog.cpp
     private/sourceregistry.cpp

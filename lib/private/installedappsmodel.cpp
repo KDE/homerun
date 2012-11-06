@@ -21,7 +21,6 @@
 // Local
 #include <pathmodel.h>
 #include <installedappsmodel.h>
-#include <sourceid.h>
 #include <sourceregistry.h>
 
 // Qt
@@ -42,13 +41,7 @@
 
 namespace Homerun {
 
-static QString sourceString(const QString &entryPath)
-{
-    SourceId sourceId;
-    sourceId.setName("InstalledApps");
-    sourceId.arguments().add("entryPath", entryPath);
-    return sourceId.toString();
-}
+static const char *SOURCE_ID = "InstalledApps";
 
 //- AbstractNode ---------------------------------------------------------------
 AbstractNode::~AbstractNode()
@@ -74,8 +67,9 @@ GroupNode::GroupNode(KServiceGroup::Ptr group, InstalledAppsModel *model)
 
 bool GroupNode::trigger()
 {
-    QString source = sourceString(m_entryPath);
-    QMetaObject::invokeMethod(m_model, "openSourceRequested", Q_ARG(QString, source));
+    QVariantMap args;
+    args.insert("entryPath", m_entryPath);
+    m_model->openSourceRequested(SOURCE_ID, args);
     return false;
 }
 
@@ -122,18 +116,19 @@ bool InstallerNode::trigger()
 }
 
 //- InstalledAppsModel ------------------------------------------------------------
-InstalledAppsModel::InstalledAppsModel (QObject *parent)
+InstalledAppsModel::InstalledAppsModel(const QString &entryPath, const QString &installer, QObject *parent)
 : QAbstractListModel(parent)
 , m_pathModel(new PathModel(this))
+, m_installer(installer)
 {
-    load(QString());
-
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(FavoriteIdRole, "favoriteId");
 
     setRoleNames(roles);
+
+    load(entryPath);
 }
 
 InstalledAppsModel::~InstalledAppsModel()
@@ -187,8 +182,9 @@ void InstalledAppsModel::load(const QString &entryPath)
     } else {
         KServiceGroup::Ptr group = KServiceGroup::group(entryPath);
         loadServiceGroup(group);
-        QString source = sourceString(entryPath);
-        m_pathModel->addPath(group->caption(), source);
+        QVariantMap args;
+        args.insert("entryPath", entryPath);
+        m_pathModel->addPath(group->caption(), SOURCE_ID, args);
     }
 
     endResetModel();
@@ -288,16 +284,24 @@ InstalledAppsSource::InstalledAppsSource(QObject *parent)
 : AbstractSource(parent)
 {}
 
-QAbstractItemModel *InstalledAppsSource::createModel(const SourceArguments &arguments)
+QAbstractItemModel *InstalledAppsSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
-    InstalledAppsModel *model = new InstalledAppsModel;
+    QString entryPath = group.readEntry("entryPath");
+    return createModel(entryPath);
+}
 
-    KConfigGroup group(registry()->config(), "PackageManagement");
-    model->m_installer = group.readEntry("categoryInstaller");
+QAbstractItemModel *InstalledAppsSource::createModelFromArguments(const QVariantMap &arguments)
+{
+    QString entryPath = arguments.value("entryPath").toString();
+    return createModel(entryPath);
+}
 
-    model->load(arguments.value("entryPath"));
+QAbstractItemModel *InstalledAppsSource::createModel(const QString &entryPath)
+{
+    KConfigGroup group(config(), "PackageManagement");
+    QString installer = group.readEntry("categoryInstaller");
 
-    return model;
+    return new InstalledAppsModel(entryPath, installer);
 }
 
 } // namespace Homerun

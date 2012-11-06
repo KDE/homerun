@@ -109,7 +109,7 @@ public:
         FavoriteIdRole = Qt::UserRole + 1,
     };
 
-    InstalledAppsModel(QObject *parent = 0);
+    InstalledAppsModel(const QString &entryPath, const QString &installer, QObject *parent = 0);
     ~InstalledAppsModel();
 
     int rowCount(const QModelIndex&) const;
@@ -124,7 +124,7 @@ public:
 
 Q_SIGNALS:
     void countChanged();
-    void openSourceRequested(const QString &source);
+    void openSourceRequested(const QString &sourceId, const QVariantMap &args);
 
 private:
     void loadRootEntries();
@@ -138,14 +138,18 @@ private:
 
     void load(const QString &entryPath);
 
-    friend class InstalledAppsSource;
+    friend class GroupNode;
 };
 
 class InstalledAppsSource : public AbstractSource
 {
 public:
     InstalledAppsSource(QObject *parent);
-    QAbstractItemModel *createModel(const SourceArguments &args);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group); // reimp
+    QAbstractItemModel *createModelFromArguments(const QVariantMap &arguments); // reimp
+
+private:
+    QAbstractItemModel *createModel(const QString &entryPath);
 };
 
 } // namespace Homerun
