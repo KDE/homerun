@@ -287,11 +287,9 @@ Item {
 
                             onRemoveRequested: {
                                 tabSourceModel.remove(delegateMain.viewIndex);
-                                main.updateSources();
                             }
                             onMoveRequested: {
                                 tabSourceModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
-                                main.updateSources();
                             }
 
                             onConfigureRequested: {

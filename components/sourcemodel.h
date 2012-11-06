@@ -58,6 +58,7 @@ public:
 
     Q_INVOKABLE void appendSource(const QString &sourceId);
     Q_INVOKABLE void recreateModel(int row);
+    Q_INVOKABLE void remove(int row);
 
 private:
     Homerun::AbstractSourceRegistry *m_sourceRegistry;

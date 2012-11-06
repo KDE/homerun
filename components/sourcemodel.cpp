@@ -172,4 +172,18 @@ void SourceModel::recreateModel(int row)
     dataChanged(idx, idx);
 }
 
+void SourceModel::remove(int row)
+{
+    if (row < 0 || row >= m_list.count()) {
+        kWarning() << "Invalid row" << row;
+        return;
+    }
+    beginRemoveRows(QModelIndex(), row, row);
+    SourceModelItem *item = m_list.takeAt(row);
+    item->m_group.deleteGroup();
+    delete item;
+    writeSourcesEntry();
+    endRemoveRows();
+}
+
 #include <sourcemodel.moc>
