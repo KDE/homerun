@@ -39,18 +39,13 @@ class GroupedInstalledAppsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit GroupedInstalledAppsModel(QObject *parent = 0);
+    explicit GroupedInstalledAppsModel(const QString &installer, QObject *parent = 0);
     ~GroupedInstalledAppsModel();
-
-    void init(AbstractSourceRegistry *registry);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
-
-    void setInstaller(const QString &installer);
-    QString installer() const;
 
 Q_SIGNALS:
     void installerChanged(const QString &);
@@ -60,9 +55,9 @@ private Q_SLOTS:
     void loadNextGroup();
 
 private:
+    QString m_installer;
     QList<KServiceGroup::Ptr> m_pendingGroupList;
     QList<InstalledAppsModel *> m_models;
-    AbstractSourceRegistry *m_registry;
 
     InstalledAppsModel *createInstalledAppsModel(KServiceGroup::Ptr group);
 };
@@ -71,7 +66,7 @@ class GroupedInstalledAppsSource : public AbstractSource
 {
 public:
     GroupedInstalledAppsSource(QObject *parent);
-    QAbstractItemModel *createModel(const SourceArguments &/*args*/);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &);
 };
 
 } // namespace Homerun

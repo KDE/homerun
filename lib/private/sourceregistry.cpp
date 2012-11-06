@@ -25,7 +25,7 @@
 #include <dirmodel.h>
 #include <favoriteappsmodel.h>
 
-//#include <groupedinstalledappsmodel.h>
+#include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
 #include <favoriteplacesmodel.h>
 #include <powermodel.h>
@@ -246,12 +246,10 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Installed Applications"),
         i18n("Browse installed applications by categories")
     );
-    /*
     d->registerSource("GroupedInstalledApps", new GroupedInstalledAppsSource(this),
         i18n("All Installed Applications"),
         i18n("List all installed applications in a flat list, grouped by categories")
     );
-    */
     d->registerSource("Dir", new DirSource(this),
         i18n("Folder"),
         i18n("List the content of a folder and let you browse into sub-folders")

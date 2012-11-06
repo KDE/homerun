@@ -25,7 +25,7 @@ set(lib_SRCS ${lib_SRCS}
     private/dirconfigurationwidget.cpp
     private/dirmodel.cpp
     private/favoriteappsmodel.cpp
-    #private/groupedinstalledappsmodel.cpp
+    private/groupedinstalledappsmodel.cpp
     private/favoriteplacesmodel.cpp
     private/powermodel.cpp
     private/runnermodel.cpp
