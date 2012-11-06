@@ -35,6 +35,9 @@ namespace Homerun
 /**
  * Defines the API of the SourceRegistry. Make it possible to mock the
  * SourceRegistry in unit-tests.
+ *
+ * Methods of this class cannot be pure virtual because AbstractSourceRegistry
+ * needs to be declared as a QML component to be usable in TabModel.
  */
 class HOMERUN_EXPORT AbstractSourceRegistry : public QObject
 {
@@ -43,8 +46,6 @@ public:
     AbstractSourceRegistry(QObject *parent = 0);
     ~AbstractSourceRegistry();
 
-    // Cannot be pure virtual because AbstractSourceRegistry needs to be
-    // declared as a QML component to be usable in TabModel.
     virtual QObject *createModelFromConfigGroup(const QString &sourceId, const KConfigGroup &configGroup, QObject *parent);
 };
 
