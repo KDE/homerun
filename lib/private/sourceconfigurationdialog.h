@@ -20,7 +20,6 @@
 #define SOURCECONFIGURATIONDIALOG_H
 
 // Local
-#include <sourceid.h>
 
 // Qt
 

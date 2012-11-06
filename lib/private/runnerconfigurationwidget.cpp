@@ -20,7 +20,6 @@
 #include <runnerconfigurationwidget.h>
 
 // Local
-#include <sourceid.h>
 
 // KDE
 #include <KDebug>

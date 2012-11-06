@@ -21,7 +21,6 @@
 
 // Local
 #include <homerun_export.h>
-#include <sourceid.h>
 
 // Qt
 #include <QWidget>

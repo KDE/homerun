@@ -20,7 +20,6 @@
 
 // Local
 #include <dirmodel.h>
-#include <sourceid.h>
 
 // KDE
 #include <KDebug>

@@ -22,7 +22,6 @@
 // Local
 #include <abstractsourceregistry.h>
 #include <installedappsmodel.h>
-#include <sourceid.h>
 
 // KDE
 #include <KConfigGroup>

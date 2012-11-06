@@ -32,7 +32,6 @@
 #include <runnermodel.h>
 #include <installedappsmodel.h>
 #include <sessionmodel.h>
-#include <sourceid.h>
 #include <sourceconfigurationdialog.h>
 
 // KDE
@@ -218,17 +217,6 @@ struct SourceRegistryPrivate
         }
         return sourceInfo->source;
     }
-
-    AbstractSource *sourceBySourceString(const QString &sourceString)
-    {
-        bool ok;
-        SourceId sourceId = SourceId::fromString(sourceString, &ok);
-        if (!ok) {
-            kWarning() << "Invalid sourceString" << sourceString;
-            return 0;
-        }
-        return sourceByName(sourceId.name());
-    }
 };
 
 //- SourceRegistry --------------------------------------------
@@ -381,27 +369,21 @@ QObject *SourceRegistry::availableSourcesModel() const
     return d->m_availableSourcesModel;
 }
 
-QString SourceRegistry::visibleNameForSource(const QString &sourceString) const
+QString SourceRegistry::visibleNameForSource(const QString &sourceId) const
 {
-    bool ok;
-    SourceId sourceId = SourceId::fromString(sourceString, &ok);
-    if (!ok) {
-        kWarning() << "Invalid sourceString" << sourceString;
-        return QString();
-    }
-    SourceInfo *info = d->m_sourceInfoByName.value(sourceId.name());
+    SourceInfo *info = d->m_sourceInfoByName.value(sourceId);
     if (!info) {
-        kWarning() << "No source for" << sourceString;
+        kWarning() << "No source for" << sourceId;
         return QString();
     }
     return info->visibleName;
 }
 
-bool SourceRegistry::isSourceConfigurable(const QString &sourceString) const
+bool SourceRegistry::isSourceConfigurable(const QString &sourceId) const
 {
-    AbstractSource *source = d->sourceBySourceString(sourceString);
+    AbstractSource *source = d->sourceByName(sourceId);
     if (!source) {
-        kWarning() << "No source for" << sourceString;
+        kWarning() << "No source for" << sourceId;
         return false;
     }
     return source->isConfigurable();

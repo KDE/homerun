@@ -24,11 +24,14 @@
 #include <KLocale>
 
 // Local
-#include <sourceid.h>
 #include <sourcemodel.h>
 #include <sourceregistry.h>
 
 #define MIGRATE_V1_CONFIG_FILE_FORMAT
+
+#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
+#include <sourceid.h>
+#endif
 
 using namespace Homerun;
 

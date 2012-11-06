@@ -23,7 +23,6 @@
 #include <dirconfigurationwidget.h>
 #include <pathmodel.h>
 #include <favoriteplacesmodel.h>
-#include <sourceid.h>
 
 // KDE
 #include <KConfigGroup>
