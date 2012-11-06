@@ -30,6 +30,7 @@ namespace Homerun {
 
 struct AbstractSourcePrivate
 {
+    KSharedConfig::Ptr m_config;
 };
 
 AbstractSource::AbstractSource(QObject *parent, const QVariantList &/*args*/)
@@ -56,6 +57,16 @@ bool AbstractSource::isConfigurable() const
 SourceConfigurationWidget *AbstractSource::createConfigurationWidget(const KConfigGroup &)
 {
     return 0;
+}
+
+KSharedConfig::Ptr AbstractSource::config() const
+{
+    return d->m_config;
+}
+
+void AbstractSource::setConfig(const KSharedConfig::Ptr& config)
+{
+    d->m_config = config;
 }
 
 } // namespace Homerun

@@ -183,6 +183,7 @@ struct SourceRegistryPrivate
             kWarning() << "Failed to create source from plugin (desktop file: " << sourceInfo->service->entryPath() << ", source:" << sourceInfo->name << ")";
             return;
         }
+        source->setConfig(m_config);
         sourceInfo->source = source;
     }
 
@@ -278,12 +279,6 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Perform searchs using a selection of runners")
     );
 
-    /*
-    Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
-        sourceInfo->source->init(this);
-    }
-    */
-
     d->listSourcePlugins();
 }
 
@@ -376,6 +371,12 @@ void SourceRegistry::setConfigFileName(const QString &name)
         return;
     }
     d->m_config = KSharedConfig::openConfig(name);
+    Q_FOREACH(SourceInfo *sourceInfo, d->m_sourceInfos) {
+        AbstractSource *source = sourceInfo->source;
+        if (source) {
+            source->setConfig(d->m_config);
+        }
+    }
     configFileNameChanged(name);
 }
 

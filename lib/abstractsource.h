@@ -33,6 +33,9 @@ class QAbstractItemModel;
 
 namespace Homerun {
 
+class SourceRegistry;
+class SourceRegistryPrivate;
+
 class SourceConfigurationWidget;
 
 class AbstractSourcePrivate;
@@ -63,8 +66,21 @@ public:
 
     virtual SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
 
+    /**
+     * Returns the homerun config file
+     */
+    KSharedConfig::Ptr config() const;
+
 private:
     AbstractSourcePrivate * const d;
+
+    /**
+     * @internal
+     */
+    void setConfig(const KSharedConfig::Ptr&);
+
+    friend class SourceRegistry;
+    friend class SourceRegistryPrivate;
 };
 
 /**
