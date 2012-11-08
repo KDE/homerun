@@ -148,6 +148,9 @@ public:
     QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group); // reimp
     QAbstractItemModel *createModelFromArguments(const QVariantMap &arguments); // reimp
 
+    bool isConfigurable() const; // reimp
+    SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group); // reimp
+
 private:
     QAbstractItemModel *createModel(const QString &entryPath);
 };

@@ -21,6 +21,7 @@
 // Local
 #include <pathmodel.h>
 #include <installedappsmodel.h>
+#include <installedappsconfigurationwidget.h>
 #include <sourceregistry.h>
 
 // Qt
@@ -302,6 +303,16 @@ QAbstractItemModel *InstalledAppsSource::createModel(const QString &entryPath)
     QString installer = group.readEntry("categoryInstaller");
 
     return new InstalledAppsModel(entryPath, installer);
+}
+
+bool InstalledAppsSource::isConfigurable() const
+{
+    return true;
+}
+
+SourceConfigurationWidget *InstalledAppsSource::createConfigurationWidget(const KConfigGroup &group)
+{
+    return new InstalledAppsConfigurationWidget(group);
 }
 
 } // namespace Homerun

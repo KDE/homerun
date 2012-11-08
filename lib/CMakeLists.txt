@@ -30,6 +30,7 @@ set(lib_SRCS ${lib_SRCS}
     private/runnermodel.cpp
     private/runnerconfigurationwidget.cpp
     private/installedappsmodel.cpp
+    private/installedappsconfigurationwidget.cpp
     private/sessionmodel.cpp
     private/sourceconfigurationdialog.cpp
     private/sourceregistry.cpp
@@ -37,6 +38,7 @@ set(lib_SRCS ${lib_SRCS}
 
 kde4_add_ui_files(lib_SRCS
     private/dirconfigurationwidget.ui
+    private/installedappsconfigurationwidget.ui
     private/runnerconfigurationwidget.ui
     )
 
