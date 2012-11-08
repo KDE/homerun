@@ -44,12 +44,9 @@ InstalledAppsConfigurationWidget::InstalledAppsConfigurationWidget(const KConfig
 : SourceConfigurationWidget(group)
 , m_ui(new Ui_InstalledAppsConfigurationWidget)
 , m_model(new QStandardItemModel(this))
-, m_defaultItem(0)
 {
-    m_defaultEntryPath = group.readEntry("entryPath");
-
     // Init model
-    fillModel();
+    QStandardItem *defaultItem = fillModel(group.readEntry("entryPath"));
     m_model->setSortRole(SortRole);
     m_model->sort(0);
 
@@ -57,8 +54,8 @@ InstalledAppsConfigurationWidget::InstalledAppsConfigurationWidget(const KConfig
     m_ui->treeView->setModel(m_model);
 
     // Select currently configured item
-    Q_ASSERT(m_defaultItem);
-    QModelIndex index = m_defaultItem->index();
+    Q_ASSERT(defaultItem);
+    QModelIndex index = defaultItem->index();
     m_ui->treeView->selectionModel()->select(index, QItemSelectionModel::Select);
 
     // Expand up to the configured item
@@ -87,46 +84,59 @@ void InstalledAppsConfigurationWidget::save()
     configGroup().writeEntry("entryPath", entryPath);
 }
 
-void InstalledAppsConfigurationWidget::fillModel()
+
+// Helper struct for fillModel
+struct ItemCreator
 {
-    KServiceGroup::Ptr group = KServiceGroup::root();
-    QStandardItem *item = new QStandardItem;
-    item->setText(i18n("All Applications"));
-    item->setData(QString(), EntryPathRole);
-    m_model->appendRow(item);
-    m_defaultItem = item;
+    ItemCreator()
+    : m_item(0)
+    {}
+    QString m_entryPath;
+    QStandardItem *m_item;
 
-    createItemChildren(item, group);
-}
+    void createItemChildren(QStandardItem *parent, KServiceGroup::Ptr parentGroup)
+    {
+        KServiceGroup::List list = parentGroup->entries(false /* sorted: set to false as it does not seem to work */);
 
-void InstalledAppsConfigurationWidget::createItemChildren(QStandardItem *parent, KServiceGroup::Ptr parentGroup)
-{
-    KServiceGroup::List list = parentGroup->entries(false /* sorted: set to false as it does not seem to work */);
+        Q_FOREACH(const KSycocaEntry::Ptr entry, list) {
+            if (!entry->isType(KST_KServiceGroup)) {
+                continue;
+            }
+            KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast(entry);
 
-    Q_FOREACH(const KSycocaEntry::Ptr entry, list) {
-        if (!entry->isType(KST_KServiceGroup)) {
-            continue;
-        }
-        KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast(entry);
+            if (group->noDisplay() || group->childCount() == 0) {
+                continue;
+            }
+            QString entryPath = group->entryPath();
 
-        if (group->noDisplay() || group->childCount() == 0) {
-            continue;
-        }
-        QString entryPath = group->entryPath();
+            QStandardItem *item = new QStandardItem;
+            item->setText(group->caption());
+            item->setIcon(KIcon(group->icon()));
+            item->setData(entryPath, EntryPathRole);
+            item->setData(group->caption().toLower(), SortRole);
 
-        QStandardItem *item = new QStandardItem;
-        item->setText(group->caption());
-        item->setIcon(KIcon(group->icon()));
-        item->setData(entryPath, EntryPathRole);
-        item->setData(group->caption().toLower(), SortRole);
+            parent->appendRow(item);
+            createItemChildren(item, group);
 
-        parent->appendRow(item);
-        createItemChildren(item, group);
-
-        if (m_defaultEntryPath == entryPath) {
-            m_defaultItem = item;
+            if (m_entryPath == entryPath) {
+                m_item = item;
+            }
         }
     }
+};
+
+QStandardItem *InstalledAppsConfigurationWidget::fillModel(const QString &entryPath)
+{
+    KServiceGroup::Ptr group = KServiceGroup::root();
+    QStandardItem *rootItem = new QStandardItem;
+    rootItem->setText(i18n("All Applications"));
+    rootItem->setData(QString(), EntryPathRole);
+    m_model->appendRow(rootItem);
+
+    ItemCreator creator;
+    creator.m_entryPath = entryPath;
+    creator.createItemChildren(rootItem, group);
+    return creator.m_item ? creator.m_item : rootItem;
 }
 
 } // namespace Homerun

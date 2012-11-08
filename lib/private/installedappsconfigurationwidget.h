@@ -51,11 +51,10 @@ private:
     Ui_InstalledAppsConfigurationWidget *m_ui;
     QStandardItemModel *m_model;
 
-    void fillModel();
-    void createItemChildren(QStandardItem *, KServiceGroup::Ptr group);
-
-    QString m_defaultEntryPath;
-    QStandardItem *m_defaultItem;
+    /**
+     * Fill m_model, returns the item which corresponds to defaultEntryPath
+     */
+    QStandardItem *fillModel(const QString &defaultEntryPath);
 };
 
 } // namespace Homerun
