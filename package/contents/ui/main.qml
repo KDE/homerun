@@ -80,7 +80,7 @@ Item {
     }
 
     HomerunComponents.TabBar {
-        id: filterTabBar
+        id: tabBar
 
         property bool selectNewTab: false
 
@@ -155,14 +155,14 @@ Item {
     PlasmaComponents.ToolButton {
         id: addTabButton
         anchors {
-            left: filterTabBar.right
-            top: filterTabBar.top
-            bottom: filterTabBar.bottom
+            left: tabBar.right
+            top: tabBar.top
+            bottom: tabBar.bottom
         }
         opacity: configureMode ? 1 : 0
         iconSource: "list-add"
         onClicked: {
-            filterTabBar.selectNewTab = true;
+            tabBar.selectNewTab = true;
             tabModel.appendRow();
         }
     }
@@ -173,8 +173,8 @@ Item {
 
         anchors {
             right: configButton.left
-            top: filterTabBar.top
-            bottom: filterTabBar.bottom
+            top: tabBar.top
+            bottom: tabBar.bottom
         }
 
         width: parent.width / 4
@@ -199,8 +199,8 @@ Item {
         id: configButton
         anchors {
             right: parent.right
-            top: filterTabBar.top
-            bottom: filterTabBar.bottom
+            top: tabBar.top
+            bottom: tabBar.bottom
             rightMargin: parent.rightMargin
         }
         iconSource: "configure"
@@ -247,7 +247,7 @@ Item {
     Item {
         id: content
         anchors {
-            top: filterTabBar.bottom
+            top: tabBar.bottom
             bottom: parent.bottom
             left: parent.left
             right: parent.right
@@ -323,7 +323,7 @@ Item {
     }
 
     function reset() {
-        filterTabBar.currentIndex = 0;
+        tabBar.currentIndex = 0;
         for (idx = 0; idx < tabGroup.data.length; ++idx) {
             var tabContent = tabGroup.data[idx];
             if (tabContent && tabContent.reset) {
@@ -337,8 +337,8 @@ Item {
 
     Keys.onPressed: {
         var lst = [
-            [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.decrementCurrentIndex],
-            [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.incrementCurrentIndex],
+            [Qt.ControlModifier, Qt.Key_PageUp, tabBar.decrementCurrentIndex],
+            [Qt.ControlModifier, Qt.Key_PageDown, tabBar.incrementCurrentIndex],
             [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
             [null,               "/", searchField.forceActiveFocus],
         ];
