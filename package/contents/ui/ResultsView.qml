@@ -127,8 +127,8 @@ FocusScope {
             width: main.resultItemWidth
             configureMode: main.configureMode
 
-            currentText: model.display
-            currentIcon: model.decoration
+            text: model.display
+            icon: model.decoration
             favoriteIcon: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
                 if (favoriteModel === null) {
@@ -206,7 +206,7 @@ FocusScope {
                     "activeFocus=" + gridView.activeFocus
                 + "\ncurrentIndex=" + gridView.currentIndex
                 + "\ncurrentItem.activeFocus=" + (gridView.currentItem ? gridView.currentItem.activeFocus : "-")
-                + "\ncurrentItem.label=" + (gridView.currentItem ? gridView.currentItem.currentText : "-")
+                + "\ncurrentItem.label=" + (gridView.currentItem ? gridView.currentItem.text : "-")
         }
         */
 
@@ -261,7 +261,7 @@ FocusScope {
         property Item target: (gridView.currentItem && gridView.currentItem.highlighted && gridView.currentItem.truncated) ? gridView.currentItem : null
         width: label.width + margins.left + margins.right
         height: label.height + margins.top + margins.bottom
-        
+
         opacity: target ? 1 : 0
 
         onTargetChanged: {
@@ -269,7 +269,7 @@ FocusScope {
                 // Manually update these properties so that they do not get reset as soon as target becomes null:
                 // we don't want the properties to be updated then because we need to keep the old text and coordinates
                 // while the tooltip is fading out.
-                label.text = target.currentText;
+                label.text = target.text;
                 x = tooltipX();
                 y = target.y;
             }

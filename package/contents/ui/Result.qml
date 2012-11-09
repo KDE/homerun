@@ -30,8 +30,8 @@ Item {
     // Set by others
     property int iconWidth: 64
     property string favoriteIcon
-    property alias currentText: resultLabel.text
-    property alias currentIcon: resultIcon.icon
+    property alias text: resultLabel.text
+    property alias icon: resultIcon.icon
     property bool configureMode: false
 
     // Exposed by us
@@ -45,10 +45,6 @@ Item {
     // button to reach item B, then B.highlighted should become true and
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
-
-    // For the log-focused-item feature
-    // FIXME: currentText should be renamed to text and this property dropped
-    property alias text: resultLabel.text
 
     signal clicked
     signal favoriteClicked
