@@ -39,3 +39,7 @@ Oxygen: it use white text on white background.
 
 ### Keep placeholder text visible when focused and empty
 Review request needs to be filed for this
+
+## ScrollArea (kde-runtime)
+A copy from kde-runtime master. This is needed because this component does not
+exist in KDE 4.8.
