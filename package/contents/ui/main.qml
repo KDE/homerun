@@ -57,7 +57,7 @@ Item {
 
     // UI
     Component {
-        id: tabContent
+        id: tabContentComponent
         TabContent {
             id: tabContentMain
             property Item tabButton
@@ -136,7 +136,7 @@ Item {
         }
 
         function createTabContent(tabButton) {
-            tabButton.tab = tabContent.createObject(tabGroup, {
+            tabButton.tab = tabContentComponent.createObject(tabGroup, {
                 tabSourceModel: tabButton.tabSourceModel,
                 sourceRegistry: sourceRegistry,
                 tabButton: tabButton,
