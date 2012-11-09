@@ -82,7 +82,6 @@ Signals:
 
 import QtQuick 1.1
 import org.kde.plasma.components 0.1
-import "private/AppManager.js" as Utils
 import "private" as Private
 
 Item {
