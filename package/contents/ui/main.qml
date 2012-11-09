@@ -82,6 +82,8 @@ Item {
     HomerunComponents.TabBar {
         id: filterTabBar
 
+        property bool selectNewTab: false
+
         anchors {
             top: parent.top
             topMargin: main.topMargin
@@ -140,6 +142,13 @@ Item {
                 tabButton: tabButton,
             });
         }
+
+        onCountChanged: {
+            if (selectNewTab) {
+                selectNewTab = false;
+                currentIndex = count - 1;
+            }
+        }
     }
 
     // Add tab button
@@ -152,7 +161,10 @@ Item {
         }
         opacity: configureMode ? 1 : 0
         iconSource: "list-add"
-        onClicked: tabModel.appendRow();
+        onClicked: {
+            filterTabBar.selectNewTab = true;
+            tabModel.appendRow();
+        }
     }
 
     // Search area

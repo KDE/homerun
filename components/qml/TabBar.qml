@@ -81,6 +81,7 @@ Item {
     property alias delegate: listView.delegate
     property alias currentIndex: listView.currentIndex
     property alias currentItem: listView.currentItem
+    property alias count: listView.count
 
     function incrementCurrentIndex() {
         listView.incrementCurrentIndex();
