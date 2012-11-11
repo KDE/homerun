@@ -356,8 +356,8 @@ void TabModel::appendRow()
         return;
     }
 
-    Tab *tab = new Tab;
-    tab->m_group = m_config->group(QLatin1String(TAB_GROUP_PREFIX) + QString::number(lastId + 1));
+    KConfigGroup tabGroup = m_config->group(QLatin1String(TAB_GROUP_PREFIX) + QString::number(lastId + 1));
+    Tab *tab = Tab::createFromGroup(tabGroup, this);
 
     int count = m_tabList.count();
     beginInsertRows(QModelIndex(), count, count);

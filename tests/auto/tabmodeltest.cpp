@@ -315,15 +315,23 @@ void TabModelTest::testAppendRow()
 
     QSignalSpy aboutInsertedSpy(&model, SIGNAL(rowsAboutToBeInserted(QModelIndex, int, int)));
     QSignalSpy insertedSpy(&model, SIGNAL(rowsInserted(QModelIndex, int, int)));
-    model.appendRow();
-    QCOMPARE(model.rowCount(), 2);
 
+    // Append row
+    model.appendRow();
+
+    // Check model
+    QCOMPARE(model.rowCount(), 2);
+    QVariant sourceModelVariant = model.index(1, 0).data(TabModel::SourceModelRole);
+    QVERIFY(sourceModelVariant.value<QObject*>());
+
+    // Check config
     QVERIFY(config->hasGroup("Tab1"));
     QVERIFY(config->group("Tab1").hasKey("name"));
     QString name = config->group("Tab1").readEntry("name");
     QCOMPARE(name, QString());
     QCOMPARE(getTabList(config), QStringList() << "Tab0" << "Tab1");
 
+    // Check signals
     QCOMPARE(aboutInsertedSpy.count(), 1);
     QVariantList args = aboutInsertedSpy.takeFirst();
     QVERIFY(!args[0].value<QModelIndex>().isValid());
