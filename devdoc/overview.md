@@ -5,6 +5,11 @@ of documents are always in danger of becoming obsolete. If you find that
 something written there is unclear or looks outdated, get in touch with us so
 we can improve or refresh it.
 
+# Developing sources
+
+If you want to create your own sources, make sure you build libhomerun
+documentation with `make dox` and have a look at the `helloworld` dir in this dir.
+
 # QML side
 
 Main window is in main.qml
