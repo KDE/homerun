@@ -188,7 +188,7 @@ QAbstractItemModel *DirSource::createModelFromArguments(const QVariantMap &args)
 
 QAbstractItemModel *DirSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
-    KUrl rootUrl = group.readEntry("rootUrl", KUrl());
+    KUrl rootUrl = group.readPathEntry("rootUrl", QDir::homePath());
     QString rootName = group.readEntry("rootName", QString());
     return createModel(rootUrl, rootName, KUrl());
 }

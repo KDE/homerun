@@ -27,6 +27,7 @@
 #include <KUrlRequester>
 
 // Qt
+#include <QDir>
 #include <QVBoxLayout>
 
 using namespace Homerun;
@@ -40,7 +41,7 @@ DirConfigurationWidget::DirConfigurationWidget(const KConfigGroup &group)
     QFont helpFont = KGlobalSettings::smallestReadableFont();
     m_ui->titleHelpLabel->setFont(helpFont);
 
-    KUrl url = group.readEntry("rootUrl", KUrl());
+    KUrl url = group.readPathEntry("rootUrl", QDir::homePath());
     if (url.isValid()) {
         m_ui->urlRequester->setUrl(url);
     }
@@ -58,7 +59,7 @@ void DirConfigurationWidget::save()
     KUrl url = m_ui->urlRequester->url().url();
     QString title = m_ui->titleLineEdit->text();
 
-    configGroup().writeEntry("rootUrl", url);
+    configGroup().writePathEntry("rootUrl", url.url());
     configGroup().writeEntry("rootName", title);
 }
 
