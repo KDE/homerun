@@ -33,13 +33,12 @@ Comment[x-test]=xxAn application launcherxx
 
 Type=Service
 ServiceTypes=Plasma/Applet
-Icon=kde
+Icon=homerun
 
 X-KDE-Library=plasma_applet_homerunlauncher
-X-KDE-PluginInfo-Author=Shaun M. Reich
-X-KDE-PluginInfo-Email=shaun.reich@blue-systems.com
+X-KDE-PluginInfo-Author=Homerun Developers
 X-KDE-PluginInfo-Name=homerunlauncher
-X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-Version=@HOMERUN_VERSION@
 X-KDE-PluginInfo-Website=
 X-KDE-PluginInfo-Category=
 X-KDE-PluginInfo-Depends=

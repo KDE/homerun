@@ -49,12 +49,6 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 # configuration file
 configure_file(homerun_config.h.in ${CMAKE_BINARY_DIR}/homerun_config.h @ONLY)
 
-# package/
-install(DIRECTORY package/
-        DESTINATION ${DATA_INSTALL_DIR}/plasma/plasmoids/org.kde.homerun)
-
-install(FILES package/metadata.desktop DESTINATION ${SERVICES_INSTALL_DIR} RENAME plasma-applet-homerun.desktop)
-
 # config/
 install(FILES config/homerunrc DESTINATION ${CONFIG_INSTALL_DIR})
 
@@ -65,4 +59,5 @@ add_subdirectory(components)
 add_subdirectory(fixes)
 add_subdirectory(tests)
 add_subdirectory(icons)
+add_subdirectory(package)
 add_subdirectory(plugins)
