@@ -41,7 +41,18 @@ class SourceConfigurationWidget;
 class AbstractSourcePrivate;
 
 /**
- * Base class to implement homerun sources
+ * Base class to implement Homerun sources
+ *
+ * The job of a source is to allow Homerun to instantiate models.
+ * The models are what show the items in Homerun tabs.
+ *
+ * You don't need to inherit from this class if you want to write a simple
+ * source, look at the SimpleSource class instead.
+ *
+ * A source can be configurable, to make it configurable, reimplement
+ * isConfigurable() to return true, and reimplement createConfigurationWidget()
+ * to return a SourceConfigurationWidget initialized from the source
+ * configuration.
  */
 class HOMERUN_EXPORT AbstractSource : public QObject
 {
@@ -51,13 +62,17 @@ public:
     ~AbstractSource();
 
     /**
-     * You must reimplement this method to create a source from a config group
+     * The main method. You must reimplement this method to create a model from
+     * a configuration group.
+     *
+     * @param group The configuration group to read from
+     * @return a Qt model, exposing Homerun roles and properties
      */
     virtual QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group) = 0;
 
     /**
-     * If you want your source to be usable from other sources using the openSourceRequested() signal,
-     * you must reimplement this method as well.
+     * If you want your source to be usable from other sources using the
+     * openSourceRequested() signal, you must reimplement this method.
      * It returns a null pointer by default.
      *
      * Note: it would have made more sense for args to be a QVariantHash as the
@@ -65,15 +80,44 @@ public:
      * a C++ -> QML -> C++ problem: When a QVariantHash is exposed to QML it is
      * turned into a JavaScript Object, but when this Object is passed back to
      * C++, it is turned into a QVariantMap, not a QVariantHash.
+     *
+     * @param args A map of named arguments
+     * @return a Qt model, exposing Homerun roles and properties
      */
     virtual QAbstractItemModel *createModelFromArguments(const QVariantMap &args);
 
+    /**
+     * Indicates whether this source is configurable.
+     *
+     * When configuring Homerun tabs, Homerun shows a configure button for
+     * configurable sources. When the configure button is clicked, Homerun calls
+     * createConfigurationWidget() and shows a dialog with the returned widget.
+     *
+     * Default implementation returns false.
+     *
+     * @return Whether this source is configurable or not
+     *
+     */
     virtual bool isConfigurable() const;
 
+    /**
+     * Returns a widget to configure the source. See SourceConfigurationWidget
+     * for more details.
+     *
+     * isConfigurable() must have been reimplemented to return true for this
+     * method to be called.
+     *
+     * @param group The configuration group for this source
+     * @return A SourceConfigurationWidget ready to be shown by Homerun
+     */
     virtual SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
 
     /**
-     * Returns the homerun config file
+     * Returns a KSharedConfig for Homerun configuration. You most likely do not
+     * need this, configuration should usually be done through
+     * SourceConfigurationWidget.
+     *
+     * @return A KSharedConfig for Homerun configuration
      */
     KSharedConfig::Ptr config() const;
 

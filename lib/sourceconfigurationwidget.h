@@ -41,11 +41,26 @@ class HOMERUN_EXPORT SourceConfigurationWidget : public QWidget
 {
     Q_OBJECT
 public:
+    /**
+     * Creates a configuration widget, initialized to show the configuration
+     * from group
+     *
+     * @param group KConfigGroup to read configuration from
+     * @param parent QWidget which will be the parent of this widget
+     */
     SourceConfigurationWidget(const KConfigGroup &group, QWidget *parent = 0);
     ~SourceConfigurationWidget();
 
+    /**
+     * This method must save configuration changes to configGroup().
+     * Homerun takes care of calling KConfig::sync() to ensure changes are
+     * stored to disk.
+     */
     virtual void save() = 0;
 
+    /**
+     * Returns the config group which was passed to the constructor.
+     */
     KConfigGroup configGroup() const;
 
 private:
