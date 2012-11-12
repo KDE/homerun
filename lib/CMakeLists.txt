@@ -67,6 +67,12 @@ target_link_libraries(homerun
     ${KDE4WORKSPACE_KWORKSPACE_LIBS}
     )
 
+# Doxygen
+configure_file(Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+add_custom_target(dox COMMAND
+    doxygen
+    )
+
 # Install
 ## Headers
 install(DIRECTORY .
