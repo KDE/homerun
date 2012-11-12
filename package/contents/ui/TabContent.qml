@@ -256,8 +256,12 @@ Item {
 
     function openSource(sourceId, sourceArguments) {
         var tabSourceModel = dynamicTabSourceModelComponent.createObject(main);
+        // This tabSourceModel should look-like the C++ SourceModel used when
+        // tab content is loaded from the config file.
         tabSourceModel.append({
-            model: sourceRegistry.createModelFromArguments(sourceId, sourceArguments, tabSourceModel)
+            sourceId: sourceId,
+            model: sourceRegistry.createModelFromArguments(sourceId, sourceArguments, tabSourceModel),
+            configGroup: null
         })
         var page = createPage(tabSourceModel, { "showHeader": false });
         TabContentInternal.addPage(page);
