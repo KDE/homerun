@@ -53,6 +53,8 @@ class AbstractSourcePrivate;
  * isConfigurable() to return true, and reimplement createConfigurationWidget()
  * to return a SourceConfigurationWidget initialized from the source
  * configuration.
+ *
+ * @see @ref homerunmodel
  */
 class HOMERUN_EXPORT AbstractSource : public QObject
 {

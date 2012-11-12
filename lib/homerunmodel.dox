@@ -1,4 +1,24 @@
-# Features of a Homerun-friendly model
+/*
+ * Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Library General Public License for more details
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+/**
+@page homerunmodel Homerun models
 
 Homerun models make heavy use of Qt introspection and duck-typing. This
 document describes the mandatory and optional roles, properties and signals of a
@@ -8,12 +28,12 @@ Homerun model.
 ### string display
 - mandatory: yes
 
-Item text
+The item text.
 
 ### string|QIcon decoration
 - mandatory: yes
 
-Name of the item icon
+The item icon, as a string or as a QIcon.
 
 ### string favoriteId
 - mandatory: no
@@ -41,11 +61,11 @@ view associated with the model.
 Returns current number of rows. Most often it will simply return
 rowCount(QModelIndex()).
 
-### PathModel pathModel
+### Homerun::PathModel pathModel
 - access: read-only
 - mandatory: no
 
-Used for models which can be navigated through. Returns a PathModel instance
+Used for models which can be navigated through. Returns a Homerun::PathModel instance
 representing the position inside the model.
 
 ### bool running
@@ -71,33 +91,13 @@ Triggers the action associated with the item at row "row". Returns true if you
 want Homerun to close, false otherwise.
 
 ## Signals
-## openSourceRequested(QString sourceId, const QVariantMap &arguments)
+### openSourceRequested(QString sourceId, const QVariantMap &arguments)
 - mandatory: no
 
 Emitted by a model when it wants another source to be opened by the view. This
 is used for example to open a browsable model in a subdir.
 
 Note: If you want to be able to access your model this way, you need to
-implement AbstractSource::createModelFromArguments().
+implement Homerun::AbstractSource::createModelFromArguments().
 
-
-# Features of a Homerun-friendly favorite model
-
-## Properties
-### string favoritePrefix
-- access: read-only
-- mandatory: yes
-
-Returns the favoriteId prefix this model handles. For example, the model storing
-favorite applications returns "app". The model storing favorite places returns
-"place".
-
-## Methods
-### bool isFavorite(string favoriteId) const
-- mandatory: yes
-
-### void addFavorite(string favoriteId)
-- mandatory: yes
-
-### void removeFavorite(string favoriteId)
-- mandatory: yes
+*/
