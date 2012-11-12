@@ -43,8 +43,6 @@ HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
 
 void HomerunLauncher::init()
 {
-    setGlobalShortcut(KShortcut(Qt::ALT | Qt::Key_F1));
-
     QGraphicsLinearLayout *layout = new QGraphicsLinearLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
 
