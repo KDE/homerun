@@ -46,11 +46,11 @@ static inline KFileItem itemForIndex(const QModelIndex &index)
 //- DirModel ------------------------------------------------------
 QVariantMap DirModel::sourceArguments(const KUrl &rootUrl, const QString &rootName, const KUrl &url)
 {
-    QVariantMap map;
-    map.insert("rootUrl", rootUrl.url());
-    map.insert("rootName", rootName);
-    map.insert("url", url.url());
-    return map;
+    QVariantMap args;
+    args.insert("rootUrl", rootUrl.url());
+    args.insert("rootName", rootName);
+    args.insert("url", url.url());
+    return args;
 }
 
 
