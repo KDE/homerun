@@ -45,17 +45,15 @@ sourceId=Runner
 whitelist=services,shell
 
 [Tab2]
-name=Documents
+name=Files
 icon=folder-documents
-sources=Source0,Source1,Source2
+sources=Source0,Source1
 
 [Tab2][Source0]
-sourceId=FavoritePlaces
+sourceId=Dir
+rootUrl=$HOME
 
 [Tab2][Source1]
-sourceId=RecentDocuments
-
-[Tab2][Source2]
 sourceId=Runner
 whitelist=bookmarks,nepomuksearch,youtube
 
