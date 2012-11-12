@@ -164,7 +164,6 @@ Item {
                 model: currentPage.pathModel
                 delegate: PlasmaComponents.ToolButton {
                     height: breadcrumbRow.height
-                    property string source: model.source
 
                     flat: false
                     checked: model.index == currentPage.pathModel.count - 1
