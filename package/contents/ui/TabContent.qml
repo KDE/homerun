@@ -166,7 +166,7 @@ Item {
                     height: breadcrumbRow.height
 
                     flat: false
-                    checked: model.index == currentPage.pathModel.count - 1
+                    checked: model.index == breadcrumbRepeater.count - 1
                     text: "› " + model.display
                     onClicked: {
                         if (!checked) {
