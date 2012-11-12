@@ -59,6 +59,12 @@ public:
      * If you want your source to be usable from other sources using the openSourceRequested() signal,
      * you must reimplement this method as well.
      * It returns a null pointer by default.
+     *
+     * Note: it would have made more sense for args to be a QVariantHash as the
+     * order of the arguments does not matter. It is a QVariantMap because of
+     * a C++ -> QML -> C++ problem: When a QVariantHash is exposed to QML it is
+     * turned into a JavaScript Object, but when this Object is passed back to
+     * C++, it is turned into a QVariantMap, not a QVariantHash.
      */
     virtual QAbstractItemModel *createModelFromArguments(const QVariantMap &args);
 
