@@ -1,0 +1,12 @@
+Licenses per dir:
+
+cmake/
+BSD 2-clause license.
+
+devdoc/helloworld/
+BSD 2-clause license.
+
+lib/
+LGPL v2.1 or v3 or or later versions approved by the membership of KDE e.V.
+
+Remaining code is using the GPL v2 or later license.
