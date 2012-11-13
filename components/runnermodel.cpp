@@ -252,6 +252,10 @@ void RunnerModel::scheduleQuery(const QString &query)
 
 void RunnerModel::startQuery()
 {
+    if (m_pendingQuery.isEmpty()) {
+        clear();
+    }
+
     if (!m_manager && m_pendingQuery.isEmpty()) {
         // avoid creating a manager just so we can run nothing
         return;
@@ -339,6 +343,17 @@ void RunnerModel::queryHasFinished()
 {
     m_running = false;
     emit runningChanged(false);
+}
+
+void RunnerModel::clear()
+{
+    if (m_models.isEmpty()) {
+        return;
+    }
+    beginResetModel();
+    qDeleteAll(m_models);
+    m_models.clear();
+    endResetModel();
 }
 
 void RunnerModel::trigger(const Plasma::QueryMatch& match)
