@@ -1,12 +1,14 @@
-Licenses per dir:
+Individual files should have appropriate license headers.
 
-cmake/
-BSD 2-clause license.
+libhomerun is licensed under LGPL v2.1 or v3 or later versions approved by the
+membership of KDE e.V.
 
-devdoc/helloworld/
-BSD 2-clause license.
+homerunviewer and the homerun plasma applet are licensed uder GPL v2 or later.
 
-lib/
-LGPL v2.1 or v3 or or later versions approved by the membership of KDE e.V.
+cmake checks and libhomerun examples are licensed under BSD 2-clause.
 
-Remaining code is using the GPL v2 or later license.
+The rest of the code is licensed under either:
+- LGPL v2.1 or later
+- LGPL v2.1 or v3 or later versions approved by the membership of KDE e.V
+- GPL v2 or later
+- GPL v2.1 or v3 or later versions approved by the membership of KDE e.V
