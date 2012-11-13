@@ -20,7 +20,6 @@
 #include <abstractsource.h>
 
 // Local
-#include <sourceregistry.h>
 
 // KDE
 

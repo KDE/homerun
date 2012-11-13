@@ -20,7 +20,6 @@
 #define ABSTRACTSOURCEREGISTRY_H
 
 // Local
-#include <homerun_export.h>
 
 // Qt
 #include <QObject>
@@ -39,7 +38,7 @@ namespace Homerun
  * Methods of this class cannot be pure virtual because AbstractSourceRegistry
  * needs to be declared as a QML component to be usable in TabModel.
  */
-class HOMERUN_EXPORT AbstractSourceRegistry : public QObject
+class AbstractSourceRegistry : public QObject
 {
     Q_OBJECT
 public:

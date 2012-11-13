@@ -32,7 +32,6 @@ endmacro(homerun_add_unit_test)
 include_directories(
     ${components_SOURCE_DIR}
     ${lib_SOURCE_DIR}
-    ${lib_SOURCE_DIR}/private
     ${lib_BINARY_DIR}
     )
 
@@ -46,30 +45,30 @@ homerun_add_unit_test(tabmodeltest
     ${components_SOURCE_DIR}/tabmodel.cpp
     ${components_SOURCE_DIR}/sourcemodel.cpp
     ${components_SOURCE_DIR}/sourceid.cpp
-    ${lib_SOURCE_DIR}/private/abstractsourceregistry.cpp
+    ${components_SOURCE_DIR}/abstractsourceregistry.cpp
     )
 
 homerun_add_unit_test(sourcemodeltest
     ${components_SOURCE_DIR}/sourcemodel.cpp
-    ${lib_SOURCE_DIR}/private/abstractsourceregistry.cpp
+    ${components_SOURCE_DIR}/abstractsourceregistry.cpp
     )
 
 # X11-dependent tests
-homerun_add_unit_test(favoriteappsmodeltest_x11 ${lib_SOURCE_DIR}/private/favoriteappsmodel.cpp)
+homerun_add_unit_test(favoriteappsmodeltest_x11 ${components_SOURCE_DIR}/favoriteappsmodel.cpp)
 homerun_add_unit_test(favoriteplacesmodeltest_x11
-    ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
-    ${lib_SOURCE_DIR}/private/dirconfigurationwidget.ui
-    ${lib_SOURCE_DIR}/private/dirmodel.cpp
-    ${lib_SOURCE_DIR}/private/favoriteplacesmodel.cpp
+    ${components_SOURCE_DIR}/dirconfigurationwidget.cpp
+    ${components_SOURCE_DIR}/dirconfigurationwidget.ui
+    ${components_SOURCE_DIR}/dirmodel.cpp
+    ${components_SOURCE_DIR}/favoriteplacesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
     )
 homerun_add_unit_test(dirmodeltest_x11
-    ${lib_SOURCE_DIR}/private/dirconfigurationwidget.cpp
-    ${lib_SOURCE_DIR}/private/dirconfigurationwidget.ui
-    ${lib_SOURCE_DIR}/private/dirmodel.cpp
-    ${lib_SOURCE_DIR}/private/favoriteplacesmodel.cpp
+    ${components_SOURCE_DIR}/dirconfigurationwidget.cpp
+    ${components_SOURCE_DIR}/dirconfigurationwidget.ui
+    ${components_SOURCE_DIR}/dirmodel.cpp
+    ${components_SOURCE_DIR}/favoriteplacesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
