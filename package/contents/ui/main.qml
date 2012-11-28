@@ -220,7 +220,12 @@ Item {
                 visualParent: configButton
                 PlasmaComponents.MenuItem {
                     text: configureMode ? i18n("End Configure") : i18n("Configure");
-                    onClicked: configureMode = !configureMode;
+                    onClicked: {
+                        configureMode = !configureMode;
+                        if (configureMode) {
+                            currentTabContent.reset();
+                        }
+                    }
                 }
                 PlasmaComponents.MenuItem {
                     separator: true

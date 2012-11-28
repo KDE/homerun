@@ -21,7 +21,7 @@ Publish changes:
 
 Prepare createtarball:
 
-    cd kdesvn/scripts/createtarball
+    cd kdesdk/scripts/createtarball
 
     # Update version in config.ini
     vi config.ini
@@ -29,6 +29,8 @@ Prepare createtarball:
 Create tarball:
 
     ./create_tarball.rb -a homerun -u $svnusername
+
+(FIXME: Need a way to check revision fetched matches the one pushed in earlier step)
 
 Check it builds:
 
@@ -39,6 +41,11 @@ Check it builds:
     cmake -DCMAKE_INSTALL_PREFIX=../install ..
     make check
     make install
+
+If it is a new .0 release, create a branch (if $newv is $x.$y.0, $branch is homerun/$x.$y)
+
+    git checkout -b $branch
+    git push -u origin $branch:$branch
 
 If ok, create $newv tag:
 
@@ -51,7 +58,8 @@ Push:
 
 # Publish
 
-Upload to upload.kde.org
+Upload to download.kde.org, following instructions from:
+<http://download.kde.org/README_UPLOAD>
 
 Add new version number on https://bugs.kde.org
 
