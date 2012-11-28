@@ -86,12 +86,19 @@ void DirModel::initPathModel(const KUrl &openedUrl)
     QVariantMap args = sourceArguments(m_rootUrl, m_rootName, m_rootUrl);
     m_pathModel->addPath(m_rootName, SOURCE_ID, args);
 
-    QString relativePath = KUrl::relativeUrl(m_rootUrl, openedUrl);
+    KUrl rootUrl = m_rootUrl;
+    // Needed for KUrl::relativeUrl
+    rootUrl.adjustPath(KUrl::AddTrailingSlash);
+    QString relativePath = KUrl::relativeUrl(rootUrl, openedUrl);
     if (relativePath == "./") {
         return;
     }
     KUrl url = m_rootUrl;
     Q_FOREACH(const QString &token, relativePath.split('/')) {
+        if (token.isEmpty()) {
+            // Just in case relativePath ends with '/'
+            continue;
+        }
         url.addPath(token);
         args["url"] = url.url();
         m_pathModel->addPath(token, SOURCE_ID, args);
@@ -212,7 +219,6 @@ QAbstractItemModel *DirSource::createModel(const KUrl &rootUrl_, const QString &
     if (!url.isValid()) {
         url = rootUrl;
     }
-    url.adjustPath(KUrl::RemoveTrailingSlash);
 
     DirModel *model = new DirModel;
     model->init(rootUrl, rootName, url);
