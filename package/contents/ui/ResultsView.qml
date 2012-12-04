@@ -17,6 +17,7 @@
  *****************************************************************************/
 
 import QtQuick 1.1
+import org.kde.draganddrop 1.0 as DragAndDrop
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
@@ -153,6 +154,26 @@ FocusScope {
                     favoriteModel.addFavorite(model.favoriteId);
                 }
                 showFeedback();
+            }
+
+            DragAndDrop.DragArea {
+                id: dragArea
+                anchors.fill: parent
+                delegate: Item {
+                    // Wrap QIconItem in an item, otherwise
+                    // DeclarativeDragArea::startDrag thinks its size is 0x0
+                    width: 48
+                    height: width
+                    QtExtra.QIconItem {
+                        icon: resultMain.icon
+                        anchors.fill: parent
+                    }
+                }
+                supportedActions: Qt.CopyAction
+                mimeData {
+                    text: model.display
+                    source: parent
+                }
             }
         }
     }
