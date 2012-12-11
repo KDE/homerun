@@ -31,6 +31,8 @@
 #include <Plasma/Containment>
 
 // Local
+#include <configkeys.h>
+#include <configmanager.h>
 #include <homerunlauncher.h>
 
 HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
@@ -47,12 +49,13 @@ void HomerunLauncher::init()
     layout->setContentsMargins(0, 0, 0, 0);
 
     m_icon = new Plasma::IconWidget(this);
-    m_icon->setIcon("homerun");
 
     connect(m_icon, SIGNAL(clicked()), SLOT(toggle()));
     connect(this, SIGNAL(activate()), SLOT(toggle()));
 
     layout->addItem(m_icon);
+
+    readConfig();
 
     if (!isViewerRunning()) {
         kDebug() << "Service not registered, launching homerunviewer";
@@ -85,6 +88,17 @@ void HomerunLauncher::toggle()
     QDBusConnection bus = QDBusConnection::sessionBus();
     QDBusInterface interface("org.kde.homerunViewer", "/HomerunViewer", "org.kde.homerunViewer", bus);
     interface.asyncCall("toggle", screen);
+}
+
+void HomerunLauncher::createConfigurationInterface(KConfigDialog *dialog)
+{
+    ConfigManager *manager = new ConfigManager(config(), dialog);
+    connect(manager, SIGNAL(configChanged()), SLOT(readConfig()));
+}
+
+void HomerunLauncher::readConfig()
+{
+    m_icon->setIcon(config().readEntry(CFG_LAUNCHER_ICON_KEY, CFG_LAUNCHER_ICON_DEFAULT));
 }
 
 #include "homerunlauncher.moc"

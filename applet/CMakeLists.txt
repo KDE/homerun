@@ -1,6 +1,13 @@
 project(homerunlauncher)
 
-set(homerunlauncher_SRCS homerunlauncher.cpp)
+set(homerunlauncher_SRCS
+    configmanager.cpp
+    homerunlauncher.cpp
+    )
+
+kde4_add_ui_files(homerunlauncher_SRCS
+    generalconfigpage.ui
+    )
 
 kde4_add_plugin(plasma_applet_homerunlauncher ${homerunlauncher_SRCS})
 
