@@ -255,15 +255,19 @@ Item {
     }
 
     function openSource(sourceId, sourceArguments) {
-        var tabSourceModel = dynamicTabSourceModelComponent.createObject(main);
         // This tabSourceModel should look-like the C++ SourceModel used when
         // tab content is loaded from the config file.
+        var tabSourceModel = dynamicTabSourceModelComponent.createObject(main);
+        var page = createPage(tabSourceModel, { "showHeader": false });
+
+        // Create the model for sourceId after creating the page so that the page
+        // can be used as its parent, avoiding memory leaks.
+        // See https://bugs.kde.org/show_bug.cgi?id=310217
         tabSourceModel.append({
             sourceId: sourceId,
-            model: sourceRegistry.createModelFromArguments(sourceId, sourceArguments, tabSourceModel),
+            model: sourceRegistry.createModelFromArguments(sourceId, sourceArguments, page),
             configGroup: null
         })
-        var page = createPage(tabSourceModel, { "showHeader": false });
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
         page.forceActiveFocus();
