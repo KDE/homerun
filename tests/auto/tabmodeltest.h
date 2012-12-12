@@ -42,6 +42,7 @@ private Q_SLOTS:
     void testRemoveRow();
     void testMoveRow_data();
     void testMoveRow();
+    void testAppendRowToEmptyModel();
 
     void testLoadLegacy();
 

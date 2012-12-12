@@ -567,4 +567,25 @@ void TabModelTest::testLoadLegacy()
     }
 }
 
+void TabModelTest::testAppendRowToEmptyModel()
+{
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(QString()));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    TabModel model;
+    model.setSourceRegistry(m_registry);
+    model.setConfig(config);
+    QCOMPARE(model.rowCount(), 0);
+
+    // Append row
+    model.appendRow();
+
+    // Check model
+    QCOMPARE(model.rowCount(), 1);
+
+    QStringList tabList = getTabList(config);
+    QCOMPARE(tabList, QStringList() << "Tab0");
+}
+
 #include "tabmodeltest.moc"
