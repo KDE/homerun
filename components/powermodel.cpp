@@ -114,7 +114,7 @@ bool PowerModel::trigger(int row)
             break;
 
         case Restart:
-            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot, KWorkSpace::ShutdownModeDefault);
+            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot);
             break;
 
         case Suspend:
