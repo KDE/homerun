@@ -17,20 +17,20 @@ Publish changes:
     git commit
     git push
 
+Note commit-id.
+
 # Pack source
 
 Prepare createtarball:
 
     cd kdesdk/scripts/createtarball
 
-    # Update version in config.ini
+    # Update version and commit-id ("gitTag" key) in config.ini
     vi config.ini
 
 Create tarball:
 
     ./create_tarball.rb -a homerun -u $svnusername
-
-(FIXME: Need a way to check revision fetched matches the one pushed in earlier step)
 
 Check it builds:
 
