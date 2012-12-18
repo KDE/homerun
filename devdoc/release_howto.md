@@ -8,9 +8,9 @@ Update NEWS:
 
     git log --pretty=format:'- \%s (\%an)' $oldv..HEAD
 
-Check version number in top-level CMakeLists.txt
+Check version number in top-level CMakeLists.txt.
 
-Check it still builds
+Check it still builds.
 
 Publish changes:
 
