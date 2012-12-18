@@ -39,6 +39,7 @@ Check it builds:
     mkdir build
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=../install ..
+    make all
     make check
     make install
 
