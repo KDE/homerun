@@ -23,6 +23,24 @@ as a containment, like the Search and Launch containment.
 
 kdelibs 4.8
 
+## Build instructions
+
+Homerun currently requires kdelibs and kde-runtime 4.8.
+
+To build it, do the following:
+
+    mkdir build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=`kde4-config --prefix`
+
+Assuming cmake did not complain about missing dependencies, run:
+
+    make
+
+Then to install it, run as root:
+
+    make install
+
 ## For packagers: Package manager integration
 
 You can integrate your package manager with Homerun.
