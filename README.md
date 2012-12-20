@@ -23,14 +23,14 @@ as a containment, like the Search and Launch containment.
 
 kdelibs 4.8
 
-## Package Manager integration
+## For packagers: Package manager integration
 
 You can integrate your package manager with Homerun.
 
 When browsing installed applications by category, Homerun can provide an item to
 install more applications from this category. To do so you need to:
 
-First, Create a .desktop file whose Exec= line contains a "@category" placeholder.
+First, create a .desktop file whose Exec= line contains a "@category" placeholder.
 This placeholder will be replaced by the category Homerun is browsing.
 
 For example, here is muon-discover-category.desktop:
