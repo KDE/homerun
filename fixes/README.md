@@ -38,7 +38,9 @@ A copy of the 4.9 version. The 4.8 version has a bug with dark themes like
 Oxygen: it use white text on white background.
 
 ### Keep placeholder text visible when focused and empty
-Review request needs to be filed for this
+<https://git.reviewboard.kde.org/r/107678/>
+
+Not applied for now
 
 ## ScrollArea (kde-runtime)
 A copy from kde-runtime master. This is needed because this component does not

@@ -17,37 +17,40 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+#ifndef CONFIGMANAGER_H
+#define CONFIGMANAGER_H
 
+// Local
+
+// Qt
 #include <QObject>
 
-class MockRegistry;
+// KDE
+#include <KConfigGroup>
 
-class TabModelTest : public QObject
+class Ui_GeneralConfigPage;
+
+class KConfigDialog;
+
+/**
+ * Object managing the config dialog of the applet
+ */
+class ConfigManager : public QObject
 {
     Q_OBJECT
+public:
+    ConfigManager(const KConfigGroup &group, KConfigDialog *dialog);
+    ~ConfigManager();
+
+Q_SIGNALS:
+    void configChanged();
 
 private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
-
-    void testSetDataForRow();
-
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
-    void testAppendRowToEmptyModel();
-
-    void testLoadLegacy();
+    void writeConfig();
 
 private:
-    MockRegistry *m_registry;
+    KConfigGroup m_group;
+    Ui_GeneralConfigPage *m_generalUi;
 };
 
-#endif /* TABMODELTEST_H */
+#endif /* CONFIGMANAGER_H */

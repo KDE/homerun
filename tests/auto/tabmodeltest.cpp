@@ -75,7 +75,8 @@ static QStringList getTabList(const KSharedConfig::Ptr config)
 static KTemporaryFile *generateTestFile(const QString &content)
 {
     KTemporaryFile *file = new KTemporaryFile;
-    Q_ASSERT(file->open());
+    bool ok = file->open();
+    Q_ASSERT(ok);
     file->write(content.toUtf8());
     file->flush();
     return file;
@@ -565,6 +566,27 @@ void TabModelTest::testLoadLegacy()
         QStringList lst = getSources(model.index(row, 0));
         QCOMPARE(lst, expectedSourceLists.at(row));
     }
+}
+
+void TabModelTest::testAppendRowToEmptyModel()
+{
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(QString()));
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+
+    // Load it
+    TabModel model;
+    model.setSourceRegistry(m_registry);
+    model.setConfig(config);
+    QCOMPARE(model.rowCount(), 0);
+
+    // Append row
+    model.appendRow();
+
+    // Check model
+    QCOMPARE(model.rowCount(), 1);
+
+    QStringList tabList = getTabList(config);
+    QCOMPARE(tabList, QStringList() << "Tab0");
 }
 
 #include "tabmodeltest.moc"

@@ -41,8 +41,11 @@ public:
 
     void init();
 
+    void createConfigurationInterface(KConfigDialog *parent); // reimp
+
 private Q_SLOTS:
     void toggle();
+    void readConfig();
 
 private:
     Plasma::IconWidget *m_icon;

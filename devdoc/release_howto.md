@@ -8,14 +8,16 @@ Update NEWS:
 
     git log --pretty=format:'- \%s (\%an)' $oldv..HEAD
 
-Check version number in top-level CMakeLists.txt
+Check version number in top-level CMakeLists.txt.
 
-Check it still builds
+Check it still builds.
 
 Publish changes:
 
     git commit
     git push
+
+Note commit-id.
 
 # Pack source
 
@@ -23,14 +25,12 @@ Prepare createtarball:
 
     cd kdesdk/scripts/createtarball
 
-    # Update version in config.ini
+    # Update version and commit-id ("gitTag" key) in config.ini
     vi config.ini
 
 Create tarball:
 
     ./create_tarball.rb -a homerun -u $svnusername
-
-(FIXME: Need a way to check revision fetched matches the one pushed in earlier step)
 
 Check it builds:
 
@@ -39,6 +39,7 @@ Check it builds:
     mkdir build
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=../install ..
+    make all
     make check
     make install
 

@@ -3,7 +3,7 @@ project(homerun)
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 # Packaging
-set(HOMERUN_VERSION "0.1.0")
+set(HOMERUN_VERSION "0.2.0git")
 
 set(HOMERUN_SOURCE_VERSION "")
 set(HOMERUN_SOURCE_DATE "")

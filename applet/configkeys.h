@@ -17,37 +17,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+#ifndef CONFIGKEYS_H
+#define CONFIGKEYS_H
 
-#include <QObject>
+#define CFG_LAUNCHER_ICON_KEY "LauncherIcon"
+#define CFG_LAUNCHER_ICON_DEFAULT "homerun"
 
-class MockRegistry;
-
-class TabModelTest : public QObject
-{
-    Q_OBJECT
-
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
-
-    void testSetDataForRow();
-
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
-    void testAppendRowToEmptyModel();
-
-    void testLoadLegacy();
-
-private:
-    MockRegistry *m_registry;
-};
-
-#endif /* TABMODELTEST_H */
+#endif /* CONFIGKEYS_H */

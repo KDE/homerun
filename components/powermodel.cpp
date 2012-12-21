@@ -110,11 +110,11 @@ bool PowerModel::trigger(int row)
 
     switch (action.type) {
         case Shutdown:
-            KWorkSpace::requestShutDown();
+            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeHalt);
             break;
 
         case Restart:
-            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot, KWorkSpace::ShutdownModeDefault);
+            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot);
             break;
 
         case Suspend:

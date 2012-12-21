@@ -350,11 +350,16 @@ void TabModel::setDataForRow(int row, const QByteArray &roleName, const QVariant
 void TabModel::appendRow()
 {
     QStringList list = tabGroupList();
-    bool ok;
-    int lastId = list.last().mid(3).toInt(&ok);
-    if (!ok) {
-        kWarning() << "Cannot extract a valid lastId from" << list.last();
-        return;
+    int lastId;
+    if (list.isEmpty()) {
+        lastId = -1;
+    } else {
+        bool ok;
+        lastId = list.last().mid(3).toInt(&ok);
+        if (!ok) {
+            kWarning() << "Cannot extract a valid lastId from" << list.last();
+            return;
+        }
     }
 
     KConfigGroup tabGroup = m_config->group(QLatin1String(TAB_GROUP_PREFIX) + QString::number(lastId + 1));

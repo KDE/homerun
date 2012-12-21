@@ -37,7 +37,8 @@ QTEST_KDEMAIN(FavoriteAppsModelTest, GUI)
 static KTemporaryFile *generateTestFile(const QString &content)
 {
     KTemporaryFile *file = new KTemporaryFile;
-    Q_ASSERT(file->open());
+    bool ok = file->open();
+    Q_ASSERT(ok);
     file->write(content.toUtf8());
     file->flush();
     return file;
