@@ -19,6 +19,7 @@ Name[sk]=KDE Homerun
 Name[sv]=KDE Homerun
 Name[uk]=KDE Homerun
 Name[x-test]=xxKDE Homerunxx
+Name[zh_CN]=KDE Homerun
 Comment=An application launcher
 Comment[da]=Programstarter
 Comment[el]=Ένας εκτελεστής εφαρμογών
@@ -36,6 +37,7 @@ Comment[sk]=Spúšťač aplikácií
 Comment[sv]=Ett startprogram
 Comment[uk]=Засіб для запуску програм
 Comment[x-test]=xxAn application launcherxx
+Comment[zh_CN]=一个应用程序启动器
 
 Icon=homerun
 Type=Service

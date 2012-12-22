@@ -18,6 +18,7 @@ Name[sk]=Spúšťač KDE Homerun
 Name[sv]=KDE Homerun startprogram
 Name[uk]=Засіб запуску KDE Homerun
 Name[x-test]=xxKDE Homerun Launcherxx
+Name[zh_CN]=KDE Homerun 启动器
 
 Comment=An application launcher
 Comment[da]=Programstarter
@@ -36,6 +37,7 @@ Comment[sk]=Spúšťač aplikácií
 Comment[sv]=Ett startprogram
 Comment[uk]=Засіб для запуску програм
 Comment[x-test]=xxAn application launcherxx
+Comment[zh_CN]=一个应用程序启动器
 
 Type=Service
 ServiceTypes=Plasma/Applet

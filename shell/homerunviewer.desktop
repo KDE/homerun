@@ -23,6 +23,7 @@ Name[sk]=Aplikácia KDE Homerun
 Name[sv]=KDE Homerun-program
 Name[uk]=Програма KDE Homerun
 Name[x-test]=xxKDE Homerun applicationxx
+Name[zh_CN]=KDE Homerun 应用程序
 
 Comment=Displays KDE Homerun in a popup
 Comment[da]=Viser KDE Homerun i en pop-op
@@ -41,3 +42,4 @@ Comment[sk]=Zobrazí KDE Homerun v popupe
 Comment[sv]=Visar KDE Homerun i ett meddelandefönster
 Comment[uk]=Показує контекстну панель KDE Homerun
 Comment[x-test]=xxDisplays KDE Homerun in a popupxx
+Comment[zh_CN]=在弹出窗口中显示 KDE Homerun

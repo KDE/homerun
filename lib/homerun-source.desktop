@@ -16,6 +16,7 @@ Comment[ro]=Extensie de sursă Homerun
 Comment[sv]=Homerun-källinsticksprogram
 Comment[uk]=Додаток джерела до Homerun
 Comment[x-test]=xxHomerun source pluginxx
+Comment[zh_CN]=Homerun 源插件
 
 [PropertyDef::X-KDE-Homerun-APIVersion]
 Type=int
