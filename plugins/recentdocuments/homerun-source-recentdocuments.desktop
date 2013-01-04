@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Recent Documents
 Name[da]=Nylige dokumenter
+Name[de]=Zuletzt geöffnete Dokumente
 Name[el]=Πρόσφατα έγγραφα
 Name[et]=Viimati kasutatud dokumendid
 Name[fi]=Viimeaikaiset tiedostot
@@ -19,6 +20,7 @@ Name[x-test]=xxRecent Documentsxx
 Name[zh_CN]=最近的文档
 Comment=List recently opened documents
 Comment[da]=Liste over nyligt åbnede dokumenter
+Comment[de]=Zeigt die zuletzt geöffneten Dokumente an
 Comment[el]=Εμφανίζει τα πρόσφατα ανοιγμένα έγγραφα
 Comment[et]=Viimati avatud dokumentide nimekiri
 Comment[fi]=Viimeksi avattujen tiedostojen luettelo

@@ -22,6 +22,7 @@ Name[zh_CN]=KDE Homerun 启动器
 
 Comment=An application launcher
 Comment[da]=Programstarter
+Comment[de]=Ein Anwendungsstarter
 Comment[el]=Ένας εκτελεστής εφαρμογών
 Comment[et]=Rakenduste käivitaja
 Comment[fi]=Sovelluskäynnistin
