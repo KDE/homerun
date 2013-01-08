@@ -47,6 +47,7 @@ Item {
     property bool highlighted: false
 
     signal clicked
+    signal pressAndHold
     signal favoriteClicked
 
     //- Private ---------------------------------------------------------------
@@ -63,6 +64,7 @@ Item {
 
     Component.onCompleted: {
         itemMouseArea.clicked.connect(clicked)
+        itemMouseArea.pressAndHold.connect(pressAndHold)
         favoriteMouseArea.clicked.connect(favoriteClicked)
     }
 

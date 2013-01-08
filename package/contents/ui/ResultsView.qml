@@ -156,13 +156,16 @@ FocusScope {
                 showFeedback();
             }
 
+            onPressAndHold: {
+                dragArea.startDrag();
+            }
+
             DragAndDrop.DragArea {
                 id: dragArea
-                anchors.fill: parent
                 delegate: Item {
                     // Wrap QIconItem in an item, otherwise
                     // DeclarativeDragArea::startDrag thinks its size is 0x0
-                    width: 48
+                    width: resultMain.iconWidth
                     height: width
                     QtExtra.QIconItem {
                         icon: resultMain.icon
