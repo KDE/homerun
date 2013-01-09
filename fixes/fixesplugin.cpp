@@ -23,6 +23,8 @@
 
 // Local
 #include <datamodel.h>
+#include <DeclarativeDragArea.h>
+#include <DeclarativeMimeData.h>
 
 // Qt
 #include <QtDeclarative/qdeclarative.h>
@@ -31,6 +33,8 @@ void FixesPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.fixes"));
     qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
+    qmlRegisterType<DeclarativeDragArea>(uri, 0, 1, "DragArea");
+    qmlRegisterUncreatableType<DeclarativeMimeData>(uri, 0, 1, "MimeData", "MimeData cannot be created from QML.");
 }
 
 #include "fixesplugin.moc"

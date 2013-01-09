@@ -2,6 +2,8 @@ project(fixes)
 
 set(fixes_SRCS
     datamodel.cpp
+    DeclarativeDragArea.cpp
+    DeclarativeMimeData.cpp
     fixesplugin.cpp
     )
 
