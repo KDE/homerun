@@ -17,7 +17,6 @@
  *****************************************************************************/
 
 import QtQuick 1.1
-import org.kde.draganddrop 1.0 as DragAndDrop
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
@@ -160,7 +159,7 @@ FocusScope {
                 dragArea.startDrag();
             }
 
-            DragAndDrop.DragArea {
+            HomerunFixes.DragArea {
                 id: dragArea
                 delegate: Item {
                     // Wrap QIconItem in an item, otherwise
