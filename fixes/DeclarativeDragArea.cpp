@@ -198,9 +198,14 @@ void DeclarativeDragArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
 
+    startDrag(event->widget());
+}
+
+void DeclarativeDragArea::startDrag(QWidget *parentWidget)
+{
     emit dragStarted();
 
-    QDrag *drag = new QDrag(event->widget());
+    QDrag *drag = new QDrag(parentWidget ? parentWidget : QApplication::activeWindow());
     DeclarativeMimeData* dataCopy = new DeclarativeMimeData(m_data); //Qt will take ownership of this copy and delete it.
     drag->setMimeData(dataCopy);
 

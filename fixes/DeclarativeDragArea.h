@@ -116,6 +116,8 @@ public:
 
     DeclarativeMimeData* mimeData() const;
 
+    Q_INVOKABLE void startDrag(QWidget* = 0);
+
 signals:
     void dragStarted();
     void delegateChanged();
