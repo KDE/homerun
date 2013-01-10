@@ -23,14 +23,32 @@ as a containment, like the Search and Launch containment.
 
 kdelibs 4.8
 
-## Package Manager integration
+## Build instructions
+
+Homerun currently requires kdelibs and kde-runtime 4.8.
+
+To build it, do the following:
+
+    mkdir build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=`kde4-config --prefix`
+
+Assuming cmake did not complain about missing dependencies, run:
+
+    make
+
+Then to install it, run as root:
+
+    make install
+
+## For packagers: Package manager integration
 
 You can integrate your package manager with Homerun.
 
 When browsing installed applications by category, Homerun can provide an item to
 install more applications from this category. To do so you need to:
 
-First, Create a .desktop file whose Exec= line contains a "@category" placeholder.
+First, create a .desktop file whose Exec= line contains a "@category" placeholder.
 This placeholder will be replaced by the category Homerun is browsing.
 
 For example, here is muon-discover-category.desktop:
