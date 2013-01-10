@@ -66,6 +66,7 @@ DirModel::DirModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(DirModel::FavoriteIdRole, "favoriteId");
+    roles.insert(DirModel::UrlRole, "url");
     setRoleNames(roles);
 
     dirLister()->setDelayedMimeTypes(true);
@@ -112,18 +113,26 @@ KDirLister *DirModel::dirLister() const
 
 QVariant DirModel::data(const QModelIndex &index, int role) const
 {
-    if (role != FavoriteIdRole) {
+    if (role != FavoriteIdRole && role != UrlRole) {
         return QSortFilterProxyModel::data(index, role);
     }
     if (index.row() < 0 || index.row() >= rowCount()) {
         return QVariant();
     }
-
     KFileItem item = itemForIndex(index);
-    if (item.isDir()) {
-        return FavoritePlacesModel::favoriteIdFromUrl(item.url());
-    } else {
-        return QString();
+
+    switch (role) {
+    case UrlRole:
+        return QUrl(item.url());
+    case FavoriteIdRole:
+        if (item.isDir()) {
+            return FavoritePlacesModel::favoriteIdFromUrl(item.url());
+        } else {
+            return QString();
+        }
+    default:
+        Q_ASSERT(0);
+        return QVariant();
     }
 }
 
