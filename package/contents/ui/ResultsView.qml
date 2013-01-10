@@ -173,8 +173,9 @@ FocusScope {
                 }
                 supportedActions: Qt.CopyAction
                 mimeData {
-                    text: model.display
                     source: parent
+                    url: model.url
+
                 }
             }
         }
