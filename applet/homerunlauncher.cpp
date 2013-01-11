@@ -17,28 +17,23 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#include "homerunlauncher.h"
-#include <QtCore/QSizeF>
-#include <QtGui/QPainter>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QGraphicsScene>
-#include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QGraphicsLinearLayout>
+// Qt
+#include <QGraphicsLinearLayout>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusInterface>
 
-#include <Plasma/PushButton>
+// KDE
+#include <KRun>
+#include <KStandardDirs>
+#include <KShortcut>
 #include <Plasma/IconWidget>
 #include <Plasma/Containment>
 
-#include <KSharedConfig>
-#include <KLocale>
-#include <KStandardDirs>
-#include <KIO/NetAccess>
-#include <KMessageBox>
-#include <KToolInvocation>
-#include <KRun>
+// Local
+#include <configkeys.h>
+#include <configmanager.h>
+#include <homerunlauncher.h>
 
 HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
     : Plasma::Applet(parent, args),
@@ -46,7 +41,6 @@ HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
 {
     setHasConfigurationInterface(true);
     KGlobal::locale()->insertCatalog("plasma_applet_org.kde.homerun");
-//    resize(contentSizeHint());
 }
 
 void HomerunLauncher::init()
@@ -55,12 +49,13 @@ void HomerunLauncher::init()
     layout->setContentsMargins(0, 0, 0, 0);
 
     m_icon = new Plasma::IconWidget(this);
-    m_icon->setIcon("homerun");
 
     connect(m_icon, SIGNAL(clicked()), SLOT(toggle()));
     connect(this, SIGNAL(activate()), SLOT(toggle()));
 
     layout->addItem(m_icon);
+
+    readConfig();
 
     if (!isViewerRunning()) {
         kDebug() << "Service not registered, launching homerunviewer";
@@ -93,6 +88,17 @@ void HomerunLauncher::toggle()
     QDBusConnection bus = QDBusConnection::sessionBus();
     QDBusInterface interface("org.kde.homerunViewer", "/HomerunViewer", "org.kde.homerunViewer", bus);
     interface.asyncCall("toggle", screen);
+}
+
+void HomerunLauncher::createConfigurationInterface(KConfigDialog *dialog)
+{
+    ConfigManager *manager = new ConfigManager(config(), dialog);
+    connect(manager, SIGNAL(configChanged()), SLOT(readConfig()));
+}
+
+void HomerunLauncher::readConfig()
+{
+    m_icon->setIcon(config().readEntry(CFG_LAUNCHER_ICON_KEY, CFG_LAUNCHER_ICON_DEFAULT));
 }
 
 #include "homerunlauncher.moc"

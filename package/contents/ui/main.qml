@@ -47,6 +47,7 @@ Item {
     HomerunComponents.TabModel {
         id: tabModel
         configFileName: main.configFileName
+        sourceRegistry: sourceRegistry
     }
 
     HomerunComponents.SourceRegistry {
@@ -56,7 +57,7 @@ Item {
 
     // UI
     Component {
-        id: tabContent
+        id: tabContentComponent
         TabContent {
             id: tabContentMain
             property Item tabButton
@@ -65,9 +66,6 @@ Item {
             configureMode: main.configureMode
             onCloseRequested: isContainment ? reset() : main.closeRequested()
             onSetSearchFieldRequested: searchField.text = text
-            onSourcesUpdated: {
-                tabModel.setSourcesForRow(tabButton.index, sources);
-            }
             onTabTextChanged: {
                 if (configureMode) {
                     tabModel.setDataForRow(tabButton.index, "display", tabText);
@@ -82,14 +80,16 @@ Item {
     }
 
     HomerunComponents.TabBar {
-        id: filterTabBar
+        id: tabBar
+
+        property bool selectNewTab: false
 
         anchors {
             top: parent.top
             topMargin: main.topMargin
             left: parent.left
             leftMargin: parent.leftMargin
-            right: searchField.left
+            right: configureMode ? configButton.left : searchField.left
             rightMargin: 6 + (configureMode ? addTabButton.width : 0)
         }
 
@@ -100,7 +100,7 @@ Item {
             property string realText: model.display
             text: model.display || i18nc("Used for tabs which have no name", "<Untitled>")
             iconSource: model.decoration
-            property variant sources: model.sources
+            property QtObject tabSourceModel: model.sourceModel
             index: model.index
 
             rightSide: [
@@ -136,11 +136,18 @@ Item {
         }
 
         function createTabContent(tabButton) {
-            tabButton.tab = tabContent.createObject(tabGroup, {
-                sources: tabButton.sources,
+            tabButton.tab = tabContentComponent.createObject(tabGroup, {
+                tabSourceModel: tabButton.tabSourceModel,
                 sourceRegistry: sourceRegistry,
                 tabButton: tabButton,
             });
+        }
+
+        onCountChanged: {
+            if (selectNewTab) {
+                selectNewTab = false;
+                currentIndex = count - 1;
+            }
         }
     }
 
@@ -148,13 +155,16 @@ Item {
     PlasmaComponents.ToolButton {
         id: addTabButton
         anchors {
-            left: filterTabBar.right
-            top: filterTabBar.top
-            bottom: filterTabBar.bottom
+            left: tabBar.right
+            top: tabBar.top
+            bottom: tabBar.bottom
         }
         opacity: configureMode ? 1 : 0
         iconSource: "list-add"
-        onClicked: tabModel.appendRow();
+        onClicked: {
+            tabBar.selectNewTab = true;
+            tabModel.appendRow();
+        }
     }
 
     // Search area
@@ -163,11 +173,12 @@ Item {
 
         anchors {
             right: configButton.left
-            top: filterTabBar.top
-            bottom: filterTabBar.bottom
+            top: tabBar.top
+            bottom: tabBar.bottom
         }
 
         width: parent.width / 4
+        opacity: configureMode ? 0 : 1
 
         focus: true
 
@@ -188,8 +199,8 @@ Item {
         id: configButton
         anchors {
             right: parent.right
-            top: filterTabBar.top
-            bottom: filterTabBar.bottom
+            top: tabBar.top
+            bottom: tabBar.bottom
             rightMargin: parent.rightMargin
         }
         iconSource: "configure"
@@ -209,9 +220,31 @@ Item {
                 visualParent: configButton
                 PlasmaComponents.MenuItem {
                     text: configureMode ? i18n("End Configure") : i18n("Configure");
-                    onClicked: configureMode = !configureMode;
+                    onClicked: {
+                        configureMode = !configureMode;
+                        if (configureMode) {
+                            currentTabContent.reset();
+                        }
+                    }
+                }
+                PlasmaComponents.MenuItem {
+                    separator: true
+                }
+                PlasmaComponents.MenuItem {
+                    // We do not use helpMenuActions.text(HomerunComponents.HelpMenuActions.AboutApplication)
+                    // because it returns Plasma when running as a containment
+                    text: i18n("About %1", "Homerun")
+                    onClicked: helpMenuActions.trigger(HomerunComponents.HelpMenuActions.AboutApplication)
+                }
+                PlasmaComponents.MenuItem {
+                    text: helpMenuActions.text(HomerunComponents.HelpMenuActions.ReportBug)
+                    onClicked: helpMenuActions.trigger(HomerunComponents.HelpMenuActions.ReportBug)
                 }
             }
+        }
+
+        HomerunComponents.HelpMenuActions {
+            id: helpMenuActions
         }
     }
 
@@ -219,7 +252,7 @@ Item {
     Item {
         id: content
         anchors {
-            top: filterTabBar.bottom
+            top: tabBar.bottom
             bottom: parent.bottom
             left: parent.left
             right: parent.right
@@ -295,7 +328,7 @@ Item {
     }
 
     function reset() {
-        filterTabBar.currentIndex = 0;
+        tabBar.currentIndex = 0;
         for (idx = 0; idx < tabGroup.data.length; ++idx) {
             var tabContent = tabGroup.data[idx];
             if (tabContent && tabContent.reset) {
@@ -309,9 +342,10 @@ Item {
 
     Keys.onPressed: {
         var lst = [
-            [Qt.ControlModifier, Qt.Key_PageUp, filterTabBar.decrementCurrentIndex],
-            [Qt.ControlModifier, Qt.Key_PageDown, filterTabBar.incrementCurrentIndex],
+            [Qt.ControlModifier, Qt.Key_PageUp, tabBar.decrementCurrentIndex],
+            [Qt.ControlModifier, Qt.Key_PageDown, tabBar.incrementCurrentIndex],
             [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
+            [null,               "/", searchField.forceActiveFocus],
         ];
         KeyboardUtils.processShortcutList(lst, event);
     }

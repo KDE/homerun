@@ -1,0 +1,103 @@
+/*
+Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) version 3, or any
+later version accepted by the membership of KDE e.V. (or its
+successor approved by the membership of KDE e.V.), which shall
+act as a proxy defined in Section 6 of version 3 of the license.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/**
+@page homerunmodel Homerun models
+
+Homerun models make heavy use of Qt introspection and duck-typing. This
+document describes the mandatory and optional roles, properties and signals of a
+Homerun model.
+
+## Roles
+### string display
+- mandatory: yes
+
+The item text.
+
+### string|QIcon decoration
+- mandatory: yes
+
+The item icon, as a string or as a QIcon.
+
+### string favoriteId
+- mandatory: no
+
+Unique Id used to favorite this item. Its value depends on the item type:
+
+- item cannot be favorited: ""
+- item is an application: "app:" + $desktopName.
+  Examples: "app:inkscape.desktop" or "app:kde4-dolphin.desktop" for KDE applications.
+- item is a place: "place:" + $url.
+  Examples: "place:file:///home/jdoe/Documents" or "place:sftp://host.com/dir".
+
+## Properties
+### string name
+- access: read-only
+- mandatory: yes
+
+Returns a translated name for the model. This name is used as a title for the
+view associated with the model.
+
+### int count
+- access: read-only
+- mandatory: yes
+
+Returns current number of rows. Most often it will simply return
+rowCount(QModelIndex()).
+
+### Homerun::PathModel pathModel
+- access: read-only
+- mandatory: no
+
+Used for models which can be navigated through. Returns a Homerun::PathModel instance
+representing the position inside the model.
+
+### bool running
+- access: read-only
+- mandatory: no
+
+Set to true to indicate the model is busy filling itself. Homerun will show a
+busy indicator as long as this property is true.
+
+### string query
+- access: read-write
+- mandatory: no
+
+A model can implement this property to implement searching/filtering itself. If
+it is not defined, Homerun will apply a generic filter to the item names when
+the user type a search criteria.
+
+## Methods
+### bool trigger(int row)
+- mandatory: yes
+
+Triggers the action associated with the item at row "row". Returns true if you
+want Homerun to close, false otherwise.
+
+## Signals
+### openSourceRequested(QString sourceId, const QVariantMap &arguments)
+- mandatory: no
+
+Emitted by a model when it wants another source to be opened by the view. This
+is used for example to open a browsable model in a subdir.
+
+Note: If you want to be able to access your model this way, you need to
+implement Homerun::AbstractSource::createModelFromArguments().
+
+*/

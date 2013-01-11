@@ -1,0 +1,13 @@
+# 2012.12.18 - 0.1.1
+
+- Add support for selecting the launcher icon
+- Fix "halt" action performing "log out" instead
+- Fix memory leak when browsing folders
+- Fix rootUrl appearing in PathModel if it did not end with a slash
+- Fix crash when trying to add a tab to an empty model
+- Fix crash if user tries to configure tabs while not on start page
+- Fix category and website fields in desktop files
+
+# 2012.11.13 - 0.1.0
+
+- First release

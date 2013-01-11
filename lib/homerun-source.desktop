@@ -5,12 +5,18 @@ Comment=Homerun source plugin
 Comment[da]=Kildeplugin til Homerun
 Comment[el]=Πρόσθετη πηγή Homerun
 Comment[et]=Homeruni allikaplugin
+Comment[fi]=Homerunin lähdeliitännäinen
+Comment[hu]=Homerun forrás bővítmény
+Comment[lt]=Homerun šaltinio priedas
 Comment[nl]=Plug-in voor Homerun-bron
+Comment[pa]=ਹੋਮਰਨ ਸਰੋਤ ਪਲੱਗਇਨ
 Comment[pt]='Plugin' de código do Homerun
 Comment[pt_BR]=Plugin de código do Homerun
+Comment[ro]=Extensie de sursă Homerun
 Comment[sv]=Homerun-källinsticksprogram
 Comment[uk]=Додаток джерела до Homerun
 Comment[x-test]=xxHomerun source pluginxx
+Comment[zh_CN]=Homerun 源插件
 
 [PropertyDef::X-KDE-Homerun-APIVersion]
 Type=int

@@ -37,8 +37,6 @@ FocusScope {
      * RunnerModel.
      */
     property QtObject model
-    property alias count: gridView.count // FIXME: Check if still used. Remove if not
-    property bool tabMe: gridView.count > 0
 
     property bool configureMode: false
 
@@ -94,7 +92,7 @@ FocusScope {
 
     //- Private -------------------------------------------------
     function focusItemAt(idx) {
-        if (idx < 0 || idx >= count) {
+        if (idx < 0 || idx >= gridView.count) {
             return;
         }
         // Reset currentIndex so that the highlight is not animated from the
@@ -130,8 +128,8 @@ FocusScope {
             width: main.resultItemWidth
             configureMode: main.configureMode
 
-            currentText: model.display
-            currentIcon: model.decoration
+            text: model.display
+            icon: model.decoration
             favoriteIcon: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
                 if (favoriteModel === null) {
@@ -221,7 +219,7 @@ FocusScope {
                     "activeFocus=" + gridView.activeFocus
                 + "\ncurrentIndex=" + gridView.currentIndex
                 + "\ncurrentItem.activeFocus=" + (gridView.currentItem ? gridView.currentItem.activeFocus : "-")
-                + "\ncurrentItem.label=" + (gridView.currentItem ? gridView.currentItem.currentText : "-")
+                + "\ncurrentItem.label=" + (gridView.currentItem ? gridView.currentItem.text : "-")
         }
         */
 
@@ -276,7 +274,7 @@ FocusScope {
         property Item target: (gridView.currentItem && gridView.currentItem.highlighted && gridView.currentItem.truncated) ? gridView.currentItem : null
         width: label.width + margins.left + margins.right
         height: label.height + margins.top + margins.bottom
-        
+
         opacity: target ? 1 : 0
 
         onTargetChanged: {
@@ -284,7 +282,7 @@ FocusScope {
                 // Manually update these properties so that they do not get reset as soon as target becomes null:
                 // we don't want the properties to be updated then because we need to keep the old text and coordinates
                 // while the tooltip is fading out.
-                label.text = target.currentText;
+                label.text = target.text;
                 x = tooltipX();
                 y = target.y;
             }
@@ -314,20 +312,6 @@ FocusScope {
     }
 
     // Code
-    onCountChanged: {
-        if (count == 0 && activeFocus) {
-            // If we were focused but our count comes to 0 (for example because
-            // of filtering) try to move focus to another view.
-
-            // Ask for focus to move to view below us.
-            focusOtherViewRequested(Qt.Key_Down, 0);
-            if (activeFocus) {
-                // Didn't work, ask for focus to move to view above us.
-                focusOtherViewRequested(Qt.Key_Up, 0);
-            }
-        }
-    }
-
     function favoriteModelForFavoriteId(favoriteId) {
         if (favoriteId === undefined || favoriteId === "") {
             return null;

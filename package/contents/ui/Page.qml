@@ -1,22 +1,22 @@
 /*
- *   Copyright 2012 Aurélien Gâteau <agateau@kde.org>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Library General Public License as
- *   published by the Free Software Foundation; either version 2, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Library General Public License for more details
- *
- *   You should have received a copy of the GNU Library General Public
- *   License along with this program; if not, write to the
- *   Free Software Foundation, Inc.,
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
+Copyright 2012 Aurélien Gâteau <agateau@kde.org>
 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) version 3, or any
+later version accepted by the membership of KDE e.V. (or its
+successor approved by the membership of KDE e.V.), which shall
+act as a proxy defined in Section 6 of version 3 of the license.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*/
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
@@ -27,7 +27,8 @@ Item {
 
     //- Defined by outside world -----------------------------------
     property QtObject sourceRegistry
-    property variant sources
+
+    property QtObject tabSourceModel
     property bool configureMode
 
     property string searchCriteria
@@ -37,20 +38,12 @@ Item {
 
     //- Read-only properties ---------------------------------------
     // Defined for pages with a single view on a browsable model
-    property QtObject pathModel: sourcesModel.count == 1 ? sourcesModel.get(0).model.pathModel : null
+    property QtObject pathModel: tabSourceModel.count == 1 ? tabSourceModel.get(0).model.pathModel : null
 
-    signal sourcesUpdated(variant sources)
     signal closeRequested()
-    signal openSourceRequested(string source)
-
-    objectName: "Page:" + sources
+    signal openSourceRequested(string sourceId, variant sourceArguments)
 
     property Item previouslyFocusedItem
-
-    //- Non visual elements ----------------------------------------
-    ListModel {
-        id: sourcesModel
-    }
 
     //- Components -------------------------------------------------
     // Filter components
@@ -215,8 +208,8 @@ Item {
         opacity: running ? 0.5 : 0
     }
 
-    ListView {
-        id: availableSourcesView
+    HomerunFixes.ScrollArea {
+        id: availableScrollArea
         anchors {
             left: parent.left
             top: parent.top
@@ -224,125 +217,114 @@ Item {
         }
         width: configureMode ? parent.width * 0.2 : 0
         opacity: configureMode ? 1 : 0
-        spacing: 6
         Behavior on width { NumberAnimation {} }
         Behavior on opacity { NumberAnimation {} }
 
-        model: HomerunFixes.SortFilterModel {
-            sourceModel: sourceRegistry.availableSourcesModel()
-            sortRole: "display"
-        }
+        ListView {
+            spacing: 6
+            anchors.fill: parent
 
-        delegate: AvailableSourceItem {
-            width: parent.width - 24
-            text: model.display
-            comment: model.comment
-            onClicked: {
-                addSource(model.sourceId);
-                main.updateSources();
+            model: HomerunFixes.SortFilterModel {
+                sourceModel: sourceRegistry.availableSourcesModel()
+                sortRole: "display"
             }
-        }
 
-        PlasmaCore.SvgItem {
-            anchors {
-                right: parent.right
-                rightMargin: 12
-                top: parent.top
-                bottom: parent.bottom
+            delegate: AvailableSourceItem {
+                width: ListView.view.width
+                text: model.display
+                comment: model.comment
+                onClicked: {
+                    tabSourceModel.appendSource(sourceId);
+                }
             }
-            width: naturalSize.width
-            z: 1000
-            svg: PlasmaCore.Svg {
-                imagePath: "widgets/scrollwidget"
-            }
-            elementId: "border-right"
         }
     }
 
-    Flickable {
-        id: centralFlickable
+    HomerunFixes.ScrollArea {
+        id: centralScrollArea
         anchors {
             top: parent.top
             bottom: parent.bottom
-            left: availableSourcesView.right
-            right: scrollBar.left
-        }
-        clip: true
-        contentHeight: centralColumn.height
-
-        Column {
-            id: centralColumn
-            width: parent.width
-
-            Repeater {
-                id: repeater
-                model: sourcesModel
-                delegate: Column {
-                    id: delegateMain
-                    width: parent ? parent.width : 0
-                    height: main.configureMode
-                        ? Math.min(implicitHeight, 200)
-                        : implicitHeight
-                    clip: main.configureMode
-
-                    property QtObject view
-                    property string sourceId: model.sourceId
-                    property int viewIndex: model.index
-                    property QtObject viewModel: model.model
-
-                    SourceItem {
-                        width: parent.width
-                        configureMode: main.configureMode
-                        sourceRegistry: main.sourceRegistry
-                        sourceId: delegateMain.sourceId
-
-                        isFirst: viewIndex == 0
-                        isLast: viewIndex == repeater.count - 1
-
-                        onRemoveRequested: {
-                            sourcesModel.remove(delegateMain.viewIndex);
-                            main.updateSources();
-                        }
-                        onMoveRequested: {
-                            sourcesModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta, 1);
-                            main.updateSources();
-                        }
-
-                        onSourceIdChanged: {
-                            delegateMain.view.model.destroy();
-                            delegateMain.view.destroy();
-                            var newModel = createModelForSource(sourceId, main);
-                            sourcesModel.setProperty(delegateMain.viewIndex, "sourceId", sourceId);
-                            sourcesModel.setProperty(delegateMain.viewIndex, "model", newModel);
-                            delegateMain.view = createView(newModel, delegateMain);
-                            main.updateSources();
-                        }
-                    }
-
-                    Component.onCompleted: {
-                        view = createView(model.model, delegateMain);
-                        main.updateRunning();
-                    }
-
-                    function navigate(key, x) {
-                        main.navigate(repeater, model.index, key, x);
-                    }
-                }
-
-                function viewAt(idx) {
-                    return itemAt(idx).view;
-                }
-            }
-        }
-    }
-
-    PlasmaComponents.ScrollBar {
-        id: scrollBar
-        flickableItem: centralFlickable
-        anchors {
+            left: availableScrollArea.right
             right: parent.right
-            top: parent.top
-            bottom: parent.bottom
+        }
+
+        Flickable {
+            id: centralFlickable
+            anchors.fill: parent
+            clip: true
+            contentHeight: centralColumn.height
+
+            Column {
+                id: centralColumn
+                width: parent.width
+
+                Repeater {
+                    id: repeater
+                    model: tabSourceModel
+                    delegate: Column {
+                        id: delegateMain
+                        width: parent ? parent.width : 0
+                        height: main.configureMode
+                            ? Math.min(implicitHeight, 200)
+                            : implicitHeight
+                        clip: main.configureMode
+
+                        property QtObject view
+                        property string sourceId: model.sourceId
+                        property int viewIndex: model.index
+                        property QtObject viewModel: model.model
+
+                        SourceItem {
+                            width: parent.width
+                            configureMode: main.configureMode
+                            sourceRegistry: main.sourceRegistry
+                            sourceId: delegateMain.sourceId
+
+                            isFirst: viewIndex == 0
+                            isLast: viewIndex == repeater.count - 1
+
+                            onRemoveRequested: {
+                                tabSourceModel.remove(delegateMain.viewIndex);
+                            }
+                            onMoveRequested: {
+                                tabSourceModel.move(delegateMain.viewIndex, delegateMain.viewIndex + delta);
+                            }
+
+                            onConfigureRequested: {
+                                var row = delegateMain.viewIndex;
+                                var dlg = sourceRegistry.createConfigurationDialog(sourceId, model.configGroup);
+                                if (!dlg.exec()) {
+                                    return;
+                                }
+                                dlg.save();
+                                tabSourceModel.recreateModel(row);
+                            }
+                        }
+
+                        onViewModelChanged: {
+                            createViewForRow();
+                        }
+
+                        function createViewForRow() {
+                            connectModel(model.model);
+                            if (view) {
+                                view.destroy();
+                            }
+                            view = main.createView(model.model, delegateMain);
+                            main.updateRunning();
+                        }
+
+                        function navigate(key, x) {
+                            main.navigate(repeater, model.index, key, x);
+                        }
+                    }
+
+                    function viewAt(idx) {
+                        return itemAt(idx).view;
+                    }
+                }
+            }
         }
     }
 
@@ -361,23 +343,21 @@ Item {
 
         onTriggered: {
             var maxCount = 10;
-            console.log("focusTimer");
+            console.log("Page.qml: focusTimer");
             updateFocus();
             if (main.focusedItem()) {
+                console.log("Page.qml: focusTimer: Focus has been set");
                 stop();
                 return;
             }
-            console.log("focusTimer: Still no valid focus");
+            console.log("Page.qml: focusTimer: Still no valid focus");
             count += 1;
             if (count >= maxCount) {
-                console.log("focusTimer: Giving up after " + maxCount + " tries");
+                console.log("Page.qml: focusTimer: Giving up after " + maxCount + " tries");
                 stop();
-            } else {
             }
         }
     }
-
-    Component.onCompleted: fillSourcesModel()
 
     onActiveFocusChanged: {
         if (!activeFocus) {
@@ -434,8 +414,8 @@ Item {
     }
 
     function updateRunning() {
-        for (var idx = 0; idx < sourcesModel.count; ++idx) {
-            if (sourcesModel.get(idx).model.running) {
+        for (var idx = 0; idx < tabSourceModel.count; ++idx) {
+            if (tabSourceModel.get(idx).model.running) {
                 busyIndicator.running = true;
                 return;
             }
@@ -451,12 +431,7 @@ Item {
         return genericFilterComponent.createObject(model, {"sourceModel": model});
     }
 
-    function createModelForSource(source, parent) {
-        var model = sourceRegistry.createModelForSource(source, parent);
-        if (!model) {
-            return null;
-        }
-
+    function connectModel(model) {
         if ("openSourceRequested" in model) {
             model.openSourceRequested.connect(main.openSourceRequested);
         }
@@ -469,7 +444,6 @@ Item {
         if ("runningChanged" in model) {
             model.runningChanged.connect(main.updateRunning);
         }
-        return model;
     }
 
     function createView(model, parent) {
@@ -492,31 +466,6 @@ Item {
         var view = component.createObject(parent, viewArgs);
         view.focusOtherViewRequested.connect(parent.navigate);
         return view;
-    }
-
-    function fillSourcesModel() {
-        sources.forEach(addSource);
-    }
-
-    function updateSources() {
-        var lst = new Array();
-        for (var idx = 0; idx < sourcesModel.count; ++idx) {
-            var item = sourcesModel.get(idx);
-            lst.push(item.sourceId);
-        }
-        sourcesUpdated(lst);
-    }
-
-    function addSource(sourceId) {
-        var model = createModelForSource(sourceId, main);
-        if (!model) {
-            console.log("addSource() could not create model for source: " + sourceId);
-            return;
-        }
-        sourcesModel.append({
-            sourceId: sourceId,
-            model: model,
-        });
     }
 
     function navigate(repeater, currentIdx, key, x) {

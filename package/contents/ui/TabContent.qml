@@ -1,22 +1,22 @@
 /*
- *   Copyright 2012 Aurélien Gâteau <agateau@kde.org>
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Library General Public License as
- *   published by the Free Software Foundation; either version 2, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Library General Public License for more details
- *
- *   You should have received a copy of the GNU Library General Public
- *   License along with this program; if not, write to the
- *   Free Software Foundation, Inc.,
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
+Copyright 2012 Aurélien Gâteau <agateau@kde.org>
 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) version 3, or any
+later version accepted by the membership of KDE e.V. (or its
+successor approved by the membership of KDE e.V.), which shall
+act as a proxy defined in Section 6 of version 3 of the license.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+*/
 import QtQuick 1.1
 import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
@@ -33,7 +33,7 @@ Item {
     //- Public ----------------------------------------------------
     // Defined by outside world
     property QtObject sourceRegistry
-    property variant sources
+    property QtObject tabSourceModel
     property string tabIconSource
     property string tabText
     property string searchCriteria
@@ -47,7 +47,6 @@ Item {
     signal closeRequested
     signal updateTabOrderRequested
     signal setSearchFieldRequested(string text)
-    signal sourcesUpdated(variant sources)
 
     //- Private ---------------------------------------------------
     Component {
@@ -55,14 +54,11 @@ Item {
         Page {
             anchors.fill: parent
             configureMode: main.configureMode
-            onSourcesUpdated: {
-                main.sourcesUpdated(sources);
-            }
             onCloseRequested: {
                 main.closeRequested();
             }
             onOpenSourceRequested: {
-                main.openSource(source);
+                main.openSource(sourceId, sourceArguments);
             }
         }
     }
@@ -168,14 +164,13 @@ Item {
                 model: currentPage.pathModel
                 delegate: PlasmaComponents.ToolButton {
                     height: breadcrumbRow.height
-                    property string source: model.source
 
                     flat: false
-                    checked: model.index == currentPage.pathModel.count - 1
+                    checked: model.index == breadcrumbRepeater.count - 1
                     text: "› " + model.display
                     onClicked: {
                         if (!checked) {
-                            openSource(model.source);
+                            openSource(model.sourceId, model.sourceArguments);
                         }
                     }
                 }
@@ -210,7 +205,7 @@ Item {
 
     // Scripting
     Component.onCompleted: {
-        var page = createPage(sources);
+        var page = createPage(tabSourceModel);
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
     }
@@ -239,19 +234,40 @@ Item {
 
     function goUp() {
         var count = breadcrumbRepeater.count;
-        var source;
+        var sourceId;
+        var sourceArgs;
         if (count >= 2) {
             // count - 1 is the breadcrumb for the current content
             // count - 2 is the breadcrumb for the content up
-            source = breadcrumbRepeater.itemAt(count - 2).source;
+            var item = breadcrumbRepeater.itemAt(count - 2);
+            sourceId = item.sourceId;
+            sourceArgs = item.sourceArguments;
         }
-        if (source !== null) {
-            openSource(source);
+        if (sourceId !== null) {
+            openSource(sourceId, sourceArguments);
         }
     }
 
-    function openSource(source) {
-        var page = createPage([source], { "showHeader": false });
+    Component {
+        id: dynamicTabSourceModelComponent
+        ListModel {
+        }
+    }
+
+    function openSource(sourceId, sourceArguments) {
+        // This tabSourceModel should look-like the C++ SourceModel used when
+        // tab content is loaded from the config file.
+        var tabSourceModel = dynamicTabSourceModelComponent.createObject(main);
+        var page = createPage(tabSourceModel, { "showHeader": false });
+
+        // Create the model for sourceId after creating the page so that the page
+        // can be used as its parent, avoiding memory leaks.
+        // See https://bugs.kde.org/show_bug.cgi?id=310217
+        tabSourceModel.append({
+            sourceId: sourceId,
+            model: sourceRegistry.createModelFromArguments(sourceId, sourceArguments, page),
+            configGroup: null
+        })
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
         page.forceActiveFocus();
@@ -265,10 +281,10 @@ Item {
             ], event);
     }
 
-    function createPage(sources, viewExtraArgs /*= {}*/) {
+    function createPage(sourceModel, viewExtraArgs /*= {}*/) {
         var args = {
             sourceRegistry: sourceRegistry,
-            sources: sources,
+            tabSourceModel: sourceModel,
         };
         if (viewExtraArgs !== undefined) {
             for (var key in viewExtraArgs) {

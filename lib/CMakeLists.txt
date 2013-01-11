@@ -14,36 +14,13 @@ set(lib_VERSION ${lib_VERSION_MAJOR}.${lib_VERSION_MINOR}.${lib_VERSION_PATCH})
 
 set(lib_SRCS
     abstractsource.cpp
-    abstractsourceregistry.cpp
     pathmodel.cpp
     sourceconfigurationwidget.cpp
-    sourceid.cpp
-    )
-
-# Private classes
-set(lib_SRCS ${lib_SRCS}
-    private/dirconfigurationwidget.cpp
-    private/favoriteappsmodel.cpp
-    private/groupedinstalledappsmodel.cpp
-    private/placesmodel.cpp
-    private/powermodel.cpp
-    private/runnermodel.cpp
-    private/runnerconfigurationwidget.cpp
-    private/installedappsmodel.cpp
-    private/sessionmodel.cpp
-    private/sourceconfigurationdialog.cpp
-    private/sourceregistry.cpp
-    )
-
-kde4_add_ui_files(lib_SRCS
-    private/dirconfigurationwidget.ui
-    private/runnerconfigurationwidget.ui
     )
 
 # Build
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/private
     )
 
 qt4_automoc(${lib_SRCS})
@@ -58,11 +35,14 @@ set_target_properties(homerun PROPERTIES
 
 target_link_libraries(homerun
     ${QT_QTCORE_LIBRARY}
-    ${KDE4_PLASMA_LIBS}
-    ${KDE4_KIO_LIBS}
-    ${KDE4_KFILE_LIBS}
+    ${QT_QTGUI_LIBRARY}
     ${KDE4_KDECORE_LIBS}
-    ${KDE4WORKSPACE_KWORKSPACE_LIBS}
+    )
+
+# Doxygen
+configure_file(Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+add_custom_target(dox COMMAND
+    doxygen
     )
 
 # Install
@@ -70,7 +50,6 @@ target_link_libraries(homerun
 install(DIRECTORY .
     DESTINATION include/homerun
     FILES_MATCHING PATTERN "*.h"
-    PATTERN "private" EXCLUDE
     )
 
 ## .so

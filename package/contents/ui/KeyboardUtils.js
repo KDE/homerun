@@ -32,45 +32,36 @@ function setTabOrder(lst) {
 }
 
 /**
- * Return a list of all children of item (including item itself) which have the
- * boolean property "tabMe" set to true
- */
-function findTabMeChildren(item) {
-    var lst = new Array();
-    if (item.tabMe === true) {
-        lst.push(item);
-    } else {
-        for (var idx = 0; idx < item.children.length; ++idx) {
-            var childLst = findTabMeChildren(item.children[idx]);
-            lst = lst.concat(childLst);
-        };
-    }
-    return lst;
-}
-
-function findFirstTabMeChildren(item) {
-    if (item.tabMe === true) {
-        return item;
-    }
-    for (var idx = 0; idx < item.children.length; ++idx) {
-        var child = findFirstTabMeChildren(item.children[idx]);
-        if (child !== null) {
-            return child;
-        }
-    }
-    return null;
-}
-
-/**
  * Look for a callback to call for a key event.
  * Marks the event as accepted if a callback was found.
- * @param lst: a list of the form: [ [modifier, key, callback], [modifier, key, callback]... ]
- * @param event: the key event.
+ * @param type:list<variant> lst a list of the form: [ [modifier, key, callback], [modifier, key, callback]... ].
+ *            Key can be either a Qt key code, for example Qt.Key_F1, or a one-char string,
+ *            for example "y".
+ * @param type:event event the key event.
  */
 function processShortcutList(lst, event) {
-    event.accepted = lst.some(function(x) {
-        if (event.modifiers == x[0] && event.key == x[1]) {
-            x[2]();
+    function eventMatchesKey(event, key) {
+        var keyType = typeof(key);
+        if (keyType === "string") {
+            return event.text === key;
+        } else if (keyType === "number") {
+            return event.key === key;
+        } else {
+            console.log("KeyboardUtils.js:processShortcutList: Key " + key + " is of wrong type");
+            return false;
         }
+    }
+    event.accepted = lst.some(function(x) {
+        var modifiers = x[0];
+        var key = x[1];
+        var callback = x[2];
+        if (modifiers !== null && event.modifiers !== modifiers) {
+            return false;
+        }
+        if (eventMatchesKey(event, key)) {
+            callback();
+            return true;
+        }
+        return false;
     });
 }

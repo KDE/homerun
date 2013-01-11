@@ -1,3 +1,6 @@
+[General]
+tabs=Tab0,Tab1,Tab2,Tab3
+
 [PackageManagement]
 categoryInstaller=muon-discover-category
 
@@ -13,28 +16,54 @@ serviceId=dolphin
 [Tab0]
 name=Home
 icon=go-home
-source0=FavoriteApps
-source1=FavoritePlaces
-source2=RecentDocuments
-source3=Runner
+sources=Source0,Source1,Source2,Source3
+
+[Tab0][Source0]
+sourceId=FavoriteApps
+
+[Tab0][Source1]
+sourceId=FavoritePlaces
+
+[Tab0][Source2]
+sourceId=RecentDocuments
+
+[Tab0][Source3]
+sourceId=Runner
 
 [Tab1]
 name=Applications
 icon=applications-other
-source0=InstalledApps
+sources=Source0,Source1
+
+[Tab1][Source0]
+sourceId=InstalledApps
 # For a grouped list of all apps
-#source0=GroupedInstalledApps
-source1=Runner:whitelist=services,shell
+#sourceId=GroupedInstalledApps
+
+[Tab1][Source1]
+sourceId=Runner
+whitelist=services,shell
 
 [Tab2]
-name=Documents
+name=Files
 icon=folder-documents
-source0=FavoritePlaces
-source1=RecentDocuments
-source2=Runner:whitelist=bookmarks,nepomuksearch,youtube
+sources=Source0,Source1
+
+[Tab2][Source0]
+sourceId=Dir
+rootUrl=$HOME
+
+[Tab2][Source1]
+sourceId=Runner
+whitelist=bookmarks,nepomuksearch,youtube
 
 [Tab3]
 name=Power
 icon=system-shutdown
-source0=Power
-source1=Session
+sources=Source0,Source1
+
+[Tab3][Source0]
+sourceId=Power
+
+[Tab3][Source1]
+sourceId=Session

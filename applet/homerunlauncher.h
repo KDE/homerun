@@ -20,18 +20,8 @@
 #ifndef HOMERUNLAUNCHER_H
 #define HOMERUNLAUNCHER_H
 
-#include <QtCore/QBasicTimer>
-#include <QtCore/QTime>
-#include <QtGui/QVector2D>
-#include <KConfigDialog>
-
+// KDE
 #include <Plasma/Applet>
-#include <Plasma/Svg>
-
-#include <Phonon/MediaObject>
-#include <Phonon/Path>
-#include <Phonon/AudioOutput>
-#include <Phonon/Global>
 
 namespace Plasma {
     class IconWidget;
@@ -51,8 +41,11 @@ public:
 
     void init();
 
+    void createConfigurationInterface(KConfigDialog *parent); // reimp
+
 private Q_SLOTS:
     void toggle();
+    void readConfig();
 
 private:
     Plasma::IconWidget *m_icon;
