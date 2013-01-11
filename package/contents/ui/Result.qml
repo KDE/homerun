@@ -46,7 +46,8 @@ Item {
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
 
-    signal clicked
+    signal clicked(variant mouse)
+    signal pressAndHold
     signal favoriteClicked
 
     //- Private ---------------------------------------------------------------
@@ -63,6 +64,7 @@ Item {
 
     Component.onCompleted: {
         itemMouseArea.clicked.connect(clicked)
+        itemMouseArea.pressAndHold.connect(pressAndHold)
         favoriteMouseArea.clicked.connect(favoriteClicked)
     }
 
@@ -138,6 +140,7 @@ Item {
 
     MouseArea {
         id: itemMouseArea
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
         hoverEnabled: true
         enabled: !configureMode

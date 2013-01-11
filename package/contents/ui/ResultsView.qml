@@ -129,6 +129,7 @@ FocusScope {
 
             text: model.display
             icon: model.decoration
+
             favoriteIcon: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
                 if (favoriteModel === null) {
@@ -143,7 +144,15 @@ FocusScope {
                 }
             }
 
-            onClicked: emitIndexClicked(model.index)
+            onClicked: {
+                if (mouse.button == Qt.LeftButton) {
+                    emitIndexClicked(model.index)
+                } else if (mouse.button == Qt.RightButton) {
+                    showContextMenu();
+                }
+            }
+
+            onPressAndHold: showContextMenu();
 
             onFavoriteClicked: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
@@ -153,6 +162,21 @@ FocusScope {
                     favoriteModel.addFavorite(model.favoriteId);
                 }
                 showFeedback();
+            }
+
+            Component {
+                id: contextMenuComponent
+                PlasmaComponents.ContextMenu {
+                    visualParent: resultMain
+                    PlasmaComponents.MenuItem {
+                        text: i18n("Favorite");
+                    }
+                }
+            }
+
+            function showContextMenu() {
+                var menu = contextMenuComponent.createObject(resultMain);
+                menu.open();
             }
         }
     }
