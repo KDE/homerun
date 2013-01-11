@@ -159,14 +159,13 @@ FocusScope {
     }
 
     // UI
-    PlasmaComponents.Label {
+    HomerunComponents.Label {
         id: headerLabel
 
         width: parent.width
         height: theme.defaultFont.mSize.height * 2.8
 
         visible: showHeader
-        opacity: 0.6
 
         text: model.name
         font {
@@ -174,17 +173,6 @@ FocusScope {
         }
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-
-        effect: HomerunComponents.HaloEffect {
-        }
-        /*
-        effect: HomerunFixes.DropShadowEffect {
-            xOffset: 0
-            yOffset: 0
-            blurRadius: 10
-            color: "white"
-        }
-        */
     }
 
     PlasmaCore.SvgItem {

@@ -81,7 +81,6 @@ Signals:
 **/
 
 import QtQuick 1.1
-import org.kde.plasma.components 0.1
 import "private" as Private
 
 Item {
@@ -145,6 +144,7 @@ Item {
         verticalAlignment: Text.AlignVCenter
 
         color: root.ListView.isCurrentItem ? theme.buttonTextColor : theme.textColor
+        useShadow: !root.ListView.isCurrentItem
     }
 
     MouseArea {
