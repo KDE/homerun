@@ -21,11 +21,17 @@ import QtQuick 1.1
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 /**
- * A label which can show an optional background shadow
+ * A label which uses Plasma colors by default, but appears differently when
+ * run as a containment: it shows a shadow behind itself and both shadow and
+ * text colors can be customized.
  */
 HomerunFixes.Label {
     id: main
 
+    /**
+     * Whether a shadow should be used in containment mode.
+     * Set this property to false to always disable the shadow.
+     */
     property bool useShadow: true
 
     Component {
@@ -33,7 +39,7 @@ HomerunFixes.Label {
         HomerunFixes.DropShadowEffect {
             xOffset: 0
             yOffset: 1
-            blurRadius: 8
+            blurRadius: 3
             enabled: main.useShadow
         }
     }
@@ -41,12 +47,17 @@ HomerunFixes.Label {
     Component.onCompleted: {
         var isContainment = "plasmoid" in this;
         if (isContainment) {
-            var shadow = shadowComponent.createObject(main);
-            main.effect = shadow;
-            shadow.color = theme.viewBackgroundColor;
-            main.color = theme.viewTextColor;
+            main.effect = shadowComponent.createObject(main);
+            readConfig();
+            plasmoid.addEventListener("ConfigChanged", readConfig);
         } else {
             main.color = theme.textColor;
         }
+    }
+
+    function readConfig() {
+        main.effect.color = plasmoid.readConfig("shadowColor");
+        main.effect.blurRadius = plasmoid.readConfig("shadowBlurRadius");
+        main.color = plasmoid.readConfig("textColor");
     }
 }
