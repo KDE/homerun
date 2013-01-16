@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 import QtQuick 1.1
+import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 /**
@@ -36,7 +37,7 @@ HomerunFixes.Label {
 
     Component {
         id: shadowComponent
-        HomerunFixes.DropShadowEffect {
+        HomerunComponents.ShadowEffect {
             xOffset: 0
             yOffset: 1
             blurRadius: 3

@@ -18,6 +18,7 @@ set(components_SRCS
     runnerconfigurationwidget.cpp
     runnermodel.cpp
     sessionmodel.cpp
+    shadoweffect.cpp
     sourceconfigurationdialog.cpp
     sourceid.cpp
     sourcemodel.cpp
