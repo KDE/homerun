@@ -166,6 +166,7 @@ FocusScope {
         height: theme.defaultFont.mSize.height * 2.8
 
         visible: showHeader
+        opacity: ("plasmoid" in this) ? 1 : 0.6
 
         text: model.name
         font {
