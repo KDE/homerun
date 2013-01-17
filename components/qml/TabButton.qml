@@ -81,6 +81,7 @@ Signals:
 **/
 
 import QtQuick 1.1
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 import "private" as Private
 
 Item {
@@ -126,6 +127,15 @@ Item {
         }
     }
 
+    /*
+    HACK: We use a HomerunComponents.Label for the normal text and
+    a HomerunFixes.Label for the current text.
+
+    This is necessary for containment mode:
+    It makes it possible to have custom color + shadow for normal text (to
+    ensure it remains readable) and buttonTextColor + no-shadow for button text
+    (because it is drawn on top of a button frame)
+    */
     Label {
         id: label
 
@@ -143,8 +153,24 @@ Item {
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
 
-        color: root.ListView.isCurrentItem ? theme.buttonTextColor : theme.textColor
-        useShadow: !root.ListView.isCurrentItem
+        color: theme.textColor
+        opacity: root.ListView.isCurrentItem ? 0 : 1
+        Behavior on opacity { NumberAnimation { duration: 250 }}
+    }
+
+    HomerunFixes.Label {
+        id: currentLabel
+        text: label.text
+
+        anchors.fill: label
+
+        elide: label.elide
+        horizontalAlignment: label.horizontalAlignment
+        verticalAlignment: label.verticalAlignment
+
+        color: theme.buttonTextColor
+        opacity: root.ListView.isCurrentItem ? 1 : 0
+        Behavior on opacity { NumberAnimation { duration: 250 }}
     }
 
     MouseArea {
