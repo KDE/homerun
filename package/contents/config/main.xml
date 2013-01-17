@@ -8,8 +8,14 @@
         <entry name="shadowColor" type="Color">
             <default>#222</default>
         </entry>
-        <entry name="shadowBlurRadius" type="Int">
-            <default>3</default>
+        <entry name="shadowModeNone" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="shadowModeAuto" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="shadowModeCustom" type="Bool">
+            <default>false</default>
         </entry>
         <entry name="textColor" type="Color">
             <default>white</default>

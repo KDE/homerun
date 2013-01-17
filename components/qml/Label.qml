@@ -40,15 +40,14 @@ HomerunFixes.Label {
         HomerunComponents.ShadowEffect {
             xOffset: 0
             yOffset: 1
-            blurRadius: 3
             enabled: main.useShadow
+            blurRadius: 2
         }
     }
 
     Component.onCompleted: {
         var isContainment = "plasmoid" in this;
         if (isContainment) {
-            main.effect = shadowComponent.createObject(main);
             readConfig();
             plasmoid.addEventListener("ConfigChanged", readConfig);
         } else {
@@ -57,8 +56,20 @@ HomerunFixes.Label {
     }
 
     function readConfig() {
-        main.effect.color = plasmoid.readConfig("shadowColor");
-        main.effect.blurRadius = plasmoid.readConfig("shadowBlurRadius");
         main.color = plasmoid.readConfig("textColor");
+        if (plasmoid.readConfig("shadowModeNone") == true) {
+            if (main.effect) {
+                main.effect.destroy();
+            }
+            return;
+        }
+        if (!main.effect) {
+            main.effect = shadowComponent.createObject(main);
+        }
+        if (plasmoid.readConfig("shadowModeCustom") == true) {
+            main.effect.color = plasmoid.readConfig("shadowColor");
+        } else {
+            main.effect.resetColor();
+        }
     }
 }
