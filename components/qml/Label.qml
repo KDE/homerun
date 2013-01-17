@@ -29,18 +29,11 @@ import org.kde.homerun.fixes 0.1 as HomerunFixes
 HomerunFixes.Label {
     id: main
 
-    /**
-     * Whether a shadow should be used in containment mode.
-     * Set this property to false to always disable the shadow.
-     */
-    property bool useShadow: true
-
     Component {
         id: shadowComponent
         HomerunComponents.ShadowEffect {
             xOffset: 0
             yOffset: 1
-            enabled: main.useShadow
             blurRadius: 2
         }
     }
