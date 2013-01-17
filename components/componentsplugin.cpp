@@ -22,7 +22,6 @@
 
 #include <QtDeclarative/qdeclarative.h>
 
-#include <haloeffect.h>
 #include <helpmenuactions.h>
 #include <icondialog.h>
 #include <shadoweffect.h>
@@ -32,7 +31,6 @@
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
-    qmlRegisterType<HaloEffect>(uri, 0, 1, "HaloEffect");
     qmlRegisterType<ShadowEffect>(uri, 0, 1, "ShadowEffect");
     qmlRegisterType<HelpMenuActions>(uri, 0, 1, "HelpMenuActions");
     qmlRegisterType<IconDialog>(uri, 0, 1, "IconDialog");

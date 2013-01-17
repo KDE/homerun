@@ -9,7 +9,6 @@ set(components_SRCS
     favoriteappsmodel.cpp
     favoriteplacesmodel.cpp
     groupedinstalledappsmodel.cpp
-    haloeffect.cpp
     helpmenuactions.cpp
     icondialog.cpp
     installedappsconfigurationwidget.cpp
