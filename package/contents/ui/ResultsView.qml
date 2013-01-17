@@ -17,6 +17,7 @@
  *****************************************************************************/
 
 import QtQuick 1.1
+import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
@@ -158,14 +159,14 @@ FocusScope {
     }
 
     // UI
-    PlasmaComponents.Label {
+    HomerunComponents.Label {
         id: headerLabel
 
         width: parent.width
         height: theme.defaultFont.mSize.height * 2.8
 
         visible: showHeader
-        opacity: 0.6
+        opacity: ("plasmoid" in this) ? 1 : 0.6
 
         text: model.name
         font {
@@ -173,15 +174,16 @@ FocusScope {
         }
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
+    }
 
-        PlasmaCore.SvgItem {
-            width: parent.width
-            height: naturalSize.height
-            svg: PlasmaCore.Svg {
-                imagePath: "widgets/line"
-            }
-            elementId: "horizontal-line"
+    PlasmaCore.SvgItem {
+        anchors.top: headerLabel.top
+        width: headerLabel.width
+        height: naturalSize.height
+        svg: PlasmaCore.Svg {
+            imagePath: "widgets/line"
         }
+        elementId: "horizontal-line"
     }
 
     GridView {
