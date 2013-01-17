@@ -278,26 +278,20 @@ Item {
         }
     }
 
-    function screenRegionChanged() {
+    function resizeToFitScreen() {
         // fit the containment to within the boundaries of the visible panels
         // (so no panels should be covering any information)
         // rect 0 is available screen region, rect 1 is for panels not 100% wide
-        screen = plasmoid.screen
-        var sourceRegion;
-
-        partialRegion = plasmoid.availableScreenRegion(screen)[1]
-
-        if (partialRegion === undefined) {
-            sourceRegion = plasmoid.availableScreenRegion(screen)[0]
-        } else {
-            sourceRegion = partialRegion;
+        var screen = plasmoid.screen;
+        var sourceRegion = plasmoid.availableScreenRegion(screen)[1];
+        if (sourceRegion === undefined) {
+            sourceRegion = plasmoid.availableScreenRegion(screen)[0];
         }
 
-        main.y = sourceRegion.y
-        main.x = sourceRegion.x
-        main.height = sourceRegion.height
-        main.width = sourceRegion.width
-
+        main.y = sourceRegion.y;
+        main.x = sourceRegion.x;
+        main.height = sourceRegion.height;
+        main.width = sourceRegion.width;
     }
 
     // Code
@@ -308,7 +302,8 @@ Item {
             configureAction = plasmoid.action("configure");
             configureAction.enabled = true;
 
-            plasmoid.availableScreenRegionChanged.connect(screenRegionChanged)
+            plasmoid.availableScreenRegionChanged.connect(resizeToFitScreen);
+            resizeToFitScreen();
 
             // Set config file only here so that when running homerunviewer with
             // a custom config file (with --config /path/to/customrc). Homerun
