@@ -49,6 +49,12 @@ public:
     qreal blurRadius() const;
     QColor color() const;
 
+    /**
+     * Use this method if you set the color manually and now want ShadowEffect
+     * to pick the color automatically, based on the source object.
+     */
+    Q_INVOKABLE void resetColor();
+
 public Q_SLOTS:
     void setXOffset(qreal dx);
     void setYOffset(qreal dy);
@@ -74,6 +80,8 @@ private:
     QImage m_shadow;
 
     QImage generateShadow(const QPixmap &px) const;
+
+    QColor computeColorFromSource() const;
 };
 
 #endif /* SHADOWEFFECT_H */

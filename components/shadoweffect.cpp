@@ -22,6 +22,7 @@
 // Local
 
 // KDE
+#include <KDebug>
 #include <Plasma/PaintUtils>
 
 // Qt
@@ -33,7 +34,6 @@ ShadowEffect::ShadowEffect(QObject *parent)
 , m_xOffset(0)
 , m_yOffset(1)
 , m_blurRadius(3)
-, m_color(Qt::black)
 {
 }
 
@@ -105,6 +105,11 @@ void ShadowEffect::setColor(const QColor &value)
     colorChanged(m_color);
 }
 
+void ShadowEffect::resetColor()
+{
+    setColor(QColor());
+}
+
 QRectF ShadowEffect::boundingRectFor(const QRectF &rect) const
 {
     return rect.united(
@@ -126,7 +131,8 @@ QImage ShadowEffect::generateShadow(const QPixmap &px) const
     tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
     tmpPainter.drawPixmap(m_xOffset, m_yOffset, px);
     tmpPainter.end();
-    Plasma::PaintUtils::shadowBlur(tmp, m_blurRadius, m_color);
+    QColor color = m_color.isValid() ? m_color : computeColorFromSource();
+    Plasma::PaintUtils::shadowBlur(tmp, m_blurRadius, color);
     return tmp;
 }
 
@@ -173,6 +179,43 @@ void ShadowEffect::sourceChanged(ChangeFlags flags)
     case SourceDetached:
         break;
     }
+}
+
+
+/**********************************************************
+ * UGLYNESS
+ * This is a severely trimmed copy of an internal class defined in qt:
+ * src/gui/effects/qgraphicseffect_p.h
+ *********************************************************/
+class QGraphicsEffectSource
+{
+public:
+    const QGraphicsItem *graphicsItem() const;
+};
+/**********************************************************
+ * /UGLYNESS
+ *********************************************************/
+
+
+QColor ShadowEffect::computeColorFromSource() const
+{
+    const QGraphicsItem *item = source()->graphicsItem();
+    if (!item) {
+        kWarning() << "No source item!";
+        return Qt::black;
+    }
+    const QGraphicsObject *obj = item->toGraphicsObject();
+    if (!obj) {
+        kWarning() << "Source is not a QGraphicsObject";
+        return Qt::black;
+    }
+    QVariant variant = obj->property("color");
+    if (!variant.canConvert<QColor>()) {
+        kWarning() << "Source has no 'color' property, or its 'color' property is not a QColor!";
+        return Qt::black;
+    }
+    int value = variant.value<QColor>().value();
+    return value > 128 ? Qt::black : Qt::white;
 }
 
 #include <shadoweffect.moc>
