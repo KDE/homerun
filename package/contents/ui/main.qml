@@ -303,6 +303,7 @@ Item {
             configureAction.enabled = true;
 
             plasmoid.availableScreenRegionChanged.connect(resizeToFitScreen);
+            resizeToFitScreen();
 
             // Set config file only here so that when running homerunviewer with
             // a custom config file (with --config /path/to/customrc). Homerun
