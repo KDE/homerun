@@ -112,9 +112,10 @@ void ShadowEffect::resetColor()
 
 QRectF ShadowEffect::boundingRectFor(const QRectF &rect) const
 {
+    qreal padding = m_blurRadius * 2;
     return rect.united(
         rect.translated(m_xOffset, m_yOffset)
-        .adjusted(-m_blurRadius, -m_blurRadius, m_blurRadius, m_blurRadius)
+        .adjusted(-padding, -padding, padding, padding)
         );
 }
 
