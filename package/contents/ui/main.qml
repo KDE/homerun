@@ -282,15 +282,10 @@ Item {
         // fit the containment to within the boundaries of the visible panels
         // (so no panels should be covering any information)
         // rect 0 is available screen region, rect 1 is for panels not 100% wide
-        screen = plasmoid.screen;
-        var sourceRegion;
-
-        partialRegion = plasmoid.availableScreenRegion(screen)[1];
-
-        if (partialRegion === undefined) {
+        var screen = plasmoid.screen;
+        var sourceRegion = plasmoid.availableScreenRegion(screen)[1];
+        if (sourceRegion === undefined) {
             sourceRegion = plasmoid.availableScreenRegion(screen)[0];
-        } else {
-            sourceRegion = partialRegion;
         }
 
         main.y = sourceRegion.y;
