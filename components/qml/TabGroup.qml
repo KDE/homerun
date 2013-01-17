@@ -202,14 +202,16 @@ Item {
                     to: "Incoming"
                     SequentialAnimation {
                         ScriptAction { script: root.clip = true }
-                        PropertyAnimation { properties: "opacity,x"; easing.type: Easing.InQuad; duration: 250 }
+                        //PropertyAnimation { properties: "opacity,x"; easing.type: Easing.InQuad; duration: 250 }
+                        PropertyAnimation { properties: "opacity"; easing.type: Easing.InQuad; duration: 150 }
                         ScriptAction { script: {incomingDone(); root.clip = false} }
                     }
                 },
                 Transition {
                     to: "OutgoingLeft,OutgoingRight"
                     SequentialAnimation {
-                        PropertyAnimation { properties: "opacity,x"; easing.type: Easing.InQuad; duration: 250 }
+                        //PropertyAnimation { properties: "opacity,x"; easing.type: Easing.InQuad; duration: 250 }
+                        PropertyAnimation { properties: "opacity"; easing.type: Easing.InQuad; duration: 150 }
                         ScriptAction { script: outgoingDone() }
                     }
                 }

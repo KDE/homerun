@@ -52,11 +52,12 @@ import org.kde.plasma.components 0.1
 Item {
     id: root
 
-    height: frame.margins.top
-        + buttonFrame.margins.top
+    height: /*frame.margins.top
+        +*/ buttonFrame.margins.top
         + theme.smallIconSize
         + buttonFrame.margins.bottom
-        + frame.margins.bottom
+        + 6
+        //+ frame.margins.bottom
 
     property alias model: listView.model
     property alias delegate: listView.delegate
@@ -74,12 +75,52 @@ Item {
 
     property alias buttonFrame: listView.buttonFrame
 
-    PlasmaCore.FrameSvgItem {
-        id: frame
+    property string outerImagePath: "widgets/button"
+    property string outerPrefix: "pressed"
 
+    PlasmaCore.FrameSvgItem {
+        id: leftFrame
+
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: parent.left
+        }
+        opacity: listView.currentIndex > 0 ? 0.6 : 0
+        width: listView.currentItem.x
+        imagePath: outerImagePath
+        prefix: outerPrefix
+        enabledBorders: "BottomBorder|RightBorder"
+        Behavior on width { NumberAnimation {duration: 100}}
+    }
+
+    PlasmaCore.FrameSvgItem {
+        id: rightFrame
+
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            right: parent.right
+        }
+        width: listView.width - listView.currentItem.x - listView.currentItem.width
+        opacity: (listView.currentIndex < listView.count - 1) ? 0.6 : 0
+        imagePath: outerImagePath
+        prefix: outerPrefix
+        enabledBorders: "LeftBorder|BottomBorder"
+        Behavior on width { NumberAnimation {duration: 100}}
+    }
+
+    Item {
         anchors.fill: parent
-        imagePath: "widgets/frame"
-        prefix: "sunken"
+        /*
+        PlasmaCore.FrameSvgItem {
+            id: frame
+
+            anchors.fill: parent
+            imagePath: "translucent/dialogs/background"
+            //imagePath: "widgets/frame"
+            //prefix: "pressed"
+        }*/
 
         ListView {
             id: listView
@@ -97,14 +138,15 @@ Item {
                 top: parent.top
                 right: parent.right
                 bottom: parent.bottom
-                leftMargin: frame.margins.left
+                /*leftMargin: frame.margins.left
                 topMargin: frame.margins.top
                 rightMargin: frame.margins.right
-                bottomMargin: frame.margins.bottom
+                bottomMargin: frame.margins.bottom*/
             }
 
             orientation: ListView.Horizontal
 
+            /*
             highlightMoveDuration: 250
             highlightResizeDuration: 250
 
@@ -113,6 +155,7 @@ Item {
                 prefix: "normal"
                 height: parent ? parent.height : 0
             }
+            */
 
             currentIndex: 0
         }
