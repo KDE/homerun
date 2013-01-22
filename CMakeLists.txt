@@ -23,22 +23,10 @@ message(STATUS "Source version: ${HOMERUN_SOURCE_VERSION}")
 message(STATUS "Source date: ${HOMERUN_SOURCE_DATE}")
 
 # Dependencies
-find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
+find_package(KDE4 4.9.97 REQUIRED)
 include(KDE4Defaults)
 find_package(KDE4Workspace REQUIRED)
 find_package(KDeclarative REQUIRED)
-
-# Check whether KDeclarative::setupQmlJsDebugger() exists
-set(CMAKE_REQUIRED_INCLUDES "${KDE4_INCLUDES}")
-set(CMAKE_REQUIRED_LIBRARIES "${KDECLARATIVE_LIBRARIES}")
-check_cxx_source_compiles("
-#include <kdeclarative.h>
-int main()
-{
-    KDeclarative::setupQmlJsDebugger();
-    return 0;
-}
-" HAVE_KDECLARATIVE_SETUPQMLJSDEBUGGER)
 
 # Compile options
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})

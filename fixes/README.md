@@ -10,38 +10,9 @@ moved to the components/ dir.
 
 # Current Status
 
-## SortFilterModel (kde-runtime)
-### Fix for flickering
-<https://git.reviewboard.kde.org/r/105042/>
-
-Applied in 4.9
-
-### New methods: mapRowFromSource, mapRowToSource
-<https://git.reviewboard.kde.org/r/105044/>
-
-Applied in 4.9
-
-### Fix SortFilterModel sorting by default
-Applied in 4.9
-
-### Notify about changes in filterRegExp and model + Allow setting model to 0
-<https://git.reviewboard.kde.org/r/106248/>
-
-Applied in 4.10
-
-## Label.qml (kde-runtime)
-A copy of the 4.9 version. The 4.8 version imports QtQuick 1.0, but we need
-QtQuick 1.1 to be able to use properties like "truncated" or "maximumLineCount".
-
 ## TextField.qml (kde-runtime)
-A copy of the 4.9 version. The 4.8 version has a bug with dark themes like
-Oxygen: it use white text on white background.
 
 ### Keep placeholder text visible when focused and empty
 <https://git.reviewboard.kde.org/r/107678/>
 
 Not applied for now
-
-## ScrollArea (kde-runtime)
-A copy from kde-runtime master. This is needed because this component does not
-exist in KDE 4.8.

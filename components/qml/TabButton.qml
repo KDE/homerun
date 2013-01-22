@@ -81,7 +81,7 @@ Signals:
 **/
 
 import QtQuick 1.1
-import org.kde.homerun.fixes 0.1 as HomerunFixes
+import org.kde.plasma.components 0.1 as PlasmaComponents
 import "private" as Private
 
 Item {
@@ -129,7 +129,7 @@ Item {
 
     /*
     HACK: We use a HomerunComponents.Label for the normal text and
-    a HomerunFixes.Label for the current text.
+    a PlasmaComponents.Label for the current text.
 
     This is necessary for containment mode:
     It makes it possible to have custom color + shadow for normal text (to
@@ -158,7 +158,7 @@ Item {
         Behavior on opacity { NumberAnimation { duration: 250 }}
     }
 
-    HomerunFixes.Label {
+    PlasmaComponents.Label {
         id: currentLabel
         text: label.text
 

@@ -54,9 +54,7 @@ int main(int argc, char *argv[])
 
     KUniqueApplication app;
     app.disableSessionManagement();
-#ifdef HAVE_KDECLARATIVE_SETUPQMLJSDEBUGGER
     KDeclarative::setupQmlJsDebugger();
-#endif
 
     // Create view
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

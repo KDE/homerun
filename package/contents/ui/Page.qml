@@ -20,7 +20,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
-import org.kde.homerun.fixes 0.1 as HomerunFixes
+import org.kde.plasma.extras 0.1 as PlasmaExtras
 
 Item {
     id: main
@@ -49,7 +49,7 @@ Item {
     // Filter components
     Component {
         id: genericFilterComponent
-        HomerunFixes.SortFilterModel {
+        PlasmaCore.SortFilterModel {
             filterRegExp: main.searchCriteria
             property string name: sourceModel.name
             property int count: sourceModel.count
@@ -208,7 +208,7 @@ Item {
         opacity: running ? 0.5 : 0
     }
 
-    HomerunFixes.ScrollArea {
+    PlasmaExtras.ScrollArea {
         id: availableScrollArea
         anchors {
             left: parent.left
@@ -224,7 +224,7 @@ Item {
             spacing: 6
             anchors.fill: parent
 
-            model: HomerunFixes.SortFilterModel {
+            model: PlasmaCore.SortFilterModel {
                 sourceModel: sourceRegistry.availableSourcesModel()
                 sortRole: "display"
             }
@@ -240,7 +240,7 @@ Item {
         }
     }
 
-    HomerunFixes.ScrollArea {
+    PlasmaExtras.ScrollArea {
         id: centralScrollArea
         anchors {
             top: parent.top
