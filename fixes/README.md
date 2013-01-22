@@ -18,7 +18,3 @@ Oxygen: it use white text on white background.
 <https://git.reviewboard.kde.org/r/107678/>
 
 Not applied for now
-
-## ScrollArea (kde-runtime)
-A copy from kde-runtime master. This is needed because this component does not
-exist in KDE 4.8.

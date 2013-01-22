@@ -20,7 +20,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
-import org.kde.homerun.fixes 0.1 as HomerunFixes
+import org.kde.plasma.extras 0.1 as PlasmaExtras
 
 Item {
     id: main
@@ -208,7 +208,7 @@ Item {
         opacity: running ? 0.5 : 0
     }
 
-    HomerunFixes.ScrollArea {
+    PlasmaExtras.ScrollArea {
         id: availableScrollArea
         anchors {
             left: parent.left
@@ -240,7 +240,7 @@ Item {
         }
     }
 
-    HomerunFixes.ScrollArea {
+    PlasmaExtras.ScrollArea {
         id: centralScrollArea
         anchors {
             top: parent.top

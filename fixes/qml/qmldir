@@ -1,4 +1,3 @@
 plugin fixesplugin
 
 TextField 0.1 TextField.qml
-ScrollArea 0.1 ScrollArea.qml
