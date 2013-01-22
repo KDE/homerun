@@ -11,8 +11,6 @@ moved to the components/ dir.
 # Current Status
 
 ## TextField.qml (kde-runtime)
-A copy of the 4.9 version. The 4.8 version has a bug with dark themes like
-Oxygen: it use white text on white background.
 
 ### Keep placeholder text visible when focused and empty
 <https://git.reviewboard.kde.org/r/107678/>
