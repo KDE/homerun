@@ -49,7 +49,7 @@ Item {
     // Filter components
     Component {
         id: genericFilterComponent
-        HomerunFixes.SortFilterModel {
+        PlasmaCore.SortFilterModel {
             filterRegExp: main.searchCriteria
             property string name: sourceModel.name
             property int count: sourceModel.count
@@ -224,7 +224,7 @@ Item {
             spacing: 6
             anchors.fill: parent
 
-            model: HomerunFixes.SortFilterModel {
+            model: PlasmaCore.SortFilterModel {
                 sourceModel: sourceRegistry.availableSourcesModel()
                 sortRole: "display"
             }

@@ -22,7 +22,6 @@
 #include <fixesplugin.h>
 
 // Local
-#include <datamodel.h>
 
 // Qt
 #include <QtDeclarative/qdeclarative.h>
@@ -31,7 +30,6 @@
 void FixesPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.fixes"));
-    qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
     qmlRegisterType<QGraphicsDropShadowEffect>(uri, 0, 1, "DropShadowEffect");
 }
 

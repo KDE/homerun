@@ -1,7 +1,6 @@
 project(fixes)
 
 set(fixes_SRCS
-    datamodel.cpp
     fixesplugin.cpp
     )
 
