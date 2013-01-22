@@ -10,10 +10,6 @@ moved to the components/ dir.
 
 # Current Status
 
-## Label.qml (kde-runtime)
-A copy of the 4.9 version. The 4.8 version imports QtQuick 1.0, but we need
-QtQuick 1.1 to be able to use properties like "truncated" or "maximumLineCount".
-
 ## TextField.qml (kde-runtime)
 A copy of the 4.9 version. The 4.8 version has a bug with dark themes like
 Oxygen: it use white text on white background.

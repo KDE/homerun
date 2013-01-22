@@ -19,14 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 import QtQuick 1.1
 import org.kde.homerun.components 0.1 as HomerunComponents
-import org.kde.homerun.fixes 0.1 as HomerunFixes
+import org.kde.plasma.components 0.1 as PlasmaComponents
 
 /**
  * A label which uses Plasma colors by default, but appears differently when
  * run as a containment: it shows a shadow behind itself and both shadow and
  * text colors can be customized.
  */
-HomerunFixes.Label {
+PlasmaComponents.Label {
     id: main
 
     Component {
