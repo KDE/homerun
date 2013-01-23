@@ -179,7 +179,9 @@ FocusScope {
                     property variant actionItem
                     property int sourceRow
 
-                    text: actionItem.text
+                    text: actionItem.text ? actionItem.text : ""
+                    enabled: actionItem.type != "title"
+                    separator: actionItem.type == "separator"
 
                     onClicked: {
                         emitIndexClicked(sourceRow, actionItem.actionId, actionItem.actionArgument);

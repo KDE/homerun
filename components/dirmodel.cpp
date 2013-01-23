@@ -128,16 +128,32 @@ static QVariantMap createActionItem(const QString &label, const QString &actionI
     return map;
 }
 
+static QVariantMap createTitleActionItem(const QString &label)
+{
+    QVariantMap map;
+    map["text"] = label;
+    map["type"] = "title";
+    return map;
+}
+
+static QVariantMap createSeparatorActionItem()
+{
+    QVariantMap map;
+    map["type"] = "separator";
+    return map;
+}
+
 static QVariantList createActionList(const KFileItem &item)
 {
     QVariantList list;
-    list << createActionItem(i18n("Open with:"), QString());
+    list << createTitleActionItem(i18n("Open with:"));
     const QString mimeType = item.mimetype();
     KService::List services = KMimeTypeTrader::self()->query(mimeType, "Application");
     Q_FOREACH(const KService::Ptr service, services) {
         const QString text = "  " + service->name().replace('&', "&&");
         list << createActionItem(text, "openWith", service->entryPath());
     }
+    list << createSeparatorActionItem();
     list << createActionItem(i18n("Properties"), "properties");
     return list;
 }

@@ -52,6 +52,9 @@ Unique Id used to favorite this item. Its value depends on the item type:
 A list of QVariantMap describing extra actions. Each map should contain the
 following elements:
 
+- string type
+    - mandatory: no, default to "action"
+    - Can be one of "action", "title" or "separator"
 - string text
     - mandatory: yes
     - The visible text shown in the item context menu
