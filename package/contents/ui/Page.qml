@@ -81,7 +81,7 @@ Item {
             width: parent.width
             configureMode: main.configureMode
             onIndexClicked: {
-                handleTriggerResult(model.trigger(index, actionId));
+                handleTriggerResult(model.trigger(index, actionId, actionArgument));
             }
             onCurrentItemChanged: {
                 if (currentItem) {
@@ -165,7 +165,7 @@ Item {
                     favoriteModels: multiMain.favoriteModels
 
                     onIndexClicked: {
-                        handleTriggerResult(model.trigger(index, actionId));
+                        handleTriggerResult(model.trigger(index, actionId, actionArgument));
                     }
 
                     onFocusOtherViewRequested: {

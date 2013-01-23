@@ -31,7 +31,10 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <KDirModel>
 #include <KDirLister>
 #include <KLocale>
+#include <KMimeTypeTrader>
 #include <KPropertiesDialog>
+#include <KService>
+#include <KRun>
 
 // Qt
 #include <QApplication>
@@ -114,20 +117,26 @@ KDirLister *DirModel::dirLister() const
     return static_cast<KDirModel *>(sourceModel())->dirLister();
 }
 
-static QVariantMap createActionItem(const QString &label, const QString &actionId)
+static QVariantMap createActionItem(const QString &label, const QString &actionId, const QVariant &actionArg = QVariant())
 {
     QVariantMap map;
     map["text"] = label;
     map["actionId"] = actionId;
+    if (actionArg.isValid()) {
+        map["actionArgument"] = actionArg;
+    }
     return map;
 }
 
 static QVariantList createActionList(const KFileItem &item)
 {
     QVariantList list;
-    list << createActionItem(i18n("Open"), QString());
-    if (item.isDir()) {
-        list << createActionItem(i18n("Open folder in file manager"), "openDir");
+    list << createActionItem(i18n("Open with:"), QString());
+    const QString mimeType = item.mimetype();
+    KService::List services = KMimeTypeTrader::self()->query(mimeType, "Application");
+    Q_FOREACH(const KService::Ptr service, services) {
+        const QString text = "  " + service->name().replace('&', "&&");
+        list << createActionItem(text, "openWith", service->entryPath());
     }
     list << createActionItem(i18n("Properties"), "properties");
     return list;
@@ -195,7 +204,7 @@ void DirModel::emitRunningChanged()
     runningChanged(running());
 }
 
-bool DirModel::trigger(int row, const QString &actionId)
+bool DirModel::trigger(int row, const QString &actionId, const QVariant &actionArg)
 {
     bool closed = false;
     QModelIndex idx = index(row, 0);
@@ -214,6 +223,15 @@ bool DirModel::trigger(int row, const QString &actionId)
         dlg->show();
     } else if (actionId == "openDir") {
         item.run();
+    } else if (actionId == "openWith") {
+        const QString path = actionArg.toString();
+        const KService::Ptr service = KService::serviceByDesktopPath(path);
+        if (!service) {
+            kWarning() << "Invalid service";
+            return false;
+        }
+        KRun::run(*service, KUrl::List() << item.url(), QApplication::activeWindow());
+        closed = true;
     }
     return closed;
 }

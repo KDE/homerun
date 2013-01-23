@@ -42,7 +42,7 @@ FocusScope {
 
     property alias currentItem: gridView.currentItem
 
-    signal indexClicked(int index, string actionId)
+    signal indexClicked(int index, string actionId, variant actionArgument)
 
     signal focusOtherViewRequested(int key, int x)
 
@@ -87,7 +87,7 @@ FocusScope {
     }
 
     function triggerFirstItem() {
-        emitIndexClicked(0, "");
+        emitIndexClicked(0, "", null);
     }
 
     //- Private -------------------------------------------------
@@ -147,7 +147,7 @@ FocusScope {
 
             onClicked: {
                 if (mouse.button == Qt.LeftButton) {
-                    emitIndexClicked(model.index, "");
+                    emitIndexClicked(model.index, "", null);
                 } else if (mouse.button == Qt.RightButton) {
                     showContextMenu();
                 }
@@ -182,7 +182,7 @@ FocusScope {
                     text: actionItem.text
 
                     onClicked: {
-                        emitIndexClicked(sourceRow, actionItem.actionId);
+                        emitIndexClicked(sourceRow, actionItem.actionId, actionItem.actionArgument);
                     }
                 }
             }
@@ -300,7 +300,7 @@ FocusScope {
             }
         }
 
-        Keys.onReturnPressed: emitIndexClicked(currentIndex, "")
+        Keys.onReturnPressed: emitIndexClicked(currentIndex, "", null)
     }
 
     PlasmaCore.FrameSvgItem {
@@ -364,10 +364,10 @@ FocusScope {
         }
     }
 
-    function emitIndexClicked(index, actionId) {
+    function emitIndexClicked(index, actionId, actionArgument) {
         if (configureMode) {
             return;
         }
-        indexClicked(index, actionId);
+        indexClicked(index, actionId, actionArgument);
     }
 }

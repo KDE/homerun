@@ -57,7 +57,7 @@ public:
         ActionListRole,
     };
 
-    Q_INVOKABLE bool trigger(int row, const QString &actionId = QString());
+    Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
     KDirLister *dirLister() const;
 
