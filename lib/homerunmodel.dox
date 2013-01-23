@@ -46,6 +46,15 @@ Unique Id used to favorite this item. Its value depends on the item type:
 - item is a place: "place:" + $url.
   Examples: "place:file:///home/jdoe/Documents" or "place:sftp://host.com/dir".
 
+### list<QVariantMap> actionList
+- mandatory: no
+
+A list of QVariantMap describing extra actions. Each map should contain the
+following elements:
+
+- "text": string. The visible text shown in the item context menu
+- "actionId": string. An id passed to "trigger()" to distinguish between actions
+
 ## Properties
 ### string name
 - access: read-only
@@ -84,11 +93,12 @@ it is not defined, Homerun will apply a generic filter to the item names when
 the user type a search criteria.
 
 ## Methods
-### bool trigger(int row)
+### bool trigger(int row, string actionId = "")
 - mandatory: yes
 
-Triggers the action associated with the item at row "row". Returns true if you
-want Homerun to close, false otherwise.
+Triggers the action identified by "actionId" on the item at row "row".
+When the user clicks on an item, "actionId" is an empty string.
+Returns true if you want Homerun to close, false otherwise.
 
 ## Signals
 ### openSourceRequested(QString sourceId, const QVariantMap &arguments)
