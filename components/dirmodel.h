@@ -54,9 +54,10 @@ public:
 
     enum {
         FavoriteIdRole = Qt::UserRole + 1,
+        ActionListRole,
     };
 
-    Q_INVOKABLE bool trigger(int row);
+    Q_INVOKABLE bool trigger(int row, const QString &actionId = QString());
 
     KDirLister *dirLister() const;
 

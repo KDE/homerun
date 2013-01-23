@@ -41,7 +41,7 @@ FocusScope {
 
     property alias currentItem: gridView.currentItem
 
-    signal indexClicked(int index)
+    signal indexClicked(int index, string actionId)
 
     signal focusOtherViewRequested(int key, int x)
 
@@ -86,7 +86,7 @@ FocusScope {
     }
 
     function triggerFirstItem() {
-        emitIndexClicked(0);
+        emitIndexClicked(0, "");
     }
 
     //- Private -------------------------------------------------
@@ -146,7 +146,7 @@ FocusScope {
 
             onClicked: {
                 if (mouse.button == Qt.LeftButton) {
-                    emitIndexClicked(model.index)
+                    emitIndexClicked(model.index, "");
                 } else if (mouse.button == Qt.RightButton) {
                     showContextMenu();
                 }
@@ -168,14 +168,36 @@ FocusScope {
                 id: contextMenuComponent
                 PlasmaComponents.ContextMenu {
                     visualParent: resultMain
-                    PlasmaComponents.MenuItem {
-                        text: i18n("Favorite");
+                }
+            }
+
+            Component {
+                id: contextMenuItemComponent
+
+                PlasmaComponents.MenuItem {
+                    property variant actionItem
+                    property int sourceRow
+
+                    text: actionItem.text
+
+                    onClicked: {
+                        emitIndexClicked(sourceRow, actionItem.actionId);
                     }
                 }
             }
 
             function showContextMenu() {
+                var list = model.actionList;
+                if (!list) {
+                    return;
+                }
                 var menu = contextMenuComponent.createObject(resultMain);
+                list.forEach(function(item) {
+                    contextMenuItemComponent.createObject(menu, {
+                        "actionItem": item,
+                        "sourceRow": index
+                    });
+                });
                 menu.open();
             }
         }
@@ -276,7 +298,7 @@ FocusScope {
             }
         }
 
-        Keys.onReturnPressed: emitIndexClicked(currentIndex)
+        Keys.onReturnPressed: emitIndexClicked(currentIndex, "")
     }
 
     PlasmaCore.FrameSvgItem {
@@ -340,10 +362,10 @@ FocusScope {
         }
     }
 
-    function emitIndexClicked(index) {
+    function emitIndexClicked(index, actionId) {
         if (configureMode) {
             return;
         }
-        indexClicked(index);
+        indexClicked(index, actionId);
     }
 }

@@ -30,8 +30,11 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <KDebug>
 #include <KDirModel>
 #include <KDirLister>
+#include <KLocale>
+#include <KPropertiesDialog>
 
 // Qt
+#include <QApplication>
 #include <QDir>
 
 namespace Homerun
@@ -66,6 +69,7 @@ DirModel::DirModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(DirModel::FavoriteIdRole, "favoriteId");
+    roles.insert(DirModel::ActionListRole, "actionList");
     setRoleNames(roles);
 
     dirLister()->setDelayedMimeTypes(true);
@@ -110,9 +114,28 @@ KDirLister *DirModel::dirLister() const
     return static_cast<KDirModel *>(sourceModel())->dirLister();
 }
 
+static QVariantMap createActionItem(const QString &label, const QString &actionId)
+{
+    QVariantMap map;
+    map["text"] = label;
+    map["actionId"] = actionId;
+    return map;
+}
+
+static QVariantList createActionList(const KFileItem &item)
+{
+    QVariantList list;
+    list << createActionItem(i18n("Open"), QString());
+    if (item.isDir()) {
+        list << createActionItem(i18n("Open folder in file manager"), "openDir");
+    }
+    list << createActionItem(i18n("Properties"), "properties");
+    return list;
+}
+
 QVariant DirModel::data(const QModelIndex &index, int role) const
 {
-    if (role != FavoriteIdRole) {
+    if (role != FavoriteIdRole && role != ActionListRole) {
         return QSortFilterProxyModel::data(index, role);
     }
     if (index.row() < 0 || index.row() >= rowCount()) {
@@ -120,11 +143,17 @@ QVariant DirModel::data(const QModelIndex &index, int role) const
     }
 
     KFileItem item = itemForIndex(index);
-    if (item.isDir()) {
-        return FavoritePlacesModel::favoriteIdFromUrl(item.url());
-    } else {
-        return QString();
+    if (role == FavoriteIdRole) {
+        if (item.isDir()) {
+            return FavoritePlacesModel::favoriteIdFromUrl(item.url());
+        } else {
+            return QString();
+        }
+    } else if (role == ActionListRole) {
+        return createActionList(item);
     }
+    // Never reached
+    return QVariant();
 }
 
 int DirModel::count() const
@@ -166,17 +195,25 @@ void DirModel::emitRunningChanged()
     runningChanged(running());
 }
 
-bool DirModel::trigger(int row)
+bool DirModel::trigger(int row, const QString &actionId)
 {
     bool closed = false;
     QModelIndex idx = index(row, 0);
 
     KFileItem item = itemForIndex(idx);
-    if (item.isDir()) {
-        openSourceRequested(SOURCE_ID, sourceArguments(m_rootUrl, m_rootName, item.url()));
-    } else {
+    if (actionId.isEmpty()) {
+        if (item.isDir()) {
+            openSourceRequested(SOURCE_ID, sourceArguments(m_rootUrl, m_rootName, item.url()));
+        } else {
+            item.run();
+            closed = true;
+        }
+    } else if (actionId == "properties") {
+        KPropertiesDialog *dlg = new KPropertiesDialog(item, QApplication::activeWindow());
+        dlg->setAttribute(Qt::WA_DeleteOnClose);
+        dlg->show();
+    } else if (actionId == "openDir") {
         item.run();
-        closed = true;
     }
     return closed;
 }
