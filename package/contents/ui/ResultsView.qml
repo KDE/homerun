@@ -42,7 +42,7 @@ FocusScope {
 
     property alias currentItem: gridView.currentItem
 
-    signal indexClicked(int index)
+    signal indexClicked(int index, string actionId)
 
     signal focusOtherViewRequested(int key, int x)
 
@@ -87,7 +87,7 @@ FocusScope {
     }
 
     function triggerFirstItem() {
-        emitIndexClicked(0);
+        emitIndexClicked(0, "");
     }
 
     //- Private -------------------------------------------------
@@ -130,6 +130,7 @@ FocusScope {
 
             text: model.display
             icon: model.decoration
+
             favoriteIcon: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
                 if (favoriteModel === null) {
@@ -144,7 +145,15 @@ FocusScope {
                 }
             }
 
-            onClicked: emitIndexClicked(model.index)
+            onClicked: {
+                if (mouse.button == Qt.LeftButton) {
+                    emitIndexClicked(model.index, "");
+                } else if (mouse.button == Qt.RightButton) {
+                    showContextMenu();
+                }
+            }
+
+            onPressAndHold: showContextMenu();
 
             onFavoriteClicked: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
@@ -154,6 +163,43 @@ FocusScope {
                     favoriteModel.addFavorite(model.favoriteId);
                 }
                 showFeedback();
+            }
+
+            Component {
+                id: contextMenuComponent
+                PlasmaComponents.ContextMenu {
+                    visualParent: resultMain
+                }
+            }
+
+            Component {
+                id: contextMenuItemComponent
+
+                PlasmaComponents.MenuItem {
+                    property variant actionItem
+                    property int sourceRow
+
+                    text: actionItem.text
+
+                    onClicked: {
+                        emitIndexClicked(sourceRow, actionItem.actionId);
+                    }
+                }
+            }
+
+            function showContextMenu() {
+                var list = model.actionList;
+                if (!list) {
+                    return;
+                }
+                var menu = contextMenuComponent.createObject(resultMain);
+                list.forEach(function(item) {
+                    contextMenuItemComponent.createObject(menu, {
+                        "actionItem": item,
+                        "sourceRow": index
+                    });
+                });
+                menu.open();
             }
         }
     }
@@ -254,7 +300,7 @@ FocusScope {
             }
         }
 
-        Keys.onReturnPressed: emitIndexClicked(currentIndex)
+        Keys.onReturnPressed: emitIndexClicked(currentIndex, "")
     }
 
     PlasmaCore.FrameSvgItem {
@@ -318,10 +364,10 @@ FocusScope {
         }
     }
 
-    function emitIndexClicked(index) {
+    function emitIndexClicked(index, actionId) {
         if (configureMode) {
             return;
         }
-        indexClicked(index);
+        indexClicked(index, actionId);
     }
 }
