@@ -58,6 +58,9 @@ following elements:
 - string text
     - mandatory: yes
     - The visible text shown in the item context menu
+- QIcon icon
+    - mandatory: no
+    - The icon associated with the action
 - string actionId
     - mandatory: yes
     - An id passed to trigger() to distinguish between actions

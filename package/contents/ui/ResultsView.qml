@@ -182,6 +182,7 @@ FocusScope {
                     text: actionItem.text ? actionItem.text : ""
                     enabled: actionItem.type != "title"
                     separator: actionItem.type == "separator"
+                    icon: actionItem.icon ? actionItem.icon : null
 
                     onClicked: {
                         emitIndexClicked(sourceRow, actionItem.actionId, actionItem.actionArgument);

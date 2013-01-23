@@ -150,8 +150,13 @@ static QVariantList createActionList(const KFileItem &item)
     const QString mimeType = item.mimetype();
     KService::List services = KMimeTypeTrader::self()->query(mimeType, "Application");
     Q_FOREACH(const KService::Ptr service, services) {
-        const QString text = "  " + service->name().replace('&', "&&");
-        list << createActionItem(text, "openWith", service->entryPath());
+        const QString text = service->name().replace('&', "&&");
+        QVariantMap item = createActionItem(text, "openWith", service->entryPath());
+        QString iconName = service->icon();
+        if (!iconName.isEmpty()) {
+            item["icon"] = KIcon(service->icon());
+        }
+        list << item;
     }
     list << createSeparatorActionItem();
     list << createActionItem(i18n("Properties"), "properties");
