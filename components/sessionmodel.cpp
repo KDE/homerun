@@ -114,7 +114,7 @@ bool SessionModel::trigger(int row)
 
         case SwitchUser: {
             QDBusConnection bus = QDBusConnection::sessionBus();
-            QDBusInterface interface("org.kde.krunner", "/App", "org.kde.krunner", bus);
+            QDBusInterface interface("org.kde.krunner", "/App", "org.kde.krunner.App", bus);
 
             interface.asyncCall("switchUser");
         }
