@@ -43,16 +43,19 @@ class RunnerManager;
 
 namespace Homerun {
 
+class RunnerModel;
+
 class RunnerSubModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
-    explicit RunnerSubModel(const QString &runnerId, const QString &name, QObject *parent = 0);
+    RunnerSubModel(const QString &runnerId, const QString &name, RunnerModel *runnerModel);
 
     enum {
-        FavoriteIdRole = Qt::UserRole + 1
+        FavoriteIdRole = Qt::UserRole + 1,
+        ActionListRole,
     };
 
     QString runnerId() const { return m_runnerId; }
@@ -66,14 +69,15 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-    Q_INVOKABLE bool trigger(int row);
+    Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
 Q_SIGNALS:
     void countChanged();
 
-    void triggerRequested(const Plasma::QueryMatch&);
+    void triggerRequested(const Plasma::QueryMatch &);
 
 private:
+    RunnerModel *m_runnerModel;
     QString m_runnerId;
     QString m_name;
 
@@ -108,6 +112,8 @@ public:
 
     QString currentQuery() const;
 
+    Plasma::RunnerManager *manager() const;
+
 public Q_SLOTS:
     void scheduleQuery(const QString &query);
 
@@ -119,7 +125,7 @@ private Q_SLOTS:
     void startQuery();
     void queryHasFinished();
     void matchesChanged(const QList<Plasma::QueryMatch> &matches);
-    void trigger(const Plasma::QueryMatch&);
+    void trigger(const Plasma::QueryMatch &);
 
 private:
     void createManager();

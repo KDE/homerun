@@ -40,8 +40,9 @@ static const char *WHITELIST_KEY = "whitelist";
 
 namespace Homerun {
 
-RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, QObject *parent)
-: QAbstractListModel(parent)
+RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, RunnerModel *runnerModel)
+: QAbstractListModel(runnerModel)
+, m_runnerModel(runnerModel)
 , m_runnerId(runnerId)
 , m_name(name)
 {
@@ -49,6 +50,7 @@ RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, QOb
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(FavoriteIdRole, "favoriteId");
+    roles.insert(ActionListRole, "actionList");
     /*
     roles.insert(Type, "type");
     roles.insert(Relevance, "relevance");
@@ -71,6 +73,17 @@ int RunnerSubModel::count() const
 int RunnerSubModel::rowCount(const QModelIndex& parent) const
 {
     return parent.isValid() ? 0 : m_matches.count();
+}
+
+static QVariantMap createActionItem(const QString &label, const QString &actionId, const QVariant &actionArg = QVariant())
+{
+    QVariantMap map;
+    map["text"] = label;
+    map["actionId"] = actionId;
+    if (actionArg.isValid()) {
+        map["actionArgument"] = actionArg;
+    }
+    return map;
 }
 
 QVariant RunnerSubModel::data(const QModelIndex &index, int role) const
@@ -97,7 +110,17 @@ QVariant RunnerSubModel::data(const QModelIndex &index, int role) const
         } else {
             return QString();
         }
-    } /*else if (role == Type) {
+    } else if (role == ActionListRole) {
+        QVariantList actionList;
+        Q_FOREACH(QAction *action, m_runnerModel->manager()->actionsForMatch(match)) {
+            QVariantMap item = createActionItem(action->text(), "runnerAction",
+                QVariant::fromValue<QObject *>(action));
+            item["icon"] = KIcon(action->icon());
+            actionList << item;
+        }
+        return actionList;
+    }
+/*else if (role == Type) {
         return m_matches.at(index.row()).type();
     } else if (role == Relevance) {
         return m_matches.at(index.row()).relevance();
@@ -113,16 +136,7 @@ QVariant RunnerSubModel::data(const QModelIndex &index, int role) const
         return m_matches.at(index.row()).runner()->id();
     } else if (role == RunnerName) {
         return m_matches.at(index.row()).runner()->name();
-    } else if (role == Actions) {
-        QVariantList actions;
-        Plasma::QueryMatch amatch = m_matches.at(index.row());
-        QList<QAction*> theactions = m_manager->actionsForMatch(amatch);
-        foreach(QAction* action, theactions) {
-            actions += qVariantFromValue<QObject*>(action);
-        }
-        return actions;
     }*/
-
     return QVariant();
 }
 
@@ -160,11 +174,27 @@ void RunnerSubModel::setMatches(const QList<Plasma::QueryMatch> &matches)
     }
 }
 
-bool RunnerSubModel::trigger(int row)
+bool RunnerSubModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
 {
-    if (row >= 0 && row < m_matches.count()) {
-        triggerRequested(m_matches.at(row));
+    if (row < 0 || row >= m_matches.count()) {
+        kWarning() << "Invalid row" << row;
+        return false;
     }
+    Plasma::QueryMatch match = m_matches.at(row);
+    if (!actionId.isEmpty()) {
+        QObject *obj = actionArgument.value<QObject *>();
+        if (!obj) {
+            kWarning() << "actionArgument is not a QObject";
+            return false;
+        }
+        QAction *action = qobject_cast<QAction *>(obj);
+        if (!action) {
+            kWarning() << "actionArgument is not a QAction";
+            return false;
+        }
+        match.setSelectedAction(action);
+    }
+    triggerRequested(match);
     return true;
 }
 
@@ -378,6 +408,11 @@ void RunnerModel::loadRunners()
     }
     m_manager->setSingleMode(m_pendingRunnersList.count() == 1);
     m_pendingRunnersList.clear();
+}
+
+Plasma::RunnerManager *RunnerModel::manager() const
+{
+    return m_manager;
 }
 
 //- RunnerSource ------------------------------
