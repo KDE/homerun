@@ -33,6 +33,7 @@
 #include <KRun>
 #include <KService>
 #include <kworkspace/kworkspace.h>
+#include <Solid/PowerManagement>
 
 //Plasma
 #include <Plasma/AbstractRunner>
@@ -43,17 +44,23 @@ namespace Homerun {
 PowerModel::PowerModel(QObject *parent)
 : QAbstractListModel(parent)
 {
-    PowerAction suspend;
-    suspend.name = i18nc("an action", "Suspend");
-    suspend.type = Suspend;
-    suspend.iconName = "system-suspend";
-    m_powerList.append(suspend);
+    QSet<Solid::PowerManagement::SleepState> sleepStates = Solid::PowerManagement::supportedSleepStates();
 
-    PowerAction hibernate;
-    hibernate.name = i18nc("an action", "Hibernate");
-    hibernate.type = Hibernate;
-    hibernate.iconName = "system-suspend-hibernate";
-    m_powerList.append(hibernate);
+    if (sleepStates.contains(Solid::PowerManagement::SuspendState)) {
+        PowerAction suspend;
+        suspend.name = i18nc("an action", "Suspend");
+        suspend.type = Suspend;
+        suspend.iconName = "system-suspend";
+        m_powerList.append(suspend);
+    }
+
+    if (sleepStates.contains(Solid::PowerManagement::HibernateState)) {
+        PowerAction hibernate;
+        hibernate.name = i18nc("an action", "Hibernate");
+        hibernate.type = Hibernate;
+        hibernate.iconName = "system-suspend-hibernate";
+        m_powerList.append(hibernate);
+    }
 
     PowerAction restart;
     restart.name = i18nc("an action", "Restart");

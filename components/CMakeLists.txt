@@ -46,6 +46,7 @@ target_link_libraries(componentsplugin
         ${KDE4_PLASMA_LIBS}
         ${KDE4_KIO_LIBS}
         ${KDE4_KFILE_LIBS}
+        ${KDE4_SOLID_LIBS}
         ${KDE4WORKSPACE_KWORKSPACE_LIBS}
         homerun
         )
