@@ -141,6 +141,10 @@ void FullView::toggle(int screen)
             Plasma::WindowEffects::overrideShadow(winId(), true);
         }
 
+        // Make sure the window will show on current desktop. Necessary after
+        // login. See https://bugs.kde.org/show_bug.cgi?id=312993
+        KWindowSystem::setOnDesktop(winId(), KWindowSystem::currentDesktop());
+
         QDesktopWidget w;
         if(screen < 0) {
             screen = w.screenNumber(QCursor::pos());
