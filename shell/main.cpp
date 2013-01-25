@@ -19,9 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // KDE
 #include <KAboutData>
+#include <KBugReport>
 #include <KCmdLineArgs>
 #include <KDebug>
 #include <KLocale>
+#include <KMessageBox>
 #include <KUniqueApplication>
 #include <kdeclarative.h>
 
@@ -32,6 +34,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <aboutdata.h>
 #include <fullview.h>
 #include <homerun_config.h>
+
+static void showError(const QString &errorMessage)
+{
+    int ret = KMessageBox::warningContinueCancel(0,
+        i18n("<p><b>Sorry, Homerun failed to load</b></p>"
+            "<p>Do you want to report this error?</p>"
+            "<p>If you decide to report it, please copy and paste the following output in your report:</p>"
+            "<pre>%1</pre>",
+            errorMessage
+            ),
+        QString(), // caption
+        KGuiItem(i18n("Report Error")),
+        KStandardGuiItem::close()
+        );
+    if (ret != KMessageBox::Continue) {
+        return;
+    }
+    KBugReport report;
+    report.exec();
+}
 
 int main(int argc, char *argv[])
 {
@@ -65,6 +87,14 @@ int main(int argc, char *argv[])
     }
 
     FullView view;
+
+    QString errorMessage;
+    if (!view.init(&errorMessage)) {
+        if (args->isSet("show")) {
+            showError(errorMessage);
+        }
+        return 1;
+    }
 
     view.setConfigFileName(
         kdeArgs->isSet("config")

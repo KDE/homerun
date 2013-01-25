@@ -58,11 +58,6 @@ FullView::FullView()
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     m_plainWindow = args->isSet("plain-window");
 
-    new HomerunViewerAdaptor(this);
-    QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.registerObject("/HomerunViewer", this);
-    dbus.registerService("org.kde.homerunViewer");
-
     KDeclarative kdeclarative;
     kdeclarative.setDeclarativeEngine(engine());
     kdeclarative.initialize();
@@ -81,6 +76,14 @@ FullView::FullView()
     setAutoFillBackground(false);
     viewport()->setAutoFillBackground(false);
     viewport()->setAttribute(Qt::WA_NoSystemBackground);
+}
+
+bool FullView::init(QString *errorMessage)
+{
+    new HomerunViewerAdaptor(this);
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    dbus.registerObject("/HomerunViewer", this);
+    dbus.registerService("org.kde.homerunViewer");
 
     // note: in libplasma2 this becomes simpler:
     // Plasma::Package package = Plasma::PluginLoader::loadPackage("Plasma/Applet");
@@ -91,16 +94,26 @@ FullView::FullView()
     Plasma::Package package(homerunPath, structure);
     setSource(package.filePath("mainscript"));
 
+    if (!rootObject()) {
+        Q_FOREACH(const QDeclarativeError &error, errors()) {
+            *errorMessage += error.toString() + "\n";
+        }
+        return false;
+    }
+
     connect(rootObject(), SIGNAL(closeRequested()), SLOT(hide()));
 
     setupBackground();
 
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if (args->isSet("log-focused-item")) {
         QTimer *timer = new QTimer(this);
         timer->setInterval(200);
         connect(timer, SIGNAL(timeout()), SLOT(logFocusedItem()));
         timer->start();
     }
+
+    return true;
 }
 
 void FullView::setupBackground()

@@ -42,6 +42,8 @@ public:
     FullView();
     ~FullView();
 
+    bool init(QString *error);
+
     void setConfigFileName(const QString &name);
 
 public Q_SLOTS:
