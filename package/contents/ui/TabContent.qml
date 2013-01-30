@@ -108,7 +108,7 @@ Item {
     }
 
     SlidingContainer {
-        // navRow = back|previous + breadcrumbs
+        // navRow = back|forward + breadcrumbs
         id: navRow
         property int maxHeight: 32
         show: canGoBack
@@ -143,7 +143,7 @@ Item {
             onClicked: goForward()
         }
 
-        Row {
+        PlasmaComponents.ButtonRow {
             id: breadcrumbRow
             anchors {
                 left: forwardButton.right
@@ -169,7 +169,10 @@ Item {
                     checked: model.index == breadcrumbRepeater.count - 1
                     text: "› " + model.display
                     onClicked: {
-                        if (!checked) {
+                        // Do not use 'checked' here because by the time
+                        // clicked() is emitted, 'checked' has already been set
+                        // to true
+                        if (model.index != breadcrumbRepeater.count - 1) {
                             openSource(model.sourceId, model.sourceArguments);
                         }
                     }
