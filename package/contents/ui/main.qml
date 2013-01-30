@@ -32,10 +32,7 @@ Item {
     signal closeRequested
     property QtObject configureAction
     property bool isContainment
-    property real leftMargin: 12
-    property real topMargin: 12
-    property real rightMargin: 12
-    property real bottomMargin: 12
+    property real headerPadding: 12
 
     property string configFileName
 
@@ -86,9 +83,9 @@ Item {
 
         anchors {
             top: parent.top
-            topMargin: main.topMargin
+            topMargin: main.headerPadding
             left: parent.left
-            leftMargin: parent.leftMargin
+            leftMargin: main.headerPadding
             right: configureMode ? configButton.left : searchField.left
             rightMargin: 6 + (configureMode ? addTabButton.width : 0)
         }
@@ -201,7 +198,7 @@ Item {
             right: parent.right
             top: tabBar.top
             bottom: tabBar.bottom
-            rightMargin: parent.rightMargin
+            rightMargin: main.headerPadding
         }
         iconSource: "configure"
 
@@ -256,10 +253,7 @@ Item {
             bottom: parent.bottom
             left: parent.left
             right: parent.right
-            topMargin: 4
-            bottomMargin: main.bottomMargin
-            leftMargin: main.leftMargin
-            rightMargin: main.rightMargin
+            topMargin: main.headerPadding
         }
 
         HomerunComponents.TabGroup {

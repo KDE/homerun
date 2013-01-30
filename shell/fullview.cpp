@@ -119,12 +119,7 @@ bool FullView::init(QString *errorMessage)
 void FullView::setupBackground()
 {
     m_backgroundSvg->setImagePath("dialogs/background");
-    qreal left, top, bottom, right;
-    m_backgroundSvg->getMargins(left, top, bottom, right);
-    rootObject()->setProperty("leftMargin", left);
-    rootObject()->setProperty("topMargin", top);
-    rootObject()->setProperty("rightMargin", right);
-    rootObject()->setProperty("bottomMargin", bottom);
+    m_backgroundSvg->setEnabledBorders(Plasma::FrameSvg::NoBorder);
 }
 
 void FullView::setConfigFileName(const QString &name)
