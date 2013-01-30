@@ -181,28 +181,29 @@ Item {
         }
     }
 
+    PlasmaCore.SvgItem {
+        id: hline
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: navRow.bottom
+            bottomMargin: -12
+        }
+        height: naturalSize.height
+        z: 1000
+        svg: PlasmaCore.Svg {
+            imagePath: "widgets/scrollwidget"
+        }
+        elementId: "border-top"
+    }
+
     Item {
         id: pageContainer
         anchors {
             left: parent.left
-            top: navRow.bottom
+            top: hline.top
             right: parent.right
             bottom: parent.bottom
-        }
-
-        PlasmaCore.SvgItem {
-            id: hline
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-            }
-            height: naturalSize.height
-            z: 1000
-            svg: PlasmaCore.Svg {
-                imagePath: "widgets/scrollwidget"
-            }
-            elementId: "border-top"
         }
     }
 

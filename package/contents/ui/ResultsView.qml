@@ -225,16 +225,6 @@ FocusScope {
         verticalAlignment: Text.AlignVCenter
     }
 
-    PlasmaCore.SvgItem {
-        anchors.top: headerLabel.top
-        width: headerLabel.width
-        height: naturalSize.height
-        svg: PlasmaCore.Svg {
-            imagePath: "widgets/line"
-        }
-        elementId: "horizontal-line"
-    }
-
     GridView {
         id: gridView
         anchors {
