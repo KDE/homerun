@@ -131,14 +131,6 @@ FocusScope {
             text: model.display
             icon: model.decoration
 
-            favoriteIcon: {
-                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
-                if (favoriteModel === null) {
-                    return "";
-                }
-                return favoriteModel.isFavorite(model.favoriteId) ? "list-remove" : "bookmarks";
-            }
-
             onHighlightedChanged: {
                 if (highlighted) {
                     gridView.currentIndex = model.index;
@@ -174,10 +166,38 @@ FocusScope {
             function openActionMenu(visualParent) {
                 // Accessing actionList can be a costly operation, so we don't
                 // access it until we need the menu
-                actionMenu.actionList = model.actionList;
+                var lst = model.actionList ? model.actionList : [];
+                prependFavoriteAction(lst);
+                actionMenu.actionList = lst;
                 actionMenu.visualParent = visualParent;
                 actionMenu.row = model.index;
                 actionMenu.open();
+            }
+
+            function prependFavoriteAction(lst) {
+                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
+                if (favoriteModel === null) {
+                    return;
+                }
+                var action = {};
+                if (favoriteModel.isFavorite(model.favoriteId)) {
+                    action.text = i18n("Remove from favorites");
+                    //action.iconName = "list-remove";
+                    action.actionId = "_homerun_favoriteRemove";
+                    action.actionArgument = model.favoriteId;
+                } else {
+                    action.text = i18n("Add to favorites");
+                    //action.iconName = "bookmarks";
+                    action.actionId = "_homerun_favoriteAdd";
+                    action.actionArgument = model.favoriteId;
+                }
+
+                if (lst.length == 0) {
+                    lst.push(action);
+                } else {
+                    var separator = { "type": "separator" };
+                    lst.unshift(action, separator);
+                }
             }
         }
     }
@@ -339,9 +359,27 @@ FocusScope {
     }
 
     function emitIndexClicked(index, actionId, actionArgument) {
+        // Looks like String.startsWith does not exist in the JS interpreter we use :/
+        function startsWith(txt, needle) {
+            return txt.substr(0, needle.length) === needle;
+        }
+
         if (configureMode) {
             return;
         }
+        if (startsWith(actionId, "_homerun_")) {
+            var favoriteId = actionArgument;
+            var favoriteModel = favoriteModelForFavoriteId(favoriteId);
+            if (actionId == "_homerun_favoriteRemove") {
+                favoriteModel.removeFavorite(favoriteId);
+            } else if (actionId == "_homerun_favoriteAdd") {
+                favoriteModel.addFavorite(favoriteId);
+            } else {
+                console.log("Unknown homerun actionId: " + actionId);
+            }
+            return;
+        }
+
         indexClicked(index, actionId, actionArgument);
     }
 }

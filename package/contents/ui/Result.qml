@@ -29,7 +29,6 @@ Item {
     //- Public ----------------------------------------------------------------
     // Set by others
     property int iconWidth: 64
-    property string favoriteIcon
     property alias text: resultLabel.text
     property alias icon: resultIcon.icon
     property bool configureMode: false
