@@ -138,6 +138,7 @@ Item {
         // when actionListButton.opacity is 0. That's why it is a sibling.
         id: actionListMouseArea
         anchors.fill: actionListButton
+        anchors.margins: -3
         hoverEnabled: true
         enabled: !configureMode
         onClicked: actionListButtonClicked(actionListButton)
