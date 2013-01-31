@@ -149,19 +149,16 @@ FocusScope {
                 if (mouse.button == Qt.LeftButton) {
                     emitIndexClicked(model.index, "", null);
                 } else if (mouse.button == Qt.RightButton) {
-                    actionMenu.visualParent = resultMain;
-                    actionMenu.open();
+                    openActionMenu(resultMain);
                 }
             }
 
             onActionListButtonClicked: {
-                actionMenu.visualParent = button;
-                actionMenu.open();
+                openActionMenu(button);
             }
 
             onPressAndHold: {
-                actionMenu.visualParent = resultMain;
-                actionMenu.open();
+                openActionMenu(resultMain);
             }
 
             onFavoriteClicked: {
@@ -174,12 +171,21 @@ FocusScope {
                 showFeedback();
             }
 
-            ActionMenu {
-                id: actionMenu
-                actionList: model.actionList
-                onActionClicked: emitIndexClicked(model.index, actionId, actionArgument)
+            function openActionMenu(visualParent) {
+                // Accessing actionList can be a costly operation, so we don't
+                // access it until we need the menu
+                actionMenu.actionList = model.actionList;
+                actionMenu.visualParent = visualParent;
+                actionMenu.row = model.index;
+                actionMenu.open();
             }
         }
+    }
+
+    ActionMenu {
+        id: actionMenu
+        property int row
+        onActionClicked: emitIndexClicked(row, actionId, actionArgument)
     }
 
     // UI
