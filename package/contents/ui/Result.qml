@@ -114,15 +114,12 @@ Item {
         id: actionListButton
         anchors {
             right: parent.right
-            top: parent.top
-            rightMargin: padding
-            topMargin: padding
+            rightMargin: main.padding
+            bottom: resultIcon.bottom
         }
-        text: "⌄"
-        font {
-            pointSize: theme.defaultFont.pointSize * 1.6
-        }
-        opacity: main.highlighted ? 0.6 : 0
+        text: "◢"
+        opacity: actionListMouseArea.containsMouse ? 1 : (main.highlighted ? 0.5 : 0)
+        Behavior on opacity { NumberAnimation {} }
     }
 
     MouseArea {
