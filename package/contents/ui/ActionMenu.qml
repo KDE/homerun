@@ -33,18 +33,10 @@ Item {
     signal actionClicked(string actionId, variant actionArgument)
 
     function open() {
-        if (!actionList) {
-            return;
-        }
         if (!menu) {
             menu = contextMenuComponent.createObject(main);
-            actionList.forEach(function(item) {
-                contextMenuItemComponent.createObject(menu, {
-                    "actionItem": item,
-                });
-            });
         }
-
+        refreshMenu();
         menu.open();
     }
 
@@ -73,5 +65,26 @@ Item {
                 actionClicked(actionItem.actionId, actionItem.actionArgument);
             }
         }
+    }
+
+    Component {
+        id: emptyMenuItemComponent
+        PlasmaComponents.MenuItem {
+            text: i18n("(Empty)")
+            enabled: false
+        }
+    }
+
+    // Code
+    function refreshMenu() {
+        if (!actionList) {
+            emptyMenuItemComponent.createObject(menu);
+            return;
+        }
+        actionList.forEach(function(item) {
+            contextMenuItemComponent.createObject(menu, {
+                "actionItem": item,
+            });
+        });
     }
 }
