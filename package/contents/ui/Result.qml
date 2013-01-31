@@ -77,6 +77,25 @@ Item {
         favoriteFeedbackComponent.createObject(favoriteIconItem);
     }
 
+    PlasmaCore.FrameSvgItem {
+        id: background
+        anchors {
+            fill: parent
+        }
+
+        imagePath: "widgets/viewitem"
+        prefix: "hover"
+
+        opacity: main.highlighted ? 1 : 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
+
     QtExtra.QIconItem {
         id: resultIcon
 

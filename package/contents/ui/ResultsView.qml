@@ -95,9 +95,6 @@ FocusScope {
         if (idx < 0 || idx >= gridView.count) {
             return;
         }
-        // Reset currentIndex so that the highlight is not animated from the
-        // previous position
-        gridView.currentIndex = -1;
         gridView.currentIndex = idx;
         gridView.currentItem.forceActiveFocus();
     }
@@ -112,14 +109,6 @@ FocusScope {
     property int resultItemHeight: iconWidth + 3 * theme.defaultFont.mSize.height
 
     // Components
-    Component {
-        id: highlight
-        PlasmaComponents.Highlight {
-            hover: true
-            opacity: (gridView.currentItem && gridView.currentItem.highlighted) ? 1 : 0
-        }
-    }
-
     Component {
         id: result
         Result {
@@ -262,8 +251,6 @@ FocusScope {
         cellHeight: resultItemHeight
         //TODO: something sane?
         cacheBuffer: 128 * 10 //10 above, 10 below caching
-
-        highlight: highlight
 
         delegate: result
 
