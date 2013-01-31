@@ -84,7 +84,7 @@ Item {
         // managed by menu itself.  If we give them a parent, then
         // menu.clearMenuItems() crashes because it tries to delete objects
         // owned by the QML engine.
-        if (!actionList) {
+        if (!actionList || actionList.length == 0) {
             var item = emptyMenuItemComponent.createObject(null);
             menu.addMenuItem(item);
             return;
