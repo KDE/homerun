@@ -47,11 +47,12 @@ Item {
     property bool highlighted: false
 
     signal clicked(variant mouse)
+    signal actionListButtonClicked(variant button)
     signal pressAndHold
     signal favoriteClicked
 
     //- Private ---------------------------------------------------------------
-    property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
+    property bool containsMouse: itemMouseArea.containsMouse || actionListMouseArea.containsMouse
     onContainsMouseChanged: {
         highlighted = containsMouse;
     }
@@ -65,7 +66,6 @@ Item {
     Component.onCompleted: {
         itemMouseArea.clicked.connect(clicked)
         itemMouseArea.pressAndHold.connect(pressAndHold)
-        favoriteMouseArea.clicked.connect(favoriteClicked)
     }
 
     Component {
@@ -111,31 +111,19 @@ Item {
         maximumLineCount: 2
     }
 
-    QtExtra.QIconItem {
-        id: favoriteIconItem
-
+    PlasmaComponents.Label {
+        id: actionListButton
         anchors {
             right: parent.right
             top: parent.top
             rightMargin: padding
             topMargin: padding
         }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 250
-                easing.type: Easing.OutQuad
-            }
+        text: "⌄"
+        font {
+            pointSize: theme.defaultFont.pointSize * 1.6
         }
-        icon: main.favoriteIcon
-
-        // Use "main.favoriteIcon" and not "icon" because right now "icon"
-        // is a non-notifiable property
-        visible: main.favoriteIcon != ""
-
-        opacity: favoriteMouseArea.containsMouse ? 1 : (main.highlighted ? 0.5 : 0)
-        width: 22
-        height: width
+        opacity: main.highlighted ? 0.6 : 0
     }
 
     MouseArea {
@@ -147,11 +135,12 @@ Item {
     }
 
     MouseArea {
-        // If MouseArea were a child of favoriteIconItem it would not work
-        // when favoriteIconItem.opacity is 0. That's why it is a sibling.
-        id: favoriteMouseArea
-        anchors.fill: favoriteIconItem
+        // If this MouseArea were a child of actionListButton it would not work
+        // when actionListButton.opacity is 0. That's why it is a sibling.
+        id: actionListMouseArea
+        anchors.fill: actionListButton
         hoverEnabled: true
         enabled: !configureMode
+        onClicked: actionListButtonClicked(actionListButton)
     }
 }

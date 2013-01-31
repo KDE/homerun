@@ -149,11 +149,20 @@ FocusScope {
                 if (mouse.button == Qt.LeftButton) {
                     emitIndexClicked(model.index, "", null);
                 } else if (mouse.button == Qt.RightButton) {
-                    showContextMenu();
+                    actionMenu.visualParent = resultMain;
+                    actionMenu.open();
                 }
             }
 
-            onPressAndHold: showContextMenu();
+            onActionListButtonClicked: {
+                actionMenu.visualParent = button;
+                actionMenu.open();
+            }
+
+            onPressAndHold: {
+                actionMenu.visualParent = resultMain;
+                actionMenu.open();
+            }
 
             onFavoriteClicked: {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
@@ -165,44 +174,10 @@ FocusScope {
                 showFeedback();
             }
 
-            Component {
-                id: contextMenuComponent
-                PlasmaComponents.ContextMenu {
-                    visualParent: resultMain
-                }
-            }
-
-            Component {
-                id: contextMenuItemComponent
-
-                PlasmaComponents.MenuItem {
-                    property variant actionItem
-                    property int sourceRow
-
-                    text: actionItem.text ? actionItem.text : ""
-                    enabled: actionItem.type != "title"
-                    separator: actionItem.type == "separator"
-                    icon: actionItem.icon ? actionItem.icon : null
-
-                    onClicked: {
-                        emitIndexClicked(sourceRow, actionItem.actionId, actionItem.actionArgument);
-                    }
-                }
-            }
-
-            function showContextMenu() {
-                var list = model.actionList;
-                if (!list) {
-                    return;
-                }
-                var menu = contextMenuComponent.createObject(resultMain);
-                list.forEach(function(item) {
-                    contextMenuItemComponent.createObject(menu, {
-                        "actionItem": item,
-                        "sourceRow": index
-                    });
-                });
-                menu.open();
+            ActionMenu {
+                id: actionMenu
+                actionList: model.actionList
+                onActionClicked: emitIndexClicked(model.index, actionId, actionArgument)
             }
         }
     }
