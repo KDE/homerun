@@ -46,9 +46,16 @@ Item {
     property bool highlighted: false
 
     signal clicked(variant mouse)
-    signal actionListButtonClicked(variant button)
     signal pressAndHold
     signal favoriteClicked
+    signal actionMenuClicked(string actionId, variant actionArgument)
+    signal aboutToShowActionMenu(variant actionMenu)
+
+    function openActionMenu(visualParent) {
+        aboutToShowActionMenu(actionMenu);
+        actionMenu.visualParent = visualParent;
+        actionMenu.open();
+    }
 
     //- Private ---------------------------------------------------------------
     property bool containsMouse: itemMouseArea.containsMouse || actionListMouseArea.containsMouse
@@ -63,8 +70,9 @@ Item {
     height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
 
     Component.onCompleted: {
-        itemMouseArea.clicked.connect(clicked)
-        itemMouseArea.pressAndHold.connect(pressAndHold)
+        itemMouseArea.clicked.connect(clicked);
+        itemMouseArea.pressAndHold.connect(pressAndHold);
+        actionMenu.actionClicked.connect(actionMenuClicked);
     }
 
     Component {
@@ -86,7 +94,7 @@ Item {
         imagePath: "widgets/viewitem"
         prefix: "hover"
 
-        opacity: main.highlighted ? 1 : 0
+        opacity: (main.highlighted || actionMenu.opened) ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
@@ -137,7 +145,7 @@ Item {
             bottom: resultIcon.bottom
         }
         text: "◢"
-        opacity: actionListMouseArea.containsMouse ? 1 : (main.highlighted ? 0.5 : 0)
+        opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
         Behavior on opacity { NumberAnimation {} }
     }
 
@@ -157,6 +165,10 @@ Item {
         anchors.margins: -3
         hoverEnabled: true
         enabled: !configureMode
-        onClicked: actionListButtonClicked(actionListButton)
+        onClicked: openActionMenu(actionListButton)
+    }
+
+    ActionMenu {
+        id: actionMenu
     }
 }
