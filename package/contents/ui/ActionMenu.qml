@@ -90,9 +90,9 @@ Item {
             return;
         }
 
-        actionList.forEach(function(item) {
+        actionList.forEach(function(actionItem) {
             var item = contextMenuItemComponent.createObject(null, {
-                "actionItem": item,
+                "actionItem": actionItem,
             });
             menu.addMenuItem(item);
         });
