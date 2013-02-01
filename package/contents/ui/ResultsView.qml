@@ -126,33 +126,11 @@ FocusScope {
                 }
             }
 
-            onClicked: {
-                if (mouse.button == Qt.LeftButton) {
-                    emitIndexClicked(model.index, "", null);
-                } else if (mouse.button == Qt.RightButton) {
-                    resultMain.openActionMenu(resultMain);
-                }
-            }
-
             onAboutToShowActionMenu: {
                 fillActionMenu(actionMenu);
             }
 
-            onPressAndHold: {
-                resultMain.openActionMenu(resultMain);
-            }
-
-            onFavoriteClicked: {
-                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
-                if (favoriteModel.isFavorite(model.favoriteId)) {
-                    favoriteModel.removeFavorite(model.favoriteId);
-                } else {
-                    favoriteModel.addFavorite(model.favoriteId);
-                }
-                showFeedback();
-            }
-
-            onActionMenuClicked: {
+            onActionTriggered: {
                 emitIndexClicked(model.index, actionId, actionArgument);
             }
 

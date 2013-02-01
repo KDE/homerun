@@ -45,17 +45,8 @@ Item {
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
 
-    signal clicked(variant mouse)
-    signal pressAndHold
-    signal favoriteClicked
-    signal actionMenuClicked(string actionId, variant actionArgument)
+    signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
-
-    function openActionMenu(visualParent) {
-        aboutToShowActionMenu(actionMenu);
-        actionMenu.visualParent = visualParent;
-        actionMenu.open();
-    }
 
     //- Private ---------------------------------------------------------------
     property bool containsMouse: itemMouseArea.containsMouse || actionListMouseArea.containsMouse
@@ -68,12 +59,6 @@ Item {
 
     property int padding: 5
     height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
-
-    Component.onCompleted: {
-        itemMouseArea.clicked.connect(clicked);
-        itemMouseArea.pressAndHold.connect(pressAndHold);
-        actionMenu.actionClicked.connect(actionMenuClicked);
-    }
 
     Component {
         id: favoriteFeedbackComponent
@@ -155,6 +140,14 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         enabled: !configureMode
+        onClicked: {
+            if (mouse.button == Qt.LeftButton) {
+                actionTriggered("", null);
+            } else if (mouse.button == Qt.RightButton) {
+                openActionMenu(main);
+            }
+        }
+        onPressAndHold: openActionMenu(main)
     }
 
     MouseArea {
@@ -170,5 +163,15 @@ Item {
 
     ActionMenu {
         id: actionMenu
+        onActionClicked: {
+            main.actionTriggered(actionId, actionArgument);
+        }
+    }
+
+    // Code
+    function openActionMenu(visualParent) {
+        aboutToShowActionMenu(actionMenu);
+        actionMenu.visualParent = visualParent;
+        actionMenu.open();
     }
 }
