@@ -60,16 +60,6 @@ Item {
     property int padding: 5
     height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
 
-    Component {
-        id: favoriteFeedbackComponent
-        FavoriteFeedback {
-        }
-    }
-
-    function showFeedback() {
-        favoriteFeedbackComponent.createObject(favoriteIconItem);
-    }
-
     PlasmaCore.FrameSvgItem {
         id: background
         anchors {
