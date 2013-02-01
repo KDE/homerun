@@ -30,6 +30,8 @@ Item {
 
     property Item visualParent
 
+    property bool opened: menu ? (menu.status != PlasmaComponents.DialogStatus.Closed) : false
+
     signal actionClicked(string actionId, variant actionArgument)
 
     function open() {
