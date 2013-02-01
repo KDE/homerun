@@ -112,14 +112,17 @@ Item {
         maximumLineCount: 2
     }
 
-    PlasmaComponents.Label {
+    PlasmaCore.IconItem {
         id: actionListButton
         anchors {
             right: parent.right
             rightMargin: main.padding
-            bottom: resultIcon.bottom
+            top: parent.top
+            topMargin: main.padding
         }
-        text: "◢"
+        source: "go-down"
+        width: 16
+        height: width
         opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
         Behavior on opacity { NumberAnimation {} }
     }
