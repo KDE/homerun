@@ -32,6 +32,7 @@ Item {
     property alias text: resultLabel.text
     property alias icon: resultIcon.icon
     property bool configureMode: false
+    property bool hasActionList: false
 
     // Exposed by us
     property alias truncated: resultLabel.truncated
@@ -125,6 +126,7 @@ Item {
         height: width
         opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
         Behavior on opacity { NumberAnimation {} }
+        visible: hasActionList
     }
 
     MouseArea {
@@ -136,11 +138,15 @@ Item {
         onClicked: {
             if (mouse.button == Qt.LeftButton) {
                 actionTriggered("", null);
-            } else if (mouse.button == Qt.RightButton) {
+            } else if (mouse.button == Qt.RightButton && hasActionList) {
                 openActionMenu(main);
             }
         }
-        onPressAndHold: openActionMenu(main)
+        onPressAndHold: {
+            if (hasActionList) {
+                openActionMenu(main);
+            }
+        }
     }
 
     MouseArea {
@@ -150,7 +156,7 @@ Item {
         anchors.fill: actionListButton
         anchors.margins: -3
         hoverEnabled: true
-        enabled: !configureMode
+        enabled: !configureMode && hasActionList
         onClicked: openActionMenu(actionListButton)
     }
 

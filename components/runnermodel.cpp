@@ -51,6 +51,7 @@ RunnerSubModel::RunnerSubModel(const QString &runnerId, const QString &name, Run
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(FavoriteIdRole, "favoriteId");
     roles.insert(ActionListRole, "actionList");
+    roles.insert(HasActionListRole, "hasActionList");
     /*
     roles.insert(Type, "type");
     roles.insert(Relevance, "relevance");
@@ -110,6 +111,11 @@ QVariant RunnerSubModel::data(const QModelIndex &index, int role) const
         } else {
             return QString();
         }
+    } else if (role == HasActionListRole) {
+        // Would be great if we could now if a match has actions without getting them
+        // as getting the action list is costly. For now we can't, so pretend all
+        // runners expose actions.
+        return true;
     } else if (role == ActionListRole) {
         QVariantList actionList;
         Q_FOREACH(QAction *action, m_runnerModel->manager()->actionsForMatch(match)) {

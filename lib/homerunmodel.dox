@@ -46,6 +46,12 @@ Unique Id used to favorite this item. Its value depends on the item type:
 - item is a place: "place:" + $url.
   Examples: "place:file:///home/jdoe/Documents" or "place:sftp://host.com/dir".
 
+### bool hasActionList
+- mandatory: no
+
+Set to true if the item has additional actions, defined by the actionList
+role.
+
 ### QVariantList actionList
 - mandatory: no
 
@@ -67,6 +73,9 @@ following elements:
 - variant actionArgument
     - mandatory: no
     - An optional argument, passed to trigger() as well
+
+Important: This role is ignored if hasActionList is not defined or returns
+false.
 
 ## Properties
 ### string name

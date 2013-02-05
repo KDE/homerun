@@ -126,6 +126,8 @@ FocusScope {
                 }
             }
 
+            hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
+
             onAboutToShowActionMenu: {
                 fillActionMenu(actionMenu);
             }
