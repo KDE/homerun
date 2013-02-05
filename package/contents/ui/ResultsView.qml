@@ -139,7 +139,7 @@ FocusScope {
             function fillActionMenu(actionMenu) {
                 // Accessing actionList can be a costly operation, so we don't
                 // access it until we need the menu
-                var lst = model.actionList ? model.actionList : [];
+                var lst = model.hasActionList ? model.actionList : [];
                 var action = createFavoriteAction();
                 if (action) {
                     if (lst.length > 0) {
