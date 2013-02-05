@@ -72,6 +72,7 @@ DirModel::DirModel(QObject *parent)
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(DirModel::FavoriteIdRole, "favoriteId");
+    roles.insert(DirModel::HasActionListRole, "hasActionList");
     roles.insert(DirModel::ActionListRole, "actionList");
     setRoleNames(roles);
 
@@ -165,13 +166,15 @@ static QVariantList createActionList(const KFileItem &item)
 
 QVariant DirModel::data(const QModelIndex &index, int role) const
 {
-    if (role != FavoriteIdRole && role != ActionListRole) {
+    if (role != FavoriteIdRole && role != HasActionListRole && role != ActionListRole) {
         return QSortFilterProxyModel::data(index, role);
     }
     if (index.row() < 0 || index.row() >= rowCount()) {
         return QVariant();
     }
-
+    if (role == HasActionListRole) {
+        return true;
+    }
     KFileItem item = itemForIndex(index);
     if (role == FavoriteIdRole) {
         if (item.isDir()) {
