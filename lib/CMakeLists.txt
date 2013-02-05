@@ -14,6 +14,7 @@ set(lib_VERSION ${lib_VERSION_MAJOR}.${lib_VERSION_MINOR}.${lib_VERSION_PATCH})
 
 set(lib_SRCS
     abstractsource.cpp
+    actionlist.cpp
     pathmodel.cpp
     sourceconfigurationwidget.cpp
     )
@@ -37,6 +38,8 @@ target_link_libraries(homerun
     ${QT_QTCORE_LIBRARY}
     ${QT_QTGUI_LIBRARY}
     ${KDE4_KDECORE_LIBS}
+    ${KDE4_KDEUI_LIBS}
+    ${KDE4_KIO_LIBS}
     )
 
 # Doxygen

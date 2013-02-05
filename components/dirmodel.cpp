@@ -22,22 +22,19 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 // Local
 #include <dirconfigurationwidget.h>
-#include <pathmodel.h>
 #include <favoriteplacesmodel.h>
+
+// libhomerun
+#include <actionlist.h>
+#include <pathmodel.h>
 
 // KDE
 #include <KConfigGroup>
 #include <KDebug>
 #include <KDirModel>
 #include <KDirLister>
-#include <KLocale>
-#include <KMimeTypeTrader>
-#include <KPropertiesDialog>
-#include <KService>
-#include <KRun>
 
 // Qt
-#include <QApplication>
 #include <QDir>
 
 namespace Homerun
@@ -118,52 +115,6 @@ KDirLister *DirModel::dirLister() const
     return static_cast<KDirModel *>(sourceModel())->dirLister();
 }
 
-static QVariantMap createActionItem(const QString &label, const QString &actionId, const QVariant &actionArg = QVariant())
-{
-    QVariantMap map;
-    map["text"] = label;
-    map["actionId"] = actionId;
-    if (actionArg.isValid()) {
-        map["actionArgument"] = actionArg;
-    }
-    return map;
-}
-
-static QVariantMap createTitleActionItem(const QString &label)
-{
-    QVariantMap map;
-    map["text"] = label;
-    map["type"] = "title";
-    return map;
-}
-
-static QVariantMap createSeparatorActionItem()
-{
-    QVariantMap map;
-    map["type"] = "separator";
-    return map;
-}
-
-static QVariantList createActionList(const KFileItem &item)
-{
-    QVariantList list;
-    list << createTitleActionItem(i18n("Open with:"));
-    const QString mimeType = item.mimetype();
-    KService::List services = KMimeTypeTrader::self()->query(mimeType, "Application");
-    Q_FOREACH(const KService::Ptr service, services) {
-        const QString text = service->name().replace('&', "&&");
-        QVariantMap item = createActionItem(text, "openWith", service->entryPath());
-        QString iconName = service->icon();
-        if (!iconName.isEmpty()) {
-            item["icon"] = KIcon(service->icon());
-        }
-        list << item;
-    }
-    list << createSeparatorActionItem();
-    list << createActionItem(i18n("Properties"), "properties");
-    return list;
-}
-
 QVariant DirModel::data(const QModelIndex &index, int role) const
 {
     if (role != FavoriteIdRole && role != HasActionListRole && role != ActionListRole) {
@@ -183,7 +134,7 @@ QVariant DirModel::data(const QModelIndex &index, int role) const
             return QString();
         }
     } else if (role == ActionListRole) {
-        return createActionList(item);
+        return ActionList::createListForFileItem(item);
     }
     // Never reached
     return QVariant();
@@ -230,34 +181,23 @@ void DirModel::emitRunningChanged()
 
 bool DirModel::trigger(int row, const QString &actionId, const QVariant &actionArg)
 {
-    bool closed = false;
     QModelIndex idx = index(row, 0);
-
     KFileItem item = itemForIndex(idx);
+
     if (actionId.isEmpty()) {
         if (item.isDir()) {
             openSourceRequested(SOURCE_ID, sourceArguments(m_rootUrl, m_rootName, item.url()));
+            return false;
         } else {
             item.run();
-            closed = true;
+            return true;
         }
-    } else if (actionId == "properties") {
-        KPropertiesDialog *dlg = new KPropertiesDialog(item, QApplication::activeWindow());
-        dlg->setAttribute(Qt::WA_DeleteOnClose);
-        dlg->show();
-    } else if (actionId == "openDir") {
-        item.run();
-    } else if (actionId == "openWith") {
-        const QString path = actionArg.toString();
-        const KService::Ptr service = KService::serviceByDesktopPath(path);
-        if (!service) {
-            kWarning() << "Invalid service";
-            return false;
-        }
-        KRun::run(*service, KUrl::List() << item.url(), QApplication::activeWindow());
-        closed = true;
     }
-    return closed;
+    bool close = false;
+    if (ActionList::handleFileItemAction(item, actionId, actionArg, &close)) {
+        return close;
+    }
+    return false;
 }
 
 //- DirSource -------------------------------------------------------
