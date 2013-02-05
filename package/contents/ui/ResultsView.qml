@@ -140,14 +140,22 @@ FocusScope {
                 // Accessing actionList can be a costly operation, so we don't
                 // access it until we need the menu
                 var lst = model.actionList ? model.actionList : [];
-                prependFavoriteAction(lst);
+                var action = createFavoriteAction();
+                if (action) {
+                    if (lst.length > 0) {
+                        var separator = { "type": "separator" };
+                        lst.unshift(action, separator);
+                    } else {
+                        lst = [action];
+                    }
+                }
                 actionMenu.actionList = lst;
             }
 
-            function prependFavoriteAction(lst) {
+            function createFavoriteAction() {
                 var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
                 if (favoriteModel === null) {
-                    return;
+                    return null;
                 }
                 var action = {};
                 if (favoriteModel.isFavorite(model.favoriteId)) {
@@ -161,13 +169,7 @@ FocusScope {
                     action.actionId = "_homerun_favoriteAdd";
                     action.actionArgument = model.favoriteId;
                 }
-
-                if (lst.length == 0) {
-                    lst.push(action);
-                } else {
-                    var separator = { "type": "separator" };
-                    lst.unshift(action, separator);
-                }
+                return action;
             }
         }
     }
