@@ -22,8 +22,12 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 // Local
 #include <dirmodel.h>
 
+// libhomerun
+#include <actionlist.h>
+
 // KDE
 #include <KDebug>
+#include <KFileItem>
 #include <KLocale>
 
 // Qt
@@ -51,7 +55,9 @@ FavoritePlacesModel::FavoritePlacesModel(QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
-    roles.insert(FavoritePlacesModel::FavoriteIdRole, "favoriteId");
+    roles.insert(FavoriteIdRole, "favoriteId");
+    roles.insert(HasActionListRole, "hasActionList");
+    roles.insert(ActionListRole, "actionList");
     setRoleNames(roles);
 }
 
@@ -101,24 +107,42 @@ QModelIndex FavoritePlacesModel::indexForFavoriteId(const QString &favoriteId) c
 
 QVariant FavoritePlacesModel::data(const QModelIndex &index, int role) const
 {
-    if (role != FavoriteIdRole) {
+    if (role != FavoriteIdRole && role != HasActionListRole && role != ActionListRole) {
         return KFilePlacesModel::data(index, role);
     }
 
     if (index.row() < 0 || index.row() >= rowCount()) {
         return QVariant();
     }
-    return QVariant(favoriteIdFromUrl(url(index)));
+    if (role == FavoriteIdRole) {
+        return QVariant(favoriteIdFromUrl(url(index)));
+    }
+    if (role == HasActionListRole) {
+        return true;
+    }
+    if (role == ActionListRole) {
+        KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url(index));
+        return ActionList::createListForFileItem(item);
+    }
+    return QVariant();
 }
 
-bool FavoritePlacesModel::trigger(int row)
+bool FavoritePlacesModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
 {
     QModelIndex idx = index(row, 0);
-
     KUrl theUrl = idx.data(KFilePlacesModel::UrlRole).value<QUrl>();
-    theUrl.adjustPath(KUrl::AddTrailingSlash);
-    QString rootName = idx.data(Qt::DisplayRole).toString();
-    openSourceRequested("Dir", DirModel::sourceArguments(theUrl, rootName, theUrl));
+    if (actionId.isEmpty()) {
+        theUrl.adjustPath(KUrl::AddTrailingSlash);
+        QString rootName = idx.data(Qt::DisplayRole).toString();
+        openSourceRequested("Dir", DirModel::sourceArguments(theUrl, rootName, theUrl));
+        return false;
+    }
+
+    bool close;
+    KFileItem item(KFileItem::Unknown, KFileItem::Unknown, theUrl);
+    if (ActionList::handleFileItemAction(item, actionId, actionArgument, &close)) {
+        return close;
+    }
 
     return false;
 }

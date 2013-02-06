@@ -42,6 +42,8 @@ class FavoritePlacesModel : public KFilePlacesModel
 public:
     enum {
         FavoriteIdRole = Qt::UserRole + 1,
+        HasActionListRole,
+        ActionListRole,
     };
 
     FavoritePlacesModel(QObject *parent = 0);
@@ -49,7 +51,7 @@ public:
     Q_INVOKABLE bool isFavorite(const QString &favoriteId) const;
     Q_INVOKABLE void addFavorite(const QString &favoriteId);
     Q_INVOKABLE void removeFavorite(const QString &favoriteId);
-    Q_INVOKABLE bool trigger(int row);
+    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArg);
 
     QString favoritePrefix() const;
 
