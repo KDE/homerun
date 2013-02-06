@@ -54,6 +54,7 @@ public:
 
     enum {
         FavoriteIdRole = Qt::UserRole + 1,
+        HasActionListRole,
         ActionListRole,
     };
 

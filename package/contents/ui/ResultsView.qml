@@ -95,9 +95,6 @@ FocusScope {
         if (idx < 0 || idx >= gridView.count) {
             return;
         }
-        // Reset currentIndex so that the highlight is not animated from the
-        // previous position
-        gridView.currentIndex = -1;
         gridView.currentIndex = idx;
         gridView.currentItem.forceActiveFocus();
     }
@@ -113,14 +110,6 @@ FocusScope {
 
     // Components
     Component {
-        id: highlight
-        PlasmaComponents.Highlight {
-            hover: true
-            opacity: (gridView.currentItem && gridView.currentItem.highlighted) ? 1 : 0
-        }
-    }
-
-    Component {
         id: result
         Result {
             id: resultMain
@@ -131,78 +120,56 @@ FocusScope {
             text: model.display
             icon: model.decoration
 
-            favoriteIcon: {
-                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
-                if (favoriteModel === null) {
-                    return "";
-                }
-                return favoriteModel.isFavorite(model.favoriteId) ? "list-remove" : "bookmarks";
-            }
-
             onHighlightedChanged: {
                 if (highlighted) {
                     gridView.currentIndex = model.index;
                 }
             }
 
-            onClicked: {
-                if (mouse.button == Qt.LeftButton) {
-                    emitIndexClicked(model.index, "", null);
-                } else if (mouse.button == Qt.RightButton) {
-                    showContextMenu();
-                }
+            hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
+
+            onAboutToShowActionMenu: {
+                fillActionMenu(actionMenu);
             }
 
-            onPressAndHold: showContextMenu();
-
-            onFavoriteClicked: {
-                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
-                if (favoriteModel.isFavorite(model.favoriteId)) {
-                    favoriteModel.removeFavorite(model.favoriteId);
-                } else {
-                    favoriteModel.addFavorite(model.favoriteId);
-                }
-                showFeedback();
+            onActionTriggered: {
+                emitIndexClicked(model.index, actionId, actionArgument);
             }
 
-            Component {
-                id: contextMenuComponent
-                PlasmaComponents.ContextMenu {
-                    visualParent: resultMain
-                }
-            }
-
-            Component {
-                id: contextMenuItemComponent
-
-                PlasmaComponents.MenuItem {
-                    property variant actionItem
-                    property int sourceRow
-
-                    text: actionItem.text ? actionItem.text : ""
-                    enabled: actionItem.type != "title"
-                    separator: actionItem.type == "separator"
-                    icon: actionItem.icon ? actionItem.icon : null
-
-                    onClicked: {
-                        emitIndexClicked(sourceRow, actionItem.actionId, actionItem.actionArgument);
+            function fillActionMenu(actionMenu) {
+                // Accessing actionList can be a costly operation, so we don't
+                // access it until we need the menu
+                var lst = model.hasActionList ? model.actionList : [];
+                var action = createFavoriteAction();
+                if (action) {
+                    if (lst.length > 0) {
+                        var separator = { "type": "separator" };
+                        lst.unshift(action, separator);
+                    } else {
+                        lst = [action];
                     }
                 }
+                actionMenu.actionList = lst;
             }
 
-            function showContextMenu() {
-                var list = model.actionList;
-                if (!list) {
-                    return;
+            function createFavoriteAction() {
+                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
+                if (favoriteModel === null) {
+                    return null;
                 }
-                var menu = contextMenuComponent.createObject(resultMain);
-                list.forEach(function(item) {
-                    contextMenuItemComponent.createObject(menu, {
-                        "actionItem": item,
-                        "sourceRow": index
-                    });
-                });
-                menu.open();
+                var action = {};
+                if (favoriteModel.isFavorite(model.favoriteId)) {
+                    action.text = i18n("Remove from favorites");
+                    //action.iconName = "list-remove";
+                    action.actionId = "_homerun_favoriteRemove";
+                    action.actionArgument = model.favoriteId;
+                } else {
+                    action.text = i18n("Add to favorites");
+                    //action.iconName = "bookmarks";
+                    action.actionId = "_homerun_favoriteAdd";
+                    action.actionArgument = model.favoriteId;
+                }
+                return action;
             }
         }
     }
@@ -261,8 +228,6 @@ FocusScope {
         cellHeight: resultItemHeight
         //TODO: something sane?
         cacheBuffer: 128 * 10 //10 above, 10 below caching
-
-        highlight: highlight
 
         delegate: result
 
@@ -358,9 +323,27 @@ FocusScope {
     }
 
     function emitIndexClicked(index, actionId, actionArgument) {
+        // Looks like String.startsWith does not exist in the JS interpreter we use :/
+        function startsWith(txt, needle) {
+            return txt.substr(0, needle.length) === needle;
+        }
+
         if (configureMode) {
             return;
         }
+        if (startsWith(actionId, "_homerun_")) {
+            var favoriteId = actionArgument;
+            var favoriteModel = favoriteModelForFavoriteId(favoriteId);
+            if (actionId == "_homerun_favoriteRemove") {
+                favoriteModel.removeFavorite(favoriteId);
+            } else if (actionId == "_homerun_favoriteAdd") {
+                favoriteModel.addFavorite(favoriteId);
+            } else {
+                console.log("Unknown homerun actionId: " + actionId);
+            }
+            return;
+        }
+
         indexClicked(index, actionId, actionArgument);
     }
 }

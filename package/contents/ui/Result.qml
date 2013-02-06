@@ -29,10 +29,10 @@ Item {
     //- Public ----------------------------------------------------------------
     // Set by others
     property int iconWidth: 64
-    property string favoriteIcon
     property alias text: resultLabel.text
     property alias icon: resultIcon.icon
     property bool configureMode: false
+    property bool hasActionList: false
 
     // Exposed by us
     property alias truncated: resultLabel.truncated
@@ -46,12 +46,11 @@ Item {
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
 
-    signal clicked(variant mouse)
-    signal pressAndHold
-    signal favoriteClicked
+    signal actionTriggered(string actionId, variant actionArgument)
+    signal aboutToShowActionMenu(variant actionMenu)
 
     //- Private ---------------------------------------------------------------
-    property bool containsMouse: itemMouseArea.containsMouse || favoriteMouseArea.containsMouse
+    property bool containsMouse: itemMouseArea.containsMouse || actionListMouseArea.containsMouse
     onContainsMouseChanged: {
         highlighted = containsMouse;
     }
@@ -62,20 +61,23 @@ Item {
     property int padding: 5
     height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
 
-    Component.onCompleted: {
-        itemMouseArea.clicked.connect(clicked)
-        itemMouseArea.pressAndHold.connect(pressAndHold)
-        favoriteMouseArea.clicked.connect(favoriteClicked)
-    }
-
-    Component {
-        id: favoriteFeedbackComponent
-        FavoriteFeedback {
+    PlasmaCore.FrameSvgItem {
+        id: background
+        anchors {
+            fill: parent
         }
-    }
 
-    function showFeedback() {
-        favoriteFeedbackComponent.createObject(favoriteIconItem);
+        imagePath: "widgets/viewitem"
+        prefix: "hover"
+
+        opacity: (main.highlighted || actionMenu.opened) ? 1 : 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutQuad
+            }
+        }
     }
 
     QtExtra.QIconItem {
@@ -111,31 +113,20 @@ Item {
         maximumLineCount: 2
     }
 
-    QtExtra.QIconItem {
-        id: favoriteIconItem
-
+    PlasmaCore.IconItem {
+        id: actionListButton
         anchors {
             right: parent.right
+            rightMargin: main.padding
             top: parent.top
-            rightMargin: padding
-            topMargin: padding
+            topMargin: main.padding
         }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 250
-                easing.type: Easing.OutQuad
-            }
-        }
-        icon: main.favoriteIcon
-
-        // Use "main.favoriteIcon" and not "icon" because right now "icon"
-        // is a non-notifiable property
-        visible: main.favoriteIcon != ""
-
-        opacity: favoriteMouseArea.containsMouse ? 1 : (main.highlighted ? 0.5 : 0)
-        width: 22
+        source: "go-down"
+        width: 16
         height: width
+        opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
+        Behavior on opacity { NumberAnimation {} }
+        visible: hasActionList
     }
 
     MouseArea {
@@ -144,14 +135,42 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         enabled: !configureMode
+        onClicked: {
+            if (mouse.button == Qt.LeftButton) {
+                actionTriggered("", null);
+            } else if (mouse.button == Qt.RightButton && hasActionList) {
+                openActionMenu(main);
+            }
+        }
+        onPressAndHold: {
+            if (hasActionList) {
+                openActionMenu(main);
+            }
+        }
     }
 
     MouseArea {
-        // If MouseArea were a child of favoriteIconItem it would not work
-        // when favoriteIconItem.opacity is 0. That's why it is a sibling.
-        id: favoriteMouseArea
-        anchors.fill: favoriteIconItem
+        // If this MouseArea were a child of actionListButton it would not work
+        // when actionListButton.opacity is 0. That's why it is a sibling.
+        id: actionListMouseArea
+        anchors.fill: actionListButton
+        anchors.margins: -3
         hoverEnabled: true
-        enabled: !configureMode
+        enabled: !configureMode && hasActionList
+        onClicked: openActionMenu(actionListButton)
+    }
+
+    ActionMenu {
+        id: actionMenu
+        onActionClicked: {
+            main.actionTriggered(actionId, actionArgument);
+        }
+    }
+
+    // Code
+    function openActionMenu(visualParent) {
+        aboutToShowActionMenu(actionMenu);
+        actionMenu.visualParent = visualParent;
+        actionMenu.open();
     }
 }
