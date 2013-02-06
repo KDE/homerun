@@ -83,7 +83,6 @@ Item {
 
         anchors {
             top: parent.top
-            topMargin: main.headerPadding
             left: parent.left
             leftMargin: main.headerPadding
             right: configureMode ? configButton.left : searchField.left
