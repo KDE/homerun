@@ -66,18 +66,20 @@ QVariantMap createSeparatorActionItem()
 QVariantList createListForFileItem(const KFileItem &fileItem)
 {
     QVariantList list;
-    list << createTitleActionItem(i18n("Open with:"));
     KService::List services = KMimeTypeTrader::self()->query(fileItem.mimetype(), "Application");
-    Q_FOREACH(const KService::Ptr service, services) {
-        const QString text = service->name().replace('&', "&&");
-        QVariantMap item = createActionItem(text, "_homerun_fileItem_openWith", service->entryPath());
-        QString iconName = service->icon();
-        if (!iconName.isEmpty()) {
-            item["icon"] = KIcon(service->icon());
+    if (!services.isEmpty()) {
+        list << createTitleActionItem(i18n("Open with:"));
+        Q_FOREACH(const KService::Ptr service, services) {
+            const QString text = service->name().replace('&', "&&");
+            QVariantMap item = createActionItem(text, "_homerun_fileItem_openWith", service->entryPath());
+            QString iconName = service->icon();
+            if (!iconName.isEmpty()) {
+                item["icon"] = KIcon(service->icon());
+            }
+            list << item;
         }
-        list << item;
+        list << createSeparatorActionItem();
     }
-    list << createSeparatorActionItem();
     list << createActionItem(i18n("Properties"), "_homerun_fileItem_properties");
     return list;
 }
