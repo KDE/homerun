@@ -22,11 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Homerun
 #include <abstractsource.h>
+#include <actionlist.h>
 
 // KDE
 #include <KDebug>
 #include <KDesktopFile>
 #include <KDirWatch>
+#include <KFileItem>
 #include <KLocale>
 #include <KPluginFactory>
 #include <KRecentDocument>
@@ -37,13 +39,19 @@ HOMERUN_EXPORT_SOURCE(recentdocuments, RecentDocumentsSource)
 
 RecentDocumentsModel::RecentDocumentsModel()
 {
+    QHash<int, QByteArray> roles;
+    roles.insert(Qt::DisplayRole, "display");
+    roles.insert(Qt::DecorationRole, "decoration");
+    roles.insert(HasActionListRole, "hasActionList");
+    roles.insert(ActionListRole, "actionList");
+    setRoleNames(roles);
+
     KDirWatch *watch = new KDirWatch(this);
     watch->addDir(KRecentDocument::recentDocumentDirectory());
 
     connect(watch, SIGNAL(created(QString)), SLOT(load()));
     connect(watch, SIGNAL(deleted(QString)), SLOT(load()));
     connect(watch, SIGNAL(dirty(QString)), SLOT(load()));
-
     load();
 }
 
@@ -63,19 +71,28 @@ void RecentDocumentsModel::load()
 
         QStandardItem *item = new QStandardItem(file.readName());
         item->setData(file.readIcon(), Qt::DecorationRole);
-        item->setData(url, Qt::UserRole);
+        item->setData(url, UrlRole);
+        item->setData(true, HasActionListRole);
         appendRow(item);
     }
     countChanged();
 }
 
-bool RecentDocumentsModel::trigger(int row)
+bool RecentDocumentsModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
 {
     QStandardItem *itm = item(row);
     Q_ASSERT(itm);
-    KUrl url = itm->data(Qt::UserRole).toString();
-    new KRun(url, 0);
-    return true;
+    KUrl url = itm->data(UrlRole).toString();
+    if (actionId.isEmpty()) {
+        new KRun(url, 0);
+        return true;
+    }
+    bool close = false;
+    KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
+    if (ActionList::handleFileItemAction(item, actionId, actionArgument, &close)) {
+        return close;
+    }
+    return false;
 }
 
 QString RecentDocumentsModel::name() const
@@ -86,6 +103,20 @@ QString RecentDocumentsModel::name() const
 int RecentDocumentsModel::count() const
 {
     return rowCount(QModelIndex());
+}
+
+QVariant RecentDocumentsModel::data(const QModelIndex& index, int role) const
+{
+    if (role != ActionListRole) {
+        return QStandardItemModel::data(index, role);
+    }
+    QStandardItem *itm = itemFromIndex(index);
+    if (!itm) {
+        return QVariant();
+    }
+    KUrl url = itm->data(UrlRole).toString();
+    KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
+    return ActionList::createListForFileItem(item);
 }
 
 #include <recentdocuments.moc>

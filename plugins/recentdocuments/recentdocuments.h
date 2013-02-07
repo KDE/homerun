@@ -34,11 +34,19 @@ class RecentDocumentsModel : public QStandardItemModel
 public:
     RecentDocumentsModel();
 
-    Q_INVOKABLE bool trigger(int row);
+    enum {
+        UrlRole = Qt::UserRole + 1,
+        HasActionListRole,
+        ActionListRole,
+    };
+
+    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
 
     QString name() const;
 
     int count() const;
+
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
 Q_SIGNALS:
     void countChanged();
