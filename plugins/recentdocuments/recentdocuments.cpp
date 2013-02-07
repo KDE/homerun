@@ -97,7 +97,7 @@ bool RecentDocumentsModel::trigger(int row, const QString &actionId, const QVari
     }
     bool close = false;
     KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
-    if (ActionList::handleFileItemAction(item, actionId, actionArgument, &close)) {
+    if (Homerun::ActionList::handleFileItemAction(item, actionId, actionArgument, &close)) {
         return close;
     }
     return false;
@@ -137,10 +137,10 @@ QVariant RecentDocumentsModel::data(const QModelIndex& index, int role) const
     }
     KUrl url = itm->data(UrlRole).toString();
     KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
-    QVariantList actionList = ActionList::createListForFileItem(item);
+    QVariantList actionList = Homerun::ActionList::createListForFileItem(item);
 
-    actionList.prepend(ActionList::createSeparatorActionItem());
-    QVariantMap forgetAction = ActionList::createActionItem(i18n("Forget Document"), "forget");
+    actionList.prepend(Homerun::ActionList::createSeparatorActionItem());
+    QVariantMap forgetAction = Homerun::ActionList::createActionItem(i18n("Forget Document"), "forget");
     actionList.prepend(forgetAction);
 
     return actionList;

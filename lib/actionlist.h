@@ -30,6 +30,9 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class KFileItem;
 
+namespace Homerun
+{
+
 /**
  * Helper functions to create action list items
  */
@@ -54,6 +57,7 @@ QVariantList HOMERUN_EXPORT createListForFileItem(const KFileItem &fileItem);
  */
 bool HOMERUN_EXPORT handleFileItemAction(const KFileItem &fileItem, const QString &actionId, const QVariant &actionArg, bool *close);
 
-} // namespace
+} // namespace ActionList
+} // namespace Homerun
 
 #endif /* ACTIONLIST_H */

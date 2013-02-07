@@ -34,6 +34,9 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 // Qt
 #include <QApplication>
 
+namespace Homerun
+{
+
 namespace ActionList
 {
 
@@ -109,4 +112,5 @@ bool handleFileItemAction(const KFileItem &fileItem, const QString &actionId, co
     return false;
 }
 
-} // namespace
+} // namespace ActionList
+} // namespace Homerun
