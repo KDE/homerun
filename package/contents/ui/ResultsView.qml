@@ -161,12 +161,12 @@ FocusScope {
                 if (favoriteModel.isFavorite(model.favoriteId)) {
                     action.text = i18n("Remove from favorites");
                     //action.iconName = "list-remove";
-                    action.actionId = "_homerun_favoriteRemove";
+                    action.actionId = "_homerun_favorite_remove";
                     action.actionArgument = model.favoriteId;
                 } else {
                     action.text = i18n("Add to favorites");
                     //action.iconName = "bookmarks";
-                    action.actionId = "_homerun_favoriteAdd";
+                    action.actionId = "_homerun_favorite_add";
                     action.actionArgument = model.favoriteId;
                 }
                 return action;
@@ -331,15 +331,15 @@ FocusScope {
         if (configureMode) {
             return;
         }
-        if (startsWith(actionId, "_homerun_")) {
+        if (startsWith(actionId, "_homerun_favorite_")) {
             var favoriteId = actionArgument;
             var favoriteModel = favoriteModelForFavoriteId(favoriteId);
-            if (actionId == "_homerun_favoriteRemove") {
+            if (actionId == "_homerun_favorite_remove") {
                 favoriteModel.removeFavorite(favoriteId);
-            } else if (actionId == "_homerun_favoriteAdd") {
+            } else if (actionId == "_homerun_favorite_add") {
                 favoriteModel.addFavorite(favoriteId);
             } else {
-                console.log("Unknown homerun actionId: " + actionId);
+                console.log("Unknown homerun favorite actionId: " + actionId);
             }
             return;
         }
