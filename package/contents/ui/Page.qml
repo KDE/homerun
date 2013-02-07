@@ -58,9 +58,9 @@ Item {
             property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
 
             objectName: "SortFilterModel:" + (sourceModel ? sourceModel.objectName : "")
-            function trigger(index) {
+            function trigger(index, actionId, actionArgument) {
                 var sourceIndex = mapRowToSource(index);
-                return sourceModel.trigger(sourceIndex);
+                return sourceModel.trigger(sourceIndex, actionId, actionArgument);
             }
         }
     }
