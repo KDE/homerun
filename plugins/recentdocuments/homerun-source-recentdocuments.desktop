@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Recent Documents
 Name[bs]=nedavnii dokumenti
+Name[cs]=Nedávné dokumenty
 Name[da]=Nylige dokumenter
 Name[de]=Zuletzt geöffnete Dokumente
 Name[el]=Πρόσφατα έγγραφα
@@ -34,6 +35,7 @@ Comment[pa]=ਤਾਜ਼ਾ ਖੁੱਲ੍ਹੇ ਗਏ ਡੌਕੂਮੈਂਟ �
 Comment[pt]=Listar os documentos abertos recentemente
 Comment[pt_BR]=Lista dos documentos abertos recentemente
 Comment[ro]=Lista documentelor deschise recent
+Comment[sk]=Vypísať nedávno otvorené dokumenty
 Comment[sv]=Lista senast öppnade dokument
 Comment[uk]=Список нещодавно відкритих документів
 Comment[x-test]=xxList recently opened documentsxx

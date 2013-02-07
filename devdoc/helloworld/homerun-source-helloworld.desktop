@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Hello World
+Name[cs]=Hello World
 Name[da]=Hej verden
 Name[de]=Hallo Welt
 Name[el]=Γεια σου κόσμε
@@ -32,6 +33,7 @@ Comment[pa]=ਹੋਮਰਨ ਸਰੋਤ ਦੀ ਉਦਾਹਰਨ
 Comment[pt]=Um exemplo de código do Homerun
 Comment[pt_BR]=Exemplo de código do Homerun
 Comment[ro]=Exemplu de sursă Homerun
+Comment[sk]=Príklad zdroja Homerun
 Comment[sv]=Ett exempel på Homerun-källor
 Comment[uk]=Приклад джерела Homerun
 Comment[x-test]=xxAn example of Homerun Sourcexx
