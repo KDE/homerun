@@ -36,6 +36,7 @@ public:
 
     enum {
         UrlRole = Qt::UserRole + 1,
+        DesktopPathRole,
         HasActionListRole,
         ActionListRole,
     };
@@ -53,6 +54,9 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void load();
+
+private:
+    void forget(QStandardItem *item);
 };
 
 #endif /* RECENTDOCUMENTS_H */

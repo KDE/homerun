@@ -34,6 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <KRecentDocument>
 #include <KRun>
 
+// Qt
+#include <QFile>
+
 typedef Homerun::SimpleSource<RecentDocumentsModel> RecentDocumentsSource;
 HOMERUN_EXPORT_SOURCE(recentdocuments, RecentDocumentsSource)
 
@@ -71,6 +74,7 @@ void RecentDocumentsModel::load()
 
         QStandardItem *item = new QStandardItem(file.readName());
         item->setData(file.readIcon(), Qt::DecorationRole);
+        item->setData(path, DesktopPathRole);
         item->setData(url, UrlRole);
         item->setData(true, HasActionListRole);
         appendRow(item);
@@ -87,12 +91,29 @@ bool RecentDocumentsModel::trigger(int row, const QString &actionId, const QVari
         new KRun(url, 0);
         return true;
     }
+    if (actionId == "forget") {
+        forget(itm);
+        return false;
+    }
     bool close = false;
     KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
     if (ActionList::handleFileItemAction(item, actionId, actionArgument, &close)) {
         return close;
     }
     return false;
+}
+
+void RecentDocumentsModel::forget(QStandardItem *itm)
+{
+    Q_ASSERT(itm);
+    QString path = itm->data(DesktopPathRole).toString();
+
+    bool ok = QFile::remove(path);
+    if (!ok) {
+        kWarning() << "Failed to remove" << path;
+        return;
+    }
+    delete itm;
 }
 
 QString RecentDocumentsModel::name() const
@@ -116,7 +137,13 @@ QVariant RecentDocumentsModel::data(const QModelIndex& index, int role) const
     }
     KUrl url = itm->data(UrlRole).toString();
     KFileItem item(KFileItem::Unknown, KFileItem::Unknown, url);
-    return ActionList::createListForFileItem(item);
+    QVariantList actionList = ActionList::createListForFileItem(item);
+
+    actionList.prepend(ActionList::createSeparatorActionItem());
+    QVariantMap forgetAction = ActionList::createActionItem(i18n("Forget Document"), "forget");
+    actionList.prepend(forgetAction);
+
+    return actionList;
 }
 
 #include <recentdocuments.moc>
