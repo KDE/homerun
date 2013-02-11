@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SINGLERUNNER_H
 #define SINGLERUNNER_H
 
+// Local
+#include <abstractsource.h>
+
 // KDE
 #include <QAbstractListModel>
 #include <Plasma/RunnerManager>
@@ -70,6 +73,15 @@ private:
     QList<Plasma::QueryMatch> m_matches;
 
     QString prepareSearchTerm(const QString &term);
+};
+
+class SingleRunnerSource : public Homerun::AbstractSource
+{
+public:
+    SingleRunnerSource(QObject *parent, const QVariantList&);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
+    Homerun::SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
+    bool isConfigurable() const;
 };
 
 #endif /* SINGLERUNNER_H */

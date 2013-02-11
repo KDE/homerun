@@ -33,8 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Qt
 #include <QIcon>
 
-typedef Homerun::SimpleSource<SingleRunnerModel> SingleRunnerSource;
-HOMERUN_EXPORT_SOURCE(singlerunner, SingleRunnerSource)
+static const char *RUNNER_KEY = "runner";
 
 SingleRunnerModel::SingleRunnerModel()
 : m_manager(0)
@@ -45,8 +44,6 @@ SingleRunnerModel::SingleRunnerModel()
     roles.insert(HasActionListRole, "hasActionList");
     roles.insert(ActionListRole, "actionList");
     setRoleNames(roles);
-
-    init("desktopsessions");
 }
 
 void SingleRunnerModel::init(const QString& runnerId)
@@ -172,5 +169,30 @@ void SingleRunnerModel::slotMatchesChanged(const QList< Plasma::QueryMatch > &ma
         emit countChanged();
     }
 }
+
+//- SingleRunnerSource ------------------------
+SingleRunnerSource::SingleRunnerSource(QObject *parent, const QVariantList &)
+: Homerun::AbstractSource(parent)
+{}
+
+QAbstractItemModel *SingleRunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
+{
+    SingleRunnerModel *model = new SingleRunnerModel;
+    QString runner = group.readEntry(RUNNER_KEY, QString());
+    model->init(runner);
+    return model;
+};
+
+bool SingleRunnerSource::isConfigurable() const
+{
+    return false;
+}
+
+Homerun::SourceConfigurationWidget *SingleRunnerSource::createConfigurationWidget(const KConfigGroup &group)
+{
+    return 0;//new RunnerConfigurationWidget(group);
+}
+
+HOMERUN_EXPORT_SOURCE(singlerunner, SingleRunnerSource)
 
 #include <singlerunner.moc>
