@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Single Runner
+Comment=List results from single-runner runners
+Type=Service
+X-KDE-ServiceTypes=Homerun/Source
+X-KDE-Library=homerun_source_singlerunner
+
+X-KDE-PluginInfo-Name=SingleRunner
+
+X-KDE-Homerun-APIVersion=0

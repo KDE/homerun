@@ -1,1 +1,2 @@
 add_subdirectory(recentdocuments)
+add_subdirectory(singlerunner)
