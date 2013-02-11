@@ -81,8 +81,17 @@ void SingleRunnerModel::setQuery(const QString &value)
     queryChanged(m_query);
 }
 
-bool SingleRunnerModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
+bool SingleRunnerModel::trigger(int row, const QString &actionId, const QVariant &/*actionArgument*/)
 {
+    if (actionId.isEmpty()) {
+        Plasma::QueryMatch match = m_matches.at(row);
+        if (match.isEnabled()) {
+            m_manager->run(match);
+            return true;
+        } else {
+            return false;
+        }
+    }
     return false;
 }
 
