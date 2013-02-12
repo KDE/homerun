@@ -25,6 +25,7 @@ Boston, MA 02110-1301, USA.
 
 // Local
 #include <abstractsource.h>
+#include <querymatchmodel.h>
 
 // Qt
 #include <QAbstractListModel>
@@ -45,44 +46,19 @@ namespace Homerun {
 
 class RunnerModel;
 
-class RunnerSubModel : public QAbstractListModel
+class RunnerSubModel : public QueryMatchModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
-    RunnerSubModel(const QString &runnerId, const QString &name, RunnerModel *runnerModel);
-
-    enum {
-        FavoriteIdRole = Qt::UserRole + 1,
-        HasActionListRole,
-        ActionListRole,
-    };
+    RunnerSubModel(const QString &runnerId, const QString &name, Plasma::RunnerManager *manager, QObject *parent = 0);
 
     QString runnerId() const { return m_runnerId; }
     QString name() const { return m_name; }
 
-    void setMatches(const QList<Plasma::QueryMatch> &matches);
-
-    int count() const;
-
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-
-    Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
-
-Q_SIGNALS:
-    void countChanged();
-
-    void triggerRequested(const Plasma::QueryMatch &);
-
 private:
-    RunnerModel *m_runnerModel;
     QString m_runnerId;
     QString m_name;
-
-    QList<Plasma::QueryMatch> m_matches;
 };
 
 /**
