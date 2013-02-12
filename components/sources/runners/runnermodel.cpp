@@ -206,8 +206,9 @@ bool RunnerSubModel::trigger(int row, const QString &actionId, const QVariant &a
 
 //--------------------------------------------------------------------
 
-RunnerModel::RunnerModel(QObject *parent)
+RunnerModel::RunnerModel(const KConfigGroup &configGroup, QObject *parent)
 : QAbstractListModel(parent)
+, m_configGroup(configGroup)
 , m_manager(0)
 , m_startQueryTimer(new QTimer(this))
 , m_runningChangedTimeout(new QTimer(this))
@@ -220,6 +221,9 @@ RunnerModel::RunnerModel(QObject *parent)
     //FIXME: HACK: some runners stay in a running but finished state, not possible to say if it's actually over
     m_runningChangedTimeout->setSingleShot(true);
     connect(m_runningChangedTimeout, SIGNAL(timeout()), this, SLOT(queryHasFinished()));
+
+    QStringList lst = m_configGroup.readEntry(WHITELIST_KEY, QStringList());
+    setAllowedRunners(lst);
 }
 
 RunnerModel::~RunnerModel()
@@ -317,7 +321,9 @@ void RunnerModel::startQuery()
 void RunnerModel::createManager()
 {
     if (!m_manager) {
-        m_manager = new Plasma::RunnerManager(this);
+        // RunnerManager must have its own config group to store instance-specific config
+        // (we don't want the manager from this RunnerModel to overwrite the config from another RunnerModel manager)
+        m_manager = new Plasma::RunnerManager(m_configGroup, this);
         connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)),
                 this, SLOT(matchesChanged(QList<Plasma::QueryMatch>)));
         connect(m_manager, SIGNAL(queryFinished()),
@@ -428,10 +434,7 @@ RunnerSource::RunnerSource(QObject *parent)
 
 QAbstractItemModel *RunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
-    RunnerModel *model = new RunnerModel;
-    QStringList lst = group.readEntry(WHITELIST_KEY, QStringList());
-    model->setAllowedRunners(lst);
-    return model;
+    return new RunnerModel(group);
 };
 
 bool RunnerSource::isConfigurable() const

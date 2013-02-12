@@ -67,7 +67,7 @@ class SingleRunnerModel : public QueryMatchModel
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
-    explicit SingleRunnerModel(QObject * parent = 0);
+    explicit SingleRunnerModel(const KConfigGroup &configGroup, QObject * parent = 0);
 
     Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
 
@@ -82,6 +82,7 @@ Q_SIGNALS:
     void queryChanged(const QString &);
 
 private:
+    KConfigGroup m_configGroup;
     Plasma::RunnerManager *m_manager;
 
     QString m_query;

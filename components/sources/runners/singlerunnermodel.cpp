@@ -109,16 +109,21 @@ void QueryMatchModel::setMatches(const QList< Plasma::QueryMatch > &matches)
 }
 
 //- SingleRunnerModel -------------------------
-SingleRunnerModel::SingleRunnerModel(QObject *parent)
+SingleRunnerModel::SingleRunnerModel(const KConfigGroup &configGroup, QObject *parent)
 : QueryMatchModel(parent)
+, m_configGroup(configGroup)
 , m_manager(0)
 {
+    QString runner = m_configGroup.readEntry(RUNNER_KEY, QString());
+    init(runner);
 }
 
 void SingleRunnerModel::init(const QString& runnerId)
 {
     if (!m_manager) {
-        m_manager = new Plasma::RunnerManager(this);
+        // RunnerManager must have its own config group to store instance-specific config
+        // (we don't want the manager from this RunnerModel to overwrite the config from another RunnerModel manager)
+        m_manager = new Plasma::RunnerManager(m_configGroup, this);
         connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)), SLOT(setMatches(QList<Plasma::QueryMatch>)));
     }
     m_manager->setAllowedRunners(QStringList() << runnerId);
@@ -195,10 +200,7 @@ SingleRunnerSource::SingleRunnerSource(QObject *parent)
 
 QAbstractItemModel *SingleRunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
-    SingleRunnerModel *model = new SingleRunnerModel;
-    QString runner = group.readEntry(RUNNER_KEY, QString());
-    model->init(runner);
-    return model;
+    return new SingleRunnerModel(group);
 };
 
 bool SingleRunnerSource::isConfigurable() const
