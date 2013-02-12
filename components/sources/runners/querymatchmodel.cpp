@@ -76,6 +76,23 @@ static QString favoriteIdFromMatch(const Plasma::QueryMatch &match)
     }
 }
 
+static bool matchHasActionList(const Plasma::QueryMatch &match)
+{
+    // Hack to expose the protected Plasma::AbstractRunner::actions() method.
+    class MyRunner : public Plasma::AbstractRunner
+    {
+    public:
+        using Plasma::AbstractRunner::actions;;
+    };
+
+    // Would be great if we could know if a match has actions without getting
+    // them as getting the action list is costly. For now we can't, so pretend
+    // all matches from runners which have registered actions have actions.
+    MyRunner *runner = static_cast<MyRunner *>(match.runner());
+    Q_ASSERT(runner);
+    return !runner->actions().isEmpty();
+}
+
 static QVariantList actionListFromMatch(Plasma::RunnerManager *manager, const Plasma::QueryMatch &match)
 {
     Q_ASSERT(manager);
@@ -102,10 +119,7 @@ QVariant QueryMatchModel::data(const QModelIndex& index, int role) const
     } else if (role == FavoriteIdRole) {
         return favoriteIdFromMatch(match);
     } else if (role == HasActionListRole) {
-        // Would be great if we could now if a match has actions without getting them
-        // as getting the action list is costly. For now we can't, so pretend all
-        // runners expose actions.
-        return true;
+        return matchHasActionList(match);
     } else if (role == ActionListRole) {
         return actionListFromMatch(m_manager, match);
     }
