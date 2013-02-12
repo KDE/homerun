@@ -22,41 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Local
 #include <abstractsource.h>
+#include <querymatchmodel.h>
 
 // KDE
-#include <QAbstractListModel>
 #include <Plasma/RunnerManager>
 
-/**
- * This model exposes results from a list of Plasma::QueryMatch
- */
-class QueryMatchModel : public QAbstractListModel
+namespace Homerun
 {
-    Q_OBJECT
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-public:
-    explicit QueryMatchModel(QObject *parent = 0);
-
-    enum {
-        HasActionListRole = Qt::UserRole + 1,
-        ActionListRole,
-    };
-
-    int count() const;
-
-    int rowCount(const QModelIndex &parent) const override;
-
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
-public Q_SLOTS:
-    void setMatches(const QList<Plasma::QueryMatch> &matches);
-
-Q_SIGNALS:
-    void countChanged();
-
-protected:
-    QList<Plasma::QueryMatch> m_matches;
-};
 
 /**
  * This model exposes results from a runner with single-runner mode
@@ -90,13 +62,15 @@ private:
     QString prepareSearchTerm(const QString &term);
 };
 
-class SingleRunnerSource : public Homerun::AbstractSource
+class SingleRunnerSource : public AbstractSource
 {
 public:
     SingleRunnerSource(QObject *parent);
     QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
-    Homerun::SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
+    SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
     bool isConfigurable() const;
 };
+
+} // namespace Homerun
 
 #endif /* SINGLERUNNERMODEL_H */
