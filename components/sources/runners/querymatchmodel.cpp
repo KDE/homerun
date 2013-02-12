@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // KDE
 #include <KDebug>
 #include <KLocale>
+#include <KUrl>
+#include <Plasma/AbstractRunner>
 
 // Qt
 #include <QIcon>
@@ -36,6 +38,7 @@ QueryMatchModel::QueryMatchModel(QObject *parent)
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
+    roles.insert(FavoriteIdRole, "favoriteId");
     roles.insert(HasActionListRole, "hasActionList");
     roles.insert(ActionListRole, "actionList");
     setRoleNames(roles);
@@ -61,6 +64,19 @@ QVariant QueryMatchModel::data(const QModelIndex& index, int role) const
         return match.text();
     } else if (role == Qt::DecorationRole) {
         return match.icon();
+    } else if (role == FavoriteIdRole) {
+        QString runnerId = match.runner()->id();
+        if (runnerId == "services") {
+            return QVariant("app:" + match.data().toString());
+        } else if (runnerId == "locations") {
+            KUrl url(match.data().toString());
+            return QVariant("place:" + url.url());
+        } else if (runnerId == "places") {
+            KUrl url(match.data().value<KUrl>());
+            return QVariant("place:" + url.url());
+        } else {
+            return QString();
+        }
     } else if (role == HasActionListRole) {
         return false;
     }

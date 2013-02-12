@@ -42,7 +42,8 @@ public:
     explicit QueryMatchModel(QObject *parent = 0);
 
     enum {
-        HasActionListRole = Qt::UserRole + 1,
+        FavoriteIdRole = Qt::UserRole + 1,
+        HasActionListRole,
         ActionListRole,
     };
 
