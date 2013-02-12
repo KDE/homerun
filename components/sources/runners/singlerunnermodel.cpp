@@ -55,6 +55,7 @@ void SingleRunnerModel::init(const QString& runnerId)
         // (we don't want the manager from this RunnerModel to overwrite the config from another RunnerModel manager)
         m_manager = new Plasma::RunnerManager(m_configGroup, this);
         connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)), SLOT(setMatches(QList<Plasma::QueryMatch>)));
+        setRunnerManager(m_manager);
     }
     m_manager->setAllowedRunners(QStringList() << runnerId);
     m_manager->setSingleModeRunnerId(runnerId);
@@ -86,20 +87,6 @@ void SingleRunnerModel::setQuery(const QString &value)
     QString term = prepareSearchTerm(m_query);
     m_manager->launchQuery(term, m_manager->singleModeRunnerId());
     queryChanged(m_query);
-}
-
-bool SingleRunnerModel::trigger(int row, const QString &actionId, const QVariant &/*actionArgument*/)
-{
-    if (actionId.isEmpty()) {
-        Plasma::QueryMatch match = m_matches.at(row);
-        if (match.isEnabled()) {
-            m_manager->run(match);
-            return true;
-        } else {
-            return false;
-        }
-    }
-    return false;
 }
 
 QString SingleRunnerModel::name() const

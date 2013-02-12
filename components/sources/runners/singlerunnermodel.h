@@ -41,8 +41,6 @@ class SingleRunnerModel : public QueryMatchModel
 public:
     explicit SingleRunnerModel(const KConfigGroup &configGroup, QObject * parent = 0);
 
-    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
-
     QString name() const;
 
     void init(const QString &runnerId);

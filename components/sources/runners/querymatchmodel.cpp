@@ -20,13 +20,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Self
 #include <querymatchmodel.h>
 
+// Local
+#include <actionlist.h>
+
 // KDE
 #include <KDebug>
+#include <KIcon>
 #include <KLocale>
 #include <KUrl>
 #include <Plasma/AbstractRunner>
+#include <Plasma/RunnerManager>
 
 // Qt
+#include <QAction>
 #include <QIcon>
 
 namespace Homerun
@@ -78,9 +84,46 @@ QVariant QueryMatchModel::data(const QModelIndex& index, int role) const
             return QString();
         }
     } else if (role == HasActionListRole) {
-        return false;
+        // Would be great if we could now if a match has actions without getting them
+        // as getting the action list is costly. For now we can't, so pretend all
+        // runners expose actions.
+        return true;
+    } else if (role == ActionListRole) {
+        Q_ASSERT(m_manager);
+        QVariantList actionList;
+        Q_FOREACH(QAction *action, m_manager->actionsForMatch(match)) {
+            QVariantMap item = ActionList::createActionItem(action->text(), "runnerAction",
+                QVariant::fromValue<QObject *>(action));
+            item["icon"] = KIcon(action->icon());
+            actionList << item;
+        }
+        return actionList;
     }
     return QVariant();
+}
+
+bool QueryMatchModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
+{
+    Q_ASSERT(m_manager);
+    Plasma::QueryMatch match = m_matches.at(row);
+    if (!match.isEnabled()) {
+        return false;
+    }
+    if (!actionId.isEmpty()) {
+        QObject *obj = actionArgument.value<QObject *>();
+        if (!obj) {
+            kWarning() << "actionArgument is not a QObject";
+            return false;
+        }
+        QAction *action = qobject_cast<QAction *>(obj);
+        if (!action) {
+            kWarning() << "actionArgument is not a QAction";
+            return false;
+        }
+        match.setSelectedAction(action);
+    }
+    m_manager->run(match);
+    return true;
 }
 
 void QueryMatchModel::setMatches(const QList< Plasma::QueryMatch > &matches)
@@ -115,6 +158,11 @@ void QueryMatchModel::setMatches(const QList< Plasma::QueryMatch > &matches)
         endResetModel();
         emit countChanged();
     }
+}
+
+void QueryMatchModel::setRunnerManager(Plasma::RunnerManager *manager)
+{
+    m_manager = manager;
 }
 
 } // namespace

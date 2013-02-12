@@ -28,6 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Qt
 #include <QAbstractListModel>
 
+namespace Plasma
+{
+    class RunnerManager;
+}
+
 namespace Homerun
 {
 
@@ -53,6 +58,14 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
+
+    /**
+     * Sets the instance of RunnerManager which is handling the matches we show.
+     * A manager *must* be defined before calling setMatches().
+     */
+    void setRunnerManager(Plasma::RunnerManager *manager);
+
 public Q_SLOTS:
     void setMatches(const QList<Plasma::QueryMatch> &matches);
 
@@ -61,6 +74,9 @@ Q_SIGNALS:
 
 protected:
     QList<Plasma::QueryMatch> m_matches;
+
+private:
+    Plasma::RunnerManager *m_manager = 0;
 };
 
 } // namespace
