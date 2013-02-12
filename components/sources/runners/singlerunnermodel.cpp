@@ -33,8 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Qt
 #include <QIcon>
 
-static const char *RUNNER_KEY = "runner";
-
 namespace Homerun
 {
 
@@ -44,8 +42,6 @@ SingleRunnerModel::SingleRunnerModel(const KConfigGroup &configGroup, QObject *p
 , m_configGroup(configGroup)
 , m_manager(0)
 {
-    QString runner = m_configGroup.readEntry(RUNNER_KEY, QString());
-    init(runner);
 }
 
 void SingleRunnerModel::init(const QString& runnerId)
@@ -114,24 +110,17 @@ QString SingleRunnerModel::prepareSearchTerm(const QString &term)
 }
 
 //- SingleRunnerSource ------------------------
-SingleRunnerSource::SingleRunnerSource(QObject *parent)
+SingleRunnerSource::SingleRunnerSource(const QString &runnerId, QObject *parent)
 : AbstractSource(parent)
+, m_runnerId(runnerId)
 {}
 
 QAbstractItemModel *SingleRunnerSource::createModelFromConfigGroup(const KConfigGroup &group)
 {
-    return new SingleRunnerModel(group);
+    SingleRunnerModel *model = new SingleRunnerModel(group);
+    model->init(m_runnerId);
+    return model;
 };
-
-bool SingleRunnerSource::isConfigurable() const
-{
-    return false;
-}
-
-SourceConfigurationWidget *SingleRunnerSource::createConfigurationWidget(const KConfigGroup &group)
-{
-    return 0;//new RunnerConfigurationWidget(group);
-}
 
 } // namespace Homerun
 

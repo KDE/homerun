@@ -63,10 +63,11 @@ private:
 class SingleRunnerSource : public AbstractSource
 {
 public:
-    SingleRunnerSource(QObject *parent);
-    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
-    SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
-    bool isConfigurable() const;
+    SingleRunnerSource(const QString &runnerId, QObject *parent);
+    QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group) override;
+
+private:
+    QString m_runnerId;
 };
 
 } // namespace Homerun

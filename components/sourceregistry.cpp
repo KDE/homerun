@@ -43,6 +43,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <KPluginInfo>
 #include <KPluginLoader>
 #include <KServiceTypeTrader>
+#include <Plasma/PluginLoader>
 
 // Qt
 #include <QApplication>
@@ -219,6 +220,19 @@ struct SourceRegistryPrivate
         }
         return sourceInfo->source;
     }
+
+    void registerSingleRunnerSources()
+    {
+        KPluginInfo::List list = Plasma::PluginLoader::pluginLoader()->listRunnerInfo();
+        Q_FOREACH(const KPluginInfo &info, list) {
+            if (!info.property("X-Plasma-AdvertiseSingleRunnerQueryMode").toBool()) {
+                continue;
+            }
+            QString runnerId = info.pluginName();
+            SingleRunnerSource *source = new SingleRunnerSource(runnerId, q);
+            registerSource("SingleRunner/" + runnerId, source, info.name(), info.comment());
+        }
+    }
 };
 
 //- SourceRegistry --------------------------------------------
@@ -264,10 +278,8 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("KRunner"),
         i18n("Perform searchs using a selection of runners")
     );
-    d->registerSource("SingleRunner", new SingleRunnerSource(this),
-        i18n("KRunner (Single-mode)"),
-        i18n("Provide results from a single-mode runner")
-    );
+
+    d->registerSingleRunnerSources();
 
     d->listSourcePlugins();
 }
