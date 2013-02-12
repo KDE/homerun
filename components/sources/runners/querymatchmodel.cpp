@@ -60,6 +60,35 @@ int QueryMatchModel::rowCount(const QModelIndex& parent) const
     return parent.isValid() ? 0 : m_matches.count();
 }
 
+static QString favoriteIdFromMatch(const Plasma::QueryMatch &match)
+{
+    QString runnerId = match.runner()->id();
+    if (runnerId == "services") {
+        return "app:" + match.data().toString();
+    } else if (runnerId == "locations") {
+        KUrl url(match.data().toString());
+        return "place:" + url.url();
+    } else if (runnerId == "places") {
+        KUrl url(match.data().value<KUrl>());
+        return "place:" + url.url();
+    } else {
+        return QString();
+    }
+}
+
+static QVariantList actionListFromMatch(Plasma::RunnerManager *manager, const Plasma::QueryMatch &match)
+{
+    Q_ASSERT(manager);
+    QVariantList actionList;
+    Q_FOREACH(QAction *action, manager->actionsForMatch(match)) {
+        QVariantMap item = ActionList::createActionItem(action->text(), "runnerAction",
+            QVariant::fromValue<QObject *>(action));
+        item["icon"] = KIcon(action->icon());
+        actionList << item;
+    }
+    return actionList;
+}
+
 QVariant QueryMatchModel::data(const QModelIndex& index, int role) const
 {
     if (index.row() < 0 || index.row() >= m_matches.count()) {
@@ -71,33 +100,14 @@ QVariant QueryMatchModel::data(const QModelIndex& index, int role) const
     } else if (role == Qt::DecorationRole) {
         return match.icon();
     } else if (role == FavoriteIdRole) {
-        QString runnerId = match.runner()->id();
-        if (runnerId == "services") {
-            return QVariant("app:" + match.data().toString());
-        } else if (runnerId == "locations") {
-            KUrl url(match.data().toString());
-            return QVariant("place:" + url.url());
-        } else if (runnerId == "places") {
-            KUrl url(match.data().value<KUrl>());
-            return QVariant("place:" + url.url());
-        } else {
-            return QString();
-        }
+        return favoriteIdFromMatch(match);
     } else if (role == HasActionListRole) {
         // Would be great if we could now if a match has actions without getting them
         // as getting the action list is costly. For now we can't, so pretend all
         // runners expose actions.
         return true;
     } else if (role == ActionListRole) {
-        Q_ASSERT(m_manager);
-        QVariantList actionList;
-        Q_FOREACH(QAction *action, m_manager->actionsForMatch(match)) {
-            QVariantMap item = ActionList::createActionItem(action->text(), "runnerAction",
-                QVariant::fromValue<QObject *>(action));
-            item["icon"] = KIcon(action->icon());
-            actionList << item;
-        }
-        return actionList;
+        return actionListFromMatch(m_manager, match);
     }
     return QVariant();
 }
