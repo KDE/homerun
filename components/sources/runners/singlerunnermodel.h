@@ -28,25 +28,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Plasma/RunnerManager>
 
 /**
- * This model exposes results from a runner with single-runner mode
+ * This model exposes results from a list of Plasma::QueryMatch
  */
-class SingleRunnerModel : public QAbstractListModel
+class QueryMatchModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
-    SingleRunnerModel();
+    explicit QueryMatchModel(QObject *parent = 0);
 
     enum {
         HasActionListRole = Qt::UserRole + 1,
         ActionListRole,
     };
-
-    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
-
-    QString name() const;
 
     int count() const;
 
@@ -54,23 +48,43 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+public Q_SLOTS:
+    void setMatches(const QList<Plasma::QueryMatch> &matches);
+
+Q_SIGNALS:
+    void countChanged();
+
+protected:
+    QList<Plasma::QueryMatch> m_matches;
+};
+
+/**
+ * This model exposes results from a runner with single-runner mode
+ */
+class SingleRunnerModel : public QueryMatchModel
+{
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
+public:
+    explicit SingleRunnerModel(QObject * parent = 0);
+
+    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
+
+    QString name() const;
+
     void init(const QString &runnerId);
 
     QString query() const;
     void setQuery(const QString &query);
 
 Q_SIGNALS:
-    void countChanged();
     void queryChanged(const QString &);
-
-private Q_SLOTS:
-    void slotMatchesChanged(const QList<Plasma::QueryMatch> &matches);
 
 private:
     Plasma::RunnerManager *m_manager;
 
     QString m_query;
-    QList<Plasma::QueryMatch> m_matches;
 
     QString prepareSearchTerm(const QString &term);
 };

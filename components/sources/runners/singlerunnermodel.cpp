@@ -35,8 +35,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static const char *RUNNER_KEY = "runner";
 
-SingleRunnerModel::SingleRunnerModel()
-: m_manager(0)
+
+//- QueryMatchModel ---------------------------
+QueryMatchModel::QueryMatchModel(QObject *parent)
+: QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
@@ -46,11 +48,78 @@ SingleRunnerModel::SingleRunnerModel()
     setRoleNames(roles);
 }
 
+int QueryMatchModel::count() const
+{
+    return m_matches.count();
+}
+
+int QueryMatchModel::rowCount(const QModelIndex& parent) const
+{
+    return parent.isValid() ? 0 : m_matches.count();
+}
+
+QVariant QueryMatchModel::data(const QModelIndex& index, int role) const
+{
+    if (index.row() < 0 || index.row() >= m_matches.count()) {
+        return QVariant();
+    }
+    Plasma::QueryMatch match = m_matches.at(index.row());
+    if (role == Qt::DisplayRole) {
+        return match.text();
+    } else if (role == Qt::DecorationRole) {
+        return match.icon();
+    } else if (role == HasActionListRole) {
+        return false;
+    }
+    return QVariant();
+}
+
+void QueryMatchModel::setMatches(const QList< Plasma::QueryMatch > &matches)
+{
+    bool fullReset = false;
+    int oldCount = m_matches.count();
+    int newCount = matches.count();
+    if (newCount > oldCount) {
+        // We received more matches than we had. If all common matches are the
+        // same, we can just append new matches instead of resetting the whole
+        // model
+        for (int row = 0; row < oldCount; ++row) {
+            if (!(m_matches.at(row) == matches.at(row))) {
+                fullReset = true;
+                break;
+            }
+        }
+        if (!fullReset) {
+            // Not a full reset, inserting rows
+            beginInsertRows(QModelIndex(), oldCount, newCount);
+            m_matches = matches;
+            endInsertRows();
+            emit countChanged();
+        }
+    } else {
+        fullReset = true;
+    }
+
+    if (fullReset) {
+        beginResetModel();
+        m_matches = matches;
+        endResetModel();
+        emit countChanged();
+    }
+}
+
+//- SingleRunnerModel -------------------------
+SingleRunnerModel::SingleRunnerModel(QObject *parent)
+: QueryMatchModel(parent)
+, m_manager(0)
+{
+}
+
 void SingleRunnerModel::init(const QString& runnerId)
 {
     if (!m_manager) {
         m_manager = new Plasma::RunnerManager(this);
-        connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)), SLOT(slotMatchesChanged(QList<Plasma::QueryMatch>)));
+        connect(m_manager, SIGNAL(matchesChanged(QList<Plasma::QueryMatch>)), SLOT(setMatches(QList<Plasma::QueryMatch>)));
     }
     m_manager->setAllowedRunners(QStringList() << runnerId);
     m_manager->setSingleModeRunnerId(runnerId);
@@ -104,32 +173,6 @@ QString SingleRunnerModel::name() const
     }
 }
 
-int SingleRunnerModel::count() const
-{
-    return m_matches.count();
-}
-
-int SingleRunnerModel::rowCount(const QModelIndex& parent) const
-{
-    return parent.isValid() ? 0 : m_matches.count();
-}
-
-QVariant SingleRunnerModel::data(const QModelIndex& index, int role) const
-{
-    if (index.row() < 0 || index.row() >= m_matches.count()) {
-        return QVariant();
-    }
-    Plasma::QueryMatch match = m_matches.at(index.row());
-    if (role == Qt::DisplayRole) {
-        return match.text();
-    } else if (role == Qt::DecorationRole) {
-        return match.icon();
-    } else if (role == HasActionListRole) {
-        return false;
-    }
-    return QVariant();
-}
-
 QString SingleRunnerModel::prepareSearchTerm(const QString &term)
 {
     const char *placeHolder = ":q:";
@@ -142,40 +185,6 @@ QString SingleRunnerModel::prepareSearchTerm(const QString &term)
         return query.replace(placeHolder, term);
     } else {
         return query + ' ' + term;
-    }
-}
-
-void SingleRunnerModel::slotMatchesChanged(const QList< Plasma::QueryMatch > &matches)
-{
-    bool fullReset = false;
-    int oldCount = m_matches.count();
-    int newCount = matches.count();
-    if (newCount > oldCount) {
-        // We received more matches than we had. If all common matches are the
-        // same, we can just append new matches instead of resetting the whole
-        // model
-        for (int row = 0; row < oldCount; ++row) {
-            if (!(m_matches.at(row) == matches.at(row))) {
-                fullReset = true;
-                break;
-            }
-        }
-        if (!fullReset) {
-            // Not a full reset, inserting rows
-            beginInsertRows(QModelIndex(), oldCount, newCount);
-            m_matches = matches;
-            endInsertRows();
-            emit countChanged();
-        }
-    } else {
-        fullReset = true;
-    }
-
-    if (fullReset) {
-        beginResetModel();
-        m_matches = matches;
-        endResetModel();
-        emit countChanged();
     }
 }
 
