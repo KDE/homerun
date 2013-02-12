@@ -17,8 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef SINGLERUNNER_H
-#define SINGLERUNNER_H
+#ifndef SINGLERUNNERMODEL_H
+#define SINGLERUNNERMODEL_H
 
 // Local
 #include <abstractsource.h>
@@ -78,10 +78,10 @@ private:
 class SingleRunnerSource : public Homerun::AbstractSource
 {
 public:
-    SingleRunnerSource(QObject *parent, const QVariantList&);
+    SingleRunnerSource(QObject *parent);
     QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
     Homerun::SourceConfigurationWidget *createConfigurationWidget(const KConfigGroup &group);
     bool isConfigurable() const;
 };
 
-#endif /* SINGLERUNNER_H */
+#endif /* SINGLERUNNERMODEL_H */

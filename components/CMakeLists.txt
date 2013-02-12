@@ -20,6 +20,7 @@ set(components_SRCS
     sourceid.cpp
     sourcemodel.cpp
     sourceregistry.cpp
+    sources/runners/singlerunnermodel.cpp
     sources/runners/runnerconfigurationwidget.cpp
     sources/runners/runnermodel.cpp
     tabmodel.cpp

@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 // Self
-#include <singlerunner.h>
+#include <singlerunnermodel.h>
 
 // Homerun
 #include <abstractsource.h>
@@ -180,7 +180,7 @@ void SingleRunnerModel::slotMatchesChanged(const QList< Plasma::QueryMatch > &ma
 }
 
 //- SingleRunnerSource ------------------------
-SingleRunnerSource::SingleRunnerSource(QObject *parent, const QVariantList &)
+SingleRunnerSource::SingleRunnerSource(QObject *parent)
 : Homerun::AbstractSource(parent)
 {}
 
@@ -202,6 +202,4 @@ Homerun::SourceConfigurationWidget *SingleRunnerSource::createConfigurationWidge
     return 0;//new RunnerConfigurationWidget(group);
 }
 
-HOMERUN_EXPORT_SOURCE(singlerunner, SingleRunnerSource)
-
-#include <singlerunner.moc>
+#include <singlerunnermodel.moc>

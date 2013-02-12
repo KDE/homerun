@@ -30,10 +30,11 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <libhomerun_config.h>
 #include <favoriteplacesmodel.h>
 #include <powermodel.h>
-#include <runnermodel.h>
 #include <installedappsmodel.h>
 #include <sessionmodel.h>
 #include <sourceconfigurationdialog.h>
+#include <sources/runners/singlerunnermodel.h>
+#include <sources/runners/runnermodel.h>
 
 // KDE
 #include <KConfigGroup>
@@ -262,6 +263,10 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->registerSource("Runner", new RunnerSource(this),
         i18n("KRunner"),
         i18n("Perform searchs using a selection of runners")
+    );
+    d->registerSource("SingleRunner", new SingleRunnerSource(this),
+        i18n("KRunner (Single-mode)"),
+        i18n("Provide results from a single-mode runner")
     );
 
     d->listSourcePlugins();
