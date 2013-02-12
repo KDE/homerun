@@ -62,6 +62,12 @@ void SingleRunnerModel::init(const QString& runnerId)
         m_manager = 0;
         return;
     }
+    if (!m_manager->singleModeRunner()->defaultSyntax()) {
+        kWarning() << "Runner" << runnerId << "advertise itself as a single mode runner but does not provide a default syntax!";
+        delete m_manager;
+        m_manager = 0;
+        return;
+    }
     m_query = "$bypass-same-value-check";
     setQuery(QString());
 }
