@@ -146,6 +146,9 @@ QString SingleRunnerModel::query() const
 
 void SingleRunnerModel::setQuery(const QString &value)
 {
+    if (!m_manager) {
+        return;
+    }
     if (m_query == value) {
         return;
     }
