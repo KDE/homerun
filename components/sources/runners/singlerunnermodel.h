@@ -37,13 +37,30 @@ class SingleRunnerModel : public QueryMatchModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
 public:
-    explicit SingleRunnerModel(const KConfigGroup &configGroup, QObject * parent = 0);
+    explicit SingleRunnerModel(Plasma::RunnerManager *manager, QObject * parent = 0);
 
     QString name() const;
 
-    void init(const QString &runnerId);
+    void launchQuery(const QString &query);
+
+private:
+    KConfigGroup m_configGroup;
+    Plasma::RunnerManager *m_manager;
+
+    QString prepareSearchTerm(const QString &term);
+};
+
+/**
+ * This model is the same as SingleRunnerModel, except it exposes a "query" property.
+ * It is used when the Runner default syntax has a placeholder.
+ */
+class SingleQueriableRunnerModel : public SingleRunnerModel
+{
+    Q_OBJECT
+    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
+public:
+    explicit SingleQueriableRunnerModel(Plasma::RunnerManager *manager, QObject * parent = 0);
 
     QString query() const;
     void setQuery(const QString &query);
@@ -52,12 +69,7 @@ Q_SIGNALS:
     void queryChanged(const QString &);
 
 private:
-    KConfigGroup m_configGroup;
-    Plasma::RunnerManager *m_manager;
-
     QString m_query;
-
-    QString prepareSearchTerm(const QString &term);
 };
 
 class SingleRunnerSource : public AbstractSource
