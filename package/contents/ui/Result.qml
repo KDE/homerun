@@ -113,25 +113,6 @@ Item {
         maximumLineCount: 2
     }
 
-    PlasmaCore.SvgItem {
-        id: actionListButton
-        anchors {
-            right: parent.right
-            rightMargin: main.padding
-            top: parent.top
-            topMargin: main.padding
-        }
-        svg: PlasmaCore.Svg {
-            imagePath: "toolbar-icons/go"
-        }
-        elementId: "16-16-go-down"
-        width: 16
-        height: width
-        opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
-        Behavior on opacity { NumberAnimation {} }
-        visible: hasActionList
-    }
-
     MouseArea {
         id: itemMouseArea
         acceptedButtons: Qt.LeftButton | Qt.RightButton
@@ -152,15 +133,34 @@ Item {
         }
     }
 
-    MouseArea {
-        // If this MouseArea were a child of actionListButton it would not work
-        // when actionListButton.opacity is 0. That's why it is a sibling.
-        id: actionListMouseArea
-        anchors.fill: actionListButton
-        anchors.margins: -3
-        hoverEnabled: true
-        enabled: !configureMode && hasActionList
-        onClicked: openActionMenu(actionListButton)
+    Item {
+        anchors {
+            right: parent.right
+            rightMargin: main.padding
+            top: parent.top
+            topMargin: main.padding
+        }
+        width: 16
+        height: width
+        opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
+        Behavior on opacity { NumberAnimation {} }
+        visible: hasActionList
+
+        PlasmaComponents.ToolButton {
+            id: actionListButton
+            iconSource: "go-down"
+            anchors.fill: parent
+            // Hack to get a background on mouse-over only
+            flat: !actionListMouseArea.containsMouse
+        }
+
+        MouseArea {
+            id: actionListMouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            enabled: !configureMode && hasActionList
+            onClicked: openActionMenu(actionListButton)
+        }
     }
 
     ActionMenu {
