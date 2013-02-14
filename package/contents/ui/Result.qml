@@ -113,7 +113,7 @@ Item {
         maximumLineCount: 2
     }
 
-    PlasmaCore.IconItem {
+    PlasmaCore.SvgItem {
         id: actionListButton
         anchors {
             right: parent.right
@@ -121,7 +121,10 @@ Item {
             top: parent.top
             topMargin: main.padding
         }
-        source: "go-down"
+        svg: PlasmaCore.Svg {
+            imagePath: "toolbar-icons/go"
+        }
+        elementId: "16-16-go-down"
         width: 16
         height: width
         opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
