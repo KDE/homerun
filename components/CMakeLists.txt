@@ -14,21 +14,23 @@ set(components_SRCS
     installedappsconfigurationwidget.cpp
     installedappsmodel.cpp
     powermodel.cpp
-    runnerconfigurationwidget.cpp
-    runnermodel.cpp
     sessionmodel.cpp
     shadoweffect.cpp
     sourceconfigurationdialog.cpp
     sourceid.cpp
     sourcemodel.cpp
     sourceregistry.cpp
+    sources/runners/querymatchmodel.cpp
+    sources/runners/singlerunnermodel.cpp
+    sources/runners/runnerconfigurationwidget.cpp
+    sources/runners/runnermodel.cpp
     tabmodel.cpp
     )
 
 kde4_add_ui_files(components_SRCS
     dirconfigurationwidget.ui
     installedappsconfigurationwidget.ui
-    runnerconfigurationwidget.ui
+    sources/runners/runnerconfigurationwidget.ui
     )
 
 qt4_automoc(${components_SRCS})
@@ -37,6 +39,7 @@ include_directories(
     ${lib_BINARY_DIR}
     ${lib_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/internal
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/runners
     )
 
 kde4_add_library(componentsplugin SHARED ${components_SRCS})

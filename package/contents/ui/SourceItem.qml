@@ -47,7 +47,16 @@ SlidingContainer {
             id: label
             x: parent.margins.left
             y: parent.margins.top
-            text: sourceId ? sourceRegistry.visibleNameForSource(sourceId) : ""
+            text: {
+                var name = "";
+                if (sourceId) {
+                    name = sourceRegistry.visibleNameForSource(sourceId);
+                    if (!name) {
+                        name = i18n("Broken source '%1'", sourceId);
+                    }
+                }
+                return name;
+            }
         }
 
         Row {

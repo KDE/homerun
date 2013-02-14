@@ -270,7 +270,7 @@ Item {
                             : implicitHeight
                         clip: main.configureMode
 
-                        property QtObject view
+                        property QtObject view: ResultsView {}
                         property string sourceId: model.sourceId
                         property int viewIndex: model.index
                         property QtObject viewModel: model.model
