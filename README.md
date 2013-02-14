@@ -21,11 +21,11 @@ as a containment, like the Search and Launch containment.
 
 ## Dependencies
 
-kdelibs 4.8
+kdelibs 4.10
 
 ## Build instructions
 
-Homerun currently requires kdelibs and kde-runtime 4.8.
+Homerun currently requires kdelibs and kde-runtime 4.10.
 
 To build it, do the following:
 
