@@ -42,7 +42,7 @@ FocusScope {
 
     property alias currentItem: gridView.currentItem
 
-    signal indexClicked(int index, string actionId, variant actionArgument)
+    signal triggerActionRequested(int index, string actionId, variant actionArgument)
 
     signal focusOtherViewRequested(int key, int x)
 
@@ -87,7 +87,7 @@ FocusScope {
     }
 
     function triggerFirstItem() {
-        emitIndexClicked(0, "", null);
+        triggerAction(0, "", null);
     }
 
     //- Private -------------------------------------------------
@@ -133,7 +133,7 @@ FocusScope {
             }
 
             onActionTriggered: {
-                emitIndexClicked(model.index, actionId, actionArgument);
+                triggerAction(model.index, actionId, actionArgument);
             }
 
             function fillActionMenu(actionMenu) {
@@ -258,7 +258,7 @@ FocusScope {
             }
         }
 
-        Keys.onReturnPressed: emitIndexClicked(currentIndex, "", null)
+        Keys.onReturnPressed: triggerAction(currentIndex, "", null)
     }
 
     PlasmaCore.FrameSvgItem {
@@ -322,28 +322,29 @@ FocusScope {
         }
     }
 
-    function emitIndexClicked(index, actionId, actionArgument) {
+    function handleFavoriteAction(actionId, favoriteId) {
+        var favoriteModel = favoriteModelForFavoriteId(favoriteId);
+        if (actionId == "_homerun_favorite_remove") {
+            favoriteModel.removeFavorite(favoriteId);
+        } else if (actionId == "_homerun_favorite_add") {
+            favoriteModel.addFavorite(favoriteId);
+        } else {
+            console.log("Unknown homerun favorite actionId: " + actionId);
+        }
+    }
+
+    function triggerAction(index, actionId, actionArgument) {
         // Looks like String.startsWith does not exist in the JS interpreter we use :/
         function startsWith(txt, needle) {
             return txt.substr(0, needle.length) === needle;
         }
-
         if (configureMode) {
             return;
         }
         if (startsWith(actionId, "_homerun_favorite_")) {
-            var favoriteId = actionArgument;
-            var favoriteModel = favoriteModelForFavoriteId(favoriteId);
-            if (actionId == "_homerun_favorite_remove") {
-                favoriteModel.removeFavorite(favoriteId);
-            } else if (actionId == "_homerun_favorite_add") {
-                favoriteModel.addFavorite(favoriteId);
-            } else {
-                console.log("Unknown homerun favorite actionId: " + actionId);
-            }
+            handleFavoriteAction(actionId, actionArgument);
             return;
         }
-
-        indexClicked(index, actionId, actionArgument);
+        triggerActionRequested(index, actionId, actionArgument);
     }
 }

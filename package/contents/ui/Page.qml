@@ -80,7 +80,7 @@ Item {
             id: view
             width: parent.width
             configureMode: main.configureMode
-            onIndexClicked: {
+            onTriggerActionRequested: {
                 handleTriggerResult(model.trigger(index, actionId, actionArgument));
             }
             onCurrentItemChanged: {
@@ -164,7 +164,7 @@ Item {
                         : repeater.model.modelForRow(index)
                     favoriteModels: multiMain.favoriteModels
 
-                    onIndexClicked: {
+                    onTriggerActionRequested: {
                         handleTriggerResult(model.trigger(index, actionId, actionArgument));
                     }
 
