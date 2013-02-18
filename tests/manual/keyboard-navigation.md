@@ -39,3 +39,13 @@
 - Search field is focused
 - Enter a search criteria => current page is updated to reflect search
 - Press tab or down => first item is focused
+
+# menu
+
+- Focus is on search field
+- Press tab or down => first item of current page is focused
+- Press 'm' or menu key => context menu for item appears
+- Press up/down => navigate in context menu
+- Press enter
+    => selected context menu item is triggered
+    => focus goes back to result item

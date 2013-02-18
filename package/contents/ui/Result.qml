@@ -170,6 +170,15 @@ Item {
         }
     }
 
+    Keys.onPressed: {
+        if (!hasActionList) {
+            return;
+        }
+        if (event.key == Qt.Key_M || event.key == Qt.Key_Menu) {
+            openActionMenu(main);
+        }
+    }
+
     // Code
     function openActionMenu(visualParent) {
         aboutToShowActionMenu(actionMenu);
