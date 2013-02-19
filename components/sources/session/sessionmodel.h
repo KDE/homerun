@@ -38,11 +38,14 @@ enum ActionType {
     Lock
 };
 
-struct SessionAction
+class AbstractSessionAction
 {
+public:
+    virtual ~AbstractSessionAction();
+    virtual void run() = 0;
+
     QString name;
     QString iconName;
-    ActionType type;
 };
 
 class SessionModel : public QAbstractListModel
@@ -67,10 +70,8 @@ Q_SIGNALS:
     void countChanged();
 
 private:
-    QList<SessionAction> m_sessionList;
+    QList<AbstractSessionAction *> m_sessionList;
     KDisplayManager m_displayManager;
-
-    void startNewSession();
 };
 
 } // namespace Homerun

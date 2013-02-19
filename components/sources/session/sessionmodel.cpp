@@ -41,42 +41,84 @@ static void lockSession()
     interface.asyncCall("Lock");
 }
 
+AbstractSessionAction::~AbstractSessionAction()
+{
+}
+
+class LockSessionAction : public AbstractSessionAction
+{
+public:
+    LockSessionAction()
+    {
+        name = i18nc("an action", "Lock");
+        iconName = "system-lock-screen";
+    }
+
+    void run() override
+    {
+        lockSession();
+    }
+};
+
+class NewSessionAction : public AbstractSessionAction
+{
+public:
+    NewSessionAction(KDisplayManager *manager)
+    : m_displayManager(manager)
+    {
+        name = i18nc("an action", "New Session");
+        iconName = "system-switch-user";
+    }
+
+    void run() override
+    {
+        lockSession();
+        m_displayManager->startReserve();
+    }
+
+private:
+    KDisplayManager *m_displayManager;
+};
+
+class LogoutAction : public AbstractSessionAction
+{
+public:
+    LogoutAction()
+    {
+        name = i18nc("an action", "Logout");
+        iconName = "system-log-out";
+    }
+
+    void run() override
+    {
+        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeNone);
+    }
+};
+
 SessionModel::SessionModel(QObject *parent)
 : QAbstractListModel(parent)
 {
     //FIXME: instead of just hiding these things..it'd be awesome if we could grey them out and/or provide a reason why they're not there.
     //otherwise the user is hunting for the power buttons and for some reason it isn't where it should be.
     if (KAuthorized::authorizeKAction("lock_screen")) {
-        SessionAction lock;
-        lock.name = i18nc("an action", "Lock");
-        lock.type = Lock;
-        lock.iconName = "system-lock-screen";
-        m_sessionList.append(lock);
+        m_sessionList.append(new LockSessionAction);
     }
 
     if (KAuthorized::authorizeKAction("start_new_session")
         && m_displayManager.isSwitchable()
         && m_displayManager.numReserve() >= 0)
     {
-        SessionAction action;
-        action.name = i18nc("an action", "New Session");
-        action.type = StartNewSession;
-        action.iconName = "system-switch-user";
-        m_sessionList.append(action);
+        m_sessionList.append(new NewSessionAction(&m_displayManager));
     }
 
-    const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
-    if (canLogout) {
-        SessionAction logout;
-        logout.name = i18nc("an action", "Logout");
-        logout.type = Logout;
-        logout.iconName = "system-log-out";
-        m_sessionList.append(logout);
+    if (KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout")) {
+        m_sessionList.append(new LogoutAction);
     }
 }
 
 SessionModel::~SessionModel()
 {
+    qDeleteAll(m_sessionList);
 }
 
 int SessionModel::count() const
@@ -99,12 +141,15 @@ int SessionModel::rowCount(const QModelIndex &index) const
 
 QVariant SessionModel::data(const QModelIndex &index, int role) const
 {
-    SessionAction action = m_sessionList.value(index.row());
+    AbstractSessionAction *action = m_sessionList.value(index.row());
+    if (!action) {
+        return QVariant();
+    }
 
     if (role == Qt::DisplayRole) {
-        return action.name;
+        return action->name;
     } else if (role == Qt::DecorationRole) {
-        return KIcon(action.iconName);
+        return action->iconName;
     } else {
         kWarning() << "Unhandled role" << role;
         return QVariant();
@@ -113,29 +158,10 @@ QVariant SessionModel::data(const QModelIndex &index, int role) const
 
 bool SessionModel::trigger(int row)
 {
-    SessionAction action = m_sessionList.value(row);
-
-    switch (action.type) {
-    case Logout:
-        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeNone);
-        break;
-
-    case StartNewSession:
-        startNewSession();
-        break;
-
-    case Lock:
-        lockSession();
-        break;
-    }
-
+    AbstractSessionAction *action = m_sessionList.value(row);
+    Q_ASSERT(action);
+    action->run();
     return true;
-}
-
-void SessionModel::startNewSession()
-{
-    lockSession();
-    m_displayManager.startReserve();
 }
 
 } // namespace Homerun
