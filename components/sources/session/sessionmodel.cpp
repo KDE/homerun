@@ -62,6 +62,41 @@ bool StandardItem::trigger(const QString &/*actionId*/, const QVariant &/*action
     return false;
 }
 
+//- StandardItemModel -------------------------------------------------------------
+StandardItemModel::StandardItemModel(QObject *parent)
+: QStandardItemModel(parent)
+{
+    connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), SIGNAL(countChanged()));
+    connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), SIGNAL(countChanged()));
+    connect(this, SIGNAL(modelReset()), SIGNAL(countChanged()));
+}
+
+QString StandardItemModel::name() const
+{
+    return m_name;
+}
+
+void StandardItemModel::setName(const QString &name)
+{
+    if (m_name == name) {
+        return;
+    }
+    m_name = name;
+    nameChanged();
+}
+
+int StandardItemModel::count() const
+{
+    return rowCount(QModelIndex());
+}
+
+bool StandardItemModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
+{
+    StandardItem *itm = static_cast<StandardItem *>(item(row));
+    Q_ASSERT(itm);
+    return itm->trigger(actionId, actionArgument);
+}
+
 //- Local items -------------------------------------------------------------------
 class LockSessionItem : public StandardItem
 {
@@ -137,10 +172,10 @@ private:
 };
 
 SessionModel::SessionModel(QObject *parent)
-: QStandardItemModel(parent)
+: StandardItemModel(parent)
 {
-    //FIXME: instead of just hiding these things..it'd be awesome if we could grey them out and/or provide a reason why they're not there.
-    //otherwise the user is hunting for the power buttons and for some reason it isn't where it should be.
+    setName(i18n("Session"));
+
     if (KAuthorized::authorizeKAction("lock_screen")) {
         appendRow(new LockSessionItem);
     }
@@ -157,23 +192,6 @@ SessionModel::SessionModel(QObject *parent)
     }
 
     createUserItems();
-}
-
-int SessionModel::count() const
-{
-    return rowCount(QModelIndex());
-}
-
-QString SessionModel::name() const
-{
-    return i18n("Session");
-}
-
-bool SessionModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
-{
-    StandardItem *itm = static_cast<StandardItem *>(item(row));
-    Q_ASSERT(itm);
-    return itm->trigger(actionId, actionArgument);
 }
 
 void SessionModel::createUserItems()
