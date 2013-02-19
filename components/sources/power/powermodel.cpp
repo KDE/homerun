@@ -21,128 +21,86 @@
 // Own
 #include "powermodel.h"
 
-//Qt
+// KDE
+#include <KDebug>
+#include <KLocale>
+#include <kworkspace/kworkspace.h>
+#include <Solid/PowerManagement>
+
+// Qt
 #include <QDBusMessage>
 #include <QDBusConnection>
 #include <QDBusPendingCall>
 
-// KDE
-#include <KDebug>
-#include <KIcon>
-#include <KLocale>
-#include <KRun>
-#include <KService>
-#include <kworkspace/kworkspace.h>
-#include <Solid/PowerManagement>
-
-//Plasma
-#include <Plasma/AbstractRunner>
-#include <Plasma/RunnerManager>
-
 namespace Homerun {
 
-PowerModel::PowerModel(QObject *parent)
-: QAbstractListModel(parent)
+enum Action
 {
+    SuspendToRam,
+    SuspendToDisk,
+    Reboot,
+    Halt
+};
+
+PowerModel::PowerModel(QObject *parent)
+: StandardItemModel(parent)
+{
+    setName(i18n("Power"));
     QSet<Solid::PowerManagement::SleepState> sleepStates = Solid::PowerManagement::supportedSleepStates();
 
     if (sleepStates.contains(Solid::PowerManagement::SuspendState)) {
-        PowerAction suspend;
-        suspend.name = i18nc("an action", "Suspend");
-        suspend.type = Suspend;
-        suspend.iconName = "system-suspend";
-        m_powerList.append(suspend);
+        StandardItem *item = new StandardItem(i18nc("an action", "Suspend"), "system-suspend");
+        item->setData(SuspendToRam);
+        appendRow(item);
     }
 
     if (sleepStates.contains(Solid::PowerManagement::HibernateState)) {
-        PowerAction hibernate;
-        hibernate.name = i18nc("an action", "Hibernate");
-        hibernate.type = Hibernate;
-        hibernate.iconName = "system-suspend-hibernate";
-        m_powerList.append(hibernate);
+        StandardItem *item = new StandardItem(i18nc("an action", "Hibernate"), "system-suspend-hibernate");
+        item->setData(SuspendToDisk);
+        appendRow(item);
     }
 
-    PowerAction restart;
-    restart.name = i18nc("an action", "Restart");
-    restart.type = Restart;
-    restart.iconName = "system-reboot";
-    m_powerList.append(restart);
-
-    PowerAction shutdown;
-    shutdown.name = i18nc("an action", "Shutdown");
-    shutdown.type = Shutdown;
-    shutdown.iconName = "system-shutdown";
-    m_powerList.append(shutdown);
-}
-
-PowerModel::~PowerModel()
-{
-}
-
-int PowerModel::count() const
-{
-    return m_powerList.count();
-}
-
-QString PowerModel::name() const
-{
-    return i18n("Power");
-}
-
-int PowerModel::rowCount(const QModelIndex &index) const
-{
-    if (index.isValid()) {
-        return 0;
+    {
+        StandardItem *item = new StandardItem(i18nc("an action", "Restart"), "system-reboot");
+        item->setData(KWorkSpace::ShutdownTypeReboot);
+        appendRow(item);
     }
-    return m_powerList.count();
-}
-
-QVariant PowerModel::data(const QModelIndex &index, int role) const
-{
-    PowerAction action = m_powerList.value(index.row());
-
-    if (role == Qt::DisplayRole) {
-        return action.name;
-    } else if (role == Qt::DecorationRole) {
-        return KIcon(action.iconName);
-    } else {
-        kWarning() << "Unhandled role" << role;
-        return QVariant();
+    {
+        StandardItem *item = new StandardItem(i18nc("an action", "Shutdown"), "system-shutdown");
+        item->setData(KWorkSpace::ShutdownTypeHalt);
+        appendRow(item);
     }
 }
 
-bool PowerModel::trigger(int row)
-{
-    PowerAction action = m_powerList.value(row);
-
-    switch (action.type) {
-        case Shutdown:
-            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeHalt);
-            break;
-
-        case Restart:
-            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot);
-            break;
-
-        case Suspend:
-            suspend("suspendToRam");
-            break;
-
-        case Hibernate:
-            suspend("suspendToDisk");
-            break;
-    }
-
-    return true;
-}
-
-void PowerModel::suspend(const QString& type)
+static void suspend(const QString &type)
 {
     QDBusMessage msg = QDBusMessage::createMethodCall("org.kde.Solid.PowerManagement",
-                                                      "/org/kde/Solid/PowerManagement",
-                                                      "org.kde.Solid.PowerManagement",
-                                                      type);
+                                                    "/org/kde/Solid/PowerManagement",
+                                                    "org.kde.Solid.PowerManagement",
+                                                    type);
     QDBusConnection::sessionBus().asyncCall(msg);
+}
+
+bool PowerModel::trigger(int row, const QString &/*actionId*/, const QVariant &/*actionArgument*/)
+{
+    QStandardItem *itm = item(row);
+    Q_ASSERT(itm);
+    Action action = static_cast<Action>(itm->data().toInt());
+    switch (action) {
+    case SuspendToRam:
+        suspend("suspendToRam");
+        break;
+    case SuspendToDisk:
+        suspend("suspendToDisk");
+        break;
+    case Halt:
+        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeHalt);
+        break;
+    case Reboot:
+        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot);
+        break;
+    }
+    return true;
 }
 
 } // namespace Homerun
