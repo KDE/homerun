@@ -6,7 +6,6 @@ set(components_SRCS
     componentsplugin.cpp
     helpmenuactions.cpp
     icondialog.cpp
-    powermodel.cpp
     sessionmodel.cpp
     shadoweffect.cpp
     sourceconfigurationdialog.cpp
@@ -20,6 +19,7 @@ set(components_SRCS
     sources/installedapps/groupedinstalledappsmodel.cpp
     sources/installedapps/installedappsconfigurationwidget.cpp
     sources/installedapps/installedappsmodel.cpp
+    sources/power/powermodel.cpp
     sources/runners/querymatchmodel.cpp
     sources/runners/singlerunnermodel.cpp
     sources/runners/runnerconfigurationwidget.cpp
@@ -42,6 +42,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/dir
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/favorites
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/installedapps
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/power
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/runners
     )
 
