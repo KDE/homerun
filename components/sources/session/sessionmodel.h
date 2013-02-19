@@ -22,7 +22,8 @@
 #define SESSIONMODEL_H
 
 // Qt
-#include <QAbstractListModel>
+#include <QStandardItem>
+#include <QStandardItemModel>
 
 // KDE
 #include <kworkspace/kdisplaymanager.h>
@@ -38,17 +39,16 @@ enum ActionType {
     Lock
 };
 
-class AbstractSessionAction
+class StandardItem : public QStandardItem
 {
 public:
-    virtual ~AbstractSessionAction();
-    virtual void run() = 0;
-
-    QString name;
-    QString iconName;
+    StandardItem();
+    StandardItem(const QString &text, const QString &iconName);
+    virtual bool trigger(const QString &actionId, const QVariant &actionArgument);
+    void setIconName(const QString &);
 };
 
-class SessionModel : public QAbstractListModel
+class SessionModel : public QStandardItemModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
@@ -56,24 +56,19 @@ class SessionModel : public QAbstractListModel
 
 public:
     SessionModel(QObject *parent = 0);
-    ~SessionModel();
 
     int count() const;
     QString name() const;
 
-    int rowCount(const QModelIndex & = QModelIndex()) const;
-    QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const;
-
-    Q_INVOKABLE bool trigger(int row);
+    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
 
 Q_SIGNALS:
     void countChanged();
 
 private:
-    QList<AbstractSessionAction *> m_sessionList;
     KDisplayManager m_displayManager;
 
-    void createUserActions();
+    void createUserItems();
 };
 
 } // namespace Homerun
