@@ -21,8 +21,11 @@
 #ifndef SESSIONMODEL_H
 #define SESSIONMODEL_H
 
+// Qt
 #include <QAbstractListModel>
 
+// KDE
+#include <kworkspace/kdisplaymanager.h>
 #include <KService>
 
 class QString;
@@ -31,7 +34,7 @@ namespace Homerun {
 
 enum ActionType {
     Logout,
-    SwitchUser,
+    StartNewSession,
     Lock
 };
 
@@ -65,6 +68,9 @@ Q_SIGNALS:
 
 private:
     QList<SessionAction> m_sessionList;
+    KDisplayManager m_displayManager;
+
+    void startNewSession();
 };
 
 } // namespace Homerun

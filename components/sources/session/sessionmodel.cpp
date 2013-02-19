@@ -31,10 +31,15 @@
 #include <KDebug>
 #include <KIcon>
 #include <KLocale>
-#include <kworkspace/kdisplaymanager.h>
-#include <kworkspace/kworkspace.h>
 
 namespace Homerun {
+
+static void lockSession()
+{
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    QDBusInterface interface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", bus);
+    interface.asyncCall("Lock");
+}
 
 SessionModel::SessionModel(QObject *parent)
 : QAbstractListModel(parent)
@@ -49,12 +54,15 @@ SessionModel::SessionModel(QObject *parent)
         m_sessionList.append(lock);
     }
 
-    if (KDisplayManager().isSwitchable() && KAuthorized::authorize(QLatin1String("switch_user"))) {
-        SessionAction switchUser;
-        switchUser.name = i18nc("an action", "Switch User");
-        switchUser.type = SwitchUser;
-        switchUser.iconName = "system-switch-user";
-        m_sessionList.append(switchUser);
+    if (KAuthorized::authorizeKAction("start_new_session")
+        && m_displayManager.isSwitchable()
+        && m_displayManager.numReserve() >= 0)
+    {
+        SessionAction action;
+        action.name = i18nc("an action", "New Session");
+        action.type = StartNewSession;
+        action.iconName = "system-switch-user";
+        m_sessionList.append(action);
     }
 
     const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
@@ -108,28 +116,26 @@ bool SessionModel::trigger(int row)
     SessionAction action = m_sessionList.value(row);
 
     switch (action.type) {
-        case Logout:
-            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeNone);
-            break;
+    case Logout:
+        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeNone);
+        break;
 
-        case SwitchUser: {
-            QDBusConnection bus = QDBusConnection::sessionBus();
-            QDBusInterface interface("org.kde.krunner", "/App", "org.kde.krunner.App", bus);
+    case StartNewSession:
+        startNewSession();
+        break;
 
-            interface.asyncCall("switchUser");
-        }
-            break;
-
-        case Lock: {
-            QDBusConnection bus = QDBusConnection::sessionBus();
-            QDBusInterface interface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", bus);
-
-            interface.asyncCall("Lock");
-        }
-            break;
+    case Lock:
+        lockSession();
+        break;
     }
 
     return true;
+}
+
+void SessionModel::startNewSession()
+{
+    lockSession();
+    m_displayManager.startReserve();
 }
 
 } // namespace Homerun
