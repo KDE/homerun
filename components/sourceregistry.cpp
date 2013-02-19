@@ -24,7 +24,6 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <abstractsource.h>
 #include <customtypes.h>
 #include <libhomerun_config.h>
-#include <sessionmodel.h>
 #include <sourceconfigurationdialog.h>
 
 #include <sources/dir/dirmodel.h>
@@ -35,6 +34,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <sources/power/powermodel.h>
 #include <sources/runners/singlerunnermodel.h>
 #include <sources/runners/runnermodel.h>
+#include <sources/session/sessionmodel.h>
 
 // KDE
 #include <KConfigGroup>

@@ -6,7 +6,6 @@ set(components_SRCS
     componentsplugin.cpp
     helpmenuactions.cpp
     icondialog.cpp
-    sessionmodel.cpp
     shadoweffect.cpp
     sourceconfigurationdialog.cpp
     sourceid.cpp
@@ -24,6 +23,7 @@ set(components_SRCS
     sources/runners/singlerunnermodel.cpp
     sources/runners/runnerconfigurationwidget.cpp
     sources/runners/runnermodel.cpp
+    sources/session/sessionmodel.cpp
     tabmodel.cpp
     )
 
@@ -44,6 +44,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/installedapps
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/power
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/runners
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/session
     )
 
 kde4_add_library(componentsplugin SHARED ${components_SRCS})
