@@ -21,53 +21,17 @@
 #ifndef POWERMODEL_H
 #define POWERMODEL_H
 
-#include <QAbstractListModel>
-
-#include <KService>
-
-class QString;
+// Local
+#include <standarditemmodel.h>
 
 namespace Homerun {
 
-enum PowerType {
-    Shutdown,
-    Restart,
-    Hibernate,
-    Suspend
-};
-
-struct PowerAction
-{
-    QString name;
-    QString iconName;
-    PowerType type;
-};
-
-class PowerModel : public QAbstractListModel
+class PowerModel : public StandardItemModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
     PowerModel(QObject *parent = 0);
-    ~PowerModel();
-
-    int count() const;
-    QString name() const;
-
-    int rowCount(const QModelIndex & = QModelIndex()) const;
-    QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const;
-
-    Q_INVOKABLE bool trigger(int row);
-
-    void suspend(const QString& type);
-
-Q_SIGNALS:
-    void countChanged();
-
-private:
-    QList<PowerAction> m_powerList;
 };
 
 } // namespace Homerun
