@@ -355,11 +355,11 @@ void TabModelTest::testRemoveRow()
         "\n"
         "[Tab0]\n"
         "name=first\n"
-        "source=foo\n"
+        "sources=foo\n"
         "\n"
         "[Tab1]\n"
         "name=second\n"
-        "source=bar\n"
+        "sources=bar\n"
         ;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
