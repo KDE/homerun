@@ -21,16 +21,17 @@
 // Own
 #include "sessionmodel.h"
 
-//Qt
-#include <QDBusConnection>
-#include <QDBusInterface>
-#include <QDBusPendingCall>
+// Local
 
 // KDE
 #include <KAuthorized>
 #include <KDebug>
-#include <KIcon>
 #include <KLocale>
+
+// Qt
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusPendingCall>
 
 namespace Homerun {
 
@@ -39,62 +40,6 @@ static void lockSession()
     QDBusConnection bus = QDBusConnection::sessionBus();
     QDBusInterface interface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", bus);
     interface.asyncCall("Lock");
-}
-
-//- StandardItem ------------------------------------------------------------------
-StandardItem::StandardItem()
-{
-}
-
-StandardItem::StandardItem(const QString& text, const QString& iconName)
-: QStandardItem(text)
-{
-    setIconName(iconName);
-}
-
-void StandardItem::setIconName(const QString &iconName)
-{
-    setData(iconName, Qt::DecorationRole);
-}
-
-bool StandardItem::trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/)
-{
-    return false;
-}
-
-//- StandardItemModel -------------------------------------------------------------
-StandardItemModel::StandardItemModel(QObject *parent)
-: QStandardItemModel(parent)
-{
-    connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), SIGNAL(countChanged()));
-    connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), SIGNAL(countChanged()));
-    connect(this, SIGNAL(modelReset()), SIGNAL(countChanged()));
-}
-
-QString StandardItemModel::name() const
-{
-    return m_name;
-}
-
-void StandardItemModel::setName(const QString &name)
-{
-    if (m_name == name) {
-        return;
-    }
-    m_name = name;
-    nameChanged();
-}
-
-int StandardItemModel::count() const
-{
-    return rowCount(QModelIndex());
-}
-
-bool StandardItemModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
-{
-    StandardItem *itm = static_cast<StandardItem *>(item(row));
-    Q_ASSERT(itm);
-    return itm->trigger(actionId, actionArgument);
 }
 
 //- Local items -------------------------------------------------------------------
