@@ -28,50 +28,9 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <sourcemodel.h>
 #include <sourceregistry.h>
 
-#define MIGRATE_V1_CONFIG_FILE_FORMAT
-
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-#include <sourceid.h>
-#endif
-
 using namespace Homerun;
 
 static const char *TAB_GROUP_PREFIX = "Tab";
-static const char *TAB_SOURCES_KEY = "sources";
-
-static const char *SOURCE_GROUP_PREFIX = "Source";
-static const char *SOURCE_SOURCEID_KEY = "sourceId";
-
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-static const char *TAB_V1_SOURCE_KEY_PREFIX = "source";
-#endif
-
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-static QStringList takeLegacySources(const KConfigGroup &group_)
-{
-    QStringList sources;
-
-    KConfigGroup group(group_);
-
-    QMap<QString, QString> map = group.entryMap();
-    auto it = map.constBegin(), end = map.constEnd();
-    for (; it != end; ++it) {
-        QString key = it.key();
-        if (!key.startsWith(TAB_V1_SOURCE_KEY_PREFIX)) {
-            continue;
-        }
-        bool ok;
-        QString num = key.mid(qstrlen(TAB_V1_SOURCE_KEY_PREFIX));
-        num.toInt(&ok);
-        if (!ok) {
-            continue;
-        }
-        sources << it.value();
-        group.deleteEntry(it.key());
-    }
-    return sources;
-}
-#endif
 
 class Tab
 {
@@ -114,42 +73,6 @@ public:
         return true;
     }
 
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-    void saveSources(const QStringList &sourceIds)
-    {
-        // Delete all source groups
-        Q_FOREACH(const QString &name, m_group.groupList()) {
-            if (name.startsWith(SOURCE_GROUP_PREFIX)) {
-                KConfigGroup(&m_group, name).deleteGroup();
-            }
-        }
-
-        // Write new source groups
-        QStringList sourceGroupNames;
-        int num = 0;
-        Q_FOREACH(const QString &source, sourceIds) {
-            bool ok;
-            QString groupName = QLatin1String(SOURCE_GROUP_PREFIX) + QString::number(num);
-            SourceId sourceId = SourceId::fromString(source, &ok);
-            Q_ASSERT(ok);
-
-            KConfigGroup sourceGroup(&m_group, groupName);
-            sourceGroup.writeEntry(SOURCE_SOURCEID_KEY, sourceId.name());
-
-            const SourceArguments &args = sourceId.arguments();
-            auto it = args.constBegin(), end = args.constEnd();
-            for (; it != end; ++it) {
-                sourceGroup.writeEntry(it.key(), it.value());
-            }
-
-            ++num;
-            sourceGroupNames << groupName;
-        }
-
-        m_group.writeEntry(TAB_SOURCES_KEY, sourceGroupNames);
-    }
-#endif
-
     void saveName()
     {
         m_group.writeEntry("name", m_name);
@@ -183,14 +106,6 @@ public:
 
         tab->m_group = group;
         tab->m_sourceModel = new SourceModel(tabModel->sourceRegistry(), group, tabModel);
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-        if (tab->m_sourceModel->rowCount() == 0) {
-            QStringList sourceIds = takeLegacySources(group);
-            tab->saveSources(sourceIds);
-            tab->m_group.sync();
-            tab->m_sourceModel->reload();
-        }
-#endif
         tab->m_iconName = group.readEntry("icon");
         return tab;
     }
@@ -224,28 +139,7 @@ TabModel::~TabModel()
 QStringList TabModel::tabGroupList() const
 {
     KConfigGroup group (m_config, "General");
-    QStringList list = group.readEntry("tabs", QStringList());
-#ifdef MIGRATE_V1_CONFIG_FILE_FORMAT
-    if (!list.isEmpty()) {
-        return list;
-    }
-
-    // Create "tabs" key if it does not exist
-    Q_FOREACH(const QString &groupName, m_config->groupList()) {
-        if (groupName.startsWith(TAB_GROUP_PREFIX)) {
-            KConfigGroup group = m_config->group(groupName);
-            if (group.readEntry("deleted", false)) {
-                continue;
-            }
-            list << groupName;
-        }
-    }
-    list.sort();
-    group.writeEntry("tabs", list);
-    const_cast<TabModel *>(this)->m_config->sync();
-#endif
-
-    return list;
+    return group.readEntry("tabs", QStringList());
 }
 
 void TabModel::setConfig(const KSharedConfig::Ptr &ptr)

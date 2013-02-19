@@ -46,7 +46,6 @@ include_directories(
 homerun_add_unit_test(tabmodeltest
     ${components_SOURCE_DIR}/tabmodel.cpp
     ${components_SOURCE_DIR}/sourcemodel.cpp
-    ${components_SOURCE_DIR}/sourceid.cpp
     ${components_SOURCE_DIR}/abstractsourceregistry.cpp
     )
 

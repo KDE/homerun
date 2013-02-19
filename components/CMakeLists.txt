@@ -8,7 +8,6 @@ set(components_SRCS
     icondialog.cpp
     shadoweffect.cpp
     sourceconfigurationdialog.cpp
-    sourceid.cpp
     sourcemodel.cpp
     sourceregistry.cpp
     sources/dir/dirconfigurationwidget.cpp

@@ -426,20 +426,17 @@ void TabModelTest::testMoveRow()
         "\n"
         "[Tab0]\n"
         "name=zero\n"
-        "source0=tab0-0\n"
-        "source1=tab0-1\n"
-        "source2=tab0-2\n"
+        "sources=tab0-0,tab0-1,tab0-2\n"
         "\n"
         "[Tab1]\n"
         "name=one\n"
         "icon=iconOne\n"
-        "source0=tab1-0\n"
-        "source1=tab1-1\n"
+        "sources=tab1-0,tab1-1\n"
         "\n"
         "[Tab2]\n"
         "name=two\n"
         "icon=iconTwo\n"
-        "source0=tab2-0\n"
+        "sources=tab2-0\n"
         ;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
@@ -508,64 +505,6 @@ void TabModelTest::testMoveRow()
     QStringList afterToSources = getSources(model2.index(to, 0));
     QCOMPARE(beforeFromSources, afterToSources);
     QCOMPARE(beforeToSources, afterFromSources);
-}
-
-void TabModelTest::testLoadLegacy()
-{
-    QString configText =
-        "[General]\n"
-        "\n"
-        "[Tab0]\n"
-        "name=zero\n"
-        "source0=zero0\n"
-        "source1=zero1\n"
-        "\n"
-        "[Tab1]\n"
-        "name=one\n"
-        "icon=iconOne\n"
-        "source0=one\n"
-        "\n"
-        "[Tab2]\n"
-        "deleted=true\n"
-        "\n"
-        "[Tab3]\n"
-        "name=three\n"
-        "icon=iconThree\n"
-        "source0=three:arg1=value1\n"
-        "\n"
-        "[Tab4]\n"
-        "name=migrated-but-broken-sources\n"
-        "sources=Source0\n"
-        "\n"
-        "[Tab4][Source0]\n"
-        "sourceId=broken\n"
-        ;
-
-    QScopedPointer<KTemporaryFile> temp(generateTestFile(configText));
-    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
-
-    // Load it
-    TabModel model;
-    model.setSourceRegistry(m_registry);
-    model.setConfig(config);
-    QCOMPARE(model.rowCount(), 4);
-
-    QStringList tabList = getTabList(config);
-    QCOMPARE(tabList, QStringList() << "Tab0" << "Tab1" << "Tab3" << "Tab4");
-
-
-    QVector<QStringList> expectedSourceLists;
-
-    expectedSourceLists
-        << (QStringList() << "zero0" << "zero1")
-        << (QStringList() << "one")
-        << (QStringList() << "three")
-        << (QStringList() << "broken")
-        ;
-    for (int row = 0; row < model.rowCount(); ++row) {
-        QStringList lst = getSources(model.index(row, 0));
-        QCOMPARE(lst, expectedSourceLists.at(row));
-    }
 }
 
 void TabModelTest::testAppendRowToEmptyModel()

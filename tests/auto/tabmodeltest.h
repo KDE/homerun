@@ -44,8 +44,6 @@ private Q_SLOTS:
     void testMoveRow();
     void testAppendRowToEmptyModel();
 
-    void testLoadLegacy();
-
 private:
     MockRegistry *m_registry;
 };
