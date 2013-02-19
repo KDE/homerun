@@ -92,30 +92,6 @@ public:
     }
 };
 
-class SwitchSessionItem : public StandardItem
-{
-public:
-    SwitchSessionItem(KDisplayManager *manager, const SessEnt &session)
-    : m_displayManager(manager)
-    , m_vt(session.vt)
-    {
-        QString user, location;
-        KDisplayManager::sess2Str2(session, user, location);
-        setText(user);
-        setIconName(session.tty ? "utilities-terminal" : "user-identity");
-    }
-
-    bool trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/) override
-    {
-        m_displayManager->lockSwitchVT(m_vt);
-        return true;
-    }
-
-private:
-    KDisplayManager *m_displayManager;
-    int m_vt;
-};
-
 SessionModel::SessionModel(QObject *parent)
 : StandardItemModel(parent)
 {
@@ -134,22 +110,6 @@ SessionModel::SessionModel(QObject *parent)
         && m_displayManager.numReserve() >= 0)
     {
         appendRow(new NewSessionItem(&m_displayManager));
-    }
-
-    createUserItems();
-}
-
-void SessionModel::createUserItems()
-{
-    SessList sessions;
-    m_displayManager.localSessions(sessions);
-
-    Q_FOREACH(const SessEnt &session, sessions) {
-        if (!session.vt || session.self) {
-            continue;
-        }
-
-        appendRow(new SwitchSessionItem(&m_displayManager, session));
     }
 }
 

@@ -60,10 +60,13 @@ whitelist=bookmarks,nepomuksearch,youtube
 [Tab3]
 name=Power
 icon=system-shutdown
-sources=Source0,Source1
+sources=Source0,Source1,Source2
 
 [Tab3][Source0]
 sourceId=Power
 
 [Tab3][Source1]
 sourceId=Session
+
+[Tab3][Source2]
+sourceId=OpenedSessions

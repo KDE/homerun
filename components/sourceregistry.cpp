@@ -34,6 +34,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <sources/power/powermodel.h>
 #include <sources/runners/singlerunnermodel.h>
 #include <sources/runners/runnermodel.h>
+#include <sources/session/openedsessionsmodel.h>
 #include <sources/session/sessionmodel.h>
 
 // KDE
@@ -274,6 +275,10 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->registerSource("Session", new SimpleSource<SessionModel>(this),
         i18n("Session"),
         i18n("Provide buttons to lock the screen, log out, or switch to another user")
+    );
+    d->registerSource("OpenedSessions", new SimpleSource<OpenedSessionsModel>(this),
+        i18n("Opened Sessions"),
+        i18n("Provide buttons to switch to opened sessions")
     );
     d->registerSource("Runner", new RunnerSource(this),
         i18n("KRunner"),

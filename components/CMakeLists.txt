@@ -23,6 +23,7 @@ set(components_SRCS
     sources/runners/runnerconfigurationwidget.cpp
     sources/runners/runnermodel.cpp
     sources/session/sessionmodel.cpp
+    sources/session/openedsessionsmodel.cpp
     standarditemmodel.cpp
     tabmodel.cpp
     )
