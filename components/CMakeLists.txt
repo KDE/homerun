@@ -4,8 +4,6 @@ set(components_SRCS
     ${CMAKE_SOURCE_DIR}/internal/aboutdata.cpp
     abstractsourceregistry.cpp
     componentsplugin.cpp
-    dirconfigurationwidget.cpp
-    dirmodel.cpp
     favoriteappsmodel.cpp
     favoriteplacesmodel.cpp
     helpmenuactions.cpp
@@ -17,6 +15,8 @@ set(components_SRCS
     sourceid.cpp
     sourcemodel.cpp
     sourceregistry.cpp
+    sources/dir/dirconfigurationwidget.cpp
+    sources/dir/dirmodel.cpp
     sources/installedapps/groupedinstalledappsmodel.cpp
     sources/installedapps/installedappsconfigurationwidget.cpp
     sources/installedapps/installedappsmodel.cpp
@@ -28,7 +28,7 @@ set(components_SRCS
     )
 
 kde4_add_ui_files(components_SRCS
-    dirconfigurationwidget.ui
+    sources/dir/dirconfigurationwidget.ui
     sources/installedapps/installedappsconfigurationwidget.ui
     sources/runners/runnerconfigurationwidget.ui
     )
@@ -39,6 +39,7 @@ include_directories(
     ${lib_BINARY_DIR}
     ${lib_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/internal
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/dir
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/installedapps
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/runners
     )

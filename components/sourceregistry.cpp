@@ -23,7 +23,6 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 // Local
 #include <abstractsource.h>
 #include <customtypes.h>
-#include <dirmodel.h>
 #include <favoriteappsmodel.h>
 
 #include <libhomerun_config.h>
@@ -31,6 +30,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <powermodel.h>
 #include <sessionmodel.h>
 #include <sourceconfigurationdialog.h>
+#include <sources/dir/dirmodel.h>
 #include <sources/installedapps/installedappsmodel.h>
 #include <sources/installedapps/groupedinstalledappsmodel.h>
 #include <sources/runners/singlerunnermodel.h>

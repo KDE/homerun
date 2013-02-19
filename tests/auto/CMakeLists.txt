@@ -31,6 +31,7 @@ endmacro(homerun_add_unit_test)
 
 include_directories(
     ${components_SOURCE_DIR}
+    ${components_SOURCE_DIR}/sources/dir
     ${lib_SOURCE_DIR}
     ${lib_BINARY_DIR}
     )
@@ -56,9 +57,9 @@ homerun_add_unit_test(sourcemodeltest
 # X11-dependent tests
 homerun_add_unit_test(favoriteappsmodeltest_x11 ${components_SOURCE_DIR}/favoriteappsmodel.cpp)
 homerun_add_unit_test(favoriteplacesmodeltest_x11
-    ${components_SOURCE_DIR}/dirconfigurationwidget.cpp
-    ${components_SOURCE_DIR}/dirconfigurationwidget.ui
-    ${components_SOURCE_DIR}/dirmodel.cpp
+    ${components_SOURCE_DIR}/sources/dir/dirconfigurationwidget.cpp
+    ${components_SOURCE_DIR}/sources/dir/dirconfigurationwidget.ui
+    ${components_SOURCE_DIR}/sources/dir/dirmodel.cpp
     ${components_SOURCE_DIR}/favoriteplacesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/actionlist.cpp
@@ -66,9 +67,9 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${lib_SOURCE_DIR}/sourceconfigurationwidget.cpp
     )
 homerun_add_unit_test(dirmodeltest_x11
-    ${components_SOURCE_DIR}/dirconfigurationwidget.cpp
-    ${components_SOURCE_DIR}/dirconfigurationwidget.ui
-    ${components_SOURCE_DIR}/dirmodel.cpp
+    ${components_SOURCE_DIR}/sources/dir/dirconfigurationwidget.cpp
+    ${components_SOURCE_DIR}/sources/dir/dirconfigurationwidget.ui
+    ${components_SOURCE_DIR}/sources/dir/dirmodel.cpp
     ${components_SOURCE_DIR}/favoriteplacesmodel.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/actionlist.cpp
