@@ -34,42 +34,12 @@
 
 namespace Homerun {
 
-class SuspendItem : public StandardItem
+enum Action
 {
-public:
-    SuspendItem(const QString &text, const QString &iconName, const QString &type)
-    : StandardItem(text, iconName)
-    , m_type(type)
-    {}
-
-    bool trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/) override
-    {
-        QDBusMessage msg = QDBusMessage::createMethodCall("org.kde.Solid.PowerManagement",
-                                                        "/org/kde/Solid/PowerManagement",
-                                                        "org.kde.Solid.PowerManagement",
-                                                        m_type);
-        QDBusConnection::sessionBus().asyncCall(msg);
-        return true;
-    }
-private:
-    QString m_type;
-};
-
-class ShutdownItem : public StandardItem
-{
-public:
-    ShutdownItem(const QString &text, const QString &iconName, const KWorkSpace::ShutdownType &type)
-    : StandardItem(text, iconName)
-    , m_type(type)
-    {}
-
-    bool trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/) override
-    {
-        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, m_type);
-        return true;
-    }
-private:
-    KWorkSpace::ShutdownType m_type;
+    SuspendToRam,
+    SuspendToDisk,
+    Reboot,
+    Halt
 };
 
 PowerModel::PowerModel(QObject *parent)
@@ -79,32 +49,58 @@ PowerModel::PowerModel(QObject *parent)
     QSet<Solid::PowerManagement::SleepState> sleepStates = Solid::PowerManagement::supportedSleepStates();
 
     if (sleepStates.contains(Solid::PowerManagement::SuspendState)) {
-        appendRow(new SuspendItem(
-            i18nc("an action", "Suspend"),
-            "system-suspend",
-            "suspendToRam")
-        );
+        StandardItem *item = new StandardItem(i18nc("an action", "Suspend"), "system-suspend");
+        item->setData(SuspendToRam);
+        appendRow(item);
     }
 
     if (sleepStates.contains(Solid::PowerManagement::HibernateState)) {
-        appendRow(new SuspendItem(
-            i18nc("an action", "Hibernate"),
-            "system-suspend-hibernate",
-            "suspendToDisk")
-        );
+        StandardItem *item = new StandardItem(i18nc("an action", "Hibernate"), "system-suspend-hibernate");
+        item->setData(SuspendToDisk);
+        appendRow(item);
     }
 
-    appendRow(new ShutdownItem(
-        i18nc("an action", "Restart"),
-        "system-reboot",
-        KWorkSpace::ShutdownTypeReboot)
-    );
+    {
+        StandardItem *item = new StandardItem(i18nc("an action", "Restart"), "system-reboot");
+        item->setData(KWorkSpace::ShutdownTypeReboot);
+        appendRow(item);
+    }
+    {
+        StandardItem *item = new StandardItem(i18nc("an action", "Shutdown"), "system-shutdown");
+        item->setData(KWorkSpace::ShutdownTypeHalt);
+        appendRow(item);
+    }
+}
 
-    appendRow(new ShutdownItem(
-        i18nc("an action", "Shutdown"),
-        "system-shutdown",
-        KWorkSpace::ShutdownTypeHalt)
-    );
+static void suspend(const QString &type)
+{
+    QDBusMessage msg = QDBusMessage::createMethodCall("org.kde.Solid.PowerManagement",
+                                                    "/org/kde/Solid/PowerManagement",
+                                                    "org.kde.Solid.PowerManagement",
+                                                    type);
+    QDBusConnection::sessionBus().asyncCall(msg);
+}
+
+bool PowerModel::trigger(int row, const QString &/*actionId*/, const QVariant &/*actionArgument*/)
+{
+    QStandardItem *itm = item(row);
+    Q_ASSERT(itm);
+    Action action = static_cast<Action>(itm->data().toInt());
+    switch (action) {
+    case SuspendToRam:
+        suspend("suspendToRam");
+        break;
+    case SuspendToDisk:
+        suspend("suspendToDisk");
+        break;
+    case Halt:
+        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeHalt);
+        break;
+    case Reboot:
+        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeReboot);
+        break;
+    }
+    return true;
 }
 
 } // namespace Homerun

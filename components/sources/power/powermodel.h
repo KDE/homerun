@@ -32,6 +32,7 @@ class PowerModel : public StandardItemModel
 
 public:
     PowerModel(QObject *parent = 0);
+    bool trigger(int row, const QString &/*actionId*/, const QVariant &/*actionArgument*/) override;
 };
 
 } // namespace Homerun

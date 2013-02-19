@@ -63,7 +63,7 @@ public:
     QString name() const;
     void setName(const QString &name);
 
-    Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
+    Q_INVOKABLE virtual bool trigger(int row, const QString &actionId, const QVariant &actionArgument);
 
 Q_SIGNALS:
     void countChanged();
