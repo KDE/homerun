@@ -230,7 +230,8 @@ struct SourceRegistryPrivate
             }
             QString runnerId = info.pluginName();
             SingleRunnerSource *source = new SingleRunnerSource(runnerId, q);
-            registerSource("SingleRunner/" + runnerId, source, info.name(), info.comment());
+            QString name = i18n("Runner: %1", info.name());
+            registerSource("SingleRunner/" + runnerId, source, name, info.comment());
         }
     }
 };
