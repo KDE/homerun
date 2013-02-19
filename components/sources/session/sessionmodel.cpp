@@ -95,6 +95,29 @@ public:
     }
 };
 
+class SwitchSessionAction : public AbstractSessionAction
+{
+public:
+    SwitchSessionAction(KDisplayManager *manager, const SessEnt &session)
+    : m_displayManager(manager)
+    , m_vt(session.vt)
+    {
+        QString user, location;
+        KDisplayManager::sess2Str2(session, user, location);
+        name = user;
+        iconName = session.tty ? "utilities-terminal" : "user-identity";
+    }
+
+    void run() override
+    {
+        m_displayManager->lockSwitchVT(m_vt);
+    }
+
+private:
+    KDisplayManager *m_displayManager;
+    int m_vt;
+};
+
 SessionModel::SessionModel(QObject *parent)
 : QAbstractListModel(parent)
 {
@@ -104,6 +127,10 @@ SessionModel::SessionModel(QObject *parent)
         m_sessionList.append(new LockSessionAction);
     }
 
+    if (KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout")) {
+        m_sessionList.append(new LogoutAction);
+    }
+
     if (KAuthorized::authorizeKAction("start_new_session")
         && m_displayManager.isSwitchable()
         && m_displayManager.numReserve() >= 0)
@@ -111,9 +138,7 @@ SessionModel::SessionModel(QObject *parent)
         m_sessionList.append(new NewSessionAction(&m_displayManager));
     }
 
-    if (KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout")) {
-        m_sessionList.append(new LogoutAction);
-    }
+    createUserActions();
 }
 
 SessionModel::~SessionModel()
@@ -162,6 +187,21 @@ bool SessionModel::trigger(int row)
     Q_ASSERT(action);
     action->run();
     return true;
+}
+
+void SessionModel::createUserActions()
+{
+    SessList sessions;
+    m_displayManager.localSessions(sessions);
+
+    Q_FOREACH(const SessEnt &session, sessions) {
+        if (!session.vt || session.self) {
+            continue;
+        }
+
+        SwitchSessionAction *action = new SwitchSessionAction(&m_displayManager, session);
+        m_sessionList.append(action);
+    }
 }
 
 } // namespace Homerun

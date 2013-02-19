@@ -72,6 +72,8 @@ Q_SIGNALS:
 private:
     QList<AbstractSessionAction *> m_sessionList;
     KDisplayManager m_displayManager;
+
+    void createUserActions();
 };
 
 } // namespace Homerun
