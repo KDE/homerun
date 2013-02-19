@@ -4,8 +4,6 @@ set(components_SRCS
     ${CMAKE_SOURCE_DIR}/internal/aboutdata.cpp
     abstractsourceregistry.cpp
     componentsplugin.cpp
-    favoriteappsmodel.cpp
-    favoriteplacesmodel.cpp
     helpmenuactions.cpp
     icondialog.cpp
     powermodel.cpp
@@ -17,6 +15,8 @@ set(components_SRCS
     sourceregistry.cpp
     sources/dir/dirconfigurationwidget.cpp
     sources/dir/dirmodel.cpp
+    sources/favorites/favoriteappsmodel.cpp
+    sources/favorites/favoriteplacesmodel.cpp
     sources/installedapps/groupedinstalledappsmodel.cpp
     sources/installedapps/installedappsconfigurationwidget.cpp
     sources/installedapps/installedappsmodel.cpp
@@ -40,6 +40,7 @@ include_directories(
     ${lib_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/internal
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/dir
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/favorites
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/installedapps
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/runners
     )

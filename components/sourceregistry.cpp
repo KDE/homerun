@@ -23,14 +23,14 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 // Local
 #include <abstractsource.h>
 #include <customtypes.h>
-#include <favoriteappsmodel.h>
 
 #include <libhomerun_config.h>
-#include <favoriteplacesmodel.h>
 #include <powermodel.h>
 #include <sessionmodel.h>
 #include <sourceconfigurationdialog.h>
 #include <sources/dir/dirmodel.h>
+#include <sources/favorites/favoriteappsmodel.h>
+#include <sources/favorites/favoriteplacesmodel.h>
 #include <sources/installedapps/installedappsmodel.h>
 #include <sources/installedapps/groupedinstalledappsmodel.h>
 #include <sources/runners/singlerunnermodel.h>
