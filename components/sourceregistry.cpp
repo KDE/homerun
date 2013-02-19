@@ -26,13 +26,13 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <dirmodel.h>
 #include <favoriteappsmodel.h>
 
-#include <groupedinstalledappsmodel.h>
 #include <libhomerun_config.h>
 #include <favoriteplacesmodel.h>
 #include <powermodel.h>
-#include <installedappsmodel.h>
 #include <sessionmodel.h>
 #include <sourceconfigurationdialog.h>
+#include <sources/installedapps/installedappsmodel.h>
+#include <sources/installedapps/groupedinstalledappsmodel.h>
 #include <sources/runners/singlerunnermodel.h>
 #include <sources/runners/runnermodel.h>
 

@@ -8,11 +8,8 @@ set(components_SRCS
     dirmodel.cpp
     favoriteappsmodel.cpp
     favoriteplacesmodel.cpp
-    groupedinstalledappsmodel.cpp
     helpmenuactions.cpp
     icondialog.cpp
-    installedappsconfigurationwidget.cpp
-    installedappsmodel.cpp
     powermodel.cpp
     sessionmodel.cpp
     shadoweffect.cpp
@@ -20,6 +17,9 @@ set(components_SRCS
     sourceid.cpp
     sourcemodel.cpp
     sourceregistry.cpp
+    sources/installedapps/groupedinstalledappsmodel.cpp
+    sources/installedapps/installedappsconfigurationwidget.cpp
+    sources/installedapps/installedappsmodel.cpp
     sources/runners/querymatchmodel.cpp
     sources/runners/singlerunnermodel.cpp
     sources/runners/runnerconfigurationwidget.cpp
@@ -29,7 +29,7 @@ set(components_SRCS
 
 kde4_add_ui_files(components_SRCS
     dirconfigurationwidget.ui
-    installedappsconfigurationwidget.ui
+    sources/installedapps/installedappsconfigurationwidget.ui
     sources/runners/runnerconfigurationwidget.ui
     )
 
@@ -39,6 +39,7 @@ include_directories(
     ${lib_BINARY_DIR}
     ${lib_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/internal
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/installedapps
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/runners
     )
 
