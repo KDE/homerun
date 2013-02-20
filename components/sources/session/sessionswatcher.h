@@ -17,37 +17,37 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef OPENEDSESSIONSMODEL_H
-#define OPENEDSESSIONSMODEL_H
+#ifndef SESSIONSWATCHER_H
+#define SESSIONSWATCHER_H
 
 // Local
-#include <standarditemmodel.h>
 
 // Qt
+#include <QObject>
 
 // KDE
 #include <kworkspace/kdisplaymanager.h>
 
-class SessionsWatcher;
-
-namespace Homerun
-{
-
-class OpenedSessionsModel : public StandardItemModel
+/**
+ * Watch sessions, emit a signal when a session is opened or closed
+ */
+class SessionsWatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit OpenedSessionsModel(QObject *parent = 0);
-    ~OpenedSessionsModel();
+    explicit SessionsWatcher(QObject *parent = 0);
+
+    SessList sessions() const;
+
+Q_SIGNALS:
+    void sessionsChanged();
+
+private Q_SLOTS:
+    void checkSessions();
 
 private:
     KDisplayManager m_displayManager;
-    SessionsWatcher *m_watcher;
-
-private Q_SLOTS:
-    void refresh();
+    SessList m_sessions;
 };
 
-} // namespace
-
-#endif /* OPENEDSESSIONSMODEL_H */
+#endif /* SESSIONSWATCHER_H */

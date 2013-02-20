@@ -21,11 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <openedsessionsmodel.h>
 
 // Local
+#include <sessionswatcher.h>
 
 // KDE
 #include <KLocale>
 
 // Qt
+#include <QTimer>
 
 namespace Homerun
 {
@@ -56,9 +58,10 @@ private:
 
 OpenedSessionsModel::OpenedSessionsModel(QObject *parent)
 : StandardItemModel(parent)
+, m_watcher(new SessionsWatcher(this))
 {
     setName(i18n("Opened Sessions"));
-    refresh();
+    connect(m_watcher, SIGNAL(sessionsChanged()), SLOT(refresh()));
 }
 
 OpenedSessionsModel::~OpenedSessionsModel()
@@ -69,8 +72,7 @@ void OpenedSessionsModel::refresh()
 {
     clear();
 
-    SessList sessions;
-    m_displayManager.localSessions(sessions);
+    SessList sessions = m_watcher->sessions();
 
     Q_FOREACH(const SessEnt &session, sessions) {
         if (!session.vt || session.self) {
