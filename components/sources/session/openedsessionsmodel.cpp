@@ -41,8 +41,12 @@ public:
     {
         QString user, location;
         KDisplayManager::sess2Str2(session, user, location);
-        setText(user);
-        setIconName(session.tty ? "utilities-terminal" : "user-identity");
+        setText(user + QString(" (Ctrl+Alt+F%1)").arg(session.vt));
+        if (session.user.isEmpty() && session.session.isEmpty()) {
+            setIconName("preferences-system-login");
+        } else {
+            setIconName("user-identity");
+        }
     }
 
     bool trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/) override
