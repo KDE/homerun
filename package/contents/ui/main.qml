@@ -200,7 +200,7 @@ Item {
             bottom: tabBar.bottom
             rightMargin: main.headerPadding
         }
-        iconSource: "configure"
+        iconSource: "applications-system"
 
         property QtObject menu
 
