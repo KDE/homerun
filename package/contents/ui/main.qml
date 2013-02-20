@@ -180,7 +180,7 @@ Item {
         focus: true
 
         clearButtonShown: true
-        placeholderText: i18n("Type to search...")
+        placeholderText: i18n("Search in current tab...")
 
         KeyNavigation.tab: content
         KeyNavigation.backtab: content
