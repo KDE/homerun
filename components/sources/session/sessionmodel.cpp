@@ -21,115 +21,96 @@
 // Own
 #include "sessionmodel.h"
 
-//Qt
-#include <QDBusConnection>
-#include <QDBusInterface>
-#include <QDBusPendingCall>
+// Local
 
 // KDE
 #include <KAuthorized>
 #include <KDebug>
-#include <KIcon>
 #include <KLocale>
-#include <kworkspace/kdisplaymanager.h>
-#include <kworkspace/kworkspace.h>
+
+// Qt
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusPendingCall>
 
 namespace Homerun {
 
+static void lockSession()
+{
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    QDBusInterface interface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", bus);
+    interface.asyncCall("Lock");
+}
+
+//- Local items -------------------------------------------------------------------
+class LockSessionItem : public StandardItem
+{
+public:
+    LockSessionItem()
+    : StandardItem(i18nc("an action", "Lock"), "system-lock-screen")
+    {
+    }
+
+    bool trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/) override
+    {
+        lockSession();
+        return true;
+    }
+};
+
+class NewSessionItem : public StandardItem
+{
+public:
+    NewSessionItem(KDisplayManager *manager)
+    : StandardItem(i18nc("an action", "New Session"), "system-switch-user")
+    , m_displayManager(manager)
+    {
+    }
+
+    bool trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/) override
+    {
+        lockSession();
+        m_displayManager->startReserve();
+        return true;
+    }
+
+private:
+    KDisplayManager *m_displayManager;
+};
+
+class LogoutItem : public StandardItem
+{
+public:
+    LogoutItem()
+    : StandardItem(i18nc("an action", "Logout"), "system-log-out")
+    {}
+
+    bool trigger(const QString &/*actionId*/, const QVariant &/*actionArgument*/) override
+    {
+        KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeNone);
+        return true;
+    }
+};
+
 SessionModel::SessionModel(QObject *parent)
-: QAbstractListModel(parent)
+: StandardItemModel(parent)
 {
-    //FIXME: instead of just hiding these things..it'd be awesome if we could grey them out and/or provide a reason why they're not there.
-    //otherwise the user is hunting for the power buttons and for some reason it isn't where it should be.
+    setName(i18n("Session"));
+
     if (KAuthorized::authorizeKAction("lock_screen")) {
-        SessionAction lock;
-        lock.name = i18nc("an action", "Lock");
-        lock.type = Lock;
-        lock.iconName = "system-lock-screen";
-        m_sessionList.append(lock);
+        appendRow(new LockSessionItem);
     }
 
-    if (KDisplayManager().isSwitchable() && KAuthorized::authorize(QLatin1String("switch_user"))) {
-        SessionAction switchUser;
-        switchUser.name = i18nc("an action", "Switch User");
-        switchUser.type = SwitchUser;
-        switchUser.iconName = "system-switch-user";
-        m_sessionList.append(switchUser);
+    if (KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout")) {
+        appendRow(new LogoutItem);
     }
 
-    const bool canLogout = KAuthorized::authorizeKAction("logout") && KAuthorized::authorize("logout");
-    if (canLogout) {
-        SessionAction logout;
-        logout.name = i18nc("an action", "Logout");
-        logout.type = Logout;
-        logout.iconName = "system-log-out";
-        m_sessionList.append(logout);
+    if (KAuthorized::authorizeKAction("start_new_session")
+        && m_displayManager.isSwitchable()
+        && m_displayManager.numReserve() >= 0)
+    {
+        appendRow(new NewSessionItem(&m_displayManager));
     }
-}
-
-SessionModel::~SessionModel()
-{
-}
-
-int SessionModel::count() const
-{
-    return m_sessionList.count();
-}
-
-QString SessionModel::name() const
-{
-    return i18n("Session");
-}
-
-int SessionModel::rowCount(const QModelIndex &index) const
-{
-    if (index.isValid()) {
-        return 0;
-    }
-    return m_sessionList.count();
-}
-
-QVariant SessionModel::data(const QModelIndex &index, int role) const
-{
-    SessionAction action = m_sessionList.value(index.row());
-
-    if (role == Qt::DisplayRole) {
-        return action.name;
-    } else if (role == Qt::DecorationRole) {
-        return KIcon(action.iconName);
-    } else {
-        kWarning() << "Unhandled role" << role;
-        return QVariant();
-    }
-}
-
-bool SessionModel::trigger(int row)
-{
-    SessionAction action = m_sessionList.value(row);
-
-    switch (action.type) {
-        case Logout:
-            KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeNone);
-            break;
-
-        case SwitchUser: {
-            QDBusConnection bus = QDBusConnection::sessionBus();
-            QDBusInterface interface("org.kde.krunner", "/App", "org.kde.krunner.App", bus);
-
-            interface.asyncCall("switchUser");
-        }
-            break;
-
-        case Lock: {
-            QDBusConnection bus = QDBusConnection::sessionBus();
-            QDBusInterface interface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", bus);
-
-            interface.asyncCall("Lock");
-        }
-            break;
-    }
-
-    return true;
 }
 
 } // namespace Homerun

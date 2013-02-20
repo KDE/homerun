@@ -21,50 +21,23 @@
 #ifndef SESSIONMODEL_H
 #define SESSIONMODEL_H
 
-#include <QAbstractListModel>
+// Local
+#include <standarditemmodel.h>
 
-#include <KService>
-
-class QString;
+// KDE
+#include <kworkspace/kdisplaymanager.h>
 
 namespace Homerun {
 
-enum ActionType {
-    Logout,
-    SwitchUser,
-    Lock
-};
-
-struct SessionAction
-{
-    QString name;
-    QString iconName;
-    ActionType type;
-};
-
-class SessionModel : public QAbstractListModel
+class SessionModel : public StandardItemModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-
 public:
     SessionModel(QObject *parent = 0);
-    ~SessionModel();
-
-    int count() const;
-    QString name() const;
-
-    int rowCount(const QModelIndex & = QModelIndex()) const;
-    QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const;
-
-    Q_INVOKABLE bool trigger(int row);
-
-Q_SIGNALS:
-    void countChanged();
 
 private:
-    QList<SessionAction> m_sessionList;
+    KDisplayManager m_displayManager;
+    void createUserItems();
 };
 
 } // namespace Homerun

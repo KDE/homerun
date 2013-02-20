@@ -22,7 +22,10 @@ set(components_SRCS
     sources/runners/singlerunnermodel.cpp
     sources/runners/runnerconfigurationwidget.cpp
     sources/runners/runnermodel.cpp
+    sources/session/openedsessionsmodel.cpp
     sources/session/sessionmodel.cpp
+    sources/session/sessionswatcher.cpp
+    standarditemmodel.cpp
     tabmodel.cpp
     )
 
