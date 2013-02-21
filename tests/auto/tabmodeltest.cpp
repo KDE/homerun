@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Local
 #include <abstractsourceregistry.h>
+#include <customtypes.h>
 #include <sourcemodel.h>
 #include <tabmodel.h>
 
@@ -50,7 +51,7 @@ public:
     }
 };
 
-static QStringList getSources(const QModelIndex &index)
+static QStringList getSourceGroups(const QModelIndex &index)
 {
     QAbstractItemModel *tabSourceModel = qobject_cast<QAbstractItemModel *>(
         index.data(TabModel::SourceModelRole).value<QObject *>()
@@ -61,7 +62,10 @@ static QStringList getSources(const QModelIndex &index)
     }
     QStringList lst;
     for (int row = 0; row < tabSourceModel->rowCount(); ++row) {
-        lst << tabSourceModel->index(row, 0).data(SourceModel::SourceIdRole).toString();
+        QModelIndex index = tabSourceModel->index(row, 0);
+        KConfigGroup *group = index.data(SourceModel::ConfigGroupRole).value<KConfigGroup *>();
+        Q_ASSERT(!group->name().isEmpty());
+        lst << group->parent().name() + "/" + group->name();
     }
     return lst;
 }
@@ -173,7 +177,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=foo\n"
         << "tab0"
         << "icon0"
-        << (QStringList() << "foo");
+        << (QStringList() << "Tab0/Source0");
 
     QTest::newRow("name-only")
         <<  "[General]\n"
@@ -185,7 +189,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=foo\n"
         << "tab0"
         << QString()
-        << (QStringList() << "foo");
+        << (QStringList() << "Tab0/Source0");
 
     QTest::newRow("unnamed")
         <<  "[General]\n"
@@ -196,7 +200,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=foo\n"
         << ""
         << QString()
-        << (QStringList() << "foo");
+        << (QStringList() << "Tab0/Source0");
 
     QTest::newRow("multi-sources")
         <<  "[General]\n"
@@ -210,7 +214,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=bar\n"
         << "tab0"
         << QString()
-        << (QStringList() << "foo" << "bar");
+        << (QStringList() << "Tab0/Source0" << "Tab0/Source1");
 
     QTest::newRow("no-sources")
         <<  "[General]\n"
@@ -243,7 +247,7 @@ void TabModelTest::testLoadKeys()
     QModelIndex index = model.index(0, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
     QCOMPARE(index.data(Qt::DecorationRole).toString(), iconName);
-    QStringList lst = getSources(index);
+    QStringList lst = getSourceGroups(index);
     QCOMPARE(sources, lst);
 }
 
@@ -450,9 +454,9 @@ void TabModelTest::testMoveRow()
     QStringList beforeTabs = getTabList(config);
     QMap<QString, QString> beforeFrom = getEntries(config, beforeTabs.at(from));
     QMap<QString, QString> beforeTo = getEntries(config, beforeTabs.at(to));
-    QStringList beforeFromSources = getSources(model.index(from, 0));
+    QStringList beforeFromSources = getSourceGroups(model.index(from, 0));
     QVERIFY(!beforeFromSources.isEmpty());
-    QStringList beforeToSources = getSources(model.index(to, 0));
+    QStringList beforeToSources = getSourceGroups(model.index(to, 0));
     QVERIFY(!beforeToSources.isEmpty());
 
     QSignalSpy aboutSpy(&model, SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
@@ -463,10 +467,10 @@ void TabModelTest::testMoveRow()
     QModelIndex index;
     index = model.index(to, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeFrom.value("name"));
-    QCOMPARE(getSources(index), beforeFromSources);
+    QCOMPARE(getSourceGroups(index), beforeFromSources);
     index = model.index(from, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeTo.value("name"));
-    QCOMPARE(getSources(index), beforeToSources);
+    QCOMPARE(getSourceGroups(index), beforeToSources);
 
     // Check config
     QStringList afterTabs = getTabList(config);
@@ -501,8 +505,8 @@ void TabModelTest::testMoveRow()
     QMap<QString, QString> afterTo = getEntries(config, afterTabs.at(to));
     QCOMPARE(beforeFrom, afterTo);
     QCOMPARE(beforeTo, afterFrom);
-    QStringList afterFromSources = getSources(model2.index(from, 0));
-    QStringList afterToSources = getSources(model2.index(to, 0));
+    QStringList afterFromSources = getSourceGroups(model2.index(from, 0));
+    QStringList afterToSources = getSourceGroups(model2.index(to, 0));
     QCOMPARE(beforeFromSources, afterToSources);
     QCOMPARE(beforeToSources, afterFromSources);
 }
