@@ -24,6 +24,7 @@
 
 #include <helpmenuactions.h>
 #include <icondialog.h>
+#include <messagebox.h>
 #include <shadoweffect.h>
 #include <sourceregistry.h>
 #include <tabmodel.h>
@@ -34,6 +35,7 @@ void ComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<ShadowEffect>(uri, 0, 1, "ShadowEffect");
     qmlRegisterType<HelpMenuActions>(uri, 0, 1, "HelpMenuActions");
     qmlRegisterType<IconDialog>(uri, 0, 1, "IconDialog");
+    qmlRegisterType<MessageBox>(uri, 0, 1, "MessageBox");
     qmlRegisterType<Homerun::AbstractSourceRegistry>(uri, 0, 1, "AbstractSourceRegistry");
     qmlRegisterType<Homerun::SourceRegistry>(uri, 0, 1, "SourceRegistry");
     qmlRegisterType<TabModel>(uri, 0, 1, "TabModel");
