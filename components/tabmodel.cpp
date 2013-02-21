@@ -32,6 +32,9 @@ using namespace Homerun;
 
 static const char *TAB_GROUP_PREFIX = "Tab";
 
+static const char *GENERAL_GROUP = "General";
+static const char *GENERAL_TABS_KEY = "tabs";
+
 class Tab
 {
 public:
@@ -138,8 +141,8 @@ TabModel::~TabModel()
 
 QStringList TabModel::tabGroupList() const
 {
-    KConfigGroup group (m_config, "General");
-    return group.readEntry("tabs", QStringList());
+    KConfigGroup group (m_config, GENERAL_GROUP);
+    return group.readEntry(GENERAL_TABS_KEY, QStringList());
 }
 
 void TabModel::setConfig(const KSharedConfig::Ptr &ptr)
@@ -308,8 +311,8 @@ void TabModel::writeGeneralTabsEntry()
     Q_FOREACH(const Tab *tab, m_tabList) {
         lst << tab->m_group.name();
     }
-    KConfigGroup group(m_config, "General");
-    group.writeEntry("tabs", lst);
+    KConfigGroup group(m_config, GENERAL_GROUP);
+    group.writeEntry(GENERAL_TABS_KEY, lst);
     m_config->sync();
 }
 
