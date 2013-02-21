@@ -228,6 +228,15 @@ Item {
                     separator: true
                 }
                 PlasmaComponents.MenuItem {
+                    text: i18n("Restore Tabs to Default");
+                    onClicked: {
+                        tabModel.resetConfig();
+                    }
+                }
+                PlasmaComponents.MenuItem {
+                    separator: true
+                }
+                PlasmaComponents.MenuItem {
                     // We do not use helpMenuActions.text(HomerunComponents.HelpMenuActions.AboutApplication)
                     // because it returns Plasma when running as a containment
                     text: i18n("About %1", "Homerun")

@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <KConfigGroup>
 #include <KDebug>
 #include <KTemporaryFile>
+#include <KTempDir>
+#include <KStandardDirs>
 #include <qtest_kde.h>
 
 // Qt
@@ -84,6 +86,22 @@ static KTemporaryFile *generateTestFile(const QString &content)
     file->write(content.toUtf8());
     file->flush();
     return file;
+}
+
+void writeFile(const QString &fileName, const QString &content)
+{
+    QFile file(fileName);
+    bool ok = file.open(QIODevice::WriteOnly);
+    Q_ASSERT(ok);
+    file.write(content.toUtf8());
+}
+
+static void printFile(const QString &fileName)
+{
+    QFile file(fileName);
+    bool ok = file.open(QIODevice::ReadOnly);
+    Q_ASSERT(ok);
+    kWarning() << file.readAll();
 }
 
 void TabModelTest::initTestCase()
@@ -530,6 +548,117 @@ void TabModelTest::testAppendRowToEmptyModel()
 
     QStringList tabList = getTabList(config);
     QCOMPARE(tabList, QStringList() << "Tab0");
+}
+
+void TabModelTest::testResetConfig()
+{
+    KSharedConfig::Ptr config;
+    // setup system and user configs
+    KTempDir systemDir;
+    QString configrc = "testhomerunrc";
+
+    writeFile(systemDir.name() + configrc,
+        "[General]\n"
+        "tabs=Tab0,Tab1,Tab2\n"
+        "\n"
+        "[Tab0]\n"
+        "name=zero\n"
+        "icon=iconZero\n"
+        "sources=tab0-0,tab0-1,tab0-2\n"
+        "\n"
+        "[Tab1]\n"
+        "name=one\n"
+        "icon=iconOne\n"
+        "sources=tab1-0,tab1-1\n"
+        "\n"
+        "[Tab2]\n"
+        "name=two\n"
+        "icon=iconTwo\n"
+        "sources=Source0\n"
+        "\n"
+        "[Tab2][Source0]\n"
+        "sourceId=ShipList\n"
+        "includeMotherShip=true\n"
+    );
+
+    writeFile(KStandardDirs::locateLocal("config", configrc),
+        "[General]\n"
+        "tabs=Tab0,Tab2,Tab3,Tab5\n"
+        "\n"
+        "[Tab0]\n"
+        "name=Foo\n"
+        "sources=tab0-0,tab0-2\n"
+        "\n"
+        "[Tab1]\n"
+        "name[$d]\n"
+        "sources[$d]\n"
+        "\n"
+        "[Tab2]\n"
+        "name=Bar\n"
+        "icon=iconBar\n"
+        "sources=Source0,Source1\n"
+        "\n"
+        "[Tab2][Source0]\n"
+        "sourceId=CarList\n"
+        "\n"
+        "[Tab3]\n"
+        "name=Baz\n"
+        "icon=iconBaz\n"
+        "sources=tab3-0\n"
+        "\n"
+        "[Tab4]\n"
+        "name[$d]\n"
+        "sources[$d]\n"
+        "\n"
+        "[Tab5]\n"
+        "name=Boom\n"
+        "icon=iconBoom\n"
+        "sources=Source1\n"
+        "\n"
+        "[Tab5][Source1]\n"
+        "sourceId=CylonStatus\n"
+        "detailLevel=4\n"
+    );
+    KGlobal::dirs()->addResourceDir("config", systemDir.name());
+    config = KSharedConfig::openConfig(configrc);
+
+    // Create model from config
+    TabModel model;
+    model.setSourceRegistry(m_registry);
+    model.setConfig(config);
+
+    // Reset config, we should be back to the system config
+    model.resetConfig();
+
+    if (0) {
+        printFile(KStandardDirs::locateLocal("config", configrc));
+    }
+
+    // Check model
+    QCOMPARE(model.rowCount(), 3);
+    QModelIndex index;
+
+    index = model.index(0, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("zero"));
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), QString("iconZero"));
+    QCOMPARE(getSourceGroups(index), QStringList() << "Tab0/tab0-0" << "Tab0/tab0-1" << "Tab0/tab0-2");
+
+    index = model.index(1, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("one"));
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), QString("iconOne"));
+    QCOMPARE(getSourceGroups(index), QStringList() << "Tab1/tab1-0" << "Tab1/tab1-1");
+
+    index = model.index(2, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("two"));
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), QString("iconTwo"));
+    QCOMPARE(getSourceGroups(index), QStringList() << "Tab2/Source0");
+    QAbstractItemModel *sourceModel = qobject_cast<QAbstractItemModel *>(index.data(TabModel::SourceModelRole).value<QObject *>());
+    Q_ASSERT(sourceModel);
+    QCOMPARE(sourceModel->rowCount(QModelIndex()), 1);
+    QCOMPARE(sourceModel->index(0, 0).data(SourceModel::SourceIdRole).toString(), QString("ShipList"));
+
+    // Check config file
+    QCOMPARE(getTabList(config), QStringList() << "Tab0" << "Tab1" << "Tab2");
 }
 
 #include "tabmodeltest.moc"

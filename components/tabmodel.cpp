@@ -23,6 +23,10 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <KConfigGroup>
 #include <KDebug>
 #include <KLocale>
+#include <KStandardDirs>
+
+// Qt
+#include <QFile>
 
 // Local
 #include <sourcemodel.h>
@@ -161,6 +165,57 @@ void TabModel::setConfig(const KSharedConfig::Ptr &ptr)
     }
     endResetModel();
     configFileNameChanged(m_config->name());
+}
+
+static void copyGroup(const KConfigGroup &dst_, const KConfigGroup &src)
+{
+    KConfigGroup dst = dst_;
+    QMap<QString, QString> entryMap = src.entryMap();
+    QSet<QString> keys = dst.keyList().toSet() | src.keyList().toSet();
+    Q_FOREACH(const QString &key, keys) {
+        auto it = entryMap.find(key);
+        if (it == entryMap.end()) {
+            dst.deleteEntry(key);
+        } else {
+            dst.writeEntry(key, src.readEntry(key));
+        }
+    }
+
+    QStringList srcGroupList = src.groupList();
+    Q_FOREACH(const QString &groupName, dst.groupList()) {
+        if (!srcGroupList.contains(groupName)) {
+            dst.deleteGroup(groupName);
+        }
+    }
+    Q_FOREACH(const QString &groupName, srcGroupList) {
+        copyGroup(dst.group(groupName), src.group(groupName));
+    }
+}
+
+void TabModel::resetConfig()
+{
+    KConfigGroup generalGroup = m_config->group(GENERAL_GROUP);
+    generalGroup.revertToDefault(GENERAL_TABS_KEY);
+
+    QStringList tabs = generalGroup.readEntry(GENERAL_TABS_KEY, QStringList());
+
+    // FIXME: Should load all config files in cascade
+    QStringList fileNames = KGlobal::dirs()->findAllResources("config", m_config->name());
+    KConfig systemConfig(fileNames.last());
+
+    Q_FOREACH(const QString &groupName, m_config->groupList()) {
+        if (!groupName.startsWith(TAB_GROUP_PREFIX)) {
+            continue;
+        }
+        if (tabs.contains(groupName)) {
+            copyGroup(m_config->group(groupName), systemConfig.group(groupName));
+        } else {
+            m_config->deleteGroup(groupName);
+        }
+    }
+    m_config->sync();
+
+    setConfig(m_config);
 }
 
 QString TabModel::configFileName() const

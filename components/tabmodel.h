@@ -65,6 +65,11 @@ public:
 
     Q_INVOKABLE void moveRow(int from, int to);
 
+    /**
+     * Reset configuration to default setup
+     */
+    Q_INVOKABLE void resetConfig();
+
 Q_SIGNALS:
     void configFileNameChanged(const QString &);
     void sourceRegistryChanged();
