@@ -1,5 +1,5 @@
 /*
-Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Aurélien Gâteau <agateau@kde.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -17,37 +17,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+// Self
+#include <messagebox.h>
 
-#include <QObject>
+// Local
 
-class MockRegistry;
+// KDE
 
-class TabModelTest : public QObject
+// Qt
+#include <QApplication>
+
+MessageBox::MessageBox(QObject *parent)
+: QObject(parent)
 {
-    Q_OBJECT
+}
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
+int MessageBox::warningContinueCancel(const QString& text, const QString& caption, const QString& continueText, const QString& cancelText)
+{
+    KGuiItem cont = continueText.isEmpty() ? KStandardGuiItem::cont() : KGuiItem(continueText);
+    KGuiItem cancel = cancelText.isEmpty() ? KStandardGuiItem::cancel() : KGuiItem(cancelText);
+    int ret = KMessageBox::warningContinueCancel(QApplication::activeWindow(),
+        text, caption, cont, cancel);
 
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
+    return ret;
+}
 
-    void testSetDataForRow();
-
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
-    void testAppendRowToEmptyModel();
-
-    void testResetConfig();
-
-private:
-    MockRegistry *m_registry;
-};
-
-#endif /* TABMODELTEST_H */
+#include <messagebox.moc>

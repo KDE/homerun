@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Local
 #include <abstractsourceregistry.h>
+#include <customtypes.h>
 #include <sourcemodel.h>
 #include <tabmodel.h>
 
@@ -28,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <KConfigGroup>
 #include <KDebug>
 #include <KTemporaryFile>
+#include <KTempDir>
+#include <KStandardDirs>
 #include <qtest_kde.h>
 
 // Qt
@@ -50,7 +53,7 @@ public:
     }
 };
 
-static QStringList getSources(const QModelIndex &index)
+static QStringList getSourceGroups(const QModelIndex &index)
 {
     QAbstractItemModel *tabSourceModel = qobject_cast<QAbstractItemModel *>(
         index.data(TabModel::SourceModelRole).value<QObject *>()
@@ -61,7 +64,10 @@ static QStringList getSources(const QModelIndex &index)
     }
     QStringList lst;
     for (int row = 0; row < tabSourceModel->rowCount(); ++row) {
-        lst << tabSourceModel->index(row, 0).data(SourceModel::SourceIdRole).toString();
+        QModelIndex index = tabSourceModel->index(row, 0);
+        KConfigGroup *group = index.data(SourceModel::ConfigGroupRole).value<KConfigGroup *>();
+        Q_ASSERT(!group->name().isEmpty());
+        lst << group->parent().name() + "/" + group->name();
     }
     return lst;
 }
@@ -80,6 +86,22 @@ static KTemporaryFile *generateTestFile(const QString &content)
     file->write(content.toUtf8());
     file->flush();
     return file;
+}
+
+void writeFile(const QString &fileName, const QString &content)
+{
+    QFile file(fileName);
+    bool ok = file.open(QIODevice::WriteOnly);
+    Q_ASSERT(ok);
+    file.write(content.toUtf8());
+}
+
+static void printFile(const QString &fileName)
+{
+    QFile file(fileName);
+    bool ok = file.open(QIODevice::ReadOnly);
+    Q_ASSERT(ok);
+    kWarning() << file.readAll();
 }
 
 void TabModelTest::initTestCase()
@@ -173,7 +195,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=foo\n"
         << "tab0"
         << "icon0"
-        << (QStringList() << "foo");
+        << (QStringList() << "Tab0/Source0");
 
     QTest::newRow("name-only")
         <<  "[General]\n"
@@ -185,7 +207,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=foo\n"
         << "tab0"
         << QString()
-        << (QStringList() << "foo");
+        << (QStringList() << "Tab0/Source0");
 
     QTest::newRow("unnamed")
         <<  "[General]\n"
@@ -196,7 +218,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=foo\n"
         << ""
         << QString()
-        << (QStringList() << "foo");
+        << (QStringList() << "Tab0/Source0");
 
     QTest::newRow("multi-sources")
         <<  "[General]\n"
@@ -210,7 +232,7 @@ void TabModelTest::testLoadKeys_data()
             "sourceId=bar\n"
         << "tab0"
         << QString()
-        << (QStringList() << "foo" << "bar");
+        << (QStringList() << "Tab0/Source0" << "Tab0/Source1");
 
     QTest::newRow("no-sources")
         <<  "[General]\n"
@@ -243,7 +265,7 @@ void TabModelTest::testLoadKeys()
     QModelIndex index = model.index(0, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), name);
     QCOMPARE(index.data(Qt::DecorationRole).toString(), iconName);
-    QStringList lst = getSources(index);
+    QStringList lst = getSourceGroups(index);
     QCOMPARE(sources, lst);
 }
 
@@ -450,9 +472,9 @@ void TabModelTest::testMoveRow()
     QStringList beforeTabs = getTabList(config);
     QMap<QString, QString> beforeFrom = getEntries(config, beforeTabs.at(from));
     QMap<QString, QString> beforeTo = getEntries(config, beforeTabs.at(to));
-    QStringList beforeFromSources = getSources(model.index(from, 0));
+    QStringList beforeFromSources = getSourceGroups(model.index(from, 0));
     QVERIFY(!beforeFromSources.isEmpty());
-    QStringList beforeToSources = getSources(model.index(to, 0));
+    QStringList beforeToSources = getSourceGroups(model.index(to, 0));
     QVERIFY(!beforeToSources.isEmpty());
 
     QSignalSpy aboutSpy(&model, SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
@@ -463,10 +485,10 @@ void TabModelTest::testMoveRow()
     QModelIndex index;
     index = model.index(to, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeFrom.value("name"));
-    QCOMPARE(getSources(index), beforeFromSources);
+    QCOMPARE(getSourceGroups(index), beforeFromSources);
     index = model.index(from, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), beforeTo.value("name"));
-    QCOMPARE(getSources(index), beforeToSources);
+    QCOMPARE(getSourceGroups(index), beforeToSources);
 
     // Check config
     QStringList afterTabs = getTabList(config);
@@ -501,8 +523,8 @@ void TabModelTest::testMoveRow()
     QMap<QString, QString> afterTo = getEntries(config, afterTabs.at(to));
     QCOMPARE(beforeFrom, afterTo);
     QCOMPARE(beforeTo, afterFrom);
-    QStringList afterFromSources = getSources(model2.index(from, 0));
-    QStringList afterToSources = getSources(model2.index(to, 0));
+    QStringList afterFromSources = getSourceGroups(model2.index(from, 0));
+    QStringList afterToSources = getSourceGroups(model2.index(to, 0));
     QCOMPARE(beforeFromSources, afterToSources);
     QCOMPARE(beforeToSources, afterFromSources);
 }
@@ -526,6 +548,117 @@ void TabModelTest::testAppendRowToEmptyModel()
 
     QStringList tabList = getTabList(config);
     QCOMPARE(tabList, QStringList() << "Tab0");
+}
+
+void TabModelTest::testResetConfig()
+{
+    KSharedConfig::Ptr config;
+    // setup system and user configs
+    KTempDir systemDir;
+    QString configrc = "testhomerunrc";
+
+    writeFile(systemDir.name() + configrc,
+        "[General]\n"
+        "tabs=Tab0,Tab1,Tab2\n"
+        "\n"
+        "[Tab0]\n"
+        "name=zero\n"
+        "icon=iconZero\n"
+        "sources=tab0-0,tab0-1,tab0-2\n"
+        "\n"
+        "[Tab1]\n"
+        "name=one\n"
+        "icon=iconOne\n"
+        "sources=tab1-0,tab1-1\n"
+        "\n"
+        "[Tab2]\n"
+        "name=two\n"
+        "icon=iconTwo\n"
+        "sources=Source0\n"
+        "\n"
+        "[Tab2][Source0]\n"
+        "sourceId=ShipList\n"
+        "includeMotherShip=true\n"
+    );
+
+    writeFile(KStandardDirs::locateLocal("config", configrc),
+        "[General]\n"
+        "tabs=Tab0,Tab2,Tab3,Tab5\n"
+        "\n"
+        "[Tab0]\n"
+        "name=Foo\n"
+        "sources=tab0-0,tab0-2\n"
+        "\n"
+        "[Tab1]\n"
+        "name[$d]\n"
+        "sources[$d]\n"
+        "\n"
+        "[Tab2]\n"
+        "name=Bar\n"
+        "icon=iconBar\n"
+        "sources=Source0,Source1\n"
+        "\n"
+        "[Tab2][Source0]\n"
+        "sourceId=CarList\n"
+        "\n"
+        "[Tab3]\n"
+        "name=Baz\n"
+        "icon=iconBaz\n"
+        "sources=tab3-0\n"
+        "\n"
+        "[Tab4]\n"
+        "name[$d]\n"
+        "sources[$d]\n"
+        "\n"
+        "[Tab5]\n"
+        "name=Boom\n"
+        "icon=iconBoom\n"
+        "sources=Source1\n"
+        "\n"
+        "[Tab5][Source1]\n"
+        "sourceId=CylonStatus\n"
+        "detailLevel=4\n"
+    );
+    KGlobal::dirs()->addResourceDir("config", systemDir.name());
+    config = KSharedConfig::openConfig(configrc);
+
+    // Create model from config
+    TabModel model;
+    model.setSourceRegistry(m_registry);
+    model.setConfig(config);
+
+    // Reset config, we should be back to the system config
+    model.resetConfig();
+
+    if (0) {
+        printFile(KStandardDirs::locateLocal("config", configrc));
+    }
+
+    // Check model
+    QCOMPARE(model.rowCount(), 3);
+    QModelIndex index;
+
+    index = model.index(0, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("zero"));
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), QString("iconZero"));
+    QCOMPARE(getSourceGroups(index), QStringList() << "Tab0/tab0-0" << "Tab0/tab0-1" << "Tab0/tab0-2");
+
+    index = model.index(1, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("one"));
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), QString("iconOne"));
+    QCOMPARE(getSourceGroups(index), QStringList() << "Tab1/tab1-0" << "Tab1/tab1-1");
+
+    index = model.index(2, 0);
+    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("two"));
+    QCOMPARE(index.data(Qt::DecorationRole).toString(), QString("iconTwo"));
+    QCOMPARE(getSourceGroups(index), QStringList() << "Tab2/Source0");
+    QAbstractItemModel *sourceModel = qobject_cast<QAbstractItemModel *>(index.data(TabModel::SourceModelRole).value<QObject *>());
+    Q_ASSERT(sourceModel);
+    QCOMPARE(sourceModel->rowCount(QModelIndex()), 1);
+    QCOMPARE(sourceModel->index(0, 0).data(SourceModel::SourceIdRole).toString(), QString("ShipList"));
+
+    // Check config file
+    QCOMPARE(getTabList(config), QStringList() << "Tab0" << "Tab1" << "Tab2");
 }
 
 #include "tabmodeltest.moc"

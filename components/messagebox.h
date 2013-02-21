@@ -1,5 +1,5 @@
 /*
-Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Aurélien Gâteau <agateau@kde.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -17,37 +17,44 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef TABMODELTEST_H
-#define TABMODELTEST_H
+#ifndef MESSAGEBOX_H
+#define MESSAGEBOX_H
 
+// Local
+
+// Qt
 #include <QObject>
 
-class MockRegistry;
+// KDE
+#include <KMessageBox>
 
-class TabModelTest : public QObject
+/**
+ * Wrapper around KMessageBox
+ */
+class MessageBox : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(ButtonCode)
+public:
+    explicit MessageBox(QObject *parent = 0);
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
+    enum ButtonCode {
+        Ok = KMessageBox::Ok,
+        Cancel = KMessageBox::Cancel,
+        Yes = KMessageBox::Yes,
+        No = KMessageBox::No,
+        Continue = KMessageBox::Continue,
+    };
 
-    void testTabOrder();
-    void testLoadKeys();
-    void testLoadKeys_data();
-
-    void testSetDataForRow();
-
-    void testAppendRow();
-    void testRemoveRow();
-    void testMoveRow_data();
-    void testMoveRow();
-    void testAppendRowToEmptyModel();
-
-    void testResetConfig();
-
-private:
-    MockRegistry *m_registry;
+    /**
+     * Return value is a MessageBox::ButtonCode
+     */
+    Q_INVOKABLE int warningContinueCancel(
+        const QString &text,
+        const QString &caption = QString(),
+        const QString &continueText = QString(),
+        const QString &cancelText = QString()
+    );
 };
 
-#endif /* TABMODELTEST_H */
+#endif /* MESSAGEBOX_H */

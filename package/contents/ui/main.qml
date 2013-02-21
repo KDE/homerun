@@ -228,6 +228,24 @@ Item {
                     separator: true
                 }
                 PlasmaComponents.MenuItem {
+                    text: i18n("Restore Tabs to Default");
+                    onClicked: {
+                        var ret = messageBox.warningContinueCancel(
+                            i18n("Are you sure you want to restore tabs?\n"
+                                + "Restoring tabs will reset your configuration to the default Homerun tabs.\n"
+                                + "Your lists of favorite applications and places will remain untouched."),
+                            i18n("Restore Tabs"),
+                            i18n("Restore Tabs"));
+
+                        if (ret == HomerunComponents.MessageBox.Continue) {
+                            tabModel.resetConfig();
+                        }
+                    }
+                }
+                PlasmaComponents.MenuItem {
+                    separator: true
+                }
+                PlasmaComponents.MenuItem {
                     // We do not use helpMenuActions.text(HomerunComponents.HelpMenuActions.AboutApplication)
                     // because it returns Plasma when running as a containment
                     text: i18n("About %1", "Homerun")
@@ -242,6 +260,9 @@ Item {
 
         HomerunComponents.HelpMenuActions {
             id: helpMenuActions
+        }
+        HomerunComponents.MessageBox {
+            id: messageBox
         }
     }
 
