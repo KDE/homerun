@@ -231,9 +231,7 @@ Item {
                     text: i18n("Restore Tabs to Default");
                     onClicked: {
                         var ret = messageBox.warningContinueCancel(
-                            i18n("Are you sure you want to restore tabs?\n"
-                                + "Restoring tabs will reset your configuration to the default Homerun tabs.\n"
-                                + "Your lists of favorite applications and places will remain untouched."),
+                            i18n("Are you sure you want to restore tabs?\nRestoring tabs will reset your configuration to the default Homerun tabs.\nYour lists of favorite applications and places will remain untouched."),
                             i18n("Restore Tabs"),
                             i18n("Restore Tabs"));
 
