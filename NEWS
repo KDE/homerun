@@ -1,3 +1,22 @@
+# 2013.02.28 - 0.2.0
+
+- Support for single runners
+- Items can now have more than one action. The other actions are accessible
+  through a context menu, which can be triggered by:
+  - Left-clicking the arrow in the top-right corner of the item
+  - Long-clicking the item
+  - Right-clicking the item
+  - Pressing M or the "Menu" key
+- Some sources expose more actions:
+  - Recent documents can now forget items
+  - Items from the Dir and FavoritePlaces sources show the relevant "Open with" actions
+- Add a "Reset tabs to default" action to the configuration menu
+- Fix window not showing on correct desktop at startup
+- Improved session handling: opened sessions are now listed in the "Power" tab
+- Hide unavailable sleep modes in Power source
+- No more border around full view
+- Show a shadow behind text in containment mode
+
 # 2012.12.18 - 0.1.1
 
 - Add support for selecting the launcher icon
