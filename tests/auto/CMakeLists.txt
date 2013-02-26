@@ -33,6 +33,7 @@ include_directories(
     ${components_SOURCE_DIR}
     ${components_SOURCE_DIR}/sources/favorites
     ${components_SOURCE_DIR}/sources/dir
+    ${CMAKE_SOURCE_DIR}/internal
     ${lib_SOURCE_DIR}
     ${lib_BINARY_DIR}
     )
@@ -53,6 +54,8 @@ homerun_add_unit_test(sourcemodeltest
     ${components_SOURCE_DIR}/sourcemodel.cpp
     ${components_SOURCE_DIR}/abstractsourceregistry.cpp
     )
+
+homerun_add_unit_test(i18nconfigtest)
 
 # X11-dependent tests
 homerun_add_unit_test(favoriteappsmodeltest_x11
