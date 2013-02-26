@@ -108,7 +108,8 @@ public:
         if (!name.isEmpty()) {
             // Only translate if not empty. If name is empty i18n(name)
             // returns I18N_EMPTY_MESSAGE.
-            tab->m_name = i18n(name);
+            // Translation context must be the same as in internal/i18nconfig.cpp
+            tab->m_name = i18nc("Tab title", name);
         }
 
         tab->m_group = group;
