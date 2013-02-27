@@ -62,12 +62,12 @@ PowerModel::PowerModel(QObject *parent)
 
     {
         StandardItem *item = new StandardItem(i18nc("an action", "Restart"), "system-reboot");
-        item->setData(KWorkSpace::ShutdownTypeReboot);
+        item->setData(Reboot);
         appendRow(item);
     }
     {
         StandardItem *item = new StandardItem(i18nc("an action", "Shutdown"), "system-shutdown");
-        item->setData(KWorkSpace::ShutdownTypeHalt);
+        item->setData(Halt);
         appendRow(item);
     }
 }

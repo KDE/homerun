@@ -201,6 +201,7 @@ Item {
         id: pageContainer
         anchors {
             left: parent.left
+            leftMargin: 12
             top: hline.top
             right: parent.right
             bottom: parent.bottom

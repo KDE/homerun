@@ -185,10 +185,7 @@ FocusScope {
         opacity: ("plasmoid" in this) ? 1 : 0.4
 
         text: model.name
-        font {
-            pointSize: theme.defaultFont.pointSize * 1.4
-            weight: ("plasmoid" in this) ? Font.Normal : Font.Bold
-        }
+        font.pointSize: theme.defaultFont.pointSize * 1.4
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
     }
