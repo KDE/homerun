@@ -1,4 +1,9 @@
-# 2013.02.28 - 0.2.0
+# 2013.02.27 - 0.2.1
+
+- Fix shutdown and halt items in the Power source
+- Improve appearance of header titles
+
+# 2013.02.26 - 0.2.0
 
 - Support for single runners
 - Items can now have more than one action. The other actions are accessible
