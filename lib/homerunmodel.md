@@ -55,6 +55,9 @@ following elements:
     - mandatory: no
     - An optional argument, passed to trigger() as well
 
+Functions from the Homerun::ActionList namespace simplifies the creation of
+actions.
+
 Important: This role is ignored if hasActionList is not defined or returns
 false.
 
