@@ -1,24 +1,5 @@
-/*
-Copyright 2012 Aurélien Gâteau <agateau@kde.org>
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) version 3, or any
-later version accepted by the membership of KDE e.V. (or its
-successor approved by the membership of KDE e.V.), which shall
-act as a proxy defined in Section 6 of version 3 of the license.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/**
-@page homerunmodel Homerun models
+Homerun Model Specification {#homerunmodel}
+===========================
 
 Homerun models make heavy use of Qt introspection and duck-typing. This
 document describes the mandatory and optional roles, properties and signals of a
@@ -73,6 +54,9 @@ following elements:
 - variant actionArgument
     - mandatory: no
     - An optional argument, passed to trigger() as well
+
+Functions from the Homerun::ActionList namespace simplifies the creation of
+actions.
 
 Important: This role is ignored if hasActionList is not defined or returns
 false.
@@ -134,5 +118,3 @@ is used for example to open a browsable model in a subdir.
 
 Note: If you want to be able to access your model this way, you need to
 implement Homerun::AbstractSource::createModelFromArguments().
-
-*/
