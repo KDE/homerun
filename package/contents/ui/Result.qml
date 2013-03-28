@@ -19,7 +19,6 @@
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
-import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 
@@ -30,7 +29,7 @@ Item {
     // Set by others
     property int iconWidth: 64
     property alias text: resultLabel.text
-    property alias icon: resultIcon.icon
+    property alias icon: resultIcon.source
     property bool configureMode: false
     property bool hasActionList: false
 
@@ -80,7 +79,7 @@ Item {
         }
     }
 
-    QtExtra.QIconItem {
+    PlasmaCore.IconItem {
         id: resultIcon
 
         anchors {
