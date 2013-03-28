@@ -22,6 +22,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 // Local
 #include <abstractsourceregistry.h>
+#include <changenotifier.h>
 #include <installedappsmodel.h>
 
 // KDE
@@ -52,6 +53,17 @@ QObject *GroupedInstalledAppsModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
+void GroupedInstalledAppsModel::refresh()
+{
+    beginResetModel();
+    qDeleteAll(m_models);
+    m_models.clear();
+    m_pendingGroupList.clear();
+    endResetModel();
+
+    loadRootEntries();
+}
+
 void GroupedInstalledAppsModel::loadRootEntries()
 {
     KServiceGroup::Ptr group = KServiceGroup::root();
@@ -80,6 +92,7 @@ void GroupedInstalledAppsModel::loadNextGroup()
     }
     KServiceGroup::Ptr group = m_pendingGroupList.takeFirst();
     InstalledAppsModel *model = createInstalledAppsModel(group);
+    model->setParent(this);
     beginInsertRows(QModelIndex(), m_models.count(), m_models.count());
     m_models << model;
     endInsertRows();
@@ -126,7 +139,10 @@ QAbstractItemModel *GroupedInstalledAppsSource::createModelFromConfigGroup(const
 {
     KConfigGroup group(config(), "PackageManagement");
     QString installer = group.readEntry("categoryInstaller");
-    return new GroupedInstalledAppsModel(installer);
+    GroupedInstalledAppsModel *model = new GroupedInstalledAppsModel(installer);
+    ChangeNotifier *notifier = new ChangeNotifier(model);
+    connect(notifier, SIGNAL(changeDetected()), model, SLOT(refresh()));
+    return model;
 }
 
 } // namespace Homerun
