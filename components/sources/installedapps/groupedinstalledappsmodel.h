@@ -51,6 +51,9 @@ public:
 Q_SIGNALS:
     void installerChanged(const QString &);
 
+public Q_SLOTS:
+    void refresh();
+
 private Q_SLOTS:
     void loadRootEntries();
     void loadNextGroup();

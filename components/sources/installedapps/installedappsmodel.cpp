@@ -18,6 +18,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 // Local
+#include <changenotifier.h>
 #include <pathmodel.h>
 #include <installedappsmodel.h>
 #include <installedappsconfigurationwidget.h>
@@ -118,6 +119,7 @@ bool InstallerNode::trigger()
 //- InstalledAppsModel ------------------------------------------------------------
 InstalledAppsModel::InstalledAppsModel(const QString &entryPath, const QString &installer, QObject *parent)
 : QAbstractListModel(parent)
+, m_entryPath(entryPath)
 , m_pathModel(new PathModel(this))
 , m_installer(installer)
 {
@@ -128,7 +130,7 @@ InstalledAppsModel::InstalledAppsModel(const QString &entryPath, const QString &
 
     setRoleNames(roles);
 
-    load(entryPath);
+    refresh();
 }
 
 InstalledAppsModel::~InstalledAppsModel()
@@ -170,20 +172,20 @@ bool InstalledAppsModel::trigger(int row)
     return m_nodeList.at(row)->trigger();
 }
 
-void InstalledAppsModel::load(const QString &entryPath)
+void InstalledAppsModel::refresh()
 {
     m_pathModel->clear();
     beginResetModel();
     qDeleteAll(m_nodeList);
     m_nodeList.clear();
 
-    if (entryPath.isEmpty()) {
+    if (m_entryPath.isEmpty()) {
         loadRootEntries();
     } else {
-        KServiceGroup::Ptr group = KServiceGroup::group(entryPath);
+        KServiceGroup::Ptr group = KServiceGroup::group(m_entryPath);
         loadServiceGroup(group);
         QVariantMap args;
-        args.insert("entryPath", entryPath);
+        args.insert("entryPath", m_entryPath);
         m_pathModel->addPath(group->caption(), SOURCE_ID, args);
     }
 
@@ -301,7 +303,10 @@ QAbstractItemModel *InstalledAppsSource::createModel(const QString &entryPath)
     KConfigGroup group(config(), "PackageManagement");
     QString installer = group.readEntry("categoryInstaller");
 
-    return new InstalledAppsModel(entryPath, installer);
+    InstalledAppsModel *model = new InstalledAppsModel(entryPath, installer);
+    ChangeNotifier *notifier = new ChangeNotifier(model);
+    connect(notifier, SIGNAL(changeDetected()), model, SLOT(refresh()));
+    return model;
 }
 
 bool InstalledAppsSource::isConfigurable() const
