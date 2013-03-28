@@ -125,17 +125,20 @@ Q_SIGNALS:
     void countChanged();
     void openSourceRequested(const QString &sourceId, const QVariantMap &args);
 
+public Q_SLOTS:
+    void refresh();
+
 private:
     void loadRootEntries();
     void loadServiceGroup(KServiceGroup::Ptr group);
     void doLoadServiceGroup(KServiceGroup::Ptr group);
 
+    QString m_entryPath;
     PathModel *m_pathModel;
     QList<AbstractNode *> m_nodeList;
     QString m_installer;
     QString m_arguments;
 
-    void load(const QString &entryPath);
 
     friend class GroupNode;
 };

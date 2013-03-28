@@ -15,6 +15,7 @@ set(components_SRCS
     sources/dir/dirmodel.cpp
     sources/favorites/favoriteappsmodel.cpp
     sources/favorites/favoriteplacesmodel.cpp
+    sources/installedapps/changenotifier.cpp
     sources/installedapps/groupedinstalledappsmodel.cpp
     sources/installedapps/installedappsconfigurationwidget.cpp
     sources/installedapps/installedappsmodel.cpp
