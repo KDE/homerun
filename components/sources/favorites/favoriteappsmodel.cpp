@@ -210,6 +210,28 @@ bool FavoriteAppsModel::trigger(int row)
     return KRun::run(*service, KUrl::List(), 0);
 }
 
+#define CHECK_ROW(row) \
+    if (row < 0 || row >= m_favoriteList.count()) { \
+        kWarning() << "Invalid row number" << row; \
+        return; \
+    }
+
+void FavoriteAppsModel::move(int from, int to)
+{
+    CHECK_ROW(from)
+    CHECK_ROW(to)
+    if (from == to) {
+        kWarning() << "Cannot move row to itself";
+        return;
+    }
+    // See beginMoveRows() doc for an explanation on modelTo
+    int modelTo = to + (to > from ? 1 : 0);
+    beginMoveRows(QModelIndex(), from, from, QModelIndex(), modelTo);
+    m_favoriteList.move(from, to);
+    // FIXME: Serialize changes
+    endMoveRows();
+}
+
 } // namespace Homerun
 
 #include "favoriteappsmodel.moc"

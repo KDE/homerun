@@ -66,6 +66,8 @@ public:
 
     Q_INVOKABLE bool trigger(int row);
 
+    Q_INVOKABLE void move(int from, int to);
+
 Q_SIGNALS:
     void countChanged();
 
