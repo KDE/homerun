@@ -191,19 +191,29 @@ void ShadowEffect::sourceChanged(ChangeFlags flags)
 }
 
 
-/**********************************************************
+/*****************************************************************************
  * UGLYNESS
- * This is a severely trimmed copy of an internal class defined in qt:
- * src/gui/effects/qgraphicseffect_p.h
- *********************************************************/
+ *
+ * If the shadow color is not defined, we want to compute it from the color of
+ * the item on which the effect is applied.
+ *
+ * To do so we need to reach the item from the effect.
+ *
+ * QGraphicsEffect has an internal, but public, "source()" method, which
+ * returns a pointer to a QGraphicsEffectSource, which has a "graphicsItem()"
+ * public method.
+ *
+ * QGraphicsEffectSource is not in any installed header, so we need to declare
+ * it. Since "graphicsItem()" is not virtual we can escape with declaring a
+ * fake QGraphicsEffectSource class, containing only the graphicsItem() method.
+ *
+ * The original class is defined in Qt4 in src/gui/effects/qgraphicseffect_p.h
+ *****************************************************************************/
 class QGraphicsEffectSource
 {
 public:
     const QGraphicsItem *graphicsItem() const;
 };
-/**********************************************************
- * /UGLYNESS
- *********************************************************/
 
 
 QColor ShadowEffect::computeColorFromSource() const
@@ -224,7 +234,7 @@ QColor ShadowEffect::computeColorFromSource() const
         return Qt::black;
     }
     int value = variant.value<QColor>().value();
-    return value > 128 ? Qt::black : Qt::white;
+    return value >= 128 ? Qt::black : Qt::white;
 }
 
 #include <shadoweffect.moc>
