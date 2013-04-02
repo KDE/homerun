@@ -6,6 +6,7 @@ set(components_SRCS
     componentsplugin.cpp
     helpmenuactions.cpp
     icondialog.cpp
+    image.cpp
     messagebox.cpp
     shadoweffect.cpp
     sourceconfigurationdialog.cpp
