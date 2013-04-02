@@ -125,21 +125,29 @@ QImage ShadowEffect::generateShadow(const QPixmap &px) const
         return QImage();
     }
 
-    // Generate shadow in tmp
+    QColor color = m_color.isValid() ? m_color : computeColorFromSource();
+
     QImage tmp(px.size(), QImage::Format_ARGB32_Premultiplied);
     tmp.fill(0);
-    QPainter tmpPainter(&tmp);
-    tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
-    tmpPainter.drawPixmap(m_xOffset, m_yOffset, px);
-    tmpPainter.end();
-    QColor color = m_color.isValid() ? m_color : computeColorFromSource();
-    Plasma::PaintUtils::shadowBlur(tmp, m_blurRadius, color);
+    if (m_blurRadius > 0) {
+        QPainter painter(&tmp);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.drawPixmap(m_xOffset, m_yOffset, px);
+        painter.end();
+        Plasma::PaintUtils::shadowBlur(tmp, m_blurRadius, color);
+    } else {
+        QPainter painter(&tmp);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.fillRect(m_xOffset, m_yOffset, px.width(), px.height(), color);
+        painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        painter.drawPixmap(m_xOffset, m_yOffset, px);
+    }
     return tmp;
 }
 
 void ShadowEffect::draw(QPainter *painter)
 {
-    if (m_blurRadius <= 0 && qFuzzyIsNull(m_xOffset) && qFuzzyIsNull(m_yOffset)) {
+    if (m_blurRadius < 0 && qFuzzyIsNull(m_xOffset) && qFuzzyIsNull(m_yOffset)) {
         drawSource(painter);
         return;
     }
