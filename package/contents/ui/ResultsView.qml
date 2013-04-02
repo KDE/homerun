@@ -111,66 +111,91 @@ FocusScope {
     // Components
     Component {
         id: result
-        Result {
-            id: resultMain
-            iconWidth: main.iconWidth
-            width: main.resultItemWidth
-            configureMode: main.configureMode
+        Item {
+            width: gridView.cellWidth
+            height: gridView.cellHeight
+            state: "inactive"
+            property alias text: resultMain.text
+            property alias icon: resultMain.icon
 
-            text: model.display
-            icon: model.decoration
+            Result {
+                id: resultMain
+                iconWidth: main.iconWidth
+                width: main.resultItemWidth
+                configureMode: main.configureMode
 
-            onHighlightedChanged: {
-                if (highlighted) {
-                    gridView.currentIndex = model.index;
-                }
-            }
+                text: model.display
+                icon: model.decoration
 
-            hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
-
-            onAboutToShowActionMenu: {
-                fillActionMenu(actionMenu);
-            }
-
-            onActionTriggered: {
-                triggerAction(model.index, actionId, actionArgument);
-            }
-
-            function fillActionMenu(actionMenu) {
-                // Accessing actionList can be a costly operation, so we don't
-                // access it until we need the menu
-                var lst = model.hasActionList ? model.actionList : [];
-                var action = createFavoriteAction();
-                if (action) {
-                    if (lst.length > 0) {
-                        var separator = { "type": "separator" };
-                        lst.unshift(action, separator);
-                    } else {
-                        lst = [action];
+                onHighlightedChanged: {
+                    if (highlighted) {
+                        gridView.currentIndex = model.index;
                     }
                 }
-                actionMenu.actionList = lst;
+
+                hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
+
+                onAboutToShowActionMenu: {
+                    fillActionMenu(actionMenu);
+                }
+
+                onActionTriggered: {
+                    triggerAction(model.index, actionId, actionArgument);
+                }
+
+                function fillActionMenu(actionMenu) {
+                    // Accessing actionList can be a costly operation, so we don't
+                    // access it until we need the menu
+                    var lst = model.hasActionList ? model.actionList : [];
+                    var action = createFavoriteAction();
+                    if (action) {
+                        if (lst.length > 0) {
+                            var separator = { "type": "separator" };
+                            lst.unshift(action, separator);
+                        } else {
+                            lst = [action];
+                        }
+                    }
+                    actionMenu.actionList = lst;
+                }
+
+                function createFavoriteAction() {
+                    var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
+                    if (favoriteModel === null) {
+                        return null;
+                    }
+                    var action = {};
+                    if (favoriteModel.isFavorite(model.favoriteId)) {
+                        action.text = i18n("Remove from favorites");
+                        //action.iconName = "list-remove";
+                        action.actionId = "_homerun_favorite_remove";
+                        action.actionArgument = model.favoriteId;
+                    } else {
+                        action.text = i18n("Add to favorites");
+                        //action.iconName = "bookmarks";
+                        action.actionId = "_homerun_favorite_add";
+                        action.actionArgument = model.favoriteId;
+                    }
+                    return action;
+                }
             }
 
-            function createFavoriteAction() {
-                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
-                if (favoriteModel === null) {
-                    return null;
+            states: [
+                State {
+                    name: "inactive"
+                    PropertyChanges { target: resultMain; opacity: 1 }
+                },
+                State {
+                    name: "inDrag"
+                    when: model.index == gridView.draggedIndex
+
+                    PropertyChanges { target: resultMain; opacity: 0 }
+                    //PropertyChanges { target: resultMain; parent: draggedItemContainer }
+
+                    //PropertyChanges { target: resultMain; x: mouseArea.mouseX - mouseArea.dragOffsetX }
+                    //PropertyChanges { target: resultMain; y: mouseArea.mouseY - mouseArea.dragOffsetY }
                 }
-                var action = {};
-                if (favoriteModel.isFavorite(model.favoriteId)) {
-                    action.text = i18n("Remove from favorites");
-                    //action.iconName = "list-remove";
-                    action.actionId = "_homerun_favorite_remove";
-                    action.actionArgument = model.favoriteId;
-                } else {
-                    action.text = i18n("Add to favorites");
-                    //action.iconName = "bookmarks";
-                    action.actionId = "_homerun_favorite_add";
-                    action.actionArgument = model.favoriteId;
-                }
-                return action;
-            }
+            ]
         }
     }
 
@@ -192,6 +217,7 @@ FocusScope {
 
     GridView {
         id: gridView
+        property int draggedIndex: -1
         anchors {
             top: showHeader ? headerLabel.bottom : parent.top
             left: parent.left
@@ -202,6 +228,21 @@ FocusScope {
         focus: true
 
         objectName: "GridView:" + main.model.objectName
+
+        Item {
+            id: draggedItemContainer
+            anchors.fill: parent
+            z: 1
+            Result {
+                id: draggedItem
+                iconWidth: main.iconWidth
+                width: main.resultItemWidth
+                x: mouseArea.mouseX - mouseArea.dragOffsetX
+                y: mouseArea.mouseY - mouseArea.dragOffsetY
+                opacity: 0.4
+            }
+            visible: gridView.draggedIndex != -1
+        }
 
         /*
         // Focus debug help
@@ -257,6 +298,45 @@ FocusScope {
         }
 
         Keys.onReturnPressed: triggerAction(currentIndex, "", null)
+
+        QtExtra.MouseEventListener {
+            id: mouseArea
+            //enabled: "move" in main.model
+            anchors.fill: parent
+            //preventStealing: true
+            property int dragOffsetX
+            property int dragOffsetY
+            property int mouseX
+            property int mouseY
+            onPositionChanged: {
+                mouseX = mouse.x;
+                mouseY = mouse.y;
+                var newIndex = gridView.indexAt(mouseX, mouseY);
+
+                if (gridView.draggedIndex != -1 && newIndex != -1 && newIndex != gridView.draggedIndex) {
+                    main.model.move(gridView.draggedIndex, newIndex);
+                    gridView.draggedIndex = newIndex;
+                }
+            }
+            onReleased: {
+                gridView.draggedIndex = -1;
+                centralFlickable.interactive = true;
+            }
+            onPressAndHold: {
+                console.log("MouseArea.onPressAndHold");
+                mouseX = mouse.x;
+                mouseY = mouse.y;
+                gridView.draggedIndex = gridView.indexAt(mouseX, mouseY);
+                var colCount = gridView.width / gridView.cellWidth;
+                var cellX = (gridView.draggedIndex % colCount) * gridView.cellWidth;
+                var cellY = parseInt(gridView.draggedIndex / colCount) * gridView.cellHeight;
+                dragOffsetX = mouseX - cellX;
+                dragOffsetY = mouseY - cellY;
+                draggedItem.icon = gridView.currentItem.icon;
+                draggedItem.text = gridView.currentItem.text;
+                centralFlickable.interactive = false;
+            }
+        }
     }
 
     PlasmaCore.FrameSvgItem {

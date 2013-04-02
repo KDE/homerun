@@ -19,6 +19,7 @@
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 
@@ -58,7 +59,7 @@ Item {
     }
 
     property int padding: 5
-    height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
+    height: resultIcon.height + resultLabel.paintedHeight + 3 * padding
 
     PlasmaCore.FrameSvgItem {
         id: background
@@ -79,7 +80,7 @@ Item {
         }
     }
 
-    PlasmaCore.IconItem {
+    HomerunComponents.Image {
         id: resultIcon
 
         anchors {
@@ -97,10 +98,11 @@ Item {
         id: resultLabel
 
         anchors {
-            bottomMargin: main.padding
             top: resultIcon.bottom
             left: parent.left
             right: parent.right
+            bottomMargin: main.padding
+            topMargin: main.padding
             rightMargin: main.padding
             leftMargin: main.padding
         }
@@ -112,9 +114,9 @@ Item {
         maximumLineCount: 2
     }
 
-    MouseArea {
+    QtExtra.MouseEventListener {
         id: itemMouseArea
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        //acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
         hoverEnabled: true
         enabled: !configureMode
@@ -153,7 +155,7 @@ Item {
             flat: !actionListMouseArea.containsMouse
         }
 
-        MouseArea {
+        QtExtra.MouseEventListener {
             id: actionListMouseArea
             anchors.fill: parent
             hoverEnabled: true

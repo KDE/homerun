@@ -62,6 +62,11 @@ Item {
                 var sourceIndex = mapRowToSource(index);
                 return sourceModel.trigger(sourceIndex, actionId, actionArgument);
             }
+            function move(from, to) {
+                var sourceFrom = mapRowToSource(from);
+                var sourceTo = mapRowToSource(to);
+                sourceModel.move(sourceFrom, sourceTo);
+            }
         }
     }
 
@@ -254,6 +259,7 @@ Item {
             anchors.fill: parent
             clip: true
             contentHeight: centralColumn.height
+            //interactive: false
 
             Column {
                 id: centralColumn
