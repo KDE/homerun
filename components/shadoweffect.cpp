@@ -61,21 +61,12 @@ QColor ShadowEffect::color() const
     return m_color;
 }
 
-#define SETTER(prop) \
-    if (prop == value) { \
-        return; \
-    } \
-    prop = value;
-
-#define SETTER_REAL(prop) \
-    if (qFuzzyCompare(prop, value)) { \
-        return; \
-    } \
-    prop = value;
-
 void ShadowEffect::setXOffset(qreal value)
 {
-    SETTER_REAL(m_xOffset);
+    if (qFuzzyCompare(m_xOffset, value)) {
+        return;
+    }
+    m_xOffset = value;
     m_shadow = QImage();
     updateBoundingRect();
     xOffsetChanged(m_xOffset);
@@ -83,7 +74,10 @@ void ShadowEffect::setXOffset(qreal value)
 
 void ShadowEffect::setYOffset(qreal value)
 {
-    SETTER_REAL(m_yOffset);
+    if (qFuzzyCompare(m_yOffset, value)) {
+        return;
+    }
+    m_yOffset = value;
     m_shadow = QImage();
     updateBoundingRect();
     yOffsetChanged(m_yOffset);
@@ -91,7 +85,10 @@ void ShadowEffect::setYOffset(qreal value)
 
 void ShadowEffect::setBlurRadius(qreal value)
 {
-    SETTER_REAL(m_blurRadius);
+    if (qFuzzyCompare(m_blurRadius, value)) {
+        return;
+    }
+    m_blurRadius = value;
     m_shadow = QImage();
     updateBoundingRect();
     blurRadiusChanged(m_blurRadius);
@@ -99,7 +96,10 @@ void ShadowEffect::setBlurRadius(qreal value)
 
 void ShadowEffect::setColor(const QColor &value)
 {
-    SETTER(m_color);
+    if (m_color == value) {
+        return;
+    }
+    m_color = value;
     m_shadow = QImage();
     update();
     colorChanged(m_color);
