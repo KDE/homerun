@@ -114,7 +114,6 @@ FocusScope {
         Item {
             width: gridView.cellWidth
             height: gridView.cellHeight
-            state: "inactive"
             property alias text: resultMain.text
             property alias icon: resultMain.icon
 
@@ -123,9 +122,11 @@ FocusScope {
                 iconWidth: main.iconWidth
                 width: main.resultItemWidth
                 configureMode: main.configureMode
+                dragContainer: gridDragContainer
 
                 text: model.display
                 icon: model.decoration
+                itemIndex: model.index
 
                 onHighlightedChanged: {
                     if (highlighted) {
@@ -178,24 +179,8 @@ FocusScope {
                     }
                     return action;
                 }
+
             }
-
-            states: [
-                State {
-                    name: "inactive"
-                    PropertyChanges { target: resultMain; opacity: 1 }
-                },
-                State {
-                    name: "inDrag"
-                    when: model.index == gridView.draggedIndex
-
-                    PropertyChanges { target: resultMain; opacity: 0 }
-                    //PropertyChanges { target: resultMain; parent: draggedItemContainer }
-
-                    //PropertyChanges { target: resultMain; x: mouseArea.mouseX - mouseArea.dragOffsetX }
-                    //PropertyChanges { target: resultMain; y: mouseArea.mouseY - mouseArea.dragOffsetY }
-                }
-            ]
         }
     }
 
@@ -217,7 +202,6 @@ FocusScope {
 
     GridView {
         id: gridView
-        property int draggedIndex: -1
         anchors {
             top: showHeader ? headerLabel.bottom : parent.top
             left: parent.left
@@ -229,19 +213,10 @@ FocusScope {
 
         objectName: "GridView:" + main.model.objectName
 
-        Item {
-            id: draggedItemContainer
+        HomerunComponents.DragContainer {
+            id: gridDragContainer
             anchors.fill: parent
-            z: 1
-            Result {
-                id: draggedItem
-                iconWidth: main.iconWidth
-                width: main.resultItemWidth
-                x: mouseArea.mouseX - mouseArea.dragOffsetX
-                y: mouseArea.mouseY - mouseArea.dragOffsetY
-                opacity: 0.4
-            }
-            visible: gridView.draggedIndex != -1
+            model: main.model
         }
 
         /*
@@ -298,45 +273,6 @@ FocusScope {
         }
 
         Keys.onReturnPressed: triggerAction(currentIndex, "", null)
-
-        QtExtra.MouseEventListener {
-            id: mouseArea
-            //enabled: "move" in main.model
-            anchors.fill: parent
-            //preventStealing: true
-            property int dragOffsetX
-            property int dragOffsetY
-            property int mouseX
-            property int mouseY
-            onPositionChanged: {
-                mouseX = mouse.x;
-                mouseY = mouse.y;
-                var newIndex = gridView.indexAt(mouseX, mouseY);
-
-                if (gridView.draggedIndex != -1 && newIndex != -1 && newIndex != gridView.draggedIndex) {
-                    main.model.move(gridView.draggedIndex, newIndex);
-                    gridView.draggedIndex = newIndex;
-                }
-            }
-            onReleased: {
-                gridView.draggedIndex = -1;
-                centralFlickable.interactive = true;
-            }
-            onPressAndHold: {
-                console.log("MouseArea.onPressAndHold");
-                mouseX = mouse.x;
-                mouseY = mouse.y;
-                gridView.draggedIndex = gridView.indexAt(mouseX, mouseY);
-                var colCount = gridView.width / gridView.cellWidth;
-                var cellX = (gridView.draggedIndex % colCount) * gridView.cellWidth;
-                var cellY = parseInt(gridView.draggedIndex / colCount) * gridView.cellHeight;
-                dragOffsetX = mouseX - cellX;
-                dragOffsetY = mouseY - cellY;
-                draggedItem.icon = gridView.currentItem.icon;
-                draggedItem.text = gridView.currentItem.text;
-                centralFlickable.interactive = false;
-            }
-        }
     }
 
     PlasmaCore.FrameSvgItem {

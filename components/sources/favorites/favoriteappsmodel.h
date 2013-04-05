@@ -66,10 +66,11 @@ public:
 
     Q_INVOKABLE bool trigger(int row);
 
-    Q_INVOKABLE void move(int from, int to);
+    Q_INVOKABLE void moveRow(int from, int to);
 
 Q_SIGNALS:
     void countChanged();
+    void itemsMoved(int from, int to, int n);
 
 private:
     KSharedConfig::Ptr m_config;

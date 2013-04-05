@@ -216,7 +216,7 @@ bool FavoriteAppsModel::trigger(int row)
         return; \
     }
 
-void FavoriteAppsModel::move(int from, int to)
+void FavoriteAppsModel::moveRow(int from, int to)
 {
     CHECK_ROW(from)
     CHECK_ROW(to)
@@ -226,7 +226,11 @@ void FavoriteAppsModel::move(int from, int to)
     }
     // See beginMoveRows() doc for an explanation on modelTo
     int modelTo = to + (to > from ? 1 : 0);
-    beginMoveRows(QModelIndex(), from, from, QModelIndex(), modelTo);
+    bool ok = beginMoveRows(QModelIndex(), from, from, QModelIndex(), modelTo);
+    if (!ok) {
+        kWarning() << "beginMoveRows failed";
+        Q_ASSERT(!"beginMoveRows failed");
+    }
     m_favoriteList.move(from, to);
     // FIXME: Serialize changes
     endMoveRows();

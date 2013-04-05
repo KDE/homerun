@@ -46,6 +46,9 @@ Item {
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
 
+    property alias dragContainer: itemMouseArea.dragContainer
+    property alias itemIndex: itemMouseArea.itemIndex
+
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
@@ -61,6 +64,9 @@ Item {
     property int padding: 5
     height: resultIcon.height + resultLabel.paintedHeight + 3 * padding
 
+    opacity: (itemMouseArea.isDragged || itemMouseArea.isHoldDown) ? 0.6 : 1
+    Behavior on opacity { NumberAnimation {} }
+
     PlasmaCore.FrameSvgItem {
         id: background
         anchors {
@@ -70,7 +76,7 @@ Item {
         imagePath: "widgets/viewitem"
         prefix: "hover"
 
-        opacity: (main.highlighted || actionMenu.opened) ? 1 : 0
+        opacity: !itemMouseArea.isDragged && (main.highlighted || actionMenu.opened) ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
@@ -114,9 +120,9 @@ Item {
         maximumLineCount: 2
     }
 
-    QtExtra.MouseEventListener {
+    HomerunComponents.DragArea {
         id: itemMouseArea
-        //acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
         hoverEnabled: true
         enabled: !configureMode
@@ -127,7 +133,13 @@ Item {
                 openActionMenu(main);
             }
         }
-        onPressAndHold: {
+
+        onLongPressTimeReached: {
+            console.log("drag to reorder, or release to show menu");
+        }
+
+        onLongPressReleased: {
+            console.log("show menu");
             if (hasActionList) {
                 openActionMenu(main);
             }

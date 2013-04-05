@@ -64,10 +64,10 @@ Item {
                 var sourceIndex = mapRowToSource(index);
                 return sourceModel.trigger(sourceIndex, actionId, actionArgument);
             }
-            function move(from, to) {
+            function moveRow(from, to) {
                 var sourceFrom = mapRowToSource(from);
                 var sourceTo = mapRowToSource(to);
-                sourceModel.move(sourceFrom, sourceTo);
+                sourceModel.moveRow(sourceFrom, sourceTo);
             }
         }
     }
