@@ -21,6 +21,7 @@ import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.extras 0.1 as PlasmaExtras
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 Item {
     id: main
@@ -49,7 +50,8 @@ Item {
     // Filter components
     Component {
         id: genericFilterComponent
-        PlasmaCore.SortFilterModel {
+
+        HomerunFixes.SortFilterModel {
             filterRegExp: main.searchCriteria
             property string name: sourceModel.name
             property int count: sourceModel.count
