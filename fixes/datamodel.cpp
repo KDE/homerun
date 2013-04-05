@@ -81,9 +81,18 @@ void SortFilterModel::setModel(QObject *source)
 
     if (sourceModel()) {
         disconnect(sourceModel(), SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
+        disconnect(sourceModel(), SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
+        disconnect(sourceModel(), SIGNAL(rowsAboutToBeMoved(QModelIndex,int,int,QModelIndex,int)),
+            this, SLOT(onRowsAboutToBeMoved(QModelIndex,int,int,QModelIndex,int)));
+        disconnect(sourceModel(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
+            this, SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)));
     }
     if (model) {
         connect(model, SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
+        connect(model, SIGNAL(rowsAboutToBeMoved(QModelIndex,int,int,QModelIndex,int)),
+            this, SLOT(onRowsAboutToBeMoved(QModelIndex,int,int,QModelIndex,int)));
+        connect(model, SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
+            this, SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)));
     }
     QSortFilterProxyModel::setSourceModel(model);
     sourceModelChanged(model);
@@ -168,6 +177,37 @@ int SortFilterModel::mapRowFromSource(int row) const
     }
     QModelIndex idx = sourceModel()->index(row, 0);
     return mapFromSource(idx).row();
+}
+
+void SortFilterModel::onRowsAboutToBeMoved(const QModelIndex &fromParent, int sourceStart, int sourceEnd, const QModelIndex &toParent, int sourceTo)
+{
+    if (fromParent.isValid() || toParent.isValid()) {
+        kWarning() << "Only flat models are supported";
+        return;
+    }
+    int start = mapRowFromSource(sourceStart);
+    int end = mapRowFromSource(sourceEnd);
+    int to;
+    if (sourceStart < sourceTo) {
+        // Compensate for the +1 when moving a row down (see QAbstractItemModel::beginMoveRows doc)
+        to = mapRowFromSource(sourceTo - 1) + 1;
+        Q_ASSERT(to >= 1);
+    } else {
+        to = mapRowFromSource(sourceTo);
+        Q_ASSERT(to >= 0);
+    }
+    beginMoveRows(
+        QModelIndex(), start, end,
+        QModelIndex(), to);
+}
+
+void SortFilterModel::onRowsMoved(const QModelIndex &fromParent, int /*fromStart*/, int /*fromEnd*/, const QModelIndex &toParent, int /*toRow*/)
+{
+    if (fromParent.isValid() || toParent.isValid()) {
+        kWarning() << "Only flat models are supported";
+        return;
+    }
+    endMoveRows();
 }
 
 }

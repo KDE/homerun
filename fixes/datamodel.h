@@ -109,6 +109,10 @@ protected:
 protected Q_SLOTS:
     void syncRoleNames();
 
+private Q_SLOTS:
+    void onRowsAboutToBeMoved(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destinationParent, int destinationRow);
+    void onRowsMoved(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destinationParent, int destinationRow);
+
 private:
     QString m_filterRole;
     QString m_sortRole;
