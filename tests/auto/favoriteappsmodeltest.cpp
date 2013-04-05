@@ -68,21 +68,18 @@ void FavoriteAppsModelTest::testLoad()
     QCOMPARE(model.rowCount(), 2);
 
     // Test Konqueror row
-    QModelIndex index = model.index(0, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konqueror"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("konqueror"));
-    QCOMPARE(index.data(FavoriteAppsModel::FavoriteIdRole).toString(), QString("app:kde4-konqbrowser.desktop"));
+    checkRole(&model, 0, Qt::DisplayRole, "Konqueror");
+    checkRole(&model, 0, Qt::DecorationRole, "konqueror");
+    checkRole(&model, 0, FavoriteAppsModel::FavoriteIdRole, "app:kde4-konqbrowser.desktop");
 
     // Test Dolphin row
-    index = model.index(1, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Dolphin"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("system-file-manager"));
-    QCOMPARE(index.data(FavoriteAppsModel::FavoriteIdRole).toString(), QString("app:kde4-dolphin.desktop"));
+    checkRole(&model, 1, Qt::DisplayRole, "Dolphin");
+    checkRole(&model, 1, Qt::DecorationRole, "system-file-manager");
+    checkRole(&model, 1, FavoriteAppsModel::FavoriteIdRole, "app:kde4-dolphin.desktop");
 }
 
 void FavoriteAppsModelTest::testAdd()
 {
-    QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-3]\n"
         "serviceId=kde4-konqbrowser.desktop\n"
@@ -98,22 +95,19 @@ void FavoriteAppsModelTest::testAdd()
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 3);
-    index = model.index(2, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model, 2, Qt::DisplayRole, "Konsole");
+    checkRole(&model, 2, Qt::DecorationRole, "utilities-terminal");
 
     // Check config matches model
     FavoriteAppsModel model2;
     model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 3);
-    index = model2.index(2, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model2, 2, Qt::DisplayRole, "Konsole");
+    checkRole(&model2, 2, Qt::DecorationRole, "utilities-terminal");
 }
 
 void FavoriteAppsModelTest::testAddEmpty()
 {
-    QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(""));
 
     KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
@@ -124,23 +118,20 @@ void FavoriteAppsModelTest::testAddEmpty()
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 1);
-    index = model.index(0, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model, 0, Qt::DisplayRole, "Konsole");
+    checkRole(&model, 0, Qt::DecorationRole, "utilities-terminal");
 
     // Check config matches model
     FavoriteAppsModel model2;
     model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 1);
-    index = model2.index(0, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model2, 0, Qt::DisplayRole, "Konsole");
+    checkRole(&model2, 0, Qt::DecorationRole, "utilities-terminal");
 
 }
 
 void FavoriteAppsModelTest::testRemove()
 {
-    QModelIndex index;
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
         "[favorites][favorite-4]\n"
         "serviceId=kde4-konqbrowser.desktop\n"
@@ -159,15 +150,13 @@ void FavoriteAppsModelTest::testRemove()
 
     // Check Dolphin has been removed from model
     QCOMPARE(model.rowCount(), 2);
-    index = model.index(1, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
+    checkRole(&model, 1, Qt::DisplayRole, "Konsole");
 
     // Check config matches model
     FavoriteAppsModel model2;
     model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 2);
-    index = model2.index(1, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
+    checkRole(&model2, 1, Qt::DisplayRole, "Konsole");
 }
 
 void FavoriteAppsModelTest::testMove()

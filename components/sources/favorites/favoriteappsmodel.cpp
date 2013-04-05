@@ -191,7 +191,7 @@ QVariant FavoriteAppsModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole) {
         return service->name();
     } else if (role == Qt::DecorationRole) {
-        return KIcon(service->icon());
+        return service->icon();
     } else if (role == FavoriteIdRole) {
         return QVariant("app:" + service->storageId());
     } else {
