@@ -1,5 +1,7 @@
 plugin componentsplugin
 
+DragArea 0.1 DragArea.qml
+DragContainer 0.1 DragContainer.qml
 TabBar 0.1 TabBar.qml
 TabButton 0.1 TabButton.qml
 TabGroup 0.1 TabGroup.qml
