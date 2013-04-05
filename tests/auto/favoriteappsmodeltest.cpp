@@ -44,6 +44,14 @@ static KTemporaryFile *generateTestFile(const QString &content)
     return file;
 }
 
+static void checkRole(QAbstractItemModel *model, int row, int role, const QVariant &expected)
+{
+    QModelIndex index = model->index(row, 0);
+    QVERIFY(index.isValid());
+    QVariant value = index.data(role);
+    QCOMPARE(expected, value);
+}
+
 void FavoriteAppsModelTest::testLoad()
 {
     QScopedPointer<KTemporaryFile> temp(generateTestFile(
@@ -160,6 +168,30 @@ void FavoriteAppsModelTest::testRemove()
     QCOMPARE(model2.rowCount(), 2);
     index = model2.index(1, 0);
     QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
+}
+
+void FavoriteAppsModelTest::testMove()
+{
+    QModelIndex index;
+    QScopedPointer<KTemporaryFile> temp(generateTestFile(
+        "[favorites][favorite-4]\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
+        "[favorites][favorite-8]\n"
+        "serviceId=kde4-dolphin.desktop\n"
+        "[favorites][favorite-9]\n"
+        "serviceId=kde4-konsole.desktop\n"
+        ));
+
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
+    FavoriteAppsModel model;
+    model.setConfig(config);
+
+    // Move Dolphin after Konsole
+    model.moveRow(1, 2);
+
+    // Check model
+    checkRole(&model, 1, Qt::DisplayRole, "Konsole");
+    checkRole(&model, 2, Qt::DisplayRole, "Dolphin");
 }
 
 #include "favoriteappsmodeltest.moc"

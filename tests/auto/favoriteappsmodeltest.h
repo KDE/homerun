@@ -31,6 +31,7 @@ private Q_SLOTS:
     void testAdd();
     void testAddEmpty();
     void testRemove();
+    void testMove();
 };
 
 #endif /* FAVORITEAPPSMODELTEST_H */
