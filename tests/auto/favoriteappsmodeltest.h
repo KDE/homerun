@@ -37,6 +37,7 @@ private Q_SLOTS:
     void testRemove();
     void testMove();
     void testImport();
+    void testFirstLoad();
 
 private:
     QString m_favoriteXmlFileName;

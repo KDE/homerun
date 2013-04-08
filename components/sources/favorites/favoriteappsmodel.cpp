@@ -87,7 +87,9 @@ void FavoriteAppsModel::load()
     if (m_favoriteList.isEmpty()) {
         // Nothing to import, load system xml file
         ok = loadFromXml(systemXmlFileName());
-        if (!ok) {
+        if (ok) {
+            saveToXml();
+        } else {
             kWarning() << "Failed to load any favoriteapps file. No apps will be listed as favorite.";
         }
     }
@@ -306,6 +308,11 @@ void FavoriteAppsModel::importFromConfigFile()
 {
     KSharedConfig::Ptr config = KSharedConfig::openConfig("homerunrc", KConfig::SimpleConfig);
     KConfigGroup baseGroup(config, "favorites");
+    if (!baseGroup.exists()) {
+        // No favorite to import. Leave now, we do not want to write an empty
+        // xml file
+        return;
+    }
 
     // Get favorites in a map to order them correctly
     QMap<int, KService::Ptr> favoriteMap;

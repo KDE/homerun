@@ -137,6 +137,19 @@ void FavoriteAppsModelTest::testImport()
     QCOMPARE(list[1], QString("Group2"));
 }
 
+void FavoriteAppsModelTest::testFirstLoad()
+{
+    QVERIFY(!QFile::exists(m_favoriteXmlFileName));
+    QVERIFY(!QFile::exists(m_configFileName));
+
+    FavoriteAppsModel model;
+    // model should start with default apps, see data/favoriteapps.xml
+    QCOMPARE(model.rowCount(), 3);
+    checkRole(&model, 0, Qt::DisplayRole, "Konqueror");
+    checkRole(&model, 1, Qt::DisplayRole, "KMail");
+    checkRole(&model, 2, Qt::DisplayRole, "Dolphin");
+}
+
 void FavoriteAppsModelTest::testAdd()
 {
     writeTestXml(
