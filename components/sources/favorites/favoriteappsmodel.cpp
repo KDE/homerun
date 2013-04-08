@@ -335,9 +335,9 @@ void FavoriteAppsModel::importFromConfigFile()
     }
 
     // Finish migration
+    saveToXml();
     config->deleteGroup("favorites");
     config->sync();
-    saveToXml();
 
     // Notify outside
     endResetModel();
