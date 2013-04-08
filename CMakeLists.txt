@@ -40,6 +40,8 @@ configure_file(homerun_config.h.in ${CMAKE_BINARY_DIR}/homerun_config.h @ONLY)
 # config/
 install(FILES config/homerunrc DESTINATION ${CONFIG_INSTALL_DIR})
 
+install(FILES data/favoriteapps.xml DESTINATION ${DATA_INSTALL_DIR}/homerun/)
+
 add_subdirectory(lib)
 add_subdirectory(applet)
 add_subdirectory(shell)

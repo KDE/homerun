@@ -4,15 +4,6 @@ tabs=Tab0,Tab1,Tab2,Tab3
 [PackageManagement]
 categoryInstaller=muon-discover-category
 
-[favorites][favorite-1]
-serviceId=konqueror
-
-[favorites][favorite-2]
-serviceId=kmail2
-
-[favorites][favorite-3]
-serviceId=dolphin
-
 [Tab0]
 name=Home
 icon=go-home
