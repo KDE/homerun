@@ -23,6 +23,8 @@
 #include "favoriteappsmodel.h"
 
 // Qt
+#include <QDomDocument>
+#include <QFile>
 
 // KDE
 #include <KDebug>
@@ -31,8 +33,19 @@
 #include <KLocale>
 #include <KRun>
 #include <KService>
+#include <KStandardDirs>
 
 namespace Homerun {
+
+static QString localXmlFileName()
+{
+    return KStandardDirs::locateLocal("data", "homerun/favoriteapps.xml");
+}
+
+static QString systemXmlFileName()
+{
+    return KStandardDirs::locate("data", "homerun/favoriteapps.xml");
+}
 
 static QString serviceIdFromFavoriteId(const QString &favoriteId)
 {
@@ -51,42 +64,106 @@ FavoriteAppsModel::FavoriteAppsModel(QObject *parent)
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(FavoriteIdRole, "favoriteId");
     setRoleNames(roles);
-    setConfig(KSharedConfig::openConfig("homerunrc"));
+    load();
 }
 
 FavoriteAppsModel::~FavoriteAppsModel()
 {
 }
 
-void FavoriteAppsModel::setConfig(const KSharedConfig::Ptr &ptr)
+void FavoriteAppsModel::load()
 {
-    m_config = ptr;
+    bool ok;
+    QString name = localXmlFileName();
+    if (QFile::exists(name)) {
+        ok = loadFromXml(name);
+        if (ok) {
+            return;
+        } else {
+            kWarning() << "Failed to load from" << name;
+        }
+    }
+    importFromConfigFile();
+    if (m_favoriteList.isEmpty()) {
+        // Nothing to import, load system xml file
+        ok = loadFromXml(systemXmlFileName());
+        if (!ok) {
+            kWarning() << "Failed to load any favoriteapps file. No apps will be listed as favorite.";
+        }
+    }
+}
 
-    KConfigGroup baseGroup(m_config, "favorites");
-
-    // get all the favorites
-    QMap<int, KService::Ptr> favoriteMap;
-    foreach (const QString &favoriteGroup, baseGroup.groupList()) {
-        if (favoriteGroup.startsWith("favorite-")) {
-            KConfigGroup favoriteConfig(&baseGroup, favoriteGroup);
-            int rank = favoriteGroup.split("-").last().toInt();
-            QString id = favoriteConfig.readEntry("serviceId");
-            KService::Ptr service = KService::serviceByStorageId(id);
-            if (!service.isNull()) {
-                favoriteMap.insert(rank, service);
-            }
+bool FavoriteAppsModel::loadFromXml(const QString &fileName)
+{
+    QDomDocument doc;
+    bool ok;
+    {
+        QFile file(fileName);
+        ok = file.open(QIODevice::ReadOnly);
+        if (!ok) {
+            kWarning() << "Failed to open" << fileName << ". Error " << file.error();
+            return false;
+        }
+        QString msg;
+        int line, column;
+        ok = doc.setContent(&file, &msg, &line, &column);
+        if (!ok) {
+            kWarning() << "Failed to parse" << fileName << ". Error line" << line << "column" << column << ":" << msg;
+            return false;
         }
     }
 
     beginResetModel();
     m_favoriteList.clear();
-    auto it = favoriteMap.constBegin(), end = favoriteMap.constEnd();
-    for (; it != end; ++it) {
-        FavoriteInfo info = { it.key(), it.value() };
+    QDomElement root = doc.documentElement();
+    for(QDomNode node = root.firstChild(); !node.isNull(); node = node.nextSibling()) {
+        const QDomElement element = node.toElement();
+        if (element.isNull()) {
+            kWarning() << "Ignoring invalid node";
+            continue;
+        }
+        const QString serviceId = element.attribute("serviceId");
+        if (serviceId.isEmpty()) {
+            kWarning() << "Ignoring element with empty serviceId attribute";
+            continue;
+        }
+        KService::Ptr service = KService::serviceByStorageId(serviceId);
+        if (service.isNull()) {
+            kWarning() << "Ignoring element with invalid serviceId" << serviceId;
+            continue;
+        }
+        FavoriteInfo info = { service };
         m_favoriteList << info;
     }
     endResetModel();
     countChanged();
+
+    return true;
+}
+
+void FavoriteAppsModel::saveToXml()
+{
+    bool ok;
+
+    QDomDocument doc;
+    QDomElement root = doc.createElement("apps");
+    root.setAttribute("version", "1");
+    doc.appendChild(root);
+
+    Q_FOREACH(const FavoriteInfo &info, m_favoriteList) {
+        QString serviceId = info.service->storageId();
+        QDomElement element = doc.createElement("app");
+        element.setAttribute("serviceId", serviceId);
+        root.appendChild(element);
+    }
+
+    QFile file(localXmlFileName());
+    ok = file.open(QIODevice::WriteOnly);
+    if (!ok) {
+        kWarning() << "Failed to open" << localXmlFileName() << "for writing. Error" << file.error();
+        return;
+    }
+    file.write(doc.toByteArray(4));
 }
 
 void FavoriteAppsModel::addFavorite(const QString &favoriteId)
@@ -100,13 +177,7 @@ void FavoriteAppsModel::addFavorite(const QString &favoriteId)
         kWarning() << "Could not find a service for" << serviceId;
         return;
     }
-    int rank;
-    if (!m_favoriteList.isEmpty()) {
-        rank = m_favoriteList.last().rank + 1;
-    } else {
-        rank = 0;
-    }
-    FavoriteInfo info = { rank, service };
+    FavoriteInfo info = { service };
 
     int row = m_favoriteList.count();
     beginInsertRows(QModelIndex(), row, row);
@@ -114,10 +185,7 @@ void FavoriteAppsModel::addFavorite(const QString &favoriteId)
     endInsertRows();
     countChanged();
 
-    KConfigGroup baseGroup(m_config, "favorites");
-    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(rank));
-    group.writeEntry("serviceId", serviceId);
-    baseGroup.sync();
+    saveToXml();
 }
 
 void FavoriteAppsModel::removeFavorite(const QString &favoriteId)
@@ -132,10 +200,7 @@ void FavoriteAppsModel::removeFavorite(const QString &favoriteId)
     endRemoveRows();
     countChanged();
 
-    KConfigGroup baseGroup(m_config, "favorites");
-    KConfigGroup group(&baseGroup, QString("favorite-%1").arg(info.rank));
-    group.deleteGroup();
-    baseGroup.sync();
+    saveToXml();
 }
 
 bool FavoriteAppsModel::isFavorite(const QString &favoriteId) const
@@ -232,8 +297,46 @@ void FavoriteAppsModel::moveRow(int from, int to)
         Q_ASSERT(!"beginMoveRows failed");
     }
     m_favoriteList.move(from, to);
-    // FIXME: Serialize changes
     endMoveRows();
+
+    saveToXml();
+}
+
+void FavoriteAppsModel::importFromConfigFile()
+{
+    KSharedConfig::Ptr config = KSharedConfig::openConfig("homerunrc", KConfig::SimpleConfig);
+    KConfigGroup baseGroup(config, "favorites");
+
+    // Get favorites in a map to order them correctly
+    QMap<int, KService::Ptr> favoriteMap;
+    Q_FOREACH(const QString &favoriteGroup, baseGroup.groupList()) {
+        if (favoriteGroup.startsWith("favorite-")) {
+            KConfigGroup favoriteConfig(&baseGroup, favoriteGroup);
+            int rank = favoriteGroup.split("-").last().toInt();
+            QString id = favoriteConfig.readEntry("serviceId");
+            KService::Ptr service = KService::serviceByStorageId(id);
+            if (!service.isNull()) {
+                favoriteMap.insert(rank, service);
+            }
+        }
+    }
+
+    // Load favorites following map order
+    beginResetModel();
+    auto it = favoriteMap.constBegin(), end = favoriteMap.constEnd();
+    for (; it != end; ++it) {
+        FavoriteInfo info = { it.value() };
+        m_favoriteList << info;
+    }
+
+    // Finish migration
+    config->deleteGroup("favorites");
+    config->sync();
+    saveToXml();
+
+    // Notify outside
+    endResetModel();
+    countChanged();
 }
 
 } // namespace Homerun

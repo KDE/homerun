@@ -27,11 +27,12 @@
 #include <KService>
 #include <KSharedConfig>
 
+class QDomDocument;
+
 namespace Homerun {
 
 struct FavoriteInfo
 {
-    int rank;
     KService::Ptr service;
 };
 
@@ -55,8 +56,6 @@ public:
     QString name() const;
     QString favoritePrefix() const;
 
-    void setConfig(const KSharedConfig::Ptr &);
-
     int rowCount(const QModelIndex & = QModelIndex()) const;
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const;
 
@@ -77,6 +76,11 @@ private:
     QList<FavoriteInfo> m_favoriteList;
 
     int rowForFavoriteId(const QString &favoriteId) const;
+
+    void load();
+    void importFromConfigFile();
+    bool loadFromXml(const QString &fileName);
+    void saveToXml();
 };
 
 } // namespace Homerun
