@@ -40,6 +40,7 @@ class FavoriteAppsModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(bool canMoveRow READ canMoveRow CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
     Q_PROPERTY(QString favoritePrefix READ favoritePrefix CONSTANT)
@@ -54,6 +55,7 @@ public:
 
     int count() const;
     QString name() const;
+    bool canMoveRow() const;
     QString favoritePrefix() const;
 
     int rowCount(const QModelIndex & = QModelIndex()) const;

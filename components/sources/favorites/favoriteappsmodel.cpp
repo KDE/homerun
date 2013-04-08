@@ -239,6 +239,11 @@ QString FavoriteAppsModel::favoritePrefix() const
     return "app";
 }
 
+bool FavoriteAppsModel::canMoveRow() const
+{
+    return true;
+}
+
 int FavoriteAppsModel::rowCount(const QModelIndex &index) const
 {
     if (index.isValid()) {
