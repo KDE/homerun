@@ -33,6 +33,7 @@ Item {
     property alias icon: resultIcon.source
     property bool configureMode: false
     property bool hasActionList: false
+    property alias dragEnabled: itemMouseArea.dragEnabled
 
     // Exposed by us
     property alias truncated: resultLabel.truncated

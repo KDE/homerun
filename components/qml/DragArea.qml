@@ -25,12 +25,15 @@ Item {
     property Item draggedItem: parent
     property int itemIndex: -1
 
+    property alias hoverEnabled: mouseArea.hoverEnabled
+    property bool dragEnabled: true
+
+    // Read only info
     property bool isHoldDown: mouseArea.holdX > -1
     property bool isDragged: dragContainer.draggedIndex != -1 && itemIndex == dragContainer.draggedIndex
 
     property alias mouseX: mouseArea.mouseX
     property alias mouseY: mouseArea.mouseY
-    property alias hoverEnabled: mouseArea.hoverEnabled
     property alias containsMouse: mouseArea.containsMouse
 
     /**
@@ -71,7 +74,7 @@ Item {
         }
 
         onPressed: {
-            if (mouse.button == Qt.MiddleButton) {
+            if (main.dragEnabled && mouse.button == Qt.MiddleButton) {
                 main.startDrag();
                 mouse.accepted = true;
             }
@@ -81,6 +84,13 @@ Item {
             function moved(a, b) {
                 return Math.abs(a, b) > 16;
             }
+            if (!main.dragEnabled) {
+                if (isHoldDown) {
+                    resetHold();
+                }
+                return;
+            }
+            // We only reach this point when drag is enabled
             if (main.isHoldDown && (moved(mouseX, holdX) || moved(mouseY, holdY))) {
                 resetHold();
                 main.startDrag();

@@ -55,16 +55,22 @@ Item {
             filterRegExp: main.searchCriteria
             property string name: sourceModel.name
             property int count: sourceModel.count
-
+            property bool canMoveRow: "canMoveRow" in sourceModel ? sourceModel.canMoveRow : false
             property bool running: "running" in sourceModel ? sourceModel.running : false
             property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
 
             objectName: "SortFilterModel:" + (sourceModel ? sourceModel.objectName : "")
+
             function trigger(index, actionId, actionArgument) {
                 var sourceIndex = mapRowToSource(index);
                 return sourceModel.trigger(sourceIndex, actionId, actionArgument);
             }
+
             function moveRow(from, to) {
+                if (!canMoveRow) {
+                    console.log("Page.qml: moveRow(): source model cannot move rows. This method should not be called.");
+                    return;
+                }
                 var sourceFrom = mapRowToSource(from);
                 var sourceTo = mapRowToSource(to);
                 sourceModel.moveRow(sourceFrom, sourceTo);

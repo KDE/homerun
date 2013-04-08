@@ -123,6 +123,7 @@ FocusScope {
                 width: main.resultItemWidth
                 configureMode: main.configureMode
                 dragContainer: gridDragContainer
+                dragEnabled: ("canMoveRow" in main.model) ? main.model.canMoveRow : false
 
                 text: model.display
                 icon: model.decoration
