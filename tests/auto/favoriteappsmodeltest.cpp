@@ -148,6 +148,9 @@ void FavoriteAppsModelTest::testFirstLoad()
     checkRole(&model, 0, Qt::DisplayRole, "Konqueror");
     checkRole(&model, 1, Qt::DisplayRole, "KMail");
     checkRole(&model, 2, Qt::DisplayRole, "Dolphin");
+
+    // we should not write the user xml file unless the user makes a change
+    QVERIFY(!QFile::exists(m_favoriteXmlFileName));
 }
 
 void FavoriteAppsModelTest::testAdd()

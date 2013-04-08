@@ -87,9 +87,7 @@ void FavoriteAppsModel::load()
     if (m_favoriteList.isEmpty()) {
         // Nothing to import, load system xml file
         ok = loadFromXml(systemXmlFileName());
-        if (ok) {
-            saveToXml();
-        } else {
+        if (!ok) {
             kWarning() << "Failed to load any favoriteapps file. No apps will be listed as favorite.";
         }
     }
