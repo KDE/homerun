@@ -34,7 +34,7 @@ class FavoritePlacesModelTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
-    void initTestCase();
+    void init();
     void testFavoriteId();
 };
 

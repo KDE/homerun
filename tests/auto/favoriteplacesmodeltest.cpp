@@ -35,7 +35,15 @@ using namespace Homerun;
 
 QTEST_KDEMAIN(FavoritePlacesModelTest, NoGUI)
 
-void FavoritePlacesModelTest::initTestCase()
+static void checkRole(QAbstractItemModel *model, int row, int role, const QVariant &expected)
+{
+    QModelIndex index = model->index(row, 0);
+    QVERIFY(index.isValid());
+    QVariant value = index.data(role);
+    QCOMPARE(expected, value);
+}
+
+void FavoritePlacesModelTest::init()
 {
     QString dir = KGlobal::dirs()->localxdgdatadir();
     QFile file(dir + "/user-places.xbel");
@@ -45,18 +53,11 @@ void FavoritePlacesModelTest::initTestCase()
 void FavoritePlacesModelTest::testFavoriteId()
 {
     FavoritePlacesModel model;
-    {
-        model.addPlace("Foo", KUrl("/foo"));
-        QModelIndex index = model.index(model.rowCount() - 1, 0);
-        QString favoriteId = index.data(FavoritePlacesModel::FavoriteIdRole).toString();
-        QCOMPARE(favoriteId, QString("place:file:///foo"));
-    }
-    {
-        model.addPlace("Foo", KUrl("sftp://user@example.com/dir/"));
-        QModelIndex index = model.index(model.rowCount() - 1, 0);
-        QString favoriteId = index.data(FavoritePlacesModel::FavoriteIdRole).toString();
-        QCOMPARE(favoriteId, QString("place:sftp://user@example.com/dir/"));
-    }
+    model.addPlace("Foo", KUrl("/foo"));
+    checkRole(&model, model.rowCount() - 1, FavoritePlacesModel::FavoriteIdRole, "place:file:///foo");
+
+    model.addPlace("Foo", KUrl("sftp://user@example.com/dir/"));
+    checkRole(&model, model.rowCount() - 1, FavoritePlacesModel::FavoriteIdRole, "place:sftp://user@example.com/dir/");
 }
 
 #include <favoriteplacesmodeltest.moc>
