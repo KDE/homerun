@@ -53,6 +53,12 @@ Item {
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
+    /**
+     * Emitted when the item wants to show a global message, for example to
+     * indicate possible actions when it is held down.
+     */
+    signal showMessageRequested(string icon, string text)
+
     //- Private ---------------------------------------------------------------
     property bool containsMouse: dragArea.containsMouse || actionListMouseArea.containsMouse
     onContainsMouseChanged: {
@@ -136,11 +142,22 @@ Item {
         }
 
         onLongPressTimeReached: {
-            console.log("drag to reorder, or release to show menu");
+            var icon = "dialog-information";
+            var text;
+            if (hasActionList && dragEnabled) {
+                text = i18n("drag to reorder, or release to show menu");
+            } else if (hasActionList) {
+                text = i18n("release to show menu");
+            } else if (dragEnabled) {
+                text = i18n("drag to reorder");
+            } else {
+                icon = "dialog-error";
+                text = i18n("This item has no menu and cannot be moved");
+            }
+            showMessageRequested(icon, text);
         }
 
         onLongPressReleased: {
-            console.log("show menu");
             if (hasActionList) {
                 openActionMenu(main);
             }

@@ -101,6 +101,9 @@ Item {
                     main.scrollToItem(currentItem);
                 }
             }
+            onShowMessageRequested: {
+                main.showMessage(icon, text);
+            }
         }
     }
 
@@ -193,6 +196,9 @@ Item {
                             main.scrollToItem(currentItem);
                         }
                     }
+                    onShowMessageRequested: {
+                        main.showMessage(icon, text);
+                    }
                 }
 
                 function viewAt(idx) {
@@ -219,6 +225,13 @@ Item {
         y: 12
 
         opacity: running ? 0.5 : 0
+    }
+
+    MessageItem {
+        id: messageItem
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+        }
     }
 
     PlasmaExtras.ScrollArea {
@@ -540,5 +553,9 @@ Item {
         } else if (y + item.height > centralFlickable.contentY + centralFlickable.height) {
             centralFlickable.contentY = y + item.height - centralFlickable.height;
         }
+    }
+
+    function showMessage(icon, text) {
+        messageItem.show(icon, text);
     }
 }

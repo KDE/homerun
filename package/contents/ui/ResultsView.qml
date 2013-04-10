@@ -46,6 +46,8 @@ FocusScope {
 
     signal focusOtherViewRequested(int key, int x)
 
+    signal showMessageRequested(string icon, string text)
+
     function isEmpty() {
         return gridView.count == 0;
     }
@@ -143,6 +145,10 @@ FocusScope {
 
                 onActionTriggered: {
                     triggerAction(model.index, actionId, actionArgument);
+                }
+
+                onShowMessageRequested: {
+                    main.showMessageRequested(icon, text);
                 }
 
                 function fillActionMenu(actionMenu) {
