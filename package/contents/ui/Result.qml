@@ -145,14 +145,14 @@ Item {
             var icon = "dialog-information";
             var text;
             if (hasActionList && dragEnabled) {
-                text = i18n("drag to reorder, or release to show menu");
+                text = i18n("Drag to reorder; release to show menu");
             } else if (hasActionList) {
-                text = i18n("release to show menu");
+                text = i18n("Release to show menu");
             } else if (dragEnabled) {
-                text = i18n("drag to reorder");
+                text = i18n("Drag to reorder");
             } else {
                 icon = "dialog-error";
-                text = i18n("This item has no menu and cannot be moved");
+                text = i18n("This item has no menu and cannot be dragged");
             }
             showMessageRequested(icon, text);
         }
