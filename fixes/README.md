@@ -15,4 +15,11 @@ moved to the components/ dir.
 ### Keep placeholder text visible when focused and empty
 <https://git.reviewboard.kde.org/r/107678/>
 
+Applied in 4.11
+
+## KFilePlacesModel (kdelibs)
+
+### Emit rowsMoved() when reordering via drag and drop, instead of remove+insert
+<https://git.reviewboard.kde.org/r/109935/>
+
 Not applied for now
