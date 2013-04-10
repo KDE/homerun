@@ -17,6 +17,17 @@ moved to the components/ dir.
 
 Applied in 4.11
 
+## SortFilterModel (kde-runtime)
+
+### Fix crash in mapRowFromSource()
+<https://git.reviewboard.kde.org/r/109946/>
+
+Not applied for now
+
+### Emit beginMoveRows() and endMoveRows()
+
+Need to be proposed
+
 ## KFilePlacesModel (kdelibs)
 
 ### Emit rowsMoved() when reordering via drag and drop, instead of remove+insert
