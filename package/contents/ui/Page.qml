@@ -217,23 +217,6 @@ Item {
     }
 
     //- UI ---------------------------------------------------------
-    PlasmaComponents.BusyIndicator {
-        id: busyIndicator
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-        }
-        y: 12
-
-        opacity: running ? 0.5 : 0
-    }
-
-    MessageItem {
-        id: messageItem
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-        }
-    }
-
     PlasmaExtras.ScrollArea {
         id: availableScrollArea
         anchors {
@@ -354,6 +337,28 @@ Item {
             }
         }
     }
+
+    Column {
+        y: 12
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+        }
+        PlasmaComponents.BusyIndicator {
+            id: busyIndicator
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+
+            opacity: running ? 0.5 : 0
+        }
+        MessageItem {
+            id: messageItem
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+        }
+    }
+
 
     Behavior on opacity {
         NumberAnimation {
