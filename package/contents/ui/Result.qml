@@ -33,7 +33,7 @@ Item {
     property alias icon: resultIcon.source
     property bool configureMode: false
     property bool hasActionList: false
-    property alias dragEnabled: itemMouseArea.dragEnabled
+    property alias dragEnabled: dragArea.dragEnabled
 
     // Exposed by us
     property alias truncated: resultLabel.truncated
@@ -47,14 +47,14 @@ Item {
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
 
-    property alias dragContainer: itemMouseArea.dragContainer
-    property alias itemIndex: itemMouseArea.itemIndex
+    property alias dragContainer: dragArea.dragContainer
+    property alias itemIndex: dragArea.itemIndex
 
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
     //- Private ---------------------------------------------------------------
-    property bool containsMouse: itemMouseArea.containsMouse || actionListMouseArea.containsMouse
+    property bool containsMouse: dragArea.containsMouse || actionListMouseArea.containsMouse
     onContainsMouseChanged: {
         highlighted = containsMouse;
     }
@@ -65,7 +65,7 @@ Item {
     property int padding: 5
     height: resultIcon.height + resultLabel.paintedHeight + 3 * padding
 
-    opacity: (itemMouseArea.isDragged || itemMouseArea.isHoldDown) ? 0.6 : 1
+    opacity: (dragArea.isDragged || dragArea.isHoldDown) ? 0.6 : 1
     Behavior on opacity { NumberAnimation {} }
 
     PlasmaCore.FrameSvgItem {
@@ -77,7 +77,7 @@ Item {
         imagePath: "widgets/viewitem"
         prefix: "hover"
 
-        opacity: !itemMouseArea.isDragged && (main.highlighted || actionMenu.opened) ? 1 : 0
+        opacity: !dragArea.isDragged && (main.highlighted || actionMenu.opened) ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
@@ -122,7 +122,7 @@ Item {
     }
 
     HomerunComponents.DragArea {
-        id: itemMouseArea
+        id: dragArea
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
         hoverEnabled: true
