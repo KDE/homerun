@@ -37,7 +37,7 @@ namespace Homerun {
 
 //- FavoritePlacesModel ------------------------------------------------
 FavoritePlacesModel::FavoritePlacesModel(QObject *parent)
-: KFilePlacesModel(parent)
+: Fixes::KFilePlacesModel(parent)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
@@ -95,7 +95,7 @@ QModelIndex FavoritePlacesModel::indexForFavoriteId(const QString &favoriteId) c
 QVariant FavoritePlacesModel::data(const QModelIndex &index, int role) const
 {
     if (role != FavoriteIdRole && role != HasActionListRole && role != ActionListRole) {
-        return KFilePlacesModel::data(index, role);
+        return Fixes::KFilePlacesModel::data(index, role);
     }
 
     if (index.row() < 0 || index.row() >= rowCount()) {
@@ -117,7 +117,7 @@ QVariant FavoritePlacesModel::data(const QModelIndex &index, int role) const
 bool FavoritePlacesModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
 {
     QModelIndex idx = index(row, 0);
-    KUrl theUrl = idx.data(KFilePlacesModel::UrlRole).value<QUrl>();
+    KUrl theUrl = idx.data(Fixes::KFilePlacesModel::UrlRole).value<QUrl>();
     if (actionId.isEmpty()) {
         theUrl.adjustPath(KUrl::AddTrailingSlash);
         QString rootName = idx.data(Qt::DisplayRole).toString();
@@ -142,6 +142,23 @@ QString FavoritePlacesModel::name() const
 int FavoritePlacesModel::count() const
 {
     return rowCount(QModelIndex());
+}
+
+void FavoritePlacesModel::moveRow(int from, int to)
+{
+    // Simulate a move by drag'n'drop because moving the row this way
+    // is the only way to get rowsMoved() signals instead of remove+insert
+    QMimeData *data = mimeData(QModelIndexList() << index(from, 0));
+    Q_ASSERT(data);
+    if (from < to) {
+        ++to;
+    }
+    dropMimeData(data, Qt::MoveAction, to, 0, QModelIndex());
+}
+
+bool FavoritePlacesModel::canMoveRow() const
+{
+    return true;
 }
 
 } // namespace Homerun

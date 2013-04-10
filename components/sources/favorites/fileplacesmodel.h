@@ -32,6 +32,11 @@
 class QMimeData;
 class QAction;
 
+namespace Homerun
+{
+namespace Fixes
+{
+
 /**
  * This class is a list view model. Each entry represents a "place"
  * where user can access files. Only revelant when
@@ -147,5 +152,8 @@ private:
     Private * const d;
     friend class Private;
 };
+
+} // namespace
+} // namespace
 
 #endif

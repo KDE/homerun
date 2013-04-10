@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <favoriteplacesmodel.h>
 
 // KDE
+#include <KDebug>
 #include <KGlobal>
 #include <KStandardDirs>
 #include <qtest_kde.h>
@@ -40,14 +41,14 @@ static void checkRole(QAbstractItemModel *model, int row, int role, const QVaria
     QModelIndex index = model->index(row, 0);
     QVERIFY(index.isValid());
     QVariant value = index.data(role);
-    QCOMPARE(expected, value);
+    QCOMPARE(value, expected);
 }
 
 void FavoritePlacesModelTest::init()
 {
     QString dir = KGlobal::dirs()->localxdgdatadir();
-    QFile file(dir + "/user-places.xbel");
-    file.remove();
+    QFile::remove(dir + "/user-places.xbel");
+    QFile::remove(KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml"));
 }
 
 void FavoritePlacesModelTest::testFavoriteId()
@@ -58,6 +59,47 @@ void FavoritePlacesModelTest::testFavoriteId()
 
     model.addPlace("Foo", KUrl("sftp://user@example.com/dir/"));
     checkRole(&model, model.rowCount() - 1, FavoritePlacesModel::FavoriteIdRole, "place:sftp://user@example.com/dir/");
+}
+
+static bool checkOrder(FavoritePlacesModel *model, const QStringList &list)
+{
+    int startRow = model->count() - list.count();
+    for(int idx = 0; idx < list.count(); ++idx) {
+        QModelIndex index = model->index(startRow + idx, 0);
+        QString actual = index.data(Qt::DisplayRole).toString();
+        QString expected = list[idx];
+        if (actual != expected) {
+            kWarning() << "--- End of model differs from list ---";
+            for(int idx = 0; idx < list.count(); ++idx) {
+                QModelIndex index = model->index(startRow + idx, 0);
+                QString actual = index.data(Qt::DisplayRole).toString();
+                QString expected = list[idx];
+                kWarning() << "- actual=" << actual << " expected=" << expected;
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
+void FavoritePlacesModelTest::testMoveRow()
+{
+    FavoritePlacesModel model;
+    int row1 = model.count();
+    model.addPlace("Foo", KUrl("/foo"));
+    int row2 = model.count();
+    model.addPlace("Bar", KUrl("/bar"));
+    model.addPlace("Baz", KUrl("/baz"));
+
+    QVERIFY(checkOrder(&model, QStringList() << "Foo" << "Bar" << "Baz"));
+
+    // Move "Foo" after "Bar"
+    model.moveRow(row1, row2);
+    QVERIFY(checkOrder(&model, QStringList() << "Bar" << "Foo" << "Baz"));
+
+    // Move "Foo" back before "Bar"
+    model.moveRow(row2, row1);
+    QVERIFY(checkOrder(&model, QStringList() << "Foo" << "Bar" << "Baz"));
 }
 
 #include <favoriteplacesmodeltest.moc>

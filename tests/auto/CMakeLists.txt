@@ -23,6 +23,7 @@ macro(homerun_add_unit_test _test)
         ${KDE4_KIO_LIBS}
         ${KDE4_KDEUI_LIBS}
         ${KDE4_KDECORE_LIBS}
+        ${KDE4_SOLID_LIBS}
         ${QT_QTTEST_LIBRARY}
         ${QT_QTCORE_LIBRARY}
         ${QT_QTGUI_LIBRARY}
@@ -68,6 +69,9 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${components_SOURCE_DIR}/sources/dir/dirmodel.cpp
     ${components_SOURCE_DIR}/sources/favorites/favoriteplacesmodel.cpp
     ${components_SOURCE_DIR}/sources/favorites/favoriteutils.cpp
+    ${components_SOURCE_DIR}/sources/favorites/fileplacesmodel.cpp
+    ${components_SOURCE_DIR}/sources/favorites/kfileplacesitem.cpp
+    ${components_SOURCE_DIR}/sources/favorites/kfileplacessharedbookmarks.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/actionlist.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp

@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 
 */
-#include "kfileplacesmodel.h"
+#include "fileplacesmodel.h"
 #include "kfileplacesitem_p.h"
 #include "kfileplacessharedbookmarks_p.h"
 
@@ -57,6 +57,11 @@
 #include <solid/opticaldisc.h>
 #include <solid/portablemediaplayer.h>
 #include <solid/predicate.h>
+
+namespace Homerun
+{
+namespace Fixes
+{
 
 class KFilePlacesModel::Private
 {
@@ -501,7 +506,7 @@ Qt::ItemFlags KFilePlacesModel::flags(const QModelIndex &index) const
 
 static QString _k_internalMimetype(const KFilePlacesModel * const self)
 {
-    return QString("application/x-kfileplacesmodel-")+QString::number((qptrdiff)self);
+    return QString("application/x-fileplacesmodel-")+QString::number((qptrdiff)self);
 }
 
 QStringList KFilePlacesModel::mimeTypes() const
@@ -865,4 +870,7 @@ void KFilePlacesModel::Private::_k_storageTeardownDone(Solid::ErrorType error, Q
     }
 }
 
-#include "kfileplacesmodel.moc"
+} // namespace
+} // namespace
+
+#include "fileplacesmodel.moc"

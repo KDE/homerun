@@ -23,3 +23,5 @@ Applied in 4.11
 <https://git.reviewboard.kde.org/r/109935/>
 
 Not applied for now
+
+Files for the fixed KFilePlacesModel class are in `components/sources/favorites/`.

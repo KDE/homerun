@@ -36,6 +36,7 @@ class FavoritePlacesModelTest : public QObject
 private Q_SLOTS:
     void init();
     void testFavoriteId();
+    void testMoveRow();
 };
 
 #endif /* FAVORITEPLACESMODELTEST_H */
