@@ -22,7 +22,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 // Local
 #include <dirconfigurationwidget.h>
-#include <favoriteplacesmodel.h>
+#include <favoriteutils.h>
 
 // libhomerun
 #include <actionlist.h>
@@ -129,7 +129,7 @@ QVariant DirModel::data(const QModelIndex &index, int role) const
     KFileItem item = itemForIndex(index);
     if (role == FavoriteIdRole) {
         if (item.isDir()) {
-            return FavoritePlacesModel::favoriteIdFromUrl(item.url());
+            return FavoriteUtils::favoriteIdFromUrl(item.url());
         } else {
             return QString();
         }

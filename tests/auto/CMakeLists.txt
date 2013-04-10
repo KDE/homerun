@@ -67,6 +67,7 @@ homerun_add_unit_test(favoriteplacesmodeltest_x11
     ${components_SOURCE_DIR}/sources/dir/dirconfigurationwidget.ui
     ${components_SOURCE_DIR}/sources/dir/dirmodel.cpp
     ${components_SOURCE_DIR}/sources/favorites/favoriteplacesmodel.cpp
+    ${components_SOURCE_DIR}/sources/favorites/favoriteutils.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/actionlist.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp
@@ -76,7 +77,7 @@ homerun_add_unit_test(dirmodeltest_x11
     ${components_SOURCE_DIR}/sources/dir/dirconfigurationwidget.cpp
     ${components_SOURCE_DIR}/sources/dir/dirconfigurationwidget.ui
     ${components_SOURCE_DIR}/sources/dir/dirmodel.cpp
-    ${components_SOURCE_DIR}/sources/favorites/favoriteplacesmodel.cpp
+    ${components_SOURCE_DIR}/sources/favorites/favoriteutils.cpp
     ${lib_SOURCE_DIR}/abstractsource.cpp
     ${lib_SOURCE_DIR}/actionlist.cpp
     ${lib_SOURCE_DIR}/pathmodel.cpp

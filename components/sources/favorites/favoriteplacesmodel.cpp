@@ -21,6 +21,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 // Local
 #include <dirmodel.h>
+#include <favoriteutils.h>
 
 // libhomerun
 #include <actionlist.h>
@@ -33,20 +34,6 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 // Qt
 
 namespace Homerun {
-
-KUrl FavoritePlacesModel::urlFromFavoriteId(const QString &favoriteId)
-{
-    if (!favoriteId.startsWith("place:")) {
-        kWarning() << "Wrong favoriteId" << favoriteId;
-        return QString();
-    }
-    return KUrl(favoriteId.mid(6));
-}
-
-QString FavoritePlacesModel::favoriteIdFromUrl(const KUrl &url)
-{
-    return "place:" + url.url();
-}
 
 //- FavoritePlacesModel ------------------------------------------------
 FavoritePlacesModel::FavoritePlacesModel(QObject *parent)
@@ -73,7 +60,7 @@ bool FavoritePlacesModel::isFavorite(const QString &favoriteId) const
 
 void FavoritePlacesModel::addFavorite(const QString &favoriteId)
 {
-    KUrl favoriteUrl = urlFromFavoriteId(favoriteId);
+    KUrl favoriteUrl = FavoriteUtils::urlFromFavoriteId(favoriteId);
     if (favoriteUrl.isEmpty()) {
         return;
     }
@@ -92,7 +79,7 @@ void FavoritePlacesModel::removeFavorite(const QString &favoriteId)
 
 QModelIndex FavoritePlacesModel::indexForFavoriteId(const QString &favoriteId) const
 {
-    KUrl favoriteUrl = urlFromFavoriteId(favoriteId);
+    KUrl favoriteUrl = FavoriteUtils::urlFromFavoriteId(favoriteId);
     if (favoriteUrl.isEmpty()) {
         return QModelIndex();
     }
@@ -115,7 +102,7 @@ QVariant FavoritePlacesModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
     if (role == FavoriteIdRole) {
-        return QVariant(favoriteIdFromUrl(url(index)));
+        return QVariant(FavoriteUtils::favoriteIdFromUrl(url(index)));
     }
     if (role == HasActionListRole) {
         return true;
