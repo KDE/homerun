@@ -22,14 +22,14 @@
 #include <fixesplugin.h>
 
 // Local
+#include <datamodel.h>
 
 // Qt
 #include <QtDeclarative/qdeclarative.h>
 
-void FixesPlugin::registerTypes(const char *uri) { Q_ASSERT(uri ==
-QLatin1String("org.kde.homerun.fixes"));
-    // Nothing there for now. May be populated again if we need a copy of a
-    // C++-based QML element
+void FixesPlugin::registerTypes(const char *uri)
+{
+    qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
 }
 
 #include "fixesplugin.moc"

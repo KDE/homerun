@@ -21,23 +21,24 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #define PLACESMODEL_H
 
 // Local
+#include <fileplacesmodel.h>
 
 // Qt
 
 // KDE
-#include <KFilePlacesModel>
 
 namespace Homerun {
 
 /**
  * Adapts KFilePlacesModel to make it usable as a Homerun favorite model
  */
-class FavoritePlacesModel : public KFilePlacesModel
+class FavoritePlacesModel : public Fixes::KFilePlacesModel
 {
     Q_OBJECT
     Q_PROPERTY(QString favoritePrefix READ favoritePrefix CONSTANT)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(bool canMoveRow READ canMoveRow CONSTANT)
 
 public:
     enum {
@@ -52,6 +53,7 @@ public:
     Q_INVOKABLE void addFavorite(const QString &favoriteId);
     Q_INVOKABLE void removeFavorite(const QString &favoriteId);
     Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &actionArg);
+    Q_INVOKABLE void moveRow(int from, int to);
 
     QString favoritePrefix() const;
 
@@ -60,6 +62,8 @@ public:
     QString name() const;
 
     int count() const;
+
+    bool canMoveRow() const;
 
 Q_SIGNALS:
     void openSourceRequested(const QString &sourceId, const QVariantMap &sourceArguments);

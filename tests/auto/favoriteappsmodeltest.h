@@ -26,11 +26,22 @@ class FavoriteAppsModelTest : public QObject
 {
     Q_OBJECT
 
+    void writeTestXml(const QString &);
+    void writeTestConfig(const QString &);
+
 private Q_SLOTS:
+    void init();
     void testLoad();
     void testAdd();
-    void testAddEmpty();
+    void testAddToEmptyFavoriteList();
     void testRemove();
+    void testMove();
+    void testImport();
+    void testFirstLoad();
+
+private:
+    QString m_favoriteXmlFileName;
+    QString m_configFileName;
 };
 
 #endif /* FAVORITEAPPSMODELTEST_H */

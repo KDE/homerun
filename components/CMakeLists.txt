@@ -6,6 +6,7 @@ set(components_SRCS
     componentsplugin.cpp
     helpmenuactions.cpp
     icondialog.cpp
+    image.cpp
     messagebox.cpp
     shadoweffect.cpp
     sourceconfigurationdialog.cpp
@@ -16,6 +17,9 @@ set(components_SRCS
     sources/favorites/favoriteappsmodel.cpp
     sources/favorites/favoriteplacesmodel.cpp
     sources/favorites/favoriteutils.cpp
+    sources/favorites/fileplacesmodel.cpp
+    sources/favorites/kfileplacesitem.cpp
+    sources/favorites/kfileplacessharedbookmarks.cpp
     sources/installedapps/changenotifier.cpp
     sources/installedapps/groupedinstalledappsmodel.cpp
     sources/installedapps/installedappsconfigurationwidget.cpp

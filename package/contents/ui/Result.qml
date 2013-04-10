@@ -19,6 +19,7 @@
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
+import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 
@@ -32,6 +33,7 @@ Item {
     property alias icon: resultIcon.source
     property bool configureMode: false
     property bool hasActionList: false
+    property alias dragEnabled: dragArea.dragEnabled
 
     // Exposed by us
     property alias truncated: resultLabel.truncated
@@ -45,11 +47,20 @@ Item {
     // A.highlighted should become false, even if the mouse is still over A.
     property bool highlighted: false
 
+    property alias dragContainer: dragArea.dragContainer
+    property alias itemIndex: dragArea.itemIndex
+
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
+    /**
+     * Emitted when the item wants to show a global message, for example to
+     * indicate possible actions when it is held down.
+     */
+    signal showMessageRequested(string icon, string text)
+
     //- Private ---------------------------------------------------------------
-    property bool containsMouse: itemMouseArea.containsMouse || actionListMouseArea.containsMouse
+    property bool containsMouse: dragArea.containsMouse || actionListMouseArea.containsMouse
     onContainsMouseChanged: {
         highlighted = containsMouse;
     }
@@ -58,7 +69,10 @@ Item {
     }
 
     property int padding: 5
-    height: resultIcon.height + resultLabel.paintedHeight + 2 * padding
+    height: resultIcon.height + resultLabel.paintedHeight + 3 * padding
+
+    opacity: (dragArea.isDragged || dragArea.isHoldDown) ? 0.6 : 1
+    Behavior on opacity { NumberAnimation {} }
 
     PlasmaCore.FrameSvgItem {
         id: background
@@ -69,7 +83,7 @@ Item {
         imagePath: "widgets/viewitem"
         prefix: "hover"
 
-        opacity: (main.highlighted || actionMenu.opened) ? 1 : 0
+        opacity: !dragArea.isDragged && (main.highlighted || actionMenu.opened) ? 1 : 0
 
         Behavior on opacity {
             NumberAnimation {
@@ -79,7 +93,7 @@ Item {
         }
     }
 
-    PlasmaCore.IconItem {
+    HomerunComponents.Image {
         id: resultIcon
 
         anchors {
@@ -97,10 +111,11 @@ Item {
         id: resultLabel
 
         anchors {
-            bottomMargin: main.padding
             top: resultIcon.bottom
             left: parent.left
             right: parent.right
+            bottomMargin: main.padding
+            topMargin: main.padding
             rightMargin: main.padding
             leftMargin: main.padding
         }
@@ -112,8 +127,8 @@ Item {
         maximumLineCount: 2
     }
 
-    MouseArea {
-        id: itemMouseArea
+    HomerunComponents.DragArea {
+        id: dragArea
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
         hoverEnabled: true
@@ -125,7 +140,24 @@ Item {
                 openActionMenu(main);
             }
         }
-        onPressAndHold: {
+
+        onLongPressTimeReached: {
+            var icon = "dialog-information";
+            var text;
+            if (hasActionList && dragEnabled) {
+                text = i18n("Drag to reorder; release to show menu");
+            } else if (hasActionList) {
+                text = i18n("Release to show menu");
+            } else if (dragEnabled) {
+                text = i18n("Drag to reorder");
+            } else {
+                icon = "dialog-error";
+                text = i18n("This item has no menu and cannot be dragged");
+            }
+            showMessageRequested(icon, text);
+        }
+
+        onLongPressReleased: {
             if (hasActionList) {
                 openActionMenu(main);
             }
@@ -153,7 +185,7 @@ Item {
             flat: !actionListMouseArea.containsMouse
         }
 
-        MouseArea {
+        QtExtra.MouseEventListener {
             id: actionListMouseArea
             anchors.fill: parent
             hoverEnabled: true

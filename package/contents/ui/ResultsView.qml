@@ -46,6 +46,8 @@ FocusScope {
 
     signal focusOtherViewRequested(int key, int x)
 
+    signal showMessageRequested(string icon, string text)
+
     function isEmpty() {
         return gridView.count == 0;
     }
@@ -111,65 +113,80 @@ FocusScope {
     // Components
     Component {
         id: result
-        Result {
-            id: resultMain
-            iconWidth: main.iconWidth
-            width: main.resultItemWidth
-            configureMode: main.configureMode
+        Item {
+            width: gridView.cellWidth
+            height: gridView.cellHeight
+            property alias text: resultMain.text
+            property alias icon: resultMain.icon
 
-            text: model.display
-            icon: model.decoration
+            Result {
+                id: resultMain
+                iconWidth: main.iconWidth
+                width: main.resultItemWidth
+                configureMode: main.configureMode
+                dragContainer: gridDragContainer
+                dragEnabled: ("canMoveRow" in main.model) ? main.model.canMoveRow : false
 
-            onHighlightedChanged: {
-                if (highlighted) {
-                    gridView.currentIndex = model.index;
-                }
-            }
+                text: model.display
+                icon: model.decoration
+                itemIndex: model.index
 
-            hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
-
-            onAboutToShowActionMenu: {
-                fillActionMenu(actionMenu);
-            }
-
-            onActionTriggered: {
-                triggerAction(model.index, actionId, actionArgument);
-            }
-
-            function fillActionMenu(actionMenu) {
-                // Accessing actionList can be a costly operation, so we don't
-                // access it until we need the menu
-                var lst = model.hasActionList ? model.actionList : [];
-                var action = createFavoriteAction();
-                if (action) {
-                    if (lst.length > 0) {
-                        var separator = { "type": "separator" };
-                        lst.unshift(action, separator);
-                    } else {
-                        lst = [action];
+                onHighlightedChanged: {
+                    if (highlighted) {
+                        gridView.currentIndex = model.index;
                     }
                 }
-                actionMenu.actionList = lst;
-            }
 
-            function createFavoriteAction() {
-                var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
-                if (favoriteModel === null) {
-                    return null;
+                hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
+
+                onAboutToShowActionMenu: {
+                    fillActionMenu(actionMenu);
                 }
-                var action = {};
-                if (favoriteModel.isFavorite(model.favoriteId)) {
-                    action.text = i18n("Remove from favorites");
-                    //action.iconName = "list-remove";
-                    action.actionId = "_homerun_favorite_remove";
-                    action.actionArgument = model.favoriteId;
-                } else {
-                    action.text = i18n("Add to favorites");
-                    //action.iconName = "bookmarks";
-                    action.actionId = "_homerun_favorite_add";
-                    action.actionArgument = model.favoriteId;
+
+                onActionTriggered: {
+                    triggerAction(model.index, actionId, actionArgument);
                 }
-                return action;
+
+                onShowMessageRequested: {
+                    main.showMessageRequested(icon, text);
+                }
+
+                function fillActionMenu(actionMenu) {
+                    // Accessing actionList can be a costly operation, so we don't
+                    // access it until we need the menu
+                    var lst = model.hasActionList ? model.actionList : [];
+                    var action = createFavoriteAction();
+                    if (action) {
+                        if (lst.length > 0) {
+                            var separator = { "type": "separator" };
+                            lst.unshift(action, separator);
+                        } else {
+                            lst = [action];
+                        }
+                    }
+                    actionMenu.actionList = lst;
+                }
+
+                function createFavoriteAction() {
+                    var favoriteModel = favoriteModelForFavoriteId(model.favoriteId);
+                    if (favoriteModel === null) {
+                        return null;
+                    }
+                    var action = {};
+                    if (favoriteModel.isFavorite(model.favoriteId)) {
+                        action.text = i18n("Remove from favorites");
+                        //action.iconName = "list-remove";
+                        action.actionId = "_homerun_favorite_remove";
+                        action.actionArgument = model.favoriteId;
+                    } else {
+                        action.text = i18n("Add to favorites");
+                        //action.iconName = "bookmarks";
+                        action.actionId = "_homerun_favorite_add";
+                        action.actionArgument = model.favoriteId;
+                    }
+                    return action;
+                }
+
             }
         }
     }
@@ -202,6 +219,12 @@ FocusScope {
         focus: true
 
         objectName: "GridView:" + main.model.objectName
+
+        HomerunComponents.DragContainer {
+            id: gridDragContainer
+            anchors.fill: parent
+            model: main.model
+        }
 
         /*
         // Focus debug help

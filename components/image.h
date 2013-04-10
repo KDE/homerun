@@ -1,5 +1,5 @@
 /*
-Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Aurélien Gâteau <agateau@kde.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -17,26 +17,45 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef FAVORITEPLACESMODELTEST_H
-#define FAVORITEPLACESMODELTEST_H
+#ifndef IMAGE_H
+#define IMAGE_H
 
 // Local
 
 // Qt
-#include <QObject>
+#include <QDeclarativeItem>
 
 // KDE
 
 /**
- *
+ * An item which shows images whose sources can be either the name of an icon
+ * or a QIcon.
  */
-class FavoritePlacesModelTest : public QObject
+class Image : public QDeclarativeItem
 {
     Q_OBJECT
-private Q_SLOTS:
-    void init();
-    void testFavoriteId();
-    void testMoveRow();
+
+    Q_PROPERTY(QVariant source READ source WRITE setSource NOTIFY sourceChanged)
+public:
+    explicit Image(QDeclarativeItem *parent = 0);
+    ~Image();
+
+    QVariant source() const;
+    void setSource(const QVariant &value);
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+Q_SIGNALS:
+    void sourceChanged();
+
+protected:
+    void geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry) override;
+
+private:
+    QVariant m_source;
+    QPixmap m_pixmap;
+
+    void reload();
 };
 
-#endif /* FAVORITEPLACESMODELTEST_H */
+#endif /* IMAGE_H */

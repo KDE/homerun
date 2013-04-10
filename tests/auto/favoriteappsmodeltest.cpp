@@ -20,12 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "favoriteappsmodeltest.h"
 
 // Qt
-#include <QIcon>
+#include <QDomNode>
+#include <QDomElement>
 
 // KDE
 #include <KConfigGroup>
-#include <KTemporaryFile>
 #include <KDebug>
+#include <KStandardDirs>
 #include <qtest_kde.h>
 
 #include <favoriteappsmodel.h>
@@ -34,132 +35,215 @@ using namespace Homerun;
 
 QTEST_KDEMAIN(FavoriteAppsModelTest, GUI)
 
-static KTemporaryFile *generateTestFile(const QString &content)
+static void checkRole(QAbstractItemModel *model, int row, int role, const QVariant &expected)
 {
-    KTemporaryFile *file = new KTemporaryFile;
-    bool ok = file->open();
-    Q_ASSERT(ok);
-    file->write(content.toUtf8());
-    file->flush();
-    return file;
+    QModelIndex index = model->index(row, 0);
+    QVERIFY(index.isValid());
+    QVariant value = index.data(role);
+    QCOMPARE(expected, value);
+}
+
+void FavoriteAppsModelTest::writeTestConfig(const QString &content)
+{
+    QFile file(m_configFileName);
+    bool ok = file.open(QIODevice::WriteOnly);
+    QVERIFY2(ok, "Failed to open test config file for writing");
+    file.write(content.toUtf8());
+}
+
+void FavoriteAppsModelTest::writeTestXml(const QString &content)
+{
+    QFile file(m_favoriteXmlFileName);
+    bool ok = file.open(QIODevice::WriteOnly);
+    QVERIFY2(ok, "Failed to open test xml file for writing");
+    file.write(content.toUtf8());
+}
+
+void FavoriteAppsModelTest::init()
+{
+    m_favoriteXmlFileName = KStandardDirs::locateLocal("data", "homerun/favoriteapps.xml");
+    m_configFileName = KStandardDirs::locateLocal("config", "homerunrc");
+
+    // Start from a blank state
+    QFile::remove(m_favoriteXmlFileName);
+    QFile::remove(m_configFileName);
 }
 
 void FavoriteAppsModelTest::testLoad()
 {
-    QScopedPointer<KTemporaryFile> temp(generateTestFile(
-        "[favorites][favorite-1]\n"
-        "serviceId=kde4-konqbrowser.desktop\n"
-        "[favorites][favorite-2]\n"
-        "serviceId=kde4-dolphin.desktop\n"
-        ));
+    writeTestXml(
+        "<apps version='1'>\n"
+        "<app serviceId='kde4-konqbrowser.desktop'/>\n"
+        "<app serviceId='kde4-dolphin.desktop'/>\n"
+        "</apps>");
 
-    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
     FavoriteAppsModel model;
-    model.setConfig(config);
 
     QCOMPARE(model.rowCount(), 2);
 
     // Test Konqueror row
-    QModelIndex index = model.index(0, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konqueror"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("konqueror"));
-    QCOMPARE(index.data(FavoriteAppsModel::FavoriteIdRole).toString(), QString("app:kde4-konqbrowser.desktop"));
+    checkRole(&model, 0, Qt::DisplayRole, "Konqueror");
+    checkRole(&model, 0, Qt::DecorationRole, "konqueror");
+    checkRole(&model, 0, FavoriteAppsModel::FavoriteIdRole, "app:kde4-konqbrowser.desktop");
 
     // Test Dolphin row
-    index = model.index(1, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Dolphin"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("system-file-manager"));
-    QCOMPARE(index.data(FavoriteAppsModel::FavoriteIdRole).toString(), QString("app:kde4-dolphin.desktop"));
+    checkRole(&model, 1, Qt::DisplayRole, "Dolphin");
+    checkRole(&model, 1, Qt::DecorationRole, "system-file-manager");
+    checkRole(&model, 1, FavoriteAppsModel::FavoriteIdRole, "app:kde4-dolphin.desktop");
+}
+
+void FavoriteAppsModelTest::testImport()
+{
+    QVERIFY(!QFile::exists(m_favoriteXmlFileName));
+    writeTestConfig(
+        "[favorites][favorite-3]\n"
+        "serviceId=kde4-konqbrowser.desktop\n"
+        "[favorites][favorite-12]\n"
+        "serviceId=kde4-konsole.desktop\n"
+        "[favorites][favorite-8]\n"
+        "serviceId=kde4-dolphin.desktop\n"
+        "\n"
+        "[Group1]\n"
+        "foo=bar\n"
+        "[Group2]\n"
+        "foo=bar\n"
+        );
+
+    FavoriteAppsModel model;
+    QCOMPARE(model.rowCount(), 3);
+    // Order should be konq (3), dolphin (8), konsole (12)
+
+    // Test Konqueror row
+    checkRole(&model, 0, Qt::DisplayRole, "Konqueror");
+    checkRole(&model, 0, Qt::DecorationRole, "konqueror");
+    checkRole(&model, 0, FavoriteAppsModel::FavoriteIdRole, "app:kde4-konqbrowser.desktop");
+
+    // Test Dolphin row
+    checkRole(&model, 1, Qt::DisplayRole, "Dolphin");
+    checkRole(&model, 1, Qt::DecorationRole, "system-file-manager");
+    checkRole(&model, 1, FavoriteAppsModel::FavoriteIdRole, "app:kde4-dolphin.desktop");
+
+    // Test Konsole row
+    checkRole(&model, 2, Qt::DisplayRole, "Konsole");
+    checkRole(&model, 2, Qt::DecorationRole, "utilities-terminal");
+    checkRole(&model, 2, FavoriteAppsModel::FavoriteIdRole, "app:kde4-konsole.desktop");
+
+    // Check favorites got removed from config file
+    KSharedConfig::Ptr config = KSharedConfig::openConfig(m_configFileName, KConfig::SimpleConfig);
+    QStringList list = config->groupList();
+    list.sort();
+    QCOMPARE(list.count(), 2);
+    QCOMPARE(list[0], QString("Group1"));
+    QCOMPARE(list[1], QString("Group2"));
+}
+
+void FavoriteAppsModelTest::testFirstLoad()
+{
+    QVERIFY(!QFile::exists(m_favoriteXmlFileName));
+    QVERIFY(!QFile::exists(m_configFileName));
+
+    FavoriteAppsModel model;
+    // model should start with default apps, see data/favoriteapps.xml
+    QCOMPARE(model.rowCount(), 3);
+    checkRole(&model, 0, Qt::DisplayRole, "Konqueror");
+    checkRole(&model, 1, Qt::DisplayRole, "KMail");
+    checkRole(&model, 2, Qt::DisplayRole, "Dolphin");
+
+    // we should not write the user xml file unless the user makes a change
+    QVERIFY(!QFile::exists(m_favoriteXmlFileName));
 }
 
 void FavoriteAppsModelTest::testAdd()
 {
-    QModelIndex index;
-    QScopedPointer<KTemporaryFile> temp(generateTestFile(
-        "[favorites][favorite-3]\n"
-        "serviceId=kde4-konqbrowser.desktop\n"
-        "[favorites][favorite-8]\n"
-        "serviceId=kde4-dolphin.desktop\n"
-        ));
+    writeTestXml(
+        "<apps version='1'>\n"
+        "<app serviceId='kde4-konqbrowser.desktop'/>\n"
+        "<app serviceId='kde4-dolphin.desktop'/>\n"
+        "</apps>");
 
-    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
     FavoriteAppsModel model;
-    model.setConfig(config);
 
     model.addFavorite("app:kde4-konsole.desktop");
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 3);
-    index = model.index(2, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model, 2, Qt::DisplayRole, "Konsole");
+    checkRole(&model, 2, Qt::DecorationRole, "utilities-terminal");
 
-    // Check config matches model
+    // Check changes got serialized
     FavoriteAppsModel model2;
-    model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 3);
-    index = model2.index(2, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model2, 2, Qt::DisplayRole, "Konsole");
+    checkRole(&model2, 2, Qt::DecorationRole, "utilities-terminal");
 }
 
-void FavoriteAppsModelTest::testAddEmpty()
+void FavoriteAppsModelTest::testAddToEmptyFavoriteList()
 {
-    QModelIndex index;
-    QScopedPointer<KTemporaryFile> temp(generateTestFile(""));
+    writeTestXml("<apps version='1'></apps>");
 
-    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
     FavoriteAppsModel model;
-    model.setConfig(config);
-
     model.addFavorite("app:konsole.desktop");
 
     // Check new favorite is in the model
     QCOMPARE(model.rowCount(), 1);
-    index = model.index(0, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model, 0, Qt::DisplayRole, "Konsole");
+    checkRole(&model, 0, Qt::DecorationRole, "utilities-terminal");
 
-    // Check config matches model
+    // Check changes got serialized
     FavoriteAppsModel model2;
-    model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 1);
-    index = model2.index(0, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
-    QCOMPARE(index.data(Qt::DecorationRole).value<QIcon>().name(), QString("utilities-terminal"));
+    checkRole(&model2, 0, Qt::DisplayRole, "Konsole");
+    checkRole(&model2, 0, Qt::DecorationRole, "utilities-terminal");
 
 }
 
 void FavoriteAppsModelTest::testRemove()
 {
-    QModelIndex index;
-    QScopedPointer<KTemporaryFile> temp(generateTestFile(
-        "[favorites][favorite-4]\n"
-        "serviceId=kde4-konqbrowser.desktop\n"
-        "[favorites][favorite-8]\n"
-        "serviceId=kde4-dolphin.desktop\n"
-        "[favorites][favorite-9]\n"
-        "serviceId=kde4-konsole.desktop\n"
-        ));
+    writeTestXml(
+        "<apps version='1'>\n"
+        "<app serviceId='kde4-konqbrowser.desktop'/>\n"
+        "<app serviceId='kde4-dolphin.desktop'/>\n"
+        "<app serviceId='kde4-konsole.desktop'/>\n"
+        "</apps>");
 
-    KSharedConfig::Ptr config = KSharedConfig::openConfig(temp->fileName());
     FavoriteAppsModel model;
-    model.setConfig(config);
 
     // Drop Dolphin row
     model.removeFavorite("app:kde4-dolphin.desktop");
 
     // Check Dolphin has been removed from model
     QCOMPARE(model.rowCount(), 2);
-    index = model.index(1, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
+    checkRole(&model, 1, Qt::DisplayRole, "Konsole");
 
-    // Check config matches model
+    // Check changes got serialized
     FavoriteAppsModel model2;
-    model2.setConfig(config);
     QCOMPARE(model2.rowCount(), 2);
-    index = model2.index(1, 0);
-    QCOMPARE(index.data(Qt::DisplayRole).toString(), QString("Konsole"));
+    checkRole(&model2, 1, Qt::DisplayRole, "Konsole");
+}
+
+void FavoriteAppsModelTest::testMove()
+{
+    QModelIndex index;
+    writeTestXml(
+        "<apps version='1'>\n"
+        "<app serviceId='kde4-konqbrowser.desktop'/>\n"
+        "<app serviceId='kde4-dolphin.desktop'/>\n"
+        "<app serviceId='kde4-konsole.desktop'/>\n"
+        "</apps>");
+
+    FavoriteAppsModel model;
+
+    // Move Dolphin after Konsole
+    model.moveRow(1, 2);
+
+    // Check model
+    checkRole(&model, 1, Qt::DisplayRole, "Konsole");
+    checkRole(&model, 2, Qt::DisplayRole, "Dolphin");
+
+    // Check changes got serialized
+    FavoriteAppsModel model2;
+    checkRole(&model2, 1, Qt::DisplayRole, "Konsole");
+    checkRole(&model2, 2, Qt::DisplayRole, "Dolphin");
 }
 
 #include "favoriteappsmodeltest.moc"

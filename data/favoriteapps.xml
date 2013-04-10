@@ -1,0 +1,5 @@
+<apps>
+    <app serviceId="konqueror"/>
+    <app serviceId="kmail2" />
+    <app serviceId="dolphin" />
+</apps>

@@ -21,6 +21,7 @@ import QtQuick 1.1
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.extras 0.1 as PlasmaExtras
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 Item {
     id: main
@@ -49,18 +50,30 @@ Item {
     // Filter components
     Component {
         id: genericFilterComponent
-        PlasmaCore.SortFilterModel {
+
+        HomerunFixes.SortFilterModel {
             filterRegExp: main.searchCriteria
             property string name: sourceModel.name
             property int count: sourceModel.count
-
+            property bool canMoveRow: "canMoveRow" in sourceModel ? sourceModel.canMoveRow : false
             property bool running: "running" in sourceModel ? sourceModel.running : false
             property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
 
             objectName: "SortFilterModel:" + (sourceModel ? sourceModel.objectName : "")
+
             function trigger(index, actionId, actionArgument) {
                 var sourceIndex = mapRowToSource(index);
                 return sourceModel.trigger(sourceIndex, actionId, actionArgument);
+            }
+
+            function moveRow(from, to) {
+                if (!canMoveRow) {
+                    console.log("Page.qml: moveRow(): source model cannot move rows. This method should not be called.");
+                    return;
+                }
+                var sourceFrom = mapRowToSource(from);
+                var sourceTo = mapRowToSource(to);
+                sourceModel.moveRow(sourceFrom, sourceTo);
             }
         }
     }
@@ -87,6 +100,9 @@ Item {
                 if (currentItem) {
                     main.scrollToItem(currentItem);
                 }
+            }
+            onShowMessageRequested: {
+                main.showMessage(icon, text);
             }
         }
     }
@@ -180,6 +196,9 @@ Item {
                             main.scrollToItem(currentItem);
                         }
                     }
+                    onShowMessageRequested: {
+                        main.showMessage(icon, text);
+                    }
                 }
 
                 function viewAt(idx) {
@@ -198,16 +217,6 @@ Item {
     }
 
     //- UI ---------------------------------------------------------
-    PlasmaComponents.BusyIndicator {
-        id: busyIndicator
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-        }
-        y: 12
-
-        opacity: running ? 0.5 : 0
-    }
-
     PlasmaExtras.ScrollArea {
         id: availableScrollArea
         anchors {
@@ -254,6 +263,7 @@ Item {
             anchors.fill: parent
             clip: true
             contentHeight: centralColumn.height
+            //interactive: false
 
             Column {
                 id: centralColumn
@@ -327,6 +337,28 @@ Item {
             }
         }
     }
+
+    Column {
+        y: 12
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+        }
+        PlasmaComponents.BusyIndicator {
+            id: busyIndicator
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+
+            opacity: running ? 0.5 : 0
+        }
+        MessageItem {
+            id: messageItem
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+        }
+    }
+
 
     Behavior on opacity {
         NumberAnimation {
@@ -526,5 +558,9 @@ Item {
         } else if (y + item.height > centralFlickable.contentY + centralFlickable.height) {
             centralFlickable.contentY = y + item.height - centralFlickable.height;
         }
+    }
+
+    function showMessage(icon, text) {
+        messageItem.show(icon, text);
     }
 }

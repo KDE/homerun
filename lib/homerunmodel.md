@@ -98,6 +98,15 @@ A model can implement this property to implement searching/filtering itself. If
 it is not defined, Homerun will apply a generic filter to the item names when
 the user type a search criteria.
 
+### bool canMoveRow
+- access: read-only
+- mandatory: no
+
+If your model supports reordering, implement this property and make it return
+true.
+
+Don't forget to implement moveRow()
+
 ## Methods
 ### bool trigger(int row, string actionId = "", QVariant actionArgument = QVariant())
 - mandatory: yes
@@ -108,6 +117,12 @@ Triggers the action identified by `actionId` on the item at row `row`.
 Returns true if you want Homerun to close, false otherwise.
 
 Note: When the user clicks on an item, `actionId` is an empty string.
+
+### void moveRow(int from, int to)
+- mandatory: no
+
+If your model supports reordering, implement this method. It should move row
+`from` to row `to` in the model and take care of any necessary serialization.
 
 ## Signals
 ### openSourceRequested(QString sourceId, const QVariantMap &arguments)
