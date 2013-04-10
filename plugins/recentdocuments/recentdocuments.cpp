@@ -70,14 +70,23 @@ void RecentDocumentsModel::load()
         if (urls.contains(url)) {
             continue;
         }
-        urls.insert(url);
 
-        QStandardItem *item = new QStandardItem(file.readName());
+        QString name = file.readName();
+        if (name.isEmpty()) {
+            name = url;
+        }
+        if (name.isEmpty()) {
+            kWarning() << "Skipping" << path << ": it has no name or url.";
+            continue;
+        }
+        QStandardItem *item = new QStandardItem(name);
         item->setData(file.readIcon(), Qt::DecorationRole);
         item->setData(path, DesktopPathRole);
         item->setData(url, UrlRole);
         item->setData(true, HasActionListRole);
         appendRow(item);
+
+        urls.insert(url);
     }
     countChanged();
 }

@@ -61,21 +61,12 @@ QColor ShadowEffect::color() const
     return m_color;
 }
 
-#define SETTER(prop) \
-    if (prop == value) { \
-        return; \
-    } \
-    prop = value;
-
-#define SETTER_REAL(prop) \
-    if (qFuzzyCompare(prop, value)) { \
-        return; \
-    } \
-    prop = value;
-
 void ShadowEffect::setXOffset(qreal value)
 {
-    SETTER_REAL(m_xOffset);
+    if (qFuzzyCompare(m_xOffset, value)) {
+        return;
+    }
+    m_xOffset = value;
     m_shadow = QImage();
     updateBoundingRect();
     xOffsetChanged(m_xOffset);
@@ -83,7 +74,10 @@ void ShadowEffect::setXOffset(qreal value)
 
 void ShadowEffect::setYOffset(qreal value)
 {
-    SETTER_REAL(m_yOffset);
+    if (qFuzzyCompare(m_yOffset, value)) {
+        return;
+    }
+    m_yOffset = value;
     m_shadow = QImage();
     updateBoundingRect();
     yOffsetChanged(m_yOffset);
@@ -91,7 +85,10 @@ void ShadowEffect::setYOffset(qreal value)
 
 void ShadowEffect::setBlurRadius(qreal value)
 {
-    SETTER_REAL(m_blurRadius);
+    if (qFuzzyCompare(m_blurRadius, value)) {
+        return;
+    }
+    m_blurRadius = value;
     m_shadow = QImage();
     updateBoundingRect();
     blurRadiusChanged(m_blurRadius);
@@ -99,7 +96,10 @@ void ShadowEffect::setBlurRadius(qreal value)
 
 void ShadowEffect::setColor(const QColor &value)
 {
-    SETTER(m_color);
+    if (m_color == value) {
+        return;
+    }
+    m_color = value;
     m_shadow = QImage();
     update();
     colorChanged(m_color);
@@ -125,21 +125,29 @@ QImage ShadowEffect::generateShadow(const QPixmap &px) const
         return QImage();
     }
 
-    // Generate shadow in tmp
+    QColor color = m_color.isValid() ? m_color : computeColorFromSource();
+
     QImage tmp(px.size(), QImage::Format_ARGB32_Premultiplied);
     tmp.fill(0);
-    QPainter tmpPainter(&tmp);
-    tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
-    tmpPainter.drawPixmap(m_xOffset, m_yOffset, px);
-    tmpPainter.end();
-    QColor color = m_color.isValid() ? m_color : computeColorFromSource();
-    Plasma::PaintUtils::shadowBlur(tmp, m_blurRadius, color);
+    if (m_blurRadius > 0) {
+        QPainter painter(&tmp);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.drawPixmap(m_xOffset, m_yOffset, px);
+        painter.end();
+        Plasma::PaintUtils::shadowBlur(tmp, m_blurRadius, color);
+    } else {
+        QPainter painter(&tmp);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.fillRect(m_xOffset, m_yOffset, px.width(), px.height(), color);
+        painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+        painter.drawPixmap(m_xOffset, m_yOffset, px);
+    }
     return tmp;
 }
 
 void ShadowEffect::draw(QPainter *painter)
 {
-    if (m_blurRadius <= 0 && qFuzzyIsNull(m_xOffset) && qFuzzyIsNull(m_yOffset)) {
+    if (m_blurRadius < 0 && qFuzzyIsNull(m_xOffset) && qFuzzyIsNull(m_yOffset)) {
         drawSource(painter);
         return;
     }
@@ -183,19 +191,29 @@ void ShadowEffect::sourceChanged(ChangeFlags flags)
 }
 
 
-/**********************************************************
+/*****************************************************************************
  * UGLYNESS
- * This is a severely trimmed copy of an internal class defined in qt:
- * src/gui/effects/qgraphicseffect_p.h
- *********************************************************/
+ *
+ * If the shadow color is not defined, we want to compute it from the color of
+ * the item on which the effect is applied.
+ *
+ * To do so we need to reach the item from the effect.
+ *
+ * QGraphicsEffect has an internal, but public, "source()" method, which
+ * returns a pointer to a QGraphicsEffectSource, which has a "graphicsItem()"
+ * public method.
+ *
+ * QGraphicsEffectSource is not in any installed header, so we need to declare
+ * it. Since "graphicsItem()" is not virtual we can escape with declaring a
+ * fake QGraphicsEffectSource class, containing only the graphicsItem() method.
+ *
+ * The original class is defined in Qt4 in src/gui/effects/qgraphicseffect_p.h
+ *****************************************************************************/
 class QGraphicsEffectSource
 {
 public:
     const QGraphicsItem *graphicsItem() const;
 };
-/**********************************************************
- * /UGLYNESS
- *********************************************************/
 
 
 QColor ShadowEffect::computeColorFromSource() const
@@ -216,7 +234,7 @@ QColor ShadowEffect::computeColorFromSource() const
         return Qt::black;
     }
     int value = variant.value<QColor>().value();
-    return value > 128 ? Qt::black : Qt::white;
+    return value >= 128 ? Qt::black : Qt::white;
 }
 
 #include <shadoweffect.moc>

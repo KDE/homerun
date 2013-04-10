@@ -19,15 +19,15 @@
 #ifndef SHADOWEFFECT_H
 #define SHADOWEFFECT_H
 
-// Local
-
 // Qt
 #include <QGraphicsEffect>
 
-// KDE
-
 /**
- * An effect which draws a halo
+ * An effect which draws a shadow behind an item, using
+ * Plasma::PaintUtils::shadowBlur()
+ *
+ * If the color is not specified, it will attempt to compute the best
+ * appropriate color, based on the item "color" property (if it has any).
  */
 class ShadowEffect : public QGraphicsEffect
 {
@@ -51,7 +51,8 @@ public:
 
     /**
      * Use this method if you set the color manually and now want ShadowEffect
-     * to pick the color automatically, based on the source object.
+     * to pick the color automatically, based on the color of the item on which
+     * the effect is applied.
      */
     Q_INVOKABLE void resetColor();
 
