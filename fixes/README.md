@@ -33,6 +33,6 @@ Need to be proposed
 ### Emit rowsMoved() when reordering via drag and drop, instead of remove+insert
 <https://git.reviewboard.kde.org/r/109935/>
 
-Not applied for now
+Applied in 4.11
 
 Files for the fixed KFilePlacesModel class are in `components/sources/favorites/`.
