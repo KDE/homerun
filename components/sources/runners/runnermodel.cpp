@@ -218,7 +218,6 @@ void RunnerModel::matchesChanged(const QList<Plasma::QueryMatch> &matches)
             Q_ASSERT(!matches.isEmpty());
             QString name = matches.first().runner()->name();
             RunnerSubModel *subModel = new RunnerSubModel(it.key(), name, m_manager, this);
-            connect(subModel, SIGNAL(triggerRequested(Plasma::QueryMatch)), SLOT(trigger(Plasma::QueryMatch)));
             subModel->setMatches(matches);
             m_models.append(subModel);
         }
@@ -243,11 +242,6 @@ void RunnerModel::clear()
     qDeleteAll(m_models);
     m_models.clear();
     endResetModel();
-}
-
-void RunnerModel::trigger(const Plasma::QueryMatch& match)
-{
-    m_manager->run(match);
 }
 
 void RunnerModel::loadRunners()

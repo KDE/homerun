@@ -102,7 +102,6 @@ private Q_SLOTS:
     void startQuery();
     void queryHasFinished();
     void matchesChanged(const QList<Plasma::QueryMatch> &matches);
-    void trigger(const Plasma::QueryMatch &);
 
 private:
     void createManager();
