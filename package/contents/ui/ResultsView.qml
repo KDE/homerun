@@ -113,7 +113,7 @@ FocusScope {
     // Components
     Component {
         id: result
-        Item {
+        FocusScope {
             width: gridView.cellWidth
             height: gridView.cellHeight
             property alias text: resultMain.text
@@ -121,6 +121,7 @@ FocusScope {
 
             Result {
                 id: resultMain
+                focus: true
                 iconWidth: main.iconWidth
                 width: main.resultItemWidth
                 configureMode: main.configureMode
