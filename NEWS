@@ -3,6 +3,7 @@
 - Update list of applications when new applications are installed or removed
 - Slightly improve performance of item rendering
 - Improve libhomerun documentation
+- Include translations
 
 # 2013.02.27 - 0.2.1
 
