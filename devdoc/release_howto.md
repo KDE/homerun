@@ -8,7 +8,7 @@ Update NEWS:
 
     git log --pretty=format:'- \%s (\%an)' $oldv..HEAD
 
-Check version number in top-level CMakeLists.txt.
+Update version number in top-level CMakeLists.txt.
 
 Check it still builds.
 
@@ -17,20 +17,21 @@ Publish changes:
     git commit
     git push
 
-Note commit-id.
-
 # Pack source
 
-Prepare createtarball:
+Get releaseme:
 
-    cd kdesdk/scripts/createtarball
+    git clone kde:releaseme
+    cd releaseme
 
-    # Update version and commit-id ("gitTag" key) in config.ini
-    vi config.ini
+Create tarball.
+- For stable updates:
 
-Create tarball:
+    ./homerun.rb -u $svnusername --git-branch homerun/$x.$y --version $x.$y.$z
 
-    ./create_tarball.rb -a homerun -u $svnusername
+- For .0 releases:
+
+    ./homerun.rb -u $svnusername --version $x.$y.$z
 
 Check it builds:
 
@@ -42,6 +43,8 @@ Check it builds:
     make all
     make check
     make install
+
+Check translations have been installed.
 
 If it is a new .0 release, create a branch (if $newv is $x.$y.0, $branch is homerun/$x.$y)
 
