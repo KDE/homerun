@@ -65,7 +65,8 @@ Push:
 Upload to download.kde.org, following instructions from:
 <http://download.kde.org/README_UPLOAD>
 
-Add new version number on https://bugs.kde.org
+Add new version number on:
+<https://bugs.kde.org/editversions.cgi?product=homerun>
 
 Update PPA
 
