@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=All Installed Applications With Filters
+Comment=Prototype variant of the canonical version with filter list
+Type=Service
+X-KDE-ServiceTypes=Homerun/Source
+X-KDE-Library=homerun_source_appswithfilters
+
+X-KDE-PluginInfo-Name=AppsWithFilters
+X-KDE-Homerun-APIVersion=0
