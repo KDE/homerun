@@ -27,7 +27,6 @@ include_directories(
 target_link_libraries(homerun_source_appswithfilters
     ${QT_QTCORE_LIBRARY}
     ${QT_QTGUI_LIBRARY}
-    ${QT_QTDECLARATIVE_LIBRARY}
     ${KDE4_KDECORE_LIBS}
     ${KDE4_KIO_LIBS}
     ${HOMERUN_LIBRARIES}
