@@ -49,7 +49,7 @@ KAboutData *createAboutData()
         ki18nc("Program name", "Homerun"),
         version);
     aboutData->setLicense(KAboutData::License_GPL);
-    aboutData->setCopyrightStatement(ki18n("(C) 2012 Blue Systems"));
+    aboutData->setCopyrightStatement(ki18n("(C) 2012-2013 Blue Systems"));
     aboutData->setProgramIconName("homerun");
 
     aboutData->addAuthor(ki18n("Shaun Reich"), ki18n("Developer"), "shaun.reich@blue-systems.com");
