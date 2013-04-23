@@ -26,6 +26,7 @@ Name[x-test]=xxHello Worldxx
 Name[zh_CN]=Hello World
 Comment=An example of Homerun Source
 Comment[da]=Et eksempel på en Homerun-kilde
+Comment[de]=Ein Beispiel einer Homerun-Quelle
 Comment[el]=Ένα παράδειγμα πηγής του Homerun
 Comment[es]=Un ejemplo de origen para Homerun
 Comment[et]=Homeruni allika näide
