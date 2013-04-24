@@ -152,6 +152,7 @@ Item {
                 left: forwardButton.right
                 leftMargin: 12
             }
+            spacing: 0
             height: navRow.maxHeight
 
             PlasmaComponents.ToolButton {

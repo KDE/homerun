@@ -28,6 +28,7 @@ Name[uk]=KDE Homerun
 Name[x-test]=xxKDE Homerunxx
 Name[zh_CN]=KDE Homerun
 Comment=An application launcher
+Comment[cs]=Spouštěč aplikací
 Comment[da]=Programstarter
 Comment[de]=Ein Anwendungsstarter
 Comment[el]=Ένας εκτελεστής εφαρμογών
