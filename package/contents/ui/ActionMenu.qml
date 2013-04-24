@@ -55,7 +55,7 @@ Item {
             property variant actionItem
 
             text: actionItem.text ? actionItem.text : ""
-            enabled: actionItem.type != "title"
+            enabled: actionItem.type != "title" && ("enabled" in actionItem ? actionItem.enabled : true)
             separator: actionItem.type == "separator"
             icon: actionItem.icon ? actionItem.icon : null
 

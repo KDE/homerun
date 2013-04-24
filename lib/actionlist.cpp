@@ -31,6 +31,9 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <KRun>
 #include <KService>
 
+// libkonq
+#include <konq_operations.h>
+
 // Qt
 #include <QApplication>
 
@@ -66,9 +69,25 @@ QVariantMap createSeparatorActionItem()
     return map;
 }
 
+static QVariantMap createEmptyTrashItem()
+{
+    QVariantMap map = createActionItem(
+        i18nc("@action:inmenu", "Empty Trash"),
+        "_homerun_fileItem_emptyTrash");
+    map["icon"] = KIcon("trash-empty");
+
+    KConfig trashConfig("trashrc", KConfig::SimpleConfig);
+    const bool isEmpty = trashConfig.group("Status").readEntry("Empty", true);
+    map["enabled"] = !isEmpty;
+    return map;
+}
+
 QVariantList createListForFileItem(const KFileItem &fileItem)
 {
     QVariantList list;
+    if (fileItem.url() == KUrl("trash:/")) {
+        list << createEmptyTrashItem() << createSeparatorActionItem();
+    }
     KService::List services = KMimeTypeTrader::self()->query(fileItem.mimetype(), "Application");
     if (!services.isEmpty()) {
         list << createTitleActionItem(i18n("Open with:"));
@@ -106,6 +125,11 @@ bool handleFileItemAction(const KFileItem &fileItem, const QString &actionId, co
         }
         KRun::run(*service, KUrl::List() << fileItem.url(), QApplication::activeWindow());
         *close = true;
+        return true;
+    }
+
+    if (actionId == "_homerun_fileItem_emptyTrash") {
+        KonqOperations::emptyTrash(QApplication::activeWindow());
         return true;
     }
 

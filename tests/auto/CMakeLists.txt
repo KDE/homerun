@@ -27,6 +27,7 @@ macro(homerun_add_unit_test _test)
         ${QT_QTTEST_LIBRARY}
         ${QT_QTCORE_LIBRARY}
         ${QT_QTGUI_LIBRARY}
+        ${LIBKONQ_LIBRARY}
         )
 endmacro(homerun_add_unit_test)
 
@@ -37,6 +38,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/internal
     ${lib_SOURCE_DIR}
     ${lib_BINARY_DIR}
+    ${LIBKONQ_INCLUDE_DIR}
     )
 
 # Tests which depend on X11 cannot be run on headless builders. If X11 is not
