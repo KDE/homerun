@@ -58,21 +58,21 @@ void Image::setSource(const QVariant &source)
 void Image::reload()
 {
     const int extent = qMin(width(), height());
-    //kWarning() << "m_source" << m_source << m_source.typeName();
     if (m_source.canConvert<QString>()) {
         KIcon icon(m_source.toString());
         m_pixmap = icon.pixmap(extent);
-        return;
-    }
-    if (m_source.canConvert<QIcon>()) {
+    } else if (m_source.canConvert<QIcon>()) {
         QIcon icon = m_source.value<QIcon>();
         m_pixmap = icon.pixmap(extent);
-        return;
+    } else {
+        if (m_source.isValid()) {
+            kWarning() << "Don't know how to handle source" << m_source;
+        }
+        m_pixmap = QPixmap();
     }
-    if (!m_source.isValid()) {
-        return;
-    }
-    kWarning() << "Don't know how to handle source" << m_source;
+    // Always update, even if we do not have valid content. If we had content
+    // before, we need to erase it.
+    update();
 }
 
 void Image::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
