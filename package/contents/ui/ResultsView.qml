@@ -178,13 +178,12 @@ FocusScope {
                         action.text = i18n("Remove from favorites");
                         //action.iconName = "list-remove";
                         action.actionId = "_homerun_favorite_remove";
-                        action.actionArgument = model.favoriteId;
                     } else {
                         action.text = i18n("Add to favorites");
                         //action.iconName = "bookmarks";
                         action.actionId = "_homerun_favorite_add";
-                        action.actionArgument = model.favoriteId;
                     }
+                    action.actionArgument = {favoriteId: model.favoriteId, text: model.display};
                     return action;
                 }
 
@@ -344,12 +343,14 @@ FocusScope {
         }
     }
 
-    function handleFavoriteAction(actionId, favoriteId) {
+    function handleFavoriteAction(actionId, actionArgument) {
+        var favoriteId = actionArgument.favoriteId;
         var favoriteModel = favoriteModelForFavoriteId(favoriteId);
         if (actionId == "_homerun_favorite_remove") {
             favoriteModel.removeFavorite(favoriteId);
         } else if (actionId == "_homerun_favorite_add") {
             favoriteModel.addFavorite(favoriteId);
+            showMessageRequested("bookmarks", i18n("%1 has been added to your favorites", actionArgument.text));
         } else {
             console.log("Unknown homerun favorite actionId: " + actionId);
         }
