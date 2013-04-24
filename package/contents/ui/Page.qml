@@ -43,6 +43,7 @@ Item {
 
     signal closeRequested()
     signal openSourceRequested(string sourceId, variant sourceArguments)
+    signal showMessageRequested(string icon, string text)
 
     property Item previouslyFocusedItem
 
@@ -102,7 +103,7 @@ Item {
                 }
             }
             onShowMessageRequested: {
-                main.showMessage(icon, text);
+                main.showMessageRequested(icon, text);
             }
         }
     }
@@ -197,7 +198,7 @@ Item {
                         }
                     }
                     onShowMessageRequested: {
-                        main.showMessage(icon, text);
+                        main.showMessageRequested(icon, text);
                     }
                 }
 
@@ -247,6 +248,16 @@ Item {
                 }
             }
         }
+    }
+
+    PlasmaComponents.BusyIndicator {
+        id: busyIndicator
+        y: 12
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+        }
+
+        opacity: running ? 0.5 : 0
     }
 
     PlasmaExtras.ScrollArea {
@@ -333,27 +344,6 @@ Item {
                         return itemAt(idx).view;
                     }
                 }
-            }
-        }
-    }
-
-    Column {
-        y: 12
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-        }
-        PlasmaComponents.BusyIndicator {
-            id: busyIndicator
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-            }
-
-            opacity: running ? 0.5 : 0
-        }
-        MessageItem {
-            id: messageItem
-            anchors {
-                horizontalCenter: parent.horizontalCenter
             }
         }
     }

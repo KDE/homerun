@@ -60,6 +60,9 @@ Item {
             onOpenSourceRequested: {
                 main.openSource(sourceId, sourceArguments);
             }
+            onShowMessageRequested: {
+                messageItem.show(icon, text);
+            }
         }
     }
 
@@ -205,6 +208,15 @@ Item {
             top: hline.top
             right: parent.right
             bottom: parent.bottom
+        }
+    }
+
+    MessageItem {
+        id: messageItem
+        anchors {
+            top: navRow.show ? navRow.top : hline.bottom
+            topMargin: navRow.show ? 0 : 6
+            horizontalCenter: parent.horizontalCenter
         }
     }
 
