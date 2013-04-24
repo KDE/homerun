@@ -86,6 +86,9 @@ following elements:
 - variant actionArgument
     - mandatory: no
     - An optional argument, passed to trigger() as well
+- bool enabled
+    - mandatory: no
+    - If set to true or omitted, the item will be enabled. If set to false, it will be disabled
 
 Functions from the Homerun::ActionList namespace simplify the creation of
 actions.
