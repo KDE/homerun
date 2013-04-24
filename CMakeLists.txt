@@ -27,6 +27,9 @@ find_package(KDE4 4.9.97 REQUIRED)
 include(KDE4Defaults)
 find_package(KDE4Workspace REQUIRED)
 find_package(KDeclarative REQUIRED)
+find_package(LibKonq REQUIRED)
+macro_log_feature(LIBKONQ_FOUND "libkonq" "Standard file management features" "http://www.kde.org" TRUE)
+macro_display_feature_log()
 
 # Compile options
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})

@@ -22,6 +22,7 @@ set(lib_SRCS
 # Build
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${LIBKONQ_INCLUDE_DIR}
     )
 
 qt4_automoc(${lib_SRCS})
@@ -40,6 +41,7 @@ target_link_libraries(homerun
     ${KDE4_KDECORE_LIBS}
     ${KDE4_KDEUI_LIBS}
     ${KDE4_KIO_LIBS}
+    ${LIBKONQ_LIBRARY}
     )
 
 # Doxygen
