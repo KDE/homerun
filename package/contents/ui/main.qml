@@ -32,13 +32,16 @@ Item {
     signal closeRequested
     property QtObject configureAction
     property bool isContainment
-    property real headerPadding: 12
 
     property string configFileName
 
     property alias currentTabContent: tabGroup.currentTab
 
     property bool configureMode: false
+
+    // Internal
+    property real outerPadding: 12
+    property real innerPadding: 6 // padding between header items
 
     // Models
     HomerunComponents.TabModel {
@@ -83,11 +86,11 @@ Item {
 
         anchors {
             top: parent.top
-            topMargin: main.headerPadding
+            topMargin: main.outerPadding
             left: parent.left
-            leftMargin: main.headerPadding
-            right: configureMode ? configButton.left : searchField.left
-            rightMargin: 6 + (configureMode ? addTabButton.width : 0)
+            leftMargin: main.outerPadding
+            right: configureMode ? addTabButton.left : searchField.left
+            rightMargin: configureMode ? 0 : innerPadding
         }
 
         model: tabModel
@@ -152,17 +155,38 @@ Item {
     PlasmaComponents.ToolButton {
         id: addTabButton
         anchors {
-            left: tabBar.right
+            right: endConfigureButton.left
             top: tabBar.top
             bottom: tabBar.bottom
+            rightMargin: innerPadding
         }
+        width: height + 1 // +1 to workaround ToolButton using a round frame if width == height
         opacity: configureMode ? 1 : 0
+
+        flat: false
         iconSource: "list-add"
         onClicked: {
             tabBar.selectNewTab = true;
             tabModel.appendRow();
         }
     }
+
+    // End config button
+    PlasmaComponents.ToolButton {
+        id: endConfigureButton
+        anchors {
+            right: configButton.left
+            top: tabBar.top
+            bottom: tabBar.bottom
+            rightMargin: innerPadding
+        }
+        opacity: configureMode ? 1 : 0
+
+        flat: false
+        text: i18nc("Button to leave configure mode", "Done")
+        onClicked: configureMode = false;
+    }
+
 
     // Search area
     HomerunFixes.TextField {
@@ -172,6 +196,7 @@ Item {
             right: configButton.left
             top: tabBar.top
             bottom: tabBar.bottom
+            rightMargin: innerPadding
         }
 
         width: parent.width / 4
@@ -198,7 +223,7 @@ Item {
             right: parent.right
             top: tabBar.top
             bottom: tabBar.bottom
-            rightMargin: main.headerPadding
+            rightMargin: main.outerPadding
         }
         iconSource: "applications-system"
 
@@ -272,7 +297,7 @@ Item {
             bottom: parent.bottom
             left: parent.left
             right: parent.right
-            topMargin: main.headerPadding
+            topMargin: main.outerPadding
         }
 
         HomerunComponents.TabGroup {
