@@ -232,7 +232,6 @@ Item {
 
         ListView {
             spacing: 6
-            anchors.fill: parent
 
             model: PlasmaCore.SortFilterModel {
                 sourceModel: sourceRegistry.availableSourcesModel()
@@ -271,8 +270,6 @@ Item {
 
         Flickable {
             id: centralFlickable
-            anchors.fill: parent
-            clip: true
             contentHeight: centralColumn.height
 
             Column {
