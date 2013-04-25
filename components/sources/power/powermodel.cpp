@@ -27,11 +27,6 @@
 #include <kworkspace/kworkspace.h>
 #include <Solid/PowerManagement>
 
-// Qt
-#include <QDBusMessage>
-#include <QDBusConnection>
-#include <QDBusPendingCall>
-
 namespace Homerun {
 
 enum Action
@@ -72,15 +67,6 @@ PowerModel::PowerModel(QObject *parent)
     }
 }
 
-static void suspend(const QString &type)
-{
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.kde.Solid.PowerManagement",
-                                                    "/org/kde/Solid/PowerManagement",
-                                                    "org.kde.Solid.PowerManagement",
-                                                    type);
-    QDBusConnection::sessionBus().asyncCall(msg);
-}
-
 bool PowerModel::trigger(int row, const QString &/*actionId*/, const QVariant &/*actionArgument*/)
 {
     QStandardItem *itm = item(row);
@@ -88,10 +74,10 @@ bool PowerModel::trigger(int row, const QString &/*actionId*/, const QVariant &/
     Action action = static_cast<Action>(itm->data().toInt());
     switch (action) {
     case SuspendToRam:
-        suspend("suspendToRam");
+         Solid::PowerManagement::requestSleep(Solid::PowerManagement::SuspendState, 0, 0);
         break;
     case SuspendToDisk:
-        suspend("suspendToDisk");
+         Solid::PowerManagement::requestSleep(Solid::PowerManagement::HibernateState, 0, 0);
         break;
     case Halt:
         KWorkSpace::requestShutDown(KWorkSpace::ShutdownConfirmDefault, KWorkSpace::ShutdownTypeHalt);
