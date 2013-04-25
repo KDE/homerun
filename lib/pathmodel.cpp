@@ -69,6 +69,17 @@ int PathModel::count() const
     return rowCount();
 }
 
+QVariantHash PathModel::get(int row) const
+{
+    QStandardItem *itm = item(row);
+    Q_ASSERT(itm);
+    QVariantHash hash;
+    hash["display"] = itm->text();
+    hash["sourceId"] = itm->data(SourceIdRole).toString();
+    hash["sourceArguments"] = itm->data(SourceArgumentsRole).toMap();
+    return hash;
+}
+
 } // namespace Homerun
 
 #include <pathmodel.moc>
