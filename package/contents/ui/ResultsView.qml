@@ -201,7 +201,7 @@ FocusScope {
         visible: showHeader
         opacity: ("plasmoid" in this) ? 1 : 0.4
 
-        text: model.name
+        text: main.model ? main.model.name : "-"
         font.pointSize: theme.defaultFont.pointSize * 1.4
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
@@ -218,7 +218,7 @@ FocusScope {
         model: main.model
         focus: true
 
-        objectName: "GridView:" + main.model.objectName
+        objectName: "GridView:" + (main.model ? main.model.objectName : "-")
 
         HomerunComponents.DragContainer {
             id: gridDragContainer
