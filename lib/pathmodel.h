@@ -47,6 +47,8 @@ public:
 
     int count() const;
 
+    Q_INVOKABLE QVariantHash get(int row) const;
+
 Q_SIGNALS:
     void countChanged();
 

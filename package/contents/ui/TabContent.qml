@@ -251,18 +251,16 @@ Item {
     }
 
     function goUp() {
-        var count = breadcrumbRepeater.count;
-        var sourceId;
-        var sourceArgs;
-        if (count >= 2) {
+        var model = currentPage.pathModel;
+        if (model.count >= 2) {
             // count - 1 is the breadcrumb for the current content
             // count - 2 is the breadcrumb for the content up
-            var item = breadcrumbRepeater.itemAt(count - 2);
-            sourceId = item.sourceId;
-            sourceArgs = item.sourceArguments;
-        }
-        if (sourceId !== null) {
-            openSource(sourceId, sourceArguments);
+            var item = model.get(model.count - 2);
+            openSource(item.sourceId, item.sourceArguments);
+        } else {
+            // "root" item is not in the path model, so we use a different way
+            // to get to it
+            TabContentInternal.goTo(0);
         }
     }
 
