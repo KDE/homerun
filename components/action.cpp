@@ -29,12 +29,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <QApplication>
 #include <QKeySequence>
 #include <QList>
-#include <QTimer>
 #include <QWidget>
 
 Action::Action(QObject *parent)
 : KAction(parent)
 {
+    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), SLOT(finishInit()));
     finishInit();
 }
 
@@ -42,10 +42,10 @@ void Action::finishInit()
 {
     QWidget *widget = QApplication::activeWindow();
     if (!widget) {
-        QTimer::singleShot(100, this, SLOT(finishInit()));
         return;
     }
     widget->addAction(this);
+    disconnect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(finishInit()));
 }
 
 Action::~Action()
