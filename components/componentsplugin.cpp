@@ -22,6 +22,8 @@
 
 #include <QtDeclarative/qdeclarative.h>
 
+#include <action.h>
+#include <actionmanager.h>
 #include <helpmenuactions.h>
 #include <icondialog.h>
 #include <image.h>
@@ -33,6 +35,8 @@
 void ComponentsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QLatin1String("org.kde.homerun.components"));
+    qmlRegisterType<Action>(uri, 0, 1, "Action");
+    qmlRegisterType<ActionManager>(uri, 0, 1, "ActionManager");
     qmlRegisterType<ShadowEffect>(uri, 0, 1, "ShadowEffect");
     qmlRegisterType<HelpMenuActions>(uri, 0, 1, "HelpMenuActions");
     qmlRegisterType<IconDialog>(uri, 0, 1, "IconDialog");

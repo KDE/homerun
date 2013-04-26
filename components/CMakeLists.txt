@@ -3,6 +3,8 @@ project(components)
 set(components_SRCS
     ${CMAKE_SOURCE_DIR}/internal/aboutdata.cpp
     abstractsourceregistry.cpp
+    action.cpp
+    actionmanager.cpp
     componentsplugin.cpp
     helpmenuactions.cpp
     icondialog.cpp
