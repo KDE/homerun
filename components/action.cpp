@@ -71,18 +71,4 @@ void Action::setKeys(const QStringList &list)
     keysChanged();
 }
 
-QString Action::name() const
-{
-    return m_name;
-}
-
-void Action::setName(const QString &value)
-{
-    if (m_name == value) {
-        return;
-    }
-    m_name = value;
-    nameChanged();
-}
-
 #include <action.moc>

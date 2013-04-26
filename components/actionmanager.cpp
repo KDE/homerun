@@ -60,11 +60,11 @@ void ActionManager::append(QDeclarativeListProperty<Action> *property, Action *a
 
 void ActionManager::addAction(Action *action)
 {
-    if (action->name().isEmpty()) {
-        kWarning() << "Cannot add action" << action << "to collection: action.name has not been defined";
+    if (action->objectName().isEmpty()) {
+        kWarning() << "Cannot add action" << action << "to collection: action.objectName has not been defined";
         return;
     }
-    m_collection->addAction(action->name(), action);
+    m_collection->addAction(action->objectName(), action);
     m_readSettingsTimer->start();
 }
 

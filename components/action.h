@@ -29,11 +29,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Thin QML wrapper around KAction
+ *
+ * To be used with ActionManager
+ * Be sure to define the action objectName(), otherwise ActionManager
+ * integration will fail!
  */
 class Action : public KAction
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    /**
+     * Define shortcut keys. Each element of the list is one shortcut.
+     * Each element is a string using the same format as
+     * QKeySequence::fromString()
+     *
+     * Examples:
+     * - "Ctrl+PgUp"
+     * - "Ctrl+PgDown"
+     * - "Alt+S"
+     * - "Ctrl+Alt+Left"
+     */
     Q_PROPERTY(QStringList keys READ keys WRITE setKeys NOTIFY keysChanged)
 public:
     explicit Action(QObject *parent = 0);
@@ -42,19 +56,14 @@ public:
     QStringList keys() const;
     void setKeys(const QStringList &keys);
 
-    QString name() const;
-    void setName(const QString &name);
-
 Q_SIGNALS:
     void keysChanged();
-    void nameChanged();
 
 private Q_SLOTS:
     void finishInit();
 
 private:
     QStringList m_keys;
-    QString m_name;
 };
 
 #endif /* ACTION_H */
