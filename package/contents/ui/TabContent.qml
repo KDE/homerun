@@ -23,8 +23,6 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 
-import "KeyboardUtils.js" as KeyboardUtils
-
 import "TabContentInternal.js" as TabContentInternal
 
 Item {
@@ -287,14 +285,6 @@ Item {
         TabContentInternal.addPage(page);
         TabContentInternal.goToLastPage();
         page.forceActiveFocus();
-    }
-
-    Keys.onPressed: {
-        KeyboardUtils.processShortcutList([
-            [Qt.AltModifier, Qt.Key_Left, goBack],
-            [Qt.AltModifier, Qt.Key_Right, goForward],
-            [Qt.AltModifier, Qt.Key_Up, goUp],
-            ], event);
     }
 
     function createPage(sourceModel, viewExtraArgs /*= {}*/) {

@@ -25,8 +25,6 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.qtextracomponents 0.1 as QtExtra
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
-import "KeyboardUtils.js" as KeyboardUtils
-
 Item {
     id: main
     signal closeRequested
@@ -55,7 +53,7 @@ Item {
         configFileName: main.configFileName
     }
 
-    // UI
+    // Components
     Component {
         id: tabContentComponent
         TabContent {
@@ -79,6 +77,49 @@ Item {
         }
     }
 
+    // Actions (used for keyboard shortcuts)
+    HomerunComponents.ActionManager {
+        id: actionManager
+        configFileName: main.configFileName
+        HomerunComponents.Action {
+            objectName: "go-to-previous-tab"
+            text: i18n("Go to previous tab")
+            keys: ["Ctrl+PgUp"]
+            onTriggered: tabBar.decrementCurrentIndex()
+        }
+        HomerunComponents.Action {
+            objectName: "go-to-next-tab"
+            text: i18n("Go to next tab")
+            keys: ["Ctrl+PgDown"]
+            onTriggered: tabBar.incrementCurrentIndex()
+        }
+        HomerunComponents.Action {
+            objectName: "search"
+            text: i18n("Focus search field")
+            keys: ["Ctrl+F", "/"]
+            onTriggered: searchField.forceActiveFocus()
+        }
+        HomerunComponents.Action {
+            objectName: "go-back"
+            text: i18n("Go back")
+            keys: ["Alt+Left"]
+            onTriggered: currentTabContent.goBack()
+        }
+        HomerunComponents.Action {
+            objectName: "go-forward"
+            text: i18n("Go forward")
+            keys: ["Alt+Right"]
+            onTriggered: currentTabContent.goBack()
+        }
+        HomerunComponents.Action {
+            objectName: "go-up"
+            text: i18n("Go up")
+            keys: ["Alt+up"]
+            onTriggered: currentTabContent.goUp()
+        }
+    }
+
+    // UI
     HomerunComponents.TabBar {
         id: tabBar
 
@@ -241,6 +282,10 @@ Item {
             PlasmaComponents.ContextMenu {
                 visualParent: configButton
                 PlasmaComponents.MenuItem {
+                    text: i18n("Configure Shortcuts...")
+                    onClicked: actionManager.configure()
+                }
+                PlasmaComponents.MenuItem {
                     text: configureMode ? i18n("End Configure") : i18n("Configure");
                     onClicked: {
                         configureMode = !configureMode;
@@ -371,15 +416,5 @@ Item {
         configureMode = false;
         searchField.text = "";
         searchField.forceActiveFocus();
-    }
-
-    Keys.onPressed: {
-        var lst = [
-            [Qt.ControlModifier, Qt.Key_PageUp, tabBar.decrementCurrentIndex],
-            [Qt.ControlModifier, Qt.Key_PageDown, tabBar.incrementCurrentIndex],
-            [Qt.ControlModifier, Qt.Key_F, searchField.forceActiveFocus],
-            [null,               "/", searchField.forceActiveFocus],
-        ];
-        KeyboardUtils.processShortcutList(lst, event);
     }
 }
