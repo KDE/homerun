@@ -173,12 +173,12 @@ FocusScope {
                     }
                     var action = {};
                     if (favoriteModel.isFavorite(model.favoriteId)) {
-                        action.text = i18n("Remove from favorites");
-                        //action.iconName = "list-remove";
+                        action.text = i18n("Remove from Favorites");
+                        action.icon = QIcon("list-remove");
                         action.actionId = "_homerun_favorite_remove";
                     } else {
-                        action.text = i18n("Add to favorites");
-                        //action.iconName = "bookmarks";
+                        action.text = i18n("Add to Favorites");
+                        action.icon = QIcon("bookmark-new");
                         action.actionId = "_homerun_favorite_add";
                     }
                     action.actionArgument = {favoriteId: model.favoriteId, text: model.display};
