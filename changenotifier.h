@@ -1,5 +1,6 @@
 /*
 Copyright 2013 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Eike Hein <hein@kde.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -24,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Qt
 #include <QObject>
+#include <QStringList>
 
 // KDE
 
@@ -41,14 +43,18 @@ public:
     explicit ChangeNotifier(QObject *parent = 0);
     ~ChangeNotifier();
 
+    bool eventFilter(QObject *watched, QEvent *event);
+
 Q_SIGNALS:
-    void changeDetected();
+    void changeDetected(bool needsReload);
 
 private Q_SLOTS:
     void checkSycocaChanges(const QStringList &changes);
+    void timeout();
 
 private:
     QTimer *mTimer;
+    QStringList mWatchedProps;
 };
 
 } // namespace Homerun

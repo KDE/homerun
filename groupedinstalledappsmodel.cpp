@@ -65,9 +65,9 @@ int InstalledAppsFilterModel::count() const
     return rowCount();
 }
 
-void InstalledAppsFilterModel::refresh()
+void InstalledAppsFilterModel::refresh(bool reload)
 {
-    m_installedAppsModel->refresh();
+    m_installedAppsModel->refresh(reload);
 }
 
 bool InstalledAppsFilterModel::trigger(int row)
@@ -158,8 +158,16 @@ QObject *GroupedInstalledAppsModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
-void GroupedInstalledAppsModel::refresh()
+void GroupedInstalledAppsModel::refresh(bool reload)
 {
+    if (!reload) {
+        foreach(InstalledAppsFilterModel* model, m_models) {
+            model->refresh(false);
+        }
+
+        return;
+    }
+
     beginResetModel();
     qDeleteAll(m_models);
     m_models.clear();

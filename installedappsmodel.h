@@ -1,5 +1,6 @@
 /*
 Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Eike Hein <hein@kde.org>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -43,9 +44,13 @@ class InstalledAppsSource;
 class AbstractNode
 {
 public:
+    enum NodeType { AppNodeType, GroupNodeType, InstallerNodeType };
+
     virtual ~AbstractNode();
 
-    virtual bool trigger() = 0;
+    virtual NodeType type() const = 0;
+
+    virtual bool trigger(const QString &actionId = QString(), const QVariant &actionArgument = QVariant()) = 0;
     virtual QString favoriteId() const { return QString(); }
 
     QString icon() const { return m_icon; }
@@ -64,7 +69,9 @@ class GroupNode : public AbstractNode
 public:
     GroupNode(KServiceGroup::Ptr group, InstalledAppsModel *model);
 
-    bool trigger(); // reimp
+    NodeType type() const { return GroupNodeType; }
+
+    bool trigger(const QString &actionId = QString(), const QVariant &actionArgument = QVariant()); // reimp
 
 private:
     InstalledAppsModel *m_model;
@@ -76,7 +83,9 @@ class AppNode : public AbstractNode
 public:
     AppNode(KService::Ptr service);
 
-    bool trigger(); // reimp;
+    NodeType type() const { return AppNodeType; }
+
+    bool trigger(const QString &actionId = QString(), const QVariant &actionArgument = QVariant()); // reimp;
     QString favoriteId() const; // reimp
 
 private:
@@ -88,7 +97,9 @@ class InstallerNode : public AbstractNode
 public:
     InstallerNode(KServiceGroup::Ptr group, KService::Ptr installerService);
 
-    bool trigger(); // reimp
+    NodeType type() const { return InstallerNodeType; }
+
+    bool trigger(const QString &actionId = QString(), const QVariant &actionArgument = QVariant()); // reimp;
 
 private:
     InstalledAppsModel *m_model;
@@ -106,6 +117,8 @@ class InstalledAppsModel : public QAbstractListModel
 public:
     enum Roles {
         FavoriteIdRole = Qt::UserRole + 1,
+        HasActionListRole,
+        ActionListRole
     };
 
     InstalledAppsModel(const QString &entryPath, const QString &installer, QObject *parent = 0);
@@ -117,7 +130,7 @@ public:
 
     PathModel *pathModel() const;
 
-    Q_INVOKABLE bool trigger(int row);
+    Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
     QString name() const;
 
@@ -126,7 +139,7 @@ Q_SIGNALS:
     void openSourceRequested(const QString &sourceId, const QVariantMap &args);
 
 public Q_SLOTS:
-    void refresh();
+    void refresh(bool reload = true);
 
 private:
     void loadRootEntries();

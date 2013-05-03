@@ -56,7 +56,7 @@ Q_SIGNALS:
     void countChanged();
 
 public Q_SLOTS:
-    void refresh();
+    void refresh(bool reload = true);
 
 private:
     InstalledAppsModel *m_installedAppsModel;
@@ -122,7 +122,7 @@ Q_SIGNALS:
     void queryChanged(const QString &);
 
 public Q_SLOTS:
-    void refresh();
+    void refresh(bool reload = true);
     void scheduleQuery(const QString &query);
 
 private Q_SLOTS:
