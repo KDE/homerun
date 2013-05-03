@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 # ctxt: "Homerun" is a product name
-Name=KDE Homerun
+Name=Homerun
 Name[cs]=KDE Homerun
 Name[da]=KDE Homerun
 Name[de]=KDE-Homerun
