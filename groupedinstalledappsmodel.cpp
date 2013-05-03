@@ -78,7 +78,7 @@ bool InstalledAppsFilterModel::trigger(int row)
 FilterModel::FilterModel(GroupedInstalledAppsModel *sourceModel)
 : QSortFilterProxyModel(sourceModel)
 , m_sourceModel(sourceModel)
-, m_activeFilterIndex(-1)
+, m_activeFilterIndex(0)
 {
     setSourceModel(m_sourceModel);
     setDynamicSortFilter(true);
@@ -179,6 +179,12 @@ void GroupedInstalledAppsModel::refresh(bool reload)
 
 void GroupedInstalledAppsModel::loadRootEntries()
 {
+    InstalledAppsFilterModel *model = createInstalledAppsModel(KServiceGroup::root());
+    model->setParent(this);
+    beginInsertRows(QModelIndex(), m_models.count(), m_models.count());
+    m_models << model;
+    endInsertRows();
+
     KServiceGroup::Ptr group = KServiceGroup::root();
     KServiceGroup::List list = group->entries(false /* sorted: set to false as it does not seem to work */);
 
