@@ -3,6 +3,9 @@ Encoding=UTF-8
 # ctxt: "Homerun" is a product name
 Name=Homerun
 Name[cs]=Homerun
+Name[nl]=Homerun
+Name[pt]=Homerun
+Name[uk]=Homerun
 Name[x-test]=xxHomerunxx
 Comment=An application launcher
 Comment[cs]=Spouštěč aplikací
