@@ -7,6 +7,7 @@ Name[fi]=Homerun
 Name[nl]=Homerun
 Name[pt]=Homerun
 Name[pt_BR]=Homerun
+Name[sv]=Homerun
 Name[uk]=Homerun
 Name[x-test]=xxHomerunxx
 Comment=An application launcher
