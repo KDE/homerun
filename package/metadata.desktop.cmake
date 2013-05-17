@@ -3,6 +3,7 @@ Encoding=UTF-8
 # ctxt: "Homerun" is a product name
 Name=Homerun
 Name[cs]=Homerun
+Name[de]=Homerun
 Name[fi]=Homerun
 Name[nl]=Homerun
 Name[pt]=Homerun
