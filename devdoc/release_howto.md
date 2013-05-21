@@ -59,6 +59,12 @@ Push:
     git push
     git push --tags
 
+# Merge back in master
+
+    git checkout master
+    git merge --no-ff homerun/$x.$y
+    git push
+
 # Publish
 
 Upload to download.kde.org, following instructions from:
@@ -66,7 +72,5 @@ Upload to download.kde.org, following instructions from:
 
 Add new version number on:
 <https://bugs.kde.org/editversions.cgi?product=homerun>
-
-Update PPA
 
 Blog
