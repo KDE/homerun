@@ -1,3 +1,12 @@
+# 2013.05.21 - 1.0.0
+
+- Favorite items can now be reordered via drag and drop (Aurélien Gâteau)
+- Shortcuts are now customizable, using the standard KDE shortcut window (Aurélien Gâteau)
+- It is now possible to empty the trash from the context menu of the "Trash" item (Aurélien Gâteau)
+- Use casing and icons consistent with Kickoff (Eike Hein)
+- Show a short message when an item is added to favorites (Aurélien Gâteau)
+- Fix missing space between icons and texts (Aurélien Gâteau)
+
 # 2013.05.06 - 0.2.3
 
 - Unbreak "alt+up" shortcut (Aurélien Gâteau)
