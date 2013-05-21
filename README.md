@@ -74,17 +74,14 @@ documentation. The generated documentation will be in "$BUILDDIR/lib/html".
 You should also have a look at the code of the "helloworld" example source in
 "devdoc/helloworld".
 
-## Contributing
+## Getting involved
 
-Report bugs on <https://bugs.kde.org>, product "homerun".
+You can get in touch with us on IRC: #kde-homerun on Freenode.
+
+You can report bugs on <https://bugs.kde.org>, product "homerun".
 
 Clone the git repository with:
 
     git clone git://anongit.kde.org/homerun
 
 File review requests on <http://git.reviewboard.kde.org>, repository "homerun".
-
-## Main Authors
-
-- Aurélien Gâteau <agateau@kde.org>
-- Shaun Reich <shaun.reich@blue-systems.com>
