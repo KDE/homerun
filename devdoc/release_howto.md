@@ -4,6 +4,15 @@ Check working tree is clean:
 
     git status
 
+Check code is up to date:
+
+    git pull
+
+If it is a .0 release, create a branch (if $newv is $x.$y.0, $branch is homerun/$x.$y):
+
+    git checkout -b $branch
+    git push -u origin $branch:$branch
+
 Update NEWS:
 
     git log --pretty=format:'- \%s (\%an)' $oldv..HEAD
@@ -24,14 +33,9 @@ Get releaseme:
     git clone kde:releaseme
     cd releaseme
 
-Create tarball.
-- For stable updates:
+Create tarball:
 
     ./homerun.rb -u $svnusername --git-branch homerun/$x.$y --version $x.$y.$z
-
-- For .0 releases:
-
-    ./homerun.rb -u $svnusername --version $x.$y.$z
 
 Check it builds:
 
@@ -45,11 +49,6 @@ Check it builds:
     make install
 
 Check translations have been installed.
-
-If it is a new .0 release, create a branch (if $newv is $x.$y.0, $branch is homerun/$x.$y)
-
-    git checkout -b $branch
-    git push -u origin $branch:$branch
 
 If ok, create $newv tag:
 
@@ -69,7 +68,5 @@ Add new version number on:
 <https://bugs.kde.org/editversions.cgi?product=homerun>
 
 Update PPA
-
-Upload on http://kde-apps.org
 
 Blog
