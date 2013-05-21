@@ -81,7 +81,6 @@ void SortFilterModel::setModel(QObject *source)
 
     if (sourceModel()) {
         disconnect(sourceModel(), SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
-        disconnect(sourceModel(), SIGNAL(modelReset()), this, SLOT(syncRoleNames()));
         disconnect(sourceModel(), SIGNAL(rowsAboutToBeMoved(QModelIndex,int,int,QModelIndex,int)),
             this, SLOT(onRowsAboutToBeMoved(QModelIndex,int,int,QModelIndex,int)));
         disconnect(sourceModel(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
