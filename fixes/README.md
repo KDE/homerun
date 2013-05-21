@@ -22,7 +22,7 @@ Applied in 4.11
 ### Fix crash in mapRowFromSource()
 <https://git.reviewboard.kde.org/r/109946/>
 
-Not applied for now
+Applied in 4.11
 
 ### Emit beginMoveRows() and endMoveRows()
 
