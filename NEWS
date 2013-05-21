@@ -1,3 +1,9 @@
+# 2013.05.06 - 0.2.3
+
+- Unbreak "alt+up" shortcut (Aurélien Gâteau)
+- Remove spacing between breadcrumb buttons (Aurélien Gâteau)
+- Switch to Solid::PowerManagement instead of using DBus interface (Hrvoje Senjan)
+
 # 2013.04.16 - 0.2.2
 
 - Update list of applications when new applications are installed or removed
