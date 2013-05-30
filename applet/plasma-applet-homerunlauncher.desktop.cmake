@@ -10,6 +10,7 @@ Name[nl]=Programmastarter Homerun
 Name[pt]=Lançador Homerun
 Name[pt_BR]=Lançador Homerun
 Name[sv]=Homerun startprogram
+Name[tr]=Homerun Çalıştırıcı
 Name[uk]=Засіб запуску Homerun
 Name[x-test]=xxHomerun Launcherxx
 
