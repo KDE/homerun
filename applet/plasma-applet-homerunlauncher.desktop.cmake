@@ -9,6 +9,7 @@ Name[fi]=Homerun-käynnistin
 Name[nl]=Programmastarter Homerun
 Name[pt]=Lançador Homerun
 Name[pt_BR]=Lançador Homerun
+Name[ru]=Запуск Homerun
 Name[sl]=Zaganjalnik Homerun
 Name[sv]=Homerun startprogram
 Name[tr]=Homerun Çalıştırıcı

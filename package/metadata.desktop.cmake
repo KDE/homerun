@@ -9,6 +9,7 @@ Name[fi]=Homerun
 Name[nl]=Homerun
 Name[pt]=Homerun
 Name[pt_BR]=Homerun
+Name[ru]=Homerun
 Name[sl]=Homerun
 Name[sv]=Homerun
 Name[tr]=Homerun
