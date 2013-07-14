@@ -37,6 +37,7 @@ FocusScope {
     property QtObject model
 
     property bool configureMode: false
+    property bool showActionListOverlay: false
     property bool filtered: false
 
     property alias currentItem: gridView.currentItem
@@ -124,6 +125,7 @@ FocusScope {
                 iconWidth: main.iconWidth
                 width: main.resultItemWidth
                 configureMode: main.configureMode
+                showActionListOverlay: main.showActionListOverlay
                 dragContainer: gridDragContainer
                 dragEnabled: ("canMoveRow" in main.model) ? main.model.canMoveRow : false
 

@@ -32,6 +32,7 @@ Item {
     property alias text: resultLabel.text
     property alias icon: resultIcon.source
     property bool configureMode: false
+    property bool showActionListOverlay: false
     property bool hasActionList: false
     property alias dragEnabled: dragArea.dragEnabled
 
@@ -60,7 +61,7 @@ Item {
     signal showMessageRequested(string icon, string text)
 
     //- Private ---------------------------------------------------------------
-    property bool containsMouse: dragArea.containsMouse || actionListMouseArea.containsMouse
+    property bool containsMouse: dragArea.containsMouse || (showActionListOverlay && actionListMouseArea.containsMouse)
     onContainsMouseChanged: {
         highlighted = containsMouse;
     }
@@ -176,7 +177,7 @@ Item {
         height: width
         opacity: actionListMouseArea.containsMouse ? 1 : ((main.highlighted || actionMenu.opened) ? 0.5 : 0)
         Behavior on opacity { NumberAnimation {} }
-        visible: hasActionList
+        visible: showActionListOverlay && hasActionList
 
         PlasmaComponents.ToolButton {
             id: actionListButton

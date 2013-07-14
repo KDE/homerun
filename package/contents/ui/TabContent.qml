@@ -36,6 +36,7 @@ Item {
     property string tabText
     property string searchCriteria
     property bool configureMode: false
+    property bool showActionListOverlay: false
 
     // Exposed by ourself
     property bool canGoBack: false
@@ -52,6 +53,7 @@ Item {
         Page {
             anchors.fill: parent
             configureMode: main.configureMode
+            showActionListOverlay: main.showActionListOverlay
             onCloseRequested: {
                 main.closeRequested();
             }

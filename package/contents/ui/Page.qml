@@ -31,6 +31,7 @@ Item {
 
     property QtObject tabSourceModel
     property bool configureMode
+    property bool showActionListOverlay
 
     property string searchCriteria
 
@@ -94,6 +95,7 @@ Item {
             id: view
             width: parent.width
             configureMode: main.configureMode
+            showActionListOverlay: main.showActionListOverlay
             onTriggerActionRequested: {
                 handleTriggerResult(model.trigger(index, actionId, actionArgument));
             }
@@ -175,6 +177,7 @@ Item {
                 delegate: ResultsView {
                     width: multiMain.width
                     configureMode: main.configureMode
+                    showActionListOverlay: main.showActionListOverlay
 
                     model: multiMain.modelNeedsFiltering
                         ? createFilterForModel(repeater.model.modelForRow(index))

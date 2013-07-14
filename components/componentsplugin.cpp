@@ -24,6 +24,7 @@
 
 #include <action.h>
 #include <actionmanager.h>
+#include <globalsettings.h>
 #include <helpmenuactions.h>
 #include <icondialog.h>
 #include <image.h>
@@ -38,6 +39,7 @@ void ComponentsPlugin::registerTypes(const char *uri)
     qmlRegisterType<Action>(uri, 0, 1, "Action");
     qmlRegisterType<ActionManager>(uri, 0, 1, "ActionManager");
     qmlRegisterType<ShadowEffect>(uri, 0, 1, "ShadowEffect");
+    qmlRegisterType<GlobalSettings>(uri, 0, 1, "GlobalSettings");
     qmlRegisterType<HelpMenuActions>(uri, 0, 1, "HelpMenuActions");
     qmlRegisterType<IconDialog>(uri, 0, 1, "IconDialog");
     qmlRegisterType<Image>(uri, 0, 1, "Image");

@@ -36,10 +36,16 @@ Item {
     property alias currentTabContent: tabGroup.currentTab
 
     property bool configureMode: false
+    property bool showActionListOverlay: globalSettings.showActionListOverlay
 
     // Internal
     property real outerPadding: 12
     property real innerPadding: 6 // padding between header items
+
+    HomerunComponents.GlobalSettings {
+        id: globalSettings
+        configFileName: main.configFileName
+    }
 
     // Models
     HomerunComponents.TabModel {
@@ -62,6 +68,7 @@ Item {
             tabIconSource: tabButton.iconSource
             tabText: tabButton.realText
             configureMode: main.configureMode
+            showActionListOverlay: main.showActionListOverlay
             onCloseRequested: isContainment ? reset() : main.closeRequested()
             onSetSearchFieldRequested: searchField.text = text
             onTabTextChanged: {
@@ -291,6 +298,14 @@ Item {
                         if (configureMode) {
                             currentTabContent.reset();
                         }
+                    }
+                }
+                PlasmaComponents.MenuItem {
+                    text: i18n("Show Action List Buttons");
+                    checkable: true
+                    checked: showActionListOverlay
+                    onCheckedChanged: {
+                        globalSettings.showActionListOverlay = checked;
                     }
                 }
                 PlasmaComponents.MenuItem {
