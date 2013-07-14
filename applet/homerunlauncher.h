@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2012 by Shaun Reich <shaun.reich@blue-systems.com>           *
+ *   Copyright (C) 2012 by Shaun Reich <shaun.reich@blue-systems.com>      *
+ *   Copyright (C) 2013 by Eike Hein <hein@kde.org>                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -27,15 +28,13 @@ namespace Plasma {
     class IconWidget;
 }
 
+class QDBusServiceWatcher;
 class QGraphicsSceneMouseEvent;
 class QSizeF;
 
 class HomerunLauncher : public Plasma::Applet
 {
     Q_OBJECT
-    enum {
-        DontShow = -2
-    };
 public:
     HomerunLauncher(QObject * parent, const QVariantList & args);
 
@@ -46,12 +45,18 @@ public:
 private Q_SLOTS:
     void toggle();
     void readConfig();
+    void viewerServiceRegistered();
+    void viewerServiceUnregistered();
+    void addToDesktop(uint containmentId, const QString &storageId);
+    void addToPanel(uint containmentId, const QString &storageId);
 
 private:
     Plasma::IconWidget *m_icon;
+    QDBusServiceWatcher *m_serviceWatcher;
+    bool m_serviceRegistered;
+    bool m_toggleWhenRegistered;
 
-    void startViewer(int screen);
-    bool isViewerRunning() const;
+    void startViewer();
 };
 
 K_EXPORT_PLASMA_APPLET (homerunlauncher, HomerunLauncher)

@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Local
 
 // KDE
-#include <KConfigGroup>
 #include <KDebug>
 #include <KSharedConfig>
 #include <KShortcutsDialog>
@@ -99,7 +98,7 @@ void ActionManager::setConfigFileName(const QString &name)
     m_configFileName = name;
     m_configGroup = KSharedConfig::openConfig(m_configFileName)->group("Shortcuts");
     m_readSettingsTimer->start();
-    configFileNameChanged();
+    emit configFileNameChanged();
 }
 
 #include <actionmanager.moc>

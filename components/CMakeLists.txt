@@ -6,6 +6,7 @@ set(components_SRCS
     action.cpp
     actionmanager.cpp
     componentsplugin.cpp
+    globalsettings.cpp
     helpmenuactions.cpp
     icondialog.cpp
     image.cpp

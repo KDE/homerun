@@ -1,5 +1,6 @@
 /*
 Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Eike Hein <hein@kde.org>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,11 +21,13 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 // Local
 #include <changenotifier.h>
 #include <pathmodel.h>
+#include <actionlist.h>
 #include <installedappsmodel.h>
 #include <installedappsconfigurationwidget.h>
 #include <sourceregistry.h>
 
 // Qt
+#include <QApplication>
 #include <QIcon>
 #include <QAction>
 #include <QTimer>
@@ -66,8 +69,11 @@ GroupNode::GroupNode(KServiceGroup::Ptr group, InstalledAppsModel *model)
     m_sortKey = m_name.toLower();
 }
 
-bool GroupNode::trigger()
+bool GroupNode::trigger(const QString &actionId, const QVariant &actionArgument)
 {
+    Q_UNUSED(actionId)
+    Q_UNUSED(actionArgument)
+
     QVariantMap args;
     args.insert("entryPath", m_entryPath);
     m_model->openSourceRequested(SOURCE_ID, args);
@@ -84,9 +90,24 @@ AppNode::AppNode(KService::Ptr service)
     m_sortKey = m_name.toLower();
 }
 
-bool AppNode::trigger()
+bool AppNode::trigger(const QString &actionId, const QVariant &actionArgument)
 {
-    return KRun::run(*m_service, KUrl::List(), 0);
+    Q_UNUSED(actionArgument)
+
+    if (!actionId.isEmpty()) {
+        QVariant adaptor = qApp->property("HomerunViewerAdaptor");
+
+        if (adaptor.isValid()) {
+            uint containmentId = (actionId == "addToDesktop") ? qApp->property("desktopContainmentId").toUInt()
+                : qApp->property("appletContainmentId").toUInt();
+            return QMetaObject::invokeMethod(adaptor.value<QObject *>(), actionId.toLocal8Bit(),
+                Qt::DirectConnection, Q_ARG(uint, containmentId), Q_ARG(QString, m_service->storageId()));
+        }
+    } else {
+        return KRun::run(*m_service, KUrl::List(), 0);
+    }
+
+    return false;
 }
 
 QString AppNode::favoriteId() const
@@ -103,8 +124,11 @@ InstallerNode::InstallerNode(KServiceGroup::Ptr group, KService::Ptr installerSe
     m_name = m_service->name();
 }
 
-bool InstallerNode::trigger()
+bool InstallerNode::trigger(const QString &actionId, const QVariant &actionArgument)
 {
+    Q_UNUSED(actionId)
+    Q_UNUSED(actionArgument)
+
     QHash<QString, QString> map;
     QString category = m_group->entryPath();
     if (category.endsWith('/')) {
@@ -127,6 +151,8 @@ InstalledAppsModel::InstalledAppsModel(const QString &entryPath, const QString &
     roles.insert(Qt::DisplayRole, "display");
     roles.insert(Qt::DecorationRole, "decoration");
     roles.insert(FavoriteIdRole, "favoriteId");
+    roles.insert(HasActionListRole, "hasActionList");
+    roles.insert(ActionListRole, "actionList");
 
     setRoleNames(roles);
 
@@ -162,18 +188,43 @@ QVariant InstalledAppsModel::data(const QModelIndex &index, int role) const
         return node->icon().isEmpty() ? QLatin1String("unknown") : node->icon();
     } else if (role == FavoriteIdRole) {
         return node->favoriteId();
+    } else if (role == HasActionListRole) {
+        return node->type() == AbstractNode::AppNodeType;
+    } else if (role == ActionListRole && node->type() == AbstractNode::AppNodeType) {
+        QVariantList actionList;
+
+        if (qApp->property("HomerunViewerAdaptor").isValid())
+        {
+            if (qApp->property("desktopContainmentId").toUInt() > 0
+                && qApp->property("desktopContainmentMutable").toBool()) {
+                actionList << ActionList::createActionItem(i18n("Add to Desktop"), "addToDesktop");
+            }
+            if (qApp->property("appletContainmentId").toUInt() > 0
+                && qApp->property("appletContainmentMutable").toBool()) {
+                actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
+            }
+        }
+
+        return actionList;
     }
 
     return QVariant();
 }
 
-bool InstalledAppsModel::trigger(int row)
+bool InstalledAppsModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
 {
-    return m_nodeList.at(row)->trigger();
+    return m_nodeList.at(row)->trigger(actionId, actionArgument);
 }
 
-void InstalledAppsModel::refresh()
+void InstalledAppsModel::refresh(bool reload)
 {
+    if (!reload) {
+        emit layoutAboutToBeChanged();
+        emit layoutChanged();
+
+        return;
+    }
+
     m_pathModel->clear();
     beginResetModel();
     qDeleteAll(m_nodeList);
@@ -305,7 +356,7 @@ QAbstractItemModel *InstalledAppsSource::createModel(const QString &entryPath)
 
     InstalledAppsModel *model = new InstalledAppsModel(entryPath, installer);
     ChangeNotifier *notifier = new ChangeNotifier(model);
-    connect(notifier, SIGNAL(changeDetected()), model, SLOT(refresh()));
+    connect(notifier, SIGNAL(changeDetected(bool)), model, SLOT(refresh(bool)));
     return model;
 }
 

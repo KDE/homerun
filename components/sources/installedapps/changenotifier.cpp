@@ -1,5 +1,6 @@
 /*
 Copyright 2013 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Eike Hein <hein@kde.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -26,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <KSycoca>
 
 // Qt
+#include <QApplication>
+#include <QDynamicPropertyChangeEvent>
 #include <QTimer>
 
 namespace Homerun {
@@ -37,13 +40,27 @@ ChangeNotifier::ChangeNotifier(QObject *parent)
     // Use a timer to aggregate multiple KSycoca changes
     mTimer->setInterval(100);
     mTimer->setSingleShot(true);
-    connect(mTimer, SIGNAL(timeout()), SIGNAL(changeDetected()));
+    connect(mTimer, SIGNAL(timeout()), SLOT(timeout()));
 
     connect(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), SLOT(checkSycocaChanges(QStringList)));
+
+    mWatchedProps << "appletContainmentId" << "appletContainmentMutable"
+        << "desktopContainmentId" << "desktopContainmentMutable";
+    qApp->installEventFilter(this);
 }
 
 ChangeNotifier::~ChangeNotifier()
 {
+}
+
+bool ChangeNotifier::eventFilter(QObject* watched, QEvent* event)
+{
+    if (event->type() == QEvent::DynamicPropertyChange
+        && mWatchedProps.contains(static_cast<QDynamicPropertyChangeEvent *>(event)->propertyName())) {
+        emit changeDetected(false);
+    }
+
+    return QObject::eventFilter(watched, event);
 }
 
 void ChangeNotifier::checkSycocaChanges(const QStringList &changes)
@@ -51,6 +68,11 @@ void ChangeNotifier::checkSycocaChanges(const QStringList &changes)
     if (changes.contains("services") || changes.contains("apps") || changes.contains("xdgdata-apps")) {
         mTimer->start();
     }
+}
+
+void ChangeNotifier::timeout()
+{
+    emit changeDetected(true);
 }
 
 } // namespace Homerun

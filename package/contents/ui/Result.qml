@@ -164,6 +164,7 @@ Item {
         }
     }
 
+
     Item {
         anchors {
             right: parent.right
@@ -193,6 +194,7 @@ Item {
             onClicked: openActionMenu(actionListButton)
         }
     }
+
 
     ActionMenu {
         id: actionMenu

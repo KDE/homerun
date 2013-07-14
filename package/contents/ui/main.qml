@@ -135,7 +135,6 @@ Item {
         }
 
         model: tabModel
-
         delegate: HomerunComponents.TabButton {
             id: tabButtonMain
             property string realText: model.display
@@ -286,7 +285,7 @@ Item {
                     onClicked: actionManager.configure()
                 }
                 PlasmaComponents.MenuItem {
-                    text: configureMode ? i18n("End Configure") : i18n("Configure");
+                    text: configureMode ? i18n("End Configure Tabs") : i18n("Configure Tabs");
                     onClicked: {
                         configureMode = !configureMode;
                         if (configureMode) {

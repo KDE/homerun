@@ -1,5 +1,6 @@
 /*
 Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Eike Hein <hein@kde.org>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -52,7 +53,7 @@ Q_SIGNALS:
     void installerChanged(const QString &);
 
 public Q_SLOTS:
-    void refresh();
+    void refresh(bool reload = true);
 
 private Q_SLOTS:
     void loadRootEntries();

@@ -1,5 +1,6 @@
 /*
 Copyright 2012 Aurélien Gâteau <agateau@kde.org>
+Copyright 2013 Eike Hein <hein@kde.org>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -53,8 +54,16 @@ QObject *GroupedInstalledAppsModel::modelForRow(int row) const
     return m_models.value(row);
 }
 
-void GroupedInstalledAppsModel::refresh()
+void GroupedInstalledAppsModel::refresh(bool reload)
 {
+    if (!reload) {
+        foreach(InstalledAppsModel* model, m_models) {
+            model->refresh(false);
+        }
+
+        return;
+    }
+
     beginResetModel();
     qDeleteAll(m_models);
     m_models.clear();
@@ -141,7 +150,7 @@ QAbstractItemModel *GroupedInstalledAppsSource::createModelFromConfigGroup(const
     QString installer = group.readEntry("categoryInstaller");
     GroupedInstalledAppsModel *model = new GroupedInstalledAppsModel(installer);
     ChangeNotifier *notifier = new ChangeNotifier(model);
-    connect(notifier, SIGNAL(changeDetected()), model, SLOT(refresh()));
+    connect(notifier, SIGNAL(changeDetected(bool)), model, SLOT(refresh(bool)));
     return model;
 }
 

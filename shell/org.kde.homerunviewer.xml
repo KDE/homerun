@@ -3,6 +3,18 @@
   <interface name="org.kde.homerunViewer">
     <method name="toggle">
       <arg name="screen" type="i" direction="in"/>
+      <arg name="appletContainmentId" type="u" direction="in"/>
+      <arg name="appletContainmentMutable" type="b" direction="in"/>
+      <arg name="desktopContainmentId" type="u" direction="in"/>
+      <arg name="desktopContainmentMutable" type="b" direction="in"/>
     </method>
+    <signal name="addToPanel">
+        <arg name="containmentId" type="u" direction="out"/>
+        <arg name="storageId" type="s" direction="out"/>
+    </signal>
+    <signal name="addToDesktop">
+        <arg name="containmentId" type="u" direction="out"/>
+        <arg name="storageId" type="s" direction="out"/>
+    </signal>
   </interface>
 </node>

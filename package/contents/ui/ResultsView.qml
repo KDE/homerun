@@ -37,6 +37,7 @@ FocusScope {
     property QtObject model
 
     property bool configureMode: false
+    property bool filtered: false
 
     property alias currentItem: gridView.currentItem
 

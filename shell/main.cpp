@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
     // Define cmdline options
     KCmdLineArgs::init(argc, argv, aboutData.data());
     KCmdLineOptions options;
-    options.add("show <screen>", ki18n("Show on screen <screen>"), "-1");
     options.add("log-focused-item", ki18n("Log focused item (for debug purposes)"));
     options.add("plain-window", ki18n("Use a plain window (for debug purposes)"));
     KCmdLineArgs::addCmdLineOptions(options);
@@ -101,15 +100,5 @@ int main(int argc, char *argv[])
         ? kdeArgs->getOption("config")
         : "homerunrc");
 
-    if (args->isSet("show")) {
-        QString str = args->getOption("show");
-        bool ok;
-        int screen = str.toInt(&ok);
-        if (!ok) {
-            kError() << "Invalid screen number:" << str << ". Using screen 0.";
-            screen = 0;
-        }
-        view.toggle(screen);
-    }
     return app.exec();
 }

@@ -80,7 +80,8 @@ FullView::FullView()
 
 bool FullView::init(QString *errorMessage)
 {
-    new HomerunViewerAdaptor(this);
+    HomerunViewerAdaptor *adaptor = new HomerunViewerAdaptor(this);
+    qApp->setProperty("HomerunViewerAdaptor", QVariant::fromValue<QObject *>(adaptor));
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerObject("/HomerunViewer", this);
     dbus.registerService("org.kde.homerunViewer");
@@ -139,7 +140,8 @@ FullView::~FullView()
 {
 }
 
-void FullView::toggle(int screen)
+void FullView::toggle(int screen, uint appletContainmentId, bool appletContainmentMutable,
+    int desktopContainmentId, bool desktopContainmentMutable)
 {
     if (isVisible()) {
         resetAndHide();
@@ -161,6 +163,11 @@ void FullView::toggle(int screen)
         setGeometry(rect);
         show();
         KWindowSystem::forceActiveWindow(winId());
+
+        qApp->setProperty("appletContainmentId", appletContainmentId);
+        qApp->setProperty("appletContainmentMutable", appletContainmentMutable);
+        qApp->setProperty("desktopContainmentId", desktopContainmentId);
+        qApp->setProperty("desktopContainmentMutable", desktopContainmentMutable);
     }
 }
 
