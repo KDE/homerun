@@ -1,3 +1,18 @@
+# 2013.07.15 - 1.1.0
+
+- Application items now have "Add to Panel" and "Add to Desktop" actions if
+  the workspace is unlocked and Homerun is opened from a panel applet (Eike Hein)
+- A global setting to toggle the action list buttons has been added, defaulting
+  to off (Eike Hein)
+- Sources can now optionally publish sidebar actions (Eike Hein)
+- A new "All Installed Applications With Filters" sources has been added, making
+  use of the new sidebar action API to allow filtering by category; this source
+  is now used on the default "Applications" tab (Eike Hein)
+- Performance improvements for application sources filtering (Eike Hein)
+- The applet is now better at managing the Homerun viewer process, e.g. its
+  ability to restart it on demand after crashes is now more robust (Eike Hein)
+- Muon integration has been disabled by default (Eike Hein)
+
 # 2013.05.21 - 1.0.0
 
 - Favorite items can now be reordered via drag and drop (Aurélien Gâteau)

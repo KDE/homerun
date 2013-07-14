@@ -3,7 +3,7 @@ project(homerun)
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 # Packaging
-set(HOMERUN_VERSION "1.0.0")
+set(HOMERUN_VERSION "1.1.0")
 
 # Dependencies
 find_package(KDE4 4.9.97 REQUIRED)
