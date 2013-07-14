@@ -26,6 +26,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 // Qt
 #include <QAbstractListModel>
+#include <QSortFilterProxyModel>
 #include <QStringList>
 
 // KDE
@@ -124,9 +125,9 @@ public:
     InstalledAppsModel(const QString &entryPath, const QString &installer, QObject *parent = 0);
     ~InstalledAppsModel();
 
-    int rowCount(const QModelIndex&) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int count() const;
-    QVariant data(const QModelIndex&, int) const;
+    QVariant data(const QModelIndex &, int) const;
 
     PathModel *pathModel() const;
 

@@ -38,7 +38,6 @@ FocusScope {
 
     property bool configureMode: false
     property bool showActionListOverlay: false
-    property bool filtered: false
 
     property alias currentItem: gridView.currentItem
 
@@ -100,10 +99,24 @@ FocusScope {
         gridView.currentIndex = idx;
         gridView.currentItem.forceActiveFocus();
     }
-    height: childrenRect.height
+    height: visible ? childrenRect.height : 0
+    visible: calculateVisibility()
 
-    opacity: configureMode ? 0.6 : 1
-    visible: gridView.count > 0 || configureMode
+    function calculateVisibility() {
+        if (!model) {
+            return false;
+        }
+
+        if (!gridView.count) {
+            return false;
+        }
+
+        if ("hidden" in model && model.hidden) {
+            return false;
+        }
+
+        return true;
+    }
 
     //FIXME: figure out sizing properly..
     property int iconWidth: 64

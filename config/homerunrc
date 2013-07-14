@@ -24,13 +24,13 @@ icon=applications-other
 sources=Source0,Source1
 
 [Tab1][Source0]
-sourceId=InstalledApps
+#sourceId=InstalledApps
 # For a grouped list of all apps
-#sourceId=GroupedInstalledApps
+sourceId=FilterableInstalledApps
 
 [Tab1][Source1]
 sourceId=Runner
-whitelist=services,shell
+whitelist=shell
 
 [Tab2]
 name=Files

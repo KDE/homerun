@@ -24,6 +24,7 @@ set(components_SRCS
     sources/favorites/kfileplacesitem.cpp
     sources/favorites/kfileplacessharedbookmarks.cpp
     sources/installedapps/changenotifier.cpp
+    sources/installedapps/filterableinstalledappsmodel.cpp
     sources/installedapps/groupedinstalledappsmodel.cpp
     sources/installedapps/installedappsconfigurationwidget.cpp
     sources/installedapps/installedappsmodel.cpp

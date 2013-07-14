@@ -237,7 +237,9 @@ void InstalledAppsModel::refresh(bool reload)
         loadServiceGroup(group);
         QVariantMap args;
         args.insert("entryPath", m_entryPath);
-        m_pathModel->addPath(group->caption(), SOURCE_ID, args);
+        QString label = (m_entryPath == KServiceGroup::root()->entryPath()) ? i18n("All Applications")
+            : group->caption();
+        m_pathModel->addPath(label, SOURCE_ID, args);
     }
 
     endResetModel();

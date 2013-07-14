@@ -18,9 +18,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 import QtQuick 1.1
+import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.extras 0.1 as PlasmaExtras
+import org.kde.qtextracomponents 0.1 as QtExtra
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 Item {
@@ -100,6 +102,10 @@ Item {
                 handleTriggerResult(model.trigger(index, actionId, actionArgument));
             }
             onCurrentItemChanged: {
+                if (!view.visible) {
+                    return;
+                }
+
                 if (currentItem) {
                     main.scrollToItem(currentItem);
                 }
@@ -196,6 +202,10 @@ Item {
                     }
 
                     onCurrentItemChanged: {
+                        if (!visible) {
+                            return;
+                        }
+
                         if (currentItem) {
                             main.scrollToItem(currentItem);
                         }
@@ -217,6 +227,79 @@ Item {
             function lastView() {
                 return repeater.itemAt(repeater.count - 1);
             }
+        }
+    }
+
+    Component {
+        id: sideBarListItem
+
+        PlasmaCore.FrameSvgItem {
+            width: parent.width
+            height: theme.defaultFont.mSize.height * 2.8
+
+            imagePath: "widgets/listitem"
+            prefix: model.checked ? "pressed" : ""
+
+            HomerunComponents.Label {
+                height: parent.height
+
+                anchors {
+                    left: parent.left
+                    leftMargin: 10
+                    right: parent.right
+                    rightMargin: 10
+                }
+
+                opacity: model.checked ? 1 : (isContainment? 0.7 : 0.4)
+
+                text: model.display
+                font.pointSize: theme.defaultFont.pointSize * 1.4
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+
+                    onContainsMouseChanged: {
+                        if (containsMouse) {
+                            listView.currentIndex = index;
+                        }
+
+                        listView.highlightItem.opacity = containsMouse ? 1 : 0;
+                    }
+
+                    onClicked: {
+                        listView.model.trigger(index);
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: sideBarList
+
+        ListView {
+            id: listView
+
+            height: (theme.defaultFont.mSize.height * 2.8) * count
+            contentHeight: height
+
+            anchors {
+                left: parent.left
+                right: parent.right
+                rightMargin: 10
+            }
+
+            delegate: sideBarListItem
+
+            highlight: PlasmaComponents.Highlight {
+                hover: true
+            }
+
+            highlightMoveDuration: 200
         }
     }
 
@@ -263,11 +346,76 @@ Item {
     }
 
     PlasmaExtras.ScrollArea {
+        id: sideBarScrollArea
+
+        property int sideBarCount: 0
+
+        width: visible ? (theme.defaultFont.mSize.width * (isContainment ? 13 : 10)) * 1.4 : 0
+        opacity: visible ? 1 : 0
+
+        visible: sideBarCount > 0
+
+        anchors {
+            left: availableScrollArea.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+
+        Behavior on width { NumberAnimation {} }
+        Behavior on opacity { NumberAnimation {} }
+
+        Flickable {
+            id: sideBarFlickable
+            anchors.fill: parent
+            clip: true
+            contentHeight: sideBarColumn.height
+
+            Column {
+                id: sideBarColumn
+                width: parent.width
+
+                Repeater {
+                    id: sideBarRepeater
+                    model: tabSourceModel
+
+                    onItemRemoved: {
+                        if ("sideBarModel" in item.viewModel) {
+                            sideBarScrollArea.sideBarCount -= 1;
+                        }
+                    }
+
+                    delegate: Item {
+                        id: sideBarDelegateMain
+
+                        width: parent.width
+                        height: view.height
+
+                        property QtObject view: Item {}
+                        property QtObject viewModel: model.model
+
+                        onViewModelChanged: {
+                            if (view) {
+                                view.destroy();
+                            }
+
+                            if ("sideBarModel" in model.model) {
+                                view = sideBarList.createObject(sideBarDelegateMain,
+                                    {"model": model.model.sideBarModel})
+                                sideBarScrollArea.sideBarCount += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    PlasmaExtras.ScrollArea {
         id: centralScrollArea
         anchors {
             top: parent.top
             bottom: parent.bottom
-            left: availableScrollArea.right
+            left: sideBarScrollArea.right
             right: parent.right
         }
 

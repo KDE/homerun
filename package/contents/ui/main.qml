@@ -288,10 +288,6 @@ Item {
             PlasmaComponents.ContextMenu {
                 visualParent: configButton
                 PlasmaComponents.MenuItem {
-                    text: i18n("Configure Shortcuts...")
-                    onClicked: actionManager.configure()
-                }
-                PlasmaComponents.MenuItem {
                     text: configureMode ? i18n("End Configure Tabs") : i18n("Configure Tabs");
                     onClicked: {
                         configureMode = !configureMode;
@@ -299,6 +295,10 @@ Item {
                             currentTabContent.reset();
                         }
                     }
+                }
+                PlasmaComponents.MenuItem {
+                    text: i18n("Configure Shortcuts...")
+                    onClicked: actionManager.configure()
                 }
                 PlasmaComponents.MenuItem {
                     text: i18n("Show Action List Buttons");
