@@ -253,8 +253,8 @@ Item {
                 onImplicitWidthChanged: {
                     var fullWidth = Math.ceil(implicitWidth) + anchors.leftMargin + (anchors.rightMargin * 2);
 
-                    if (fullWidth > sideBarScrollArea.width) {
-                        sideBarScrollArea.width = fullWidth;
+                    if (fullWidth > sideBarScrollArea.textWidth) {
+                        sideBarScrollArea.textWidth = fullWidth;
                     }
                 }
 
@@ -357,8 +357,9 @@ Item {
         id: sideBarScrollArea
 
         property int sideBarCount: 0
+        property int textWidth: 0
 
-        width: 0
+        width: visible ? textWidth : 0
         opacity: visible ? 1 : 0
 
         visible: sideBarCount > 0
