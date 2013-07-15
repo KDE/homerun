@@ -5,6 +5,7 @@ Name=Homerun
 Name[cs]=Homerun
 Name[da]=Homerun
 Name[de]=Homerun
+Name[el]=Homerun
 Name[fi]=Homerun
 Name[fr]=Homerun
 Name[hu]=Homerun
