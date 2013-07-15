@@ -37,3 +37,14 @@ add_subdirectory(tests)
 add_subdirectory(icons)
 add_subdirectory(package)
 add_subdirectory(plugins)
+
+get_filename_component(_po_path po ABSOLUTE)
+
+if (EXISTS ${_po_path}/CMakeLists.txt)
+    find_package(Msgfmt REQUIRED)
+    find_package(Gettext REQUIRED)
+endif()
+
+if (EXISTS ${_po_path}/CMakeLists.txt)
+    add_subdirectory(po)
+endif()
