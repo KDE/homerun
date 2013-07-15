@@ -250,7 +250,15 @@ Item {
                     rightMargin: 10
                 }
 
-                opacity: model.checked ? 1 : (isContainment? 0.7 : 0.4)
+                onImplicitWidthChanged: {
+                    var fullWidth = Math.ceil(implicitWidth) + anchors.leftMargin + (anchors.rightMargin * 2);
+
+                    if (fullWidth > sideBarScrollArea.width) {
+                        sideBarScrollArea.width = fullWidth;
+                    }
+                }
+
+                opacity: model.checked ? 1 : (isContainment? 0.8 : 0.4)
 
                 text: model.display
                 font.pointSize: theme.defaultFont.pointSize * 1.4
@@ -350,7 +358,7 @@ Item {
 
         property int sideBarCount: 0
 
-        width: visible ? (theme.defaultFont.mSize.width * (isContainment ? 13 : 10)) * 1.4 : 0
+        width: 0
         opacity: visible ? 1 : 0
 
         visible: sideBarCount > 0
