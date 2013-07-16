@@ -5,6 +5,7 @@ Name=Homerun Launcher
 Name[cs]=Spouštěč Homerun
 Name[da]=Startmenuen Homerun
 Name[de]=Homerun-Starter
+Name[el]=Εκτελεστής Homerun
 Name[fi]=Homerun-käynnistin
 Name[fr]=Lanceur de Homerun
 Name[hu]=Homerun indító
