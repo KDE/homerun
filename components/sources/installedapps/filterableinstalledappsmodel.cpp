@@ -159,6 +159,11 @@ FilterableInstalledAppsModel::~FilterableInstalledAppsModel()
 {
 }
 
+int FilterableInstalledAppsModel::count() const
+{
+    return rowCount();
+}
+
 QObject *FilterableInstalledAppsModel::modelForRow(int row) const
 {
     if (row < 0 || row >= m_models.count()) {
@@ -185,6 +190,8 @@ void FilterableInstalledAppsModel::refresh(bool reload)
     endResetModel();
 
     loadRootEntries();
+
+    emit countChanged();
 }
 
 void FilterableInstalledAppsModel::loadRootEntries()
@@ -212,7 +219,7 @@ void FilterableInstalledAppsModel::loadRootEntries()
         }
     }
     m_pendingGroupList = groupMap.values();
-    QMetaObject::invokeMethod(this, "loadNextGroup", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this, "loadNextGroup");
 }
 
 void FilterableInstalledAppsModel::loadNextGroup()
@@ -226,7 +233,7 @@ void FilterableInstalledAppsModel::loadNextGroup()
     beginInsertRows(QModelIndex(), m_models.count(), m_models.count());
     m_models << model;
     endInsertRows();
-    QMetaObject::invokeMethod(this, "loadNextGroup", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this, "loadNextGroup");
 }
 
 int FilterableInstalledAppsModel::rowCount(const QModelIndex &parent) const
@@ -267,6 +274,7 @@ QString FilterableInstalledAppsModel::currentQuery() const
 
 void FilterableInstalledAppsModel::scheduleQuery(const QString& query)
 {
+    kDebug() << "running" << query;
     emit queryChanged(query);
     m_sideBarModel->invalidateFilter();
 }
@@ -288,8 +296,8 @@ QAbstractItemModel *FilterableInstalledAppsSource::createModelFromConfigGroup(co
     KConfigGroup group(config(), "PackageManagement");
     QString installer = group.readEntry("categoryInstaller");
     FilterableInstalledAppsModel *model = new FilterableInstalledAppsModel(installer);
-    ChangeNotifier *notifier = new ChangeNotifier(model);
-    connect(notifier, SIGNAL(changeDetected(bool)), model, SLOT(refresh(bool)));
+    //ChangeNotifier *notifier = new ChangeNotifier(model);
+    //connect(notifier, SIGNAL(changeDetected(bool)), model, SLOT(refresh(bool)));
     return model;
 }
 

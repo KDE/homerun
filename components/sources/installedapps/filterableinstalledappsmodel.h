@@ -92,12 +92,15 @@ private:
 class FilterableInstalledAppsModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString query WRITE scheduleQuery READ currentQuery NOTIFY queryChanged)
     Q_PROPERTY(QObject* sideBarModel READ sideBarModel CONSTANT)
 
 public:
     explicit FilterableInstalledAppsModel(const QString &installer, QObject *parent = 0);
     ~FilterableInstalledAppsModel();
+
+    int count() const;
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const; // reimp
     QVariant data(const QModelIndex &, int role = Qt::DisplayRole) const; // reimp
@@ -107,8 +110,10 @@ public:
     SideBarModel *sideBarModel() const;
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
+    Q_INVOKABLE QString nameForRow(int row) const { return data(index(row, 0)).toString(); }
 
 Q_SIGNALS:
+    void countChanged();
     void installerChanged(const QString &);
     void queryChanged(const QString &);
 
