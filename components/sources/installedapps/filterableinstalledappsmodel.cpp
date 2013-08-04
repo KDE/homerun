@@ -82,7 +82,9 @@ void InstalledAppsFilterModel::refresh(bool reload)
 
 bool InstalledAppsFilterModel::trigger(int row, const QString &actionId, const QVariant &actionArgument)
 {
-    return m_installedAppsModel->trigger(row, actionId, actionArgument);
+    const QModelIndex &idx = index(row, 0);
+    const QModelIndex &sourceIndex = mapToSource(idx);
+    return m_installedAppsModel->trigger(sourceIndex.row(), actionId, actionArgument);
 }
 
 SideBarModel::SideBarModel(FilterableInstalledAppsModel *parent)
