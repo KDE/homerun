@@ -20,6 +20,7 @@ Name[sv]=Homerun startprogram
 Name[tr]=Homerun Çalıştırıcı
 Name[uk]=Засіб запуску Homerun
 Name[x-test]=xxHomerun Launcherxx
+Name[zh_CN]=Homerun 启动器
 
 Comment=An application launcher
 Comment[cs]=Spouštěč aplikací

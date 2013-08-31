@@ -20,6 +20,7 @@ Name[sv]=Homerun
 Name[tr]=Homerun
 Name[uk]=Homerun
 Name[x-test]=xxHomerunxx
+Name[zh_CN]=Homerun
 Comment=An application launcher
 Comment[cs]=Spouštěč aplikací
 Comment[da]=Programstarter
