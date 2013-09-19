@@ -29,7 +29,7 @@ PlasmaCore.IconItem {
     property int minimumWidth: 16
     property int minimumHeight: 16
 
-    property string configFileName: "homerunkickstarterrc"
+    property string configFileName: "homerunkickerrc"
 
     source: "homerun"
 

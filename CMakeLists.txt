@@ -24,7 +24,7 @@ configure_file(homerun_config.h.in ${CMAKE_BINARY_DIR}/homerun_config.h @ONLY)
 
 # config/
 install(FILES config/homerunrc DESTINATION ${CONFIG_INSTALL_DIR})
-install(FILES config/homerunkickstarterrc DESTINATION ${CONFIG_INSTALL_DIR})
+install(FILES config/homerunkickerrc DESTINATION ${CONFIG_INSTALL_DIR})
 
 install(FILES data/favoriteapps.xml DESTINATION ${DATA_INSTALL_DIR}/homerun/)
 
@@ -36,7 +36,7 @@ add_subdirectory(fixes)
 add_subdirectory(tests)
 add_subdirectory(icons)
 add_subdirectory(package)
-add_subdirectory(kickstarter)
+add_subdirectory(kicker)
 add_subdirectory(plugins)
 
 get_filename_component(_po_path po ABSOLUTE)
