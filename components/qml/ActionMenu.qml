@@ -34,8 +34,12 @@ Item {
 
     signal actionClicked(string actionId, variant actionArgument)
 
-    function open() {
-        menu.open();
+    function open(x, y) {
+        if (x && y) {
+            menu.open(x, y);
+        } else {
+            menu.open();
+        }
     }
 
     /// Internal

@@ -197,7 +197,7 @@ Item {
     }
 
 
-    ActionMenu {
+    HomerunComponents.ActionMenu {
         id: actionMenu
         onActionClicked: {
             main.actionTriggered(actionId, actionArgument);

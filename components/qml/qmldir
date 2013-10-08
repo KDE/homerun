@@ -1,5 +1,6 @@
 plugin componentsplugin
 
+ActionMenu 0.1 ActionMenu.qml
 DragArea 0.1 DragArea.qml
 DragContainer 0.1 DragContainer.qml
 TabBar 0.1 TabBar.qml

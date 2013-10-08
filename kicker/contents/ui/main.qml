@@ -20,6 +20,7 @@
 import QtQuick 1.1
 
 import org.kde.plasma.core 0.1 as PlasmaCore
+import org.kde.draganddrop 1.0 as DragAndDrop
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.homerun.fixes 0.1 as HomerunFixes
@@ -50,6 +51,36 @@ Item {
             searchField.text = "";
             leftList.model = sourcesModel;
             leftList.currentIndex = 0;
+        }
+    }
+
+     function favoriteModelForFavoriteId(favoriteId) {
+        if (favoriteId === undefined || favoriteId === "") {
+            return null;
+        }
+        var lst = favoriteId.split(":");
+        if (lst.length === 0) {
+            return null;
+        }
+        var model = sourceRegistry.favoriteModels[lst[0]];
+        if (model === undefined) {
+            console.log("favoriteModelForFavoriteId(): No favorite model for favoriteId '" + favoriteId + "'");
+            return null;
+        } else {
+            return model;
+        }
+    }
+
+    function handleFavoriteAction(actionId, actionArgument) {
+        var favoriteId = actionArgument.favoriteId;
+        var favoriteModel = favoriteModelForFavoriteId(favoriteId);
+        if (actionId == "_homerun_favorite_remove") {
+            favoriteModel.removeFavorite(favoriteId);
+        } else if (actionId == "_homerun_favorite_add") {
+            favoriteModel.addFavorite(favoriteId);
+            showMessageRequested("bookmarks", i18n("%1 has been added to your favorites", actionArgument.text));
+        } else {
+            console.log("Unknown homerun favorite actionId: " + actionId);
         }
     }
 
@@ -96,12 +127,50 @@ Item {
                 imagePath: "widgets/listitem"
                 prefix: "normal"
 
-                Column {
-                    id: favoritesColumn
+                DragAndDrop.DropArea {
+                    id: favoritesDropArea
+
+                    width: favorites.implicitWidth
+                    height: favorites.implicitHeight
 
                     anchors.top: parent.top
                     anchors.topMargin: 8
                     anchors.horizontalCenter: parent.horizontalCenter
+
+                    onDragMove: {
+                        if (favorites.animating) {
+                            return;
+                        }
+
+                        var above = favorites.childAt(event.x, event.y);
+
+                        if (above && above != event.mimeData.source) {
+                            favoriteAppsRepeater.model.moveRow(event.mimeData.source.itemIndex, above.itemIndex);
+                        }
+                    }
+
+
+                }
+
+                Flow {
+                    id: favorites
+
+                    anchors.fill: favoritesDropArea
+
+                    property bool animating: false
+
+                    move: Transition {
+                        SequentialAnimation {
+                            PropertyAction { target: favoritesFlow; property: "animating"; value: true }
+
+                            NumberAnimation {
+                                properties: "x, y"
+                                easing.type: Easing.OutQuad
+                            }
+
+                            PropertyAction { target: favoritesFlow; property: "animating"; value: false }
+                        }
+                    }
 
                     spacing: 6
 
@@ -112,7 +181,7 @@ Item {
                 }
 
                 Column {
-                    id: powerColumn
+                    id: power
 
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 8
