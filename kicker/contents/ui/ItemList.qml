@@ -34,7 +34,6 @@ PlasmaExtras.ScrollArea {
     property bool expandable: false
 
     height: parent.height
-    width: theme.defaultFont.mSize.width * 20
 
     ListView {
         id: listView
@@ -52,7 +51,7 @@ PlasmaExtras.ScrollArea {
         model: main.model
 
         onModelChanged: {
-            currentIndex = menuDialog.visible && expandable ? 0 : -1;
+            currentIndex = plasmoid.popupShowing && expandable ? 0 : -1;
         }
 
         delegate: PlasmaComponents.ListItem {
@@ -71,7 +70,8 @@ PlasmaExtras.ScrollArea {
 
                 onClicked: {
                     main.model.trigger(index, "", null);
-                    menuDialog.visible = false;
+                    console.log("clicked");
+                    plasmoid.hidePopup();
                 }
             }
 

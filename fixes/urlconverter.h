@@ -1,6 +1,5 @@
 /*
- *   Copyright (C) 2013 by Eike Hein <hein@kde.org>
- *
+ *   Copyright 2013 Eike Hein <hein@kde.org>
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2, or
@@ -17,28 +16,22 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import QtQuick 1.1
+#ifndef UrlConverter_H
+#define UrlConverter_H
 
-import org.kde.plasma.core 0.1 as PlasmaCore
+#include <QObject>
 
-MouseArea {
-    width: 32
-    height: 32
+#include <KUrl>
 
-    property Item repeater
+class UrlConverter : public QObject
+{
+    Q_OBJECT
 
-    hoverEnabled: true
+    public:
+        UrlConverter(QObject *parent = 0);
+        ~UrlConverter();
 
-    onClicked: {
-        repeater.model.trigger(index, "", null);
-        plasmoid.hidePopup();
-    }
+        Q_INVOKABLE QString convertToPath(const KUrl &url);
+};
 
-    PlasmaCore.IconItem {
-        anchors.fill: parent
-
-        active: parent.containsMouse
-
-        source: model.decoration
-    }
-}
+#endif

@@ -24,6 +24,7 @@
 // Local
 #include <datamodel.h>
 #include <toolboxtoggle.h>
+#include <urlconverter.h>
 
 // Qt
 #include <QtDeclarative/qdeclarative.h>
@@ -32,6 +33,7 @@ void FixesPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
     qmlRegisterType<ToolBoxToggle>(uri, 0, 1, "ToolBoxToggle");
+    qmlRegisterType<UrlConverter>(uri, 0, 1, "UrlConverter");
 }
 
 #include "fixesplugin.moc"

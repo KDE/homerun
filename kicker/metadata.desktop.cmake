@@ -17,4 +17,3 @@ X-KDE-PluginInfo-Category=Application Launchers
 X-KDE-PluginInfo-Depends=
 X-KDE-PluginInfo-License=GPL v2+
 X-KDE-PluginInfo-EnabledByDefault=true
-X-Plasma-DefaultSize=290,340

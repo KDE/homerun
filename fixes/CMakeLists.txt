@@ -4,6 +4,7 @@ set(fixes_SRCS
     datamodel.cpp
     fixesplugin.cpp
     toolboxtoggle.cpp
+    urlconverter.cpp
     )
 
 qt4_automoc(${fixes_SRCS})
