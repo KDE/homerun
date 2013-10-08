@@ -22,6 +22,7 @@
 #include <fixesplugin.h>
 
 // Local
+#include <appletproxy.h>
 #include <datamodel.h>
 <<<<<<< HEAD
 #include <toolboxtoggle.h>
@@ -35,6 +36,7 @@
 
 void FixesPlugin::registerTypes(const char *uri)
 {
+    qmlRegisterType<AppletProxy>(uri, 0, 1, "AppletProxy");
     qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
     qmlRegisterType<ToolBoxToggle>(uri, 0, 1, "ToolBoxToggle");
     qmlRegisterType<SourceListModel>(uri, 0, 1, "SourceListModel");

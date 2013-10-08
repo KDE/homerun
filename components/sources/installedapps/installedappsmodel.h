@@ -82,7 +82,7 @@ private:
 class AppNode : public AbstractNode
 {
 public:
-    AppNode(KService::Ptr service);
+    AppNode(KService::Ptr service, InstalledAppsModel *model);
 
     NodeType type() const { return AppNodeType; }
 
@@ -90,6 +90,7 @@ public:
     QString favoriteId() const; // reimp
 
 private:
+    InstalledAppsModel *m_model;
     KService::Ptr m_service;
 };
 
@@ -133,11 +134,16 @@ public:
 
     Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
+    Q_INVOKABLE void setDesktopContainmentMutable(bool isMutable);
+    Q_INVOKABLE void setAppletContainmentMutable(bool isMutable);
+
     QString name() const;
 
 Q_SIGNALS:
     void countChanged();
     void openSourceRequested(const QString &sourceId, const QVariantMap &args);
+    void addToDesktop(const QString& storageId);
+    void addToPanel(const QString& storageId);
 
 public Q_SLOTS:
     void refresh(bool reload = true);
@@ -153,8 +159,11 @@ private:
     QString m_installer;
     QString m_arguments;
 
+    bool m_desktopContainmentMutable;
+    bool m_appletContainmentMutable;
 
     friend class GroupNode;
+    friend class AppNode;
 };
 
 class InstalledAppsSource : public AbstractSource

@@ -25,6 +25,8 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.homerun.components 0.1 as HomerunComponents
 
 PlasmaComponents.ListItem {
+    property QtObject foo: model
+
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
@@ -56,10 +58,12 @@ PlasmaComponents.ListItem {
         }
 
         onClicked: {
-            if (mouse.button == Qt.LeftButton) {
-                itemList.model.trigger(index, "", null);
-                plasmoid.hidePopup();
-            } else if (hasActionList) {
+            listView.model.trigger(index, "", null);
+            plasmoid.hidePopup();
+        }
+
+        onPressed: {
+            if (mouse.buttons & Qt.RightButton && hasActionList) {
                 openActionMenu(mouseArea, mouse.x, mouse.y);
             }
         }
@@ -137,6 +141,15 @@ PlasmaComponents.ListItem {
     function fillActionMenu(actionMenu) {
         // Accessing actionList can be a costly operation, so we don't
         // access it until we need the menu
+
+        if ("setDesktopContainmentMutable" in listView.model) {
+            listView.model.setDesktopContainmentMutable(appletProxy.desktopContainmentMutable());
+        }
+
+        if ("setAppletContainmentMutable" in listView.model) {
+            listView.model.setAppletContainmentMutable(appletProxy.appletContainmentMutable());
+        }
+
         var lst = model.hasActionList ? model.actionList : [];
         var action = createFavoriteAction();
         if (action) {
@@ -179,7 +192,7 @@ PlasmaComponents.ListItem {
             return;
         }
 
-        var closeRequested = model.trigger(index, actionId, actionArgument);
+        var closeRequested = listView.model.trigger(index, actionId, actionArgument);
 
         if (closeRequested) {
             plasmoid.hidePopup();

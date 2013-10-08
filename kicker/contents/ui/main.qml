@@ -102,6 +102,11 @@ Item {
         size: "16x16"
     }
 
+    HomerunFixes.AppletProxy {
+        id: appletProxy
+        item: plasmoid.action("configure")
+    }
+
     HomerunFixes.UrlConverter {
         id: urlConverter
     }
@@ -120,7 +125,7 @@ Item {
             spacing: 6
 
             PlasmaCore.FrameSvgItem {
-                width: 48
+                width: theme.mediumIconSize + 16
                 height: parent.height
                 id: frame
 
@@ -130,12 +135,7 @@ Item {
                 DragAndDrop.DropArea {
                     id: favoritesDropArea
 
-                    width: favorites.implicitWidth
-                    height: favorites.implicitHeight
-
-                    anchors.top: parent.top
-                    anchors.topMargin: 8
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.fill: favorites
 
                     onDragMove: {
                         if (favorites.animating) {
@@ -148,27 +148,29 @@ Item {
                             favoriteAppsRepeater.model.moveRow(event.mimeData.source.itemIndex, above.itemIndex);
                         }
                     }
-
-
                 }
 
                 Flow {
                     id: favorites
 
-                    anchors.fill: favoritesDropArea
+                    width: theme.mediumIconSize
+
+                    anchors.top: parent.top
+                    anchors.topMargin: 8
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     property bool animating: false
 
                     move: Transition {
                         SequentialAnimation {
-                            PropertyAction { target: favoritesFlow; property: "animating"; value: true }
+                            PropertyAction { target: favorites; property: "animating"; value: true }
 
                             NumberAnimation {
                                 properties: "x, y"
                                 easing.type: Easing.OutQuad
                             }
 
-                            PropertyAction { target: favoritesFlow; property: "animating"; value: false }
+                            PropertyAction { target: favorites; property: "animating"; value: false }
                         }
                     }
 
@@ -331,7 +333,6 @@ Item {
                         }
 
                         sourcesModel.appendSource(sourceName, sourceFilter);
-                        //sourcesModel.append({"display": sourceName, "model": sourceFilter});
                     }
                 }
             }
@@ -361,11 +362,16 @@ Item {
             delegate: Item { property string display: model.display }
 
             onItemAdded: {
+                var mdl = model.modelForRow(index);
+
                 if (runner) {
-                    sourcesModel.appendSource(item.display, model.modelForRow(index));
+                    sourcesModel.appendSource(item.display, mdl);
                 } else {
-                    sourcesModel.insertSource(index, item.display, model.modelForRow(index));
+                    sourcesModel.insertSource(index, item.display, mdl);
                 }
+
+                mdl.addToDesktop.connect(appletProxy.addToDesktop);
+                mdl.addToPanel.connect(appletProxy.addToPanel);
             }
         }
     }

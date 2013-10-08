@@ -20,16 +20,16 @@
 import QtQuick 1.1
 
 import org.kde.plasma.core 0.1 as PlasmaCore
-import org.kde.draganddrop 1.0
-import org.kde.qtextracomponents 0.1
+import org.kde.draganddrop 1.0 as DragAndDrop
+import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 
-DragArea {
+DragAndDrop.DragArea {
     id: sidebarItem
 
-    width: 32
-    height: 32
+    width: theme.mediumIconSize
+    height: theme.mediumIconSize
 
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
@@ -45,7 +45,7 @@ DragArea {
         source: sidebarItem
     }
 
-    MouseEventListener {
+    QtExtra.MouseEventListener {
         id: listener
 
         anchors.fill: parent
@@ -53,11 +53,12 @@ DragArea {
         hoverEnabled: true
 
         onClicked: {
-            if (mouse.button == Qt.LeftButton) {
-                //repeater.model.trigger(index, "", null);
-                repeater.model.moveRow(0, 1);
-                //plasmoid.hidePopup();
-            } else if (hasActionList) {
+            repeater.model.trigger(index, "", null);
+            plasmoid.hidePopup();
+        }
+
+        onPressed: {
+            if (mouse.buttons & Qt.RightButton && hasActionList) {
                 openActionMenu(sidebarItem, mouse.x, mouse.y);
             }
         }
@@ -90,6 +91,15 @@ DragArea {
     function fillActionMenu(actionMenu) {
         // Accessing actionList can be a costly operation, so we don't
         // access it until we need the menu
+
+        if ("setDesktopContainmentMutable" in listView.model) {
+            listView.model.setDesktopContainmentMutable(appletProxy.desktopContainmentMutable());
+        }
+
+        if ("setAppletContainmentMutable" in listView.model) {
+            listView.model.setAppletContainmentMutable(appletProxy.appletContainmentMutable());
+        }
+
         var lst = model.hasActionList ? model.actionList : [];
         var action = createFavoriteAction();
         if (action) {

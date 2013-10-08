@@ -46,6 +46,9 @@ InstalledAppsFilterModel::InstalledAppsFilterModel(const QString &entryPath, con
     connect(this, SIGNAL(modelReset()), this, SIGNAL(countChanged()));
     connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SIGNAL(countChanged()));
     connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SIGNAL(countChanged()));
+
+    connect(m_installedAppsModel, SIGNAL(addToDesktop(QString)), this, SIGNAL(addToDesktop(QString)));
+    connect(m_installedAppsModel, SIGNAL(addToPanel(QString)), this, SIGNAL(addToPanel(QString)));
 }
 
 InstalledAppsFilterModel::~InstalledAppsFilterModel()
@@ -85,6 +88,16 @@ bool InstalledAppsFilterModel::trigger(int row, const QString &actionId, const Q
     const QModelIndex &idx = index(row, 0);
     const QModelIndex &sourceIndex = mapToSource(idx);
     return m_installedAppsModel->trigger(sourceIndex.row(), actionId, actionArgument);
+}
+
+void InstalledAppsFilterModel::setDesktopContainmentMutable(bool isMutable)
+{
+    m_installedAppsModel->setDesktopContainmentMutable(isMutable);
+}
+
+void InstalledAppsFilterModel::setAppletContainmentMutable(bool isMutable)
+{
+    m_installedAppsModel->setAppletContainmentMutable(isMutable);
 }
 
 SideBarModel::SideBarModel(FilterableInstalledAppsModel *parent)
@@ -151,6 +164,7 @@ FilterableInstalledAppsModel::FilterableInstalledAppsModel(const QString &instal
 : QAbstractListModel(parent)
 , m_installer(installer)
 , m_sideBarModel(new SideBarModel(this))
+, m_firstRefresh(true)
 {
     loadRootEntries();
 }
@@ -180,6 +194,11 @@ void FilterableInstalledAppsModel::refresh(bool reload)
             model->refresh(false);
         }
 
+        return;
+    }
+
+    if (m_firstRefresh) {
+        m_firstRefresh = false;
         return;
     }
 

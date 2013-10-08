@@ -1,6 +1,7 @@
 project(fixes)
 
 set(fixes_SRCS
+    appletproxy.cpp
     datamodel.cpp
     fixesplugin.cpp
     toolboxtoggle.cpp

@@ -81,8 +81,9 @@ bool GroupNode::trigger(const QString &actionId, const QVariant &actionArgument)
 }
 
 //- AppNode --------------------------------------------------------------------
-AppNode::AppNode(KService::Ptr service)
-: m_service(service)
+AppNode::AppNode(KService::Ptr service, InstalledAppsModel *model)
+: m_model(model)
+, m_service(service)
 {
     m_icon = service->icon();
     m_name = service->name();
@@ -102,6 +103,14 @@ bool AppNode::trigger(const QString &actionId, const QVariant &actionArgument)
                 : qApp->property("appletContainmentId").toUInt();
             return QMetaObject::invokeMethod(adaptor.value<QObject *>(), actionId.toLocal8Bit(),
                 Qt::DirectConnection, Q_ARG(uint, containmentId), Q_ARG(QString, m_service->storageId()));
+        }
+
+        if (qApp->applicationName() == "plasma-desktop") {
+            if (actionId == "addToDesktop") {
+                emit m_model->addToDesktop(m_service->storageId());
+            } else {
+                emit m_model->addToPanel(m_service->storageId());
+            }
         }
     } else {
         return KRun::run(*m_service, KUrl::List(), 0);
@@ -146,6 +155,8 @@ InstalledAppsModel::InstalledAppsModel(const QString &entryPath, const QString &
 , m_entryPath(entryPath)
 , m_pathModel(new PathModel(this))
 , m_installer(installer)
+, m_desktopContainmentMutable(false)
+, m_appletContainmentMutable(false)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
@@ -201,6 +212,16 @@ QVariant InstalledAppsModel::data(const QModelIndex &index, int role) const
             }
             if (qApp->property("appletContainmentId").toUInt() > 0
                 && qApp->property("appletContainmentMutable").toBool()) {
+                actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
+            }
+        }
+
+        if (qApp->applicationName().contains(QLatin1String("plasma-desktop"))) {
+            if (m_desktopContainmentMutable) {
+                actionList << ActionList::createActionItem(i18n("Add to Desktop"), "addToDesktop");
+            }
+
+            if (m_appletContainmentMutable) {
                 actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
             }
         }
@@ -306,7 +327,7 @@ void InstalledAppsModel::doLoadServiceGroup(KServiceGroup::Ptr group)
                 if (genericName.isNull()) {
                     genericName = service->comment();
                 }
-                m_nodeList << new AppNode(service);
+                m_nodeList << new AppNode(service, this);
             }
 
         } else if (p->isType(KST_KServiceGroup)) {
@@ -322,6 +343,16 @@ void InstalledAppsModel::doLoadServiceGroup(KServiceGroup::Ptr group)
 PathModel *InstalledAppsModel::pathModel() const
 {
     return m_pathModel;
+}
+
+void InstalledAppsModel::setDesktopContainmentMutable(bool isMutable)
+{
+    m_desktopContainmentMutable = isMutable;
+}
+
+void InstalledAppsModel::setAppletContainmentMutable(bool isMutable)
+{
+    m_appletContainmentMutable = isMutable;
 }
 
 QString InstalledAppsModel::name() const

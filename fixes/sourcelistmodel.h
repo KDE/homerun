@@ -29,6 +29,11 @@ class SourceListModel : public QAbstractListModel
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
     public:
+        enum Roles {
+            ModelRole = Qt::UserRole,
+            CountRole
+        };
+
         SourceListModel(QObject *parent = 0);
         ~SourceListModel();
 

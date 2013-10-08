@@ -50,6 +50,9 @@ public:
 
     Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
+    Q_INVOKABLE void setDesktopContainmentMutable(bool isMutable);
+    Q_INVOKABLE void setAppletContainmentMutable(bool isMutable);
+
     QString name() const;
 
     bool hidden() const;
@@ -58,6 +61,8 @@ public:
 Q_SIGNALS:
     void countChanged();
     void hiddenChanged();
+    void addToDesktop(const QString& storageId);
+    void addToPanel(const QString& storageId);
 
 public Q_SLOTS:
     void refresh(bool reload = true);
@@ -130,6 +135,7 @@ private:
     QList<InstalledAppsFilterModel *> m_models;
     SideBarModel *m_sideBarModel;
     QString m_query;
+    bool m_firstRefresh;
 
     InstalledAppsFilterModel *createInstalledAppsFilterModel(KServiceGroup::Ptr group);
 };

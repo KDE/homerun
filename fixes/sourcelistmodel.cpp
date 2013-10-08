@@ -22,8 +22,8 @@ SourceListModel::SourceListModel(QObject* parent): QAbstractListModel(parent)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
-    roles.insert(Qt::UserRole, "model");
-    roles.insert(Qt::UserRole + 1, "count");
+    roles.insert(ModelRole, "model");
+    roles.insert(CountRole, "count");
 
     setRoleNames(roles);
 }
@@ -56,9 +56,9 @@ QVariant SourceListModel::data(const QModelIndex& index, int role) const
 
     if (role == Qt::DisplayRole) {
         return m_sourceList.at(index.row()).first;
-    } else if (role == Qt::UserRole) {
+    } else if (role == ModelRole) {
         return QVariant::fromValue(m_sourceList.at(index.row()).second);
-    } else if (role == Qt::UserRole + 1) {
+    } else if (role == CountRole) {
         return m_sourceList.at(index.row()).second->property("count");
     }
 
