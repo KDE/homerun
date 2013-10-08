@@ -32,6 +32,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <sources/installedapps/installedappsmodel.h>
 #include <sources/installedapps/groupedinstalledappsmodel.h>
 #include <sources/installedapps/filterableinstalledappsmodel.h>
+#include <sources/recentapps/recentappsmodel.h>
 #include <sources/power/powermodel.h>
 #include <sources/runners/singlerunnermodel.h>
 #include <sources/runners/runnermodel.h>
@@ -260,6 +261,10 @@ SourceRegistry::SourceRegistry(QObject *parent)
     d->registerSource("FilterableInstalledApps", new FilterableInstalledAppsSource(this),
         i18n("All Installed Applications With Filters"),
         i18n("List all installed applications and filter via the sidebar")
+    );
+    d->registerSource("RecentApps", new RecentAppsSource(this),
+        i18n("Recent Applications"),
+        i18n("List the most recently launched applications")
     );
     d->registerSource("Dir", new DirSource(this),
         i18n("Folder"),

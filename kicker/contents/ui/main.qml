@@ -32,6 +32,7 @@ Item {
     property int minimumHeight: leftList.contentHeight + searchField.height + 2 * mainRow.spacing + mainColumn.spacing
 
     property string configFileName: "homerunkickerrc"
+    property QtObject appsModel
 
     property bool useCustomButtonImage
     property string buttonImage
@@ -64,7 +65,6 @@ Item {
         }
         var model = sourceRegistry.favoriteModels[lst[0]];
         if (model === undefined) {
-            console.log("favoriteModelForFavoriteId(): No favorite model for favoriteId '" + favoriteId + "'");
             return null;
         } else {
             return model;
@@ -78,9 +78,6 @@ Item {
             favoriteModel.removeFavorite(favoriteId);
         } else if (actionId == "_homerun_favorite_add") {
             favoriteModel.addFavorite(favoriteId);
-            showMessageRequested("bookmarks", i18n("%1 has been added to your favorites", actionArgument.text));
-        } else {
-            console.log("Unknown homerun favorite actionId: " + actionId);
         }
     }
 
@@ -324,12 +321,20 @@ Item {
                     var runner = (model.sourceId == "Runner") ? true : false;
                     multiModelExpander.createObject(sourceDelegateMain, {"display": sourceName,
                         "model": sourceFilter, "runner": runner});
+
+                    if (model.sourceId == "FilterableInstalledApps") {
+                        appsModel = model.model;
+                    }
                 } else {
                     if (model.sourceId == "FavoriteApps") {
                         favoriteAppsRepeater.model = model.model;
                     } else {
                         if (model.sourceId == "Power") {
                             powerRepeater.model = model.model;
+                        } else if (model.sourceId == "RecentApps") {
+                            appsModel.launched.connect(model.model.addApp);
+                            model.model.addToDesktop.connect(appletProxy.addToDesktop);
+                            model.model.addToPanel.connect(appletProxy.addToPanel);
                         }
 
                         sourcesModel.appendSource(sourceName, sourceFilter);
@@ -401,6 +406,18 @@ Item {
                 var sourceFrom = mapRowToSource(from);
                 var sourceTo = mapRowToSource(to);
                 sourceModel.moveRow(sourceFrom, sourceTo);
+            }
+
+            function setDesktopContainmentMutable(isMutable) {
+                if ("setDesktopContainmentMutable" in sourceModel) {
+                    sourceModel.setDesktopContainmentMutable(isMutable);
+                }
+            }
+
+            function setAppletContainmentMutable(isMutable) {
+                if ("setAppletContainmentMutable" in sourceModel) {
+                    sourceModel.setAppletContainmentMutable(isMutable);
+                }
             }
         }
     }

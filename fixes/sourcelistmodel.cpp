@@ -39,9 +39,7 @@ int SourceListModel::count() const
 
 int SourceListModel::rowCount(const QModelIndex& parent) const
 {
-    Q_UNUSED(parent)
-
-    return m_sourceList.count();
+    return parent.isValid() ? 0 : m_sourceList.count();
 }
 
 QVariant SourceListModel::data(const QModelIndex& index, int role) const

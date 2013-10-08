@@ -25,8 +25,6 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.homerun.components 0.1 as HomerunComponents
 
 PlasmaComponents.ListItem {
-    property QtObject foo: model
-
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
@@ -48,14 +46,12 @@ PlasmaComponents.ListItem {
 
         anchors.fill: parent
 
+        property int thresh: (Math.abs(index - currentIndex) <= 6 && expandable) ?
+            width - ((width - eligibleWidth) - ((width - eligibleWidth) / 6) * Math.abs(index - currentIndex))
+            : width;
+
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-        onContainsMouseChanged: {
-            if (containsMouse) {
-                listView.currentIndex = index;
-            }
-        }
 
         onClicked: {
             listView.model.trigger(index, "", null);
@@ -65,6 +61,14 @@ PlasmaComponents.ListItem {
         onPressed: {
             if (mouse.buttons & Qt.RightButton && hasActionList) {
                 openActionMenu(mouseArea, mouse.x, mouse.y);
+            }
+        }
+
+        onPositionChanged: {
+            eligibleWidth = Math.min(Math.max(0, mouse.x - 5), width - 35);
+
+            if (mouse.x < thresh) {
+                listView.currentIndex = index;
             }
         }
     }

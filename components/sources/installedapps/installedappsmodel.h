@@ -142,6 +142,7 @@ public:
 Q_SIGNALS:
     void countChanged();
     void openSourceRequested(const QString &sourceId, const QVariantMap &args);
+    void launched(const QString& storageId);
     void addToDesktop(const QString& storageId);
     void addToPanel(const QString& storageId);
 

@@ -92,12 +92,12 @@ DragAndDrop.DragArea {
         // Accessing actionList can be a costly operation, so we don't
         // access it until we need the menu
 
-        if ("setDesktopContainmentMutable" in listView.model) {
-            listView.model.setDesktopContainmentMutable(appletProxy.desktopContainmentMutable());
+        if ("setDesktopContainmentMutable" in model) {
+            modelsetDesktopContainmentMutable(appletProxy.desktopContainmentMutable());
         }
 
-        if ("setAppletContainmentMutable" in listView.model) {
-            listView.model.setAppletContainmentMutable(appletProxy.appletContainmentMutable());
+        if ("setAppletContainmentMutable" in model) {
+            modelsetAppletContainmentMutable(appletProxy.appletContainmentMutable());
         }
 
         var lst = model.hasActionList ? model.actionList : [];

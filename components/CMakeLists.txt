@@ -29,6 +29,7 @@ set(components_SRCS
     sources/installedapps/installedappsconfigurationwidget.cpp
     sources/installedapps/installedappsmodel.cpp
     sources/power/powermodel.cpp
+    sources/recentapps/recentappsmodel.cpp
     sources/runners/querymatchmodel.cpp
     sources/runners/singlerunnermodel.cpp
     sources/runners/runnerconfigurationwidget.cpp
@@ -56,6 +57,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/favorites
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/installedapps
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/power
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/recentapps
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/runners
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/session
     )

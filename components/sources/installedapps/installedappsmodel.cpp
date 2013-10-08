@@ -113,7 +113,13 @@ bool AppNode::trigger(const QString &actionId, const QVariant &actionArgument)
             }
         }
     } else {
-        return KRun::run(*m_service, KUrl::List(), 0);
+        bool ran = KRun::run(*m_service, KUrl::List(), 0);
+
+        if (ran) {
+            emit m_model->launched(m_service->storageId());
+        }
+
+        return ran;
     }
 
     return false;
