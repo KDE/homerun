@@ -189,7 +189,9 @@ Item {
                         }
 
                         Keys.onPressed: {
-                            if (event.key == Qt.Key_Right) {
+                            if (event.key == Qt.Key_Up && currentIndex == 0) {
+                                searchField.focus = true;
+                            } else if (event.key == Qt.Key_Right) {
                                 rightList.focus = true;
                             }
                         }
@@ -202,7 +204,9 @@ Item {
                         height: parent.height - 2 * parent.spacing
 
                         Keys.onPressed: {
-                            if (event.key == Qt.Key_Left) {
+                            if (event.key == Qt.Key_Up && currentIndex == 0) {
+                                searchField.focus = true;
+                            } else if (event.key == Qt.Key_Left) {
                                 leftList.focus = true;
                             }
                         }
