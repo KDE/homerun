@@ -20,6 +20,7 @@
 import QtQuick 1.1
 
 import org.kde.plasma.core 0.1 as PlasmaCore
+import org.kde.qtextracomponents 0.1 as QtExtra
 
 Item {
     property bool vertical: (plasmoid.formFactor == Vertical)
@@ -31,6 +32,7 @@ Item {
 
         visible: !main.useCustomButtonImage
         source: "homerun"
+        active: listener.containsMouse
 
         onWidthChanged: {
             if (vertical && visible) {
@@ -52,6 +54,17 @@ Item {
                     plasmoid.setMinimumSize(parent.height, theme.smallIconSize.height);
                 }
             }
+        }
+
+        QtExtra.MouseEventListener
+        {
+            id: listener
+
+            anchors.fill: parent
+
+            hoverEnabled: true
+
+            onClicked: plasmoid.popupShowing ? plasmoid.hidePopup() : plasmoid.showPopup()
         }
     }
 
