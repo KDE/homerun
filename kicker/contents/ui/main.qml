@@ -28,7 +28,7 @@ Item {
     id: main
 
     property int minimumWidth: 450
-    property int minimumHeight: 500
+    property int minimumHeight: leftList.contentHeight + searchField.height + 2 * mainRow.spacing + mainColumn.spacing
 
     property string configFileName: "homerunkickerrc"
 
@@ -36,6 +36,22 @@ Item {
     property string buttonImage
 
     property Component compactRepresentation: PopupButton { id: button }
+
+    function configChanged() {
+        useCustomButtonImage = plasmoid.readConfig("useCustomButtonImage");
+        buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
+    }
+
+    function showPopup(shown) {
+        if (shown) {
+            searchField.focus = true;
+            leftList.currentIndex = 0;
+        } else {
+            searchField.text = "";
+            leftList.model = sourcesModel;
+            leftList.currentIndex = 0;
+        }
+    }
 
     HomerunComponents.TabModel {
         id: tabModel
@@ -124,6 +140,8 @@ Item {
             }
 
             Column {
+                id: mainColumn
+
                 spacing: 8
 
                 height: parent.height
@@ -131,36 +149,19 @@ Item {
                 HomerunFixes.TextField {
                     id: searchField
 
-                    width: Math.min((main.width - frame.width - 2 * mainRow.spacing - 2 * listRow.spacing) / 2)
-
-                    property QtObject model
+                    width: parent.width
 
                     clearButtonShown: true
                     placeholderText: i18n("Search...")
 
-                    onTextChanged: {
-                        if (text) {
-                            resultList.model = null;
-                            model.query = text;
-                            sourceList.model = sourcesModel.get(0).sourceModel;
-                            sourceList.expandable = false;
-                        } else {
-                            model.query = "";
-                            sourceList.expandable = true;
-                            sourceList.model = sourcesModel;
-                        }
-                    }
-
                     onAccepted: {
-                        sourceList.model.trigger(sourceList.currentIndex, "", null);
+                        rightList.model.trigger(leftList.currentIndex, "", null);
                         plasmoid.hidePopup();
                     }
 
                     Keys.onPressed: {
-                        if (event.key == Qt.Key_Down) {
-                            sourceList.focus = true;
-                        } else if (event.key == Qt.Key_Right) {
-                            resultList.focus = true;
+                        if (event.key == Qt.Key_Down || event.key == Qt.Key_Right) {
+                            rightList.focus = true;
                         }
                     }
                 }
@@ -173,34 +174,36 @@ Item {
                     height: parent.height - searchField.height
 
                     ItemList {
-                        id: sourceList
+                        id: leftList
 
                         width: Math.min((main.width - frame.width - 2 * mainRow.spacing - 2 * listRow.spacing) / 2)
+                        height: parent.height - 2 * parent.spacing
 
                         expandable: true
                         model: sourcesModel
 
                         onCurrentIndexChanged: {
                             if (model == sourcesModel && currentIndex >= 0) {
-                                resultList.model = sourcesModel.get(currentIndex).sourceModel;
+                                rightList.model = sourcesModel.modelForRow(currentIndex);
                             }
                         }
 
                         Keys.onPressed: {
                             if (event.key == Qt.Key_Right) {
-                                resultList.focus = true;
+                                rightList.focus = true;
                             }
                         }
                     }
 
                     ItemList {
-                        id: resultList
+                        id: rightList
 
                         width: Math.min((main.width - frame.width - 2 * mainRow.spacing - 2 * listRow.spacing) / 2)
+                        height: parent.height - 2 * parent.spacing
 
                         Keys.onPressed: {
                             if (event.key == Qt.Key_Left) {
-                                sourceList.focus = true;
+                                leftList.focus = true;
                             }
                         }
                     }
@@ -209,7 +212,7 @@ Item {
         }
     }
 
-    ListModel {
+    HomerunFixes.SourceListFilterModel {
         id: sourcesModel
     }
 
@@ -221,48 +224,105 @@ Item {
             Repeater {
                 model: sourceModel
 
-                delegate: Item {
-                    property QtObject modelProxy: model
+                delegate: sourceDelegate
+            }
+        }
+    }
+
+    Component {
+        id: sourceDelegate
+
+        Item {
+            id: sourceDelegateMain
+
+            Component.onCompleted: {
+                var sourceFilter = model.model;
+                var sourceName = sourceRegistry.visibleNameForSource(model.sourceId);
+
+                if ("query" in model.model) {
+                    queryBindingComponent.createObject(sourceDelegateMain, {"target": sourceFilter});
+                } else {
+                    sourceFilter = genericFilterComponent.createObject(model.model, {"sourceModel": model.model});
                 }
 
-                onItemAdded: {
-                    if (item.modelProxy.sourceId == "FilterableInstalledApps") {
-                        for (var i = 0; i < 1; ++i) {
-                            sourcesModel.append({ "display": item.modelProxy.model.nameForRow(i),
-                                                    "sourceModel": item.modelProxy.model.modelForRow(i) });
-                        }
-
-                        searchField.model = item.modelProxy.model;
+                if ("modelForRow" in sourceFilter) {
+                    var runner = (model.sourceId == "Runner") ? true : false;
+                    multiModelExpander.createObject(sourceDelegateMain, {"display": sourceName,
+                        "model": sourceFilter, "runner": runner});
+                } else {
+                    if (model.sourceId == "FavoriteApps") {
+                        favoriteAppsRepeater.model = model.model;
                     } else {
-                        if (item.modelProxy.sourceId == "FavoriteApps") {
-                            favoriteAppsRepeater.model = item.modelProxy.model;
-                        } else {
-                            if (item.modelProxy.sourceId == "Power") {
-                                powerRepeater.model = item.modelProxy.model;
-                            }
-
-                            sourcesModel.append({ "display": sourceRegistry.visibleNameForSource(item.modelProxy.sourceId),
-                                                    "sourceModel": item.modelProxy.model });
+                        if (model.sourceId == "Power") {
+                            powerRepeater.model = model.model;
                         }
+
+                        sourcesModel.appendSource(sourceName, sourceFilter);
+                        //sourcesModel.append({"display": sourceName, "model": sourceFilter});
                     }
                 }
             }
         }
     }
 
-    function configChanged() {
-        useCustomButtonImage = plasmoid.readConfig("useCustomButtonImage");
-        buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
+    Component {
+        id: queryBindingComponent
+        Binding {
+            property: "query"
+            value: searchField.text
+        }
     }
 
-    function showPopup(shown) {
-        if (shown) {
-            searchField.focus = true;
-            sourceList.currentIndex = 0;
-        } else {
-            searchField.text = "";
-            sourceList.model = sourcesModel;
-            sourceList.currentIndex = 0;
+    Component {
+        id: multiModelExpander
+
+        Repeater {
+            width: 0
+            height: 0
+
+            visible: false
+
+            property bool runner: false
+            property string display
+
+            delegate: Item { property string display: model.display }
+
+            onItemAdded: {
+                if (runner) {
+                    sourcesModel.appendSource(item.display, model.modelForRow(index));
+                } else {
+                    sourcesModel.insertSource(index, item.display, model.modelForRow(index));
+                }
+            }
+        }
+    }
+
+    Component {
+        id: genericFilterComponent
+
+        HomerunFixes.SortFilterModel {
+            filterRegExp: searchField.text
+            property string name: sourceModel.name
+            property bool canMoveRow: "canMoveRow" in sourceModel ? sourceModel.canMoveRow : false
+            property bool running: "running" in sourceModel ? sourceModel.running : false
+            property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
+
+            objectName: "SortFilterModel:" + (sourceModel ? sourceModel.objectName : "")
+
+            function trigger(index, actionId, actionArgument) {
+                var sourceIndex = mapRowToSource(index);
+                return sourceModel.trigger(sourceIndex, actionId, actionArgument);
+            }
+
+            function moveRow(from, to) {
+                if (!canMoveRow) {
+                    console.log("moveRow(): source model cannot move rows. This method should not be called.");
+                    return;
+                }
+                var sourceFrom = mapRowToSource(from);
+                var sourceTo = mapRowToSource(to);
+                sourceModel.moveRow(sourceFrom, sourceTo);
+            }
         }
     }
 

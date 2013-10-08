@@ -110,7 +110,6 @@ public:
     SideBarModel *sideBarModel() const;
 
     Q_INVOKABLE QObject *modelForRow(int row) const;
-    Q_INVOKABLE QString nameForRow(int row) const { return data(index(row, 0)).toString(); }
 
 Q_SIGNALS:
     void countChanged();

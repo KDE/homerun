@@ -19,21 +19,19 @@
 
 import QtQuick 1.1
 
-import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.plasma.extras 0.1 as PlasmaExtras
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 
 PlasmaExtras.ScrollArea {
-    id: main
+    id: itemList
 
     property QtObject model
+    property alias contentHeight: listView.contentHeight
     property alias currentIndex: listView.currentIndex
     property alias currentItem: listView.currentItem
     property bool expandable: false
-
-    height: parent.height
 
     ListView {
         id: listView
@@ -44,91 +42,15 @@ PlasmaExtras.ScrollArea {
             currentIndex = focus ? 0 : -1;
         }
 
-        //boundsBehavior: Flickable.StopAtBounds
-
         currentIndex: -1
 
-        model: main.model
+        model: itemList.model
 
         onModelChanged: {
             currentIndex = plasmoid.popupShowing && expandable ? 0 : -1;
         }
 
-        delegate: PlasmaComponents.ListItem {
-            MouseArea {
-                id: mouseArea
-
-                anchors.fill: parent
-
-                hoverEnabled: true
-
-                onContainsMouseChanged: {
-                    if (containsMouse) {
-                        listView.currentIndex = index;
-                    }
-                }
-
-                onClicked: {
-                    main.model.trigger(index, "", null);
-                    console.log("clicked");
-                    plasmoid.hidePopup();
-                }
-            }
-
-            HomerunComponents.Image {
-                id: icon
-
-                visible: false
-
-                anchors {
-                    left: parent.left
-                    verticalCenter: parent.verticalCenter
-                }
-
-                onSourceChanged: {
-                    if (source) {
-                        visible = true;
-                        width = 22;
-                        height = 22;
-                    } else {
-                        visible = false;
-                        width = 0;
-                        height = 0;
-                    }
-                }
-
-                source: model.decoration
-            }
-
-            PlasmaComponents.Label {
-                anchors {
-                    top: parent.top
-                    left: icon.right
-                    leftMargin: 6
-                    bottom: parent.bottom
-                    right: arrow.left
-                }
-
-                clip: true
-
-                text: model.display
-            }
-
-            PlasmaCore.SvgItem {
-                id: arrow
-
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-
-                width: theme.smallIconSize
-                height: theme.smallIconSize
-
-                visible: (expandable && listView.currentIndex == index)
-
-                svg: arrows
-                elementId: "right-arrow"
-            }
-        }
+        delegate: ItemListDelegate {}
 
         highlight: PlasmaComponents.Highlight {}
         highlightFollowsCurrentItem: true

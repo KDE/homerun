@@ -43,9 +43,9 @@ InstalledAppsFilterModel::InstalledAppsFilterModel(const QString &entryPath, con
     setDynamicSortFilter(true);
     setFilterCaseSensitivity(Qt::CaseInsensitive);
 
-    connect(m_installedAppsModel, SIGNAL(modelReset()), this, SIGNAL(countChanged()));
-    connect(m_installedAppsModel, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SIGNAL(countChanged()));
-    connect(m_installedAppsModel, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SIGNAL(countChanged()));
+    connect(this, SIGNAL(modelReset()), this, SIGNAL(countChanged()));
+    connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SIGNAL(countChanged()));
+    connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SIGNAL(countChanged()));
 }
 
 InstalledAppsFilterModel::~InstalledAppsFilterModel()
@@ -274,7 +274,6 @@ QString FilterableInstalledAppsModel::currentQuery() const
 
 void FilterableInstalledAppsModel::scheduleQuery(const QString& query)
 {
-    kDebug() << "running" << query;
     emit queryChanged(query);
     m_sideBarModel->invalidateFilter();
 }
@@ -296,8 +295,8 @@ QAbstractItemModel *FilterableInstalledAppsSource::createModelFromConfigGroup(co
     KConfigGroup group(config(), "PackageManagement");
     QString installer = group.readEntry("categoryInstaller");
     FilterableInstalledAppsModel *model = new FilterableInstalledAppsModel(installer);
-    //ChangeNotifier *notifier = new ChangeNotifier(model);
-    //connect(notifier, SIGNAL(changeDetected(bool)), model, SLOT(refresh(bool)));
+    ChangeNotifier *notifier = new ChangeNotifier(model);
+    connect(notifier, SIGNAL(changeDetected(bool)), model, SLOT(refresh(bool)));
     return model;
 }
 

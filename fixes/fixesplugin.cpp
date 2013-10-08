@@ -23,7 +23,11 @@
 
 // Local
 #include <datamodel.h>
+<<<<<<< HEAD
 #include <toolboxtoggle.h>
+=======
+#include <sourcelistmodel.h>
+>>>>>>> Proper search, proper source reload, KRunner support.
 #include <urlconverter.h>
 
 // Qt
@@ -33,6 +37,8 @@ void FixesPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
     qmlRegisterType<ToolBoxToggle>(uri, 0, 1, "ToolBoxToggle");
+    qmlRegisterType<SourceListModel>(uri, 0, 1, "SourceListModel");
+    qmlRegisterType<SourceListFilterModel>(uri, 0, 1, "SourceListFilterModel");
     qmlRegisterType<UrlConverter>(uri, 0, 1, "UrlConverter");
 }
 
