@@ -67,7 +67,7 @@ PlasmaComponents.ListItem {
                 listView.currentIndex = index;
             } else {
                 mouseCol = mouse.x;
-                updateCurrentItemTimer.interval = (mouse.x < itemList.eligibleWidth) ? 0 : 40;
+                updateCurrentItemTimer.interval = (mouse.x < itemList.eligibleWidth) ? 0 : 50;
                 updateCurrentItemTimer.start();
             }
         }
