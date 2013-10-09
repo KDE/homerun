@@ -172,6 +172,7 @@ Item {
                             PropertyAction { target: favorites; property: "animating"; value: true }
 
                             NumberAnimation {
+                                duration: 130
                                 properties: "x, y"
                                 easing.type: Easing.OutQuad
                             }
