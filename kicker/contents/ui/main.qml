@@ -21,6 +21,7 @@ import QtQuick 1.1
 
 import org.kde.plasma.core 0.1 as PlasmaCore
 import org.kde.draganddrop 1.0 as DragAndDrop
+import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.homerun.fixes 0.1 as HomerunFixes
@@ -46,6 +47,7 @@ Item {
 
     function showPopup(shown) {
         if (shown) {
+            justOpenedTimer.start();
             searchField.focus = true;
             leftList.currentIndex = 0;
         } else {
@@ -79,6 +81,13 @@ Item {
         } else if (actionId == "_homerun_favorite_add") {
             favoriteModel.addFavorite(favoriteId);
         }
+    }
+
+    Timer {
+        id: justOpenedTimer
+
+        repeat: false
+        interval: 400
     }
 
     HomerunComponents.TabModel {
@@ -241,26 +250,36 @@ Item {
 
                     height: parent.height - searchField.height
 
-                    ItemList {
-                        id: leftList
-
+                    QtExtra.MouseEventListener {
                         width: Math.min((main.width - frame.width - 2 * mainRow.spacing - 2 * listRow.spacing) / 2)
                         height: parent.height - 2 * parent.spacing
 
-                        expandable: true
-                        model: sourcesModel
+                        hoverEnabled: true
 
-                        onCurrentIndexChanged: {
-                            if (model == sourcesModel && currentIndex >= 0) {
-                                rightList.model = sourcesModel.modelForRow(currentIndex);
-                            }
+                        onContainsMouseChanged: {
+                            leftList.eligibleWidth = leftList.width;
                         }
 
-                        Keys.onPressed: {
-                            if (event.key == Qt.Key_Up && currentIndex == 0) {
-                                searchField.focus = true;
-                            } else if (event.key == Qt.Key_Right) {
-                                rightList.focus = true;
+                        ItemList {
+                            id: leftList
+
+                            anchors.fill: parent
+
+                            expandable: true
+                            model: sourcesModel
+
+                            onCurrentIndexChanged: {
+                                if (model == sourcesModel && currentIndex >= 0) {
+                                    rightList.model = sourcesModel.modelForRow(currentIndex);
+                                }
+                            }
+
+                            Keys.onPressed: {
+                                if (event.key == Qt.Key_Up && currentIndex == 0) {
+                                    searchField.focus = true;
+                                } else if (event.key == Qt.Key_Right) {
+                                    rightList.focus = true;
+                                }
                             }
                         }
                     }

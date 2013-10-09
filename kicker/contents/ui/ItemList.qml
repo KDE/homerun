@@ -32,7 +32,7 @@ PlasmaExtras.ScrollArea {
     property alias currentIndex: listView.currentIndex
     property alias currentItem: listView.currentItem
     property bool expandable: false
-    property int eligibleWidth: 0
+    property int eligibleWidth
 
     ListView {
         id: listView

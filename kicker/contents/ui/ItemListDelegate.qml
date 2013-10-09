@@ -46,9 +46,7 @@ PlasmaComponents.ListItem {
 
         anchors.fill: parent
 
-        property int thresh: (Math.abs(index - currentIndex) <= 6 && expandable) ?
-            width - ((width - eligibleWidth) - ((width - eligibleWidth) / 6) * Math.abs(index - currentIndex))
-            : width;
+        property int mouseCol
 
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
@@ -65,11 +63,32 @@ PlasmaComponents.ListItem {
         }
 
         onPositionChanged: {
-            eligibleWidth = Math.min(Math.max(0, mouse.x - 5), width - 35);
-
-            if (mouse.x < thresh) {
+            if (!expandable || justOpenedTimer.running) {
                 listView.currentIndex = index;
+            } else {
+                mouseCol = mouse.x;
+                updateCurrentItemTimer.interval = (mouse.x < itemList.eligibleWidth) ? 0 : 40;
+                updateCurrentItemTimer.start();
             }
+        }
+
+        onContainsMouseChanged: {
+            if (!containsMouse) {
+                updateCurrentItemTimer.stop();
+            }
+        }
+
+        function updateCurrentItem() {
+            listView.currentIndex = index;
+            itemList.eligibleWidth = Math.min(width, mouseCol + 5);
+        }
+
+        Timer {
+            id: updateCurrentItemTimer
+
+            repeat: false
+
+            onTriggered: parent.updateCurrentItem()
         }
     }
 
