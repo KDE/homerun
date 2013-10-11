@@ -64,7 +64,14 @@ Item {
 
             hoverEnabled: true
 
-            onClicked: plasmoid.popupShowing ? plasmoid.hidePopup() : plasmoid.showPopup()
+            onClicked: {
+                if (plasmoid.popupShowing) {
+                    plasmoid.hidePopup();
+                } else {
+                    plasmoid.showPopup();
+                    main.updateMinimumHeight();
+                }
+            }
         }
     }
 

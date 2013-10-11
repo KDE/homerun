@@ -49,8 +49,12 @@ RecentAppsModel::RecentAppsModel(const KConfigGroup &group, QObject *parent)
 
     QList<QString> apps = group.readEntry("RecentApps", QList<QString>());
 
-    for (int i = apps.count() - 1; i >= 0; --i) {
-        addApp(apps.at(i), false);
+    if (apps.isEmpty()) {
+        addApp("systemsettings.desktop", false);
+    } else {
+        for (int i = apps.count() - 1; i >= 0; --i) {
+            addApp(apps.at(i), false);
+        }
     }
 }
 

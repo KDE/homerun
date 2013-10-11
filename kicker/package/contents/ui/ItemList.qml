@@ -28,34 +28,28 @@ PlasmaExtras.ScrollArea {
     id: itemList
 
     property QtObject model
+    property alias count: listView.count
     property alias contentHeight: listView.contentHeight
     property alias currentIndex: listView.currentIndex
     property alias currentItem: listView.currentItem
+    property alias highlightItem: listView.highlightItem
     property bool expandable: false
     property int eligibleWidth
 
     ListView {
         id: listView
 
-        focus: parent.focus
+        spacing: 0
 
-        onFocusChanged: {
-            currentIndex = focus ? 0 : -1;
-        }
+        focus: parent.focus
 
         currentIndex: -1
 
         model: itemList.model
 
-        onModelChanged: {
-            currentIndex = plasmoid.popupShowing && expandable ? 0 : -1;
-        }
-
         delegate: ItemListDelegate {}
 
-        highlight: PlasmaComponents.Highlight {}
-        highlightFollowsCurrentItem: true
-        highlightMoveDuration: 250
+        highlight: PlasmaComponents.Highlight { anchors.fill: listView.currentItem }
     }
 
     Keys.onReturnPressed: {

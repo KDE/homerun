@@ -25,6 +25,8 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.homerun.components 0.1 as HomerunComponents
 
 PlasmaComponents.ListItem {
+    height: Math.max(theme.defaultFont.mSize.height, theme.smallIconSize) + dummy.margins.top + dummy.margins.bottom
+
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
@@ -105,8 +107,8 @@ PlasmaComponents.ListItem {
         onSourceChanged: {
             if (source) {
                 visible = true;
-                width = 22;
-                height = 22;
+                width = theme.smallIconSize;
+                height = theme.smallIconSize;
             } else {
                 visible = false;
                 width = 0;

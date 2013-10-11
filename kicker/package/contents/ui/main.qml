@@ -30,11 +30,14 @@ import org.kde.homerun.fixes 0.1 as HomerunFixes
 Item {
     id: main
 
-    property int minimumWidth: 450
-    property int minimumHeight: leftList.contentHeight + searchField.height + 2 * mainRow.spacing + mainColumn.spacing
+    property int minimumWidth: frame.width + theme.defaultFont.mSize.width * 18
+    property int minimumHeight: 350
+
+    property int spacing: 6
 
     property string configFileName: "homerunkickerrc"
-    property QtObject appsModel
+    property QtObject recentAppsModel
+    property QtObject allAppsModel
 
     property bool useCustomButtonImage
     property string buttonImage
@@ -46,19 +49,22 @@ Item {
         buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
     }
 
+    function updateMinimumHeight() {
+        minimumHeight = sourcesList.contentHeight + searchField.height + main.spacing + searchField.anchors.bottomMargin + mainRow.anchors.topMargin + mainRow.anchors.bottomMargin;
+    }
+
     function showPopup(shown) {
         if (shown) {
+            plasmoid.resize(minimumWidth, minimumHeight);
             justOpenedTimer.start();
             searchField.focus = true;
-            leftList.currentIndex = 0;
         } else {
+            resultsDialog.visible = false;
             searchField.text = "";
-            leftList.model = sourcesModel;
-            leftList.currentIndex = 0;
         }
     }
 
-     function favoriteModelForFavoriteId(favoriteId) {
+    function favoriteModelForFavoriteId(favoriteId) {
         if (favoriteId === undefined || favoriteId === "") {
             return null;
         }
@@ -82,6 +88,15 @@ Item {
         } else if (actionId == "_homerun_favorite_add") {
             favoriteModel.addFavorite(favoriteId);
         }
+    }
+
+    PlasmaCore.FrameSvgItem {
+        id : dummy
+
+        visible: false
+
+        imagePath: "widgets/listitem"
+        prefix: "normal"
     }
 
     Timer {
@@ -124,12 +139,13 @@ Item {
         Row {
             id: mainRow
 
-            x: 6
-            y: 3
-            height: parent.height - 6
-            width: listRow.width + frame.width + spacing
+            anchors.fill: parent
+            anchors.leftMargin: 6
+            anchors.topMargin: 3
+            anchors.rightMargin: 2
+            anchors.bottomMargin: 4
 
-            spacing: 6
+            spacing: main.spacing
 
             PlasmaCore.FrameSvgItem {
                 width: theme.mediumIconSize + 16
@@ -182,7 +198,7 @@ Item {
                         }
                     }
 
-                    spacing: 6
+                    spacing: main.spacing
 
                     Repeater {
                         id: favoriteAppsRepeater
@@ -197,7 +213,7 @@ Item {
                     anchors.bottomMargin: 8
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    spacing: 6
+                    spacing: main.spacing
 
                     PlasmaCore.SvgItem {
                         width: parent.width
@@ -218,91 +234,184 @@ Item {
                 }
             }
 
-            Column {
-                id: mainColumn
-
-                spacing: 8
-
+            Item {
                 height: parent.height
+                width: mainRow.width - frame.width - mainRow.spacing
+
+                QtExtra.MouseEventListener {
+                    id: sourcesListListener
+
+                    anchors.bottom: searchField.top
+                    anchors.bottomMargin: main.spacing
+
+                    height: (sourcesList.contentHeight < parent.height - searchField.height) ? sourcesList.contentHeight : parent.height - searchField.height
+                    width: parent.width
+
+                    hoverEnabled: true
+
+                    onContainsMouseChanged: {
+                        sourcesList.eligibleWidth = sourcesList.width;
+                    }
+
+                    ItemList {
+                        id: sourcesList
+
+                        anchors.fill: parent
+
+                        expandable: true
+                        model: sourcesModel
+
+                        onCurrentIndexChanged: {
+                            if (currentIndex != -1) {
+                                focus = true;
+                                resultsList.model = sourcesModel.modelForRow(currentIndex);
+                                resultsDialog.target = currentItem;
+                                resultsDialog.visible = true;
+                            } else {
+                                resultsList.model = null;
+                                resultsDialog.visible = false;
+                            }
+                        }
+
+                        Keys.onPressed: {
+                            if (event.key == Qt.Key_Down && currentIndex == count - 1) {
+                                searchField.focus = true;
+                            } else if (event.key == Qt.Key_Right && resultsDialog.visible) {
+                                resultsList.focus = true;
+                            }
+                        }
+                    }
+                }
 
                 HomerunFixes.TextField {
                     id: searchField
 
-                    width: parent.width
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 3
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    width: parent.width - 4
 
                     clearButtonShown: true
                     placeholderText: i18n("Search...")
 
                     onAccepted: {
-                        rightList.model.trigger(leftList.currentIndex, "", null);
+                        if (allAppsModel && allAppsModel.count) {
+                            allAppsModel.model.trigger(0, "", null);
+                        }
+
                         plasmoid.hidePopup();
                     }
 
+                    onTextChanged: {
+                        if (text != "" && allAppsModel.count) {
+                            resultsList.model = allAppsModel;
+                            resultsDialog.target = searchField;
+                            resultsDialog.visible = true;
+                        }
+                    }
+
+                    onFocusChanged: {
+                        if (focus) {
+                            sourcesList.currentIndex = -1;
+                        }
+                    }
+
                     Keys.onPressed: {
-                        if (event.key == Qt.Key_Down || event.key == Qt.Key_Right) {
-                            rightList.focus = true;
-                        }
-                    }
-                }
-
-                Row {
-                    id: listRow
-
-                    spacing: 6
-
-                    height: parent.height - searchField.height
-
-                    QtExtra.MouseEventListener {
-                        width: Math.min((main.width - frame.width - 2 * mainRow.spacing - 2 * listRow.spacing) / 2)
-                        height: parent.height - 2 * parent.spacing
-
-                        hoverEnabled: true
-
-                        onContainsMouseChanged: {
-                            leftList.eligibleWidth = leftList.width;
-                        }
-
-                        ItemList {
-                            id: leftList
-
-                            anchors.fill: parent
-
-                            expandable: true
-                            model: sourcesModel
-
-                            onCurrentIndexChanged: {
-                                if (model == sourcesModel && currentIndex >= 0) {
-                                    rightList.model = sourcesModel.modelForRow(currentIndex);
-                                }
-                            }
-
-                            Keys.onPressed: {
-                                if (event.key == Qt.Key_Up && currentIndex == 0) {
-                                    searchField.focus = true;
-                                } else if (event.key == Qt.Key_Right) {
-                                    rightList.focus = true;
-                                }
-                            }
-                        }
-                    }
-
-                    ItemList {
-                        id: rightList
-
-                        width: Math.min((main.width - frame.width - 2 * mainRow.spacing - 2 * listRow.spacing) / 2)
-                        height: parent.height - 2 * parent.spacing
-
-                        Keys.onPressed: {
-                            if (event.key == Qt.Key_Up && currentIndex == 0) {
-                                searchField.focus = true;
-                            } else if (event.key == Qt.Key_Left) {
-                                leftList.focus = true;
-                            }
+                        if (event.key == Qt.Key_Up) {
+                            sourcesList.currentIndex = sourcesList.count - 1;
+                        } else if (event.key == Qt.Key_Down) {
+                            sourcesList.currentIndex = 0;
                         }
                     }
                 }
             }
         }
+    }
+
+    PlasmaCore.Dialog {
+        id: resultsDialog
+
+        property Item target
+
+        visible: false
+
+        location: Floating
+        windowFlags: Qt.WindowStaysOnTopHint
+
+        mainItem: QtExtra.MouseEventListener {
+            id: resultsListener
+
+            height: resultsList.height
+            width: resultsList.width
+
+            hoverEnabled: true
+
+            ItemList {
+                id: resultsList
+
+                width: theme.defaultFont.mSize.width * 20
+
+                onContentHeightChanged: resultsDialog.updatePosition()
+
+                onModelChanged: {
+                    updateHeight();
+                    currentIndex = -1;
+                }
+
+                onCountChanged: updateHeight()
+
+                Keys.onPressed: {
+                    if (event.key == Qt.Key_Left && visible) {
+                        resultsDialog.visible = false;
+                    }
+                }
+
+                function updateHeight() {
+                    if (count) {
+                        height = Math.min(sourcesList.height, count * sourcesList.highlightItem.height);
+                    }
+                }
+            }
+        }
+
+        onVisibleChanged: {
+            if (visible && target) {
+                updatePosition();
+            } else {
+                sourcesList.focus = true;
+                target = null;
+                resultsList.model = null;
+            }
+        }
+
+        onTargetChanged: {
+            if (visible && target) {
+                updatePosition();
+            } else {
+                resultsList.model = null;
+            }
+        }
+
+        function updatePosition() {
+            if (target) {
+                var pos = popupPosition(sourcesList, Qt.AlignLeft);
+                x = pos.x + sourcesList.width + margins.left + margins.right + mainRow.anchors.rightMargin - 1;
+                //FIXME: Cleanup.
+                y = pos.y + margins.top + target.y + target.height + Math.min(((sourcesList.count - sourcesList.currentIndex) * sourcesList.highlightItem.height),
+                    (resultsList.count - 1) * sourcesList.highlightItem.height)
+            }
+        }
+
+        Component.onCompleted: {
+            setAttribute(Qt.WA_X11NetWmWindowTypeMenu, true);
+        }
+    }
+
+    Binding {
+        target: plasmoid
+        property: "passivePopup"
+        value: resultsListener.containsMouse
     }
 
     HomerunKicker.SourceListFilterModel {
@@ -344,7 +453,7 @@ Item {
                         "model": sourceFilter, "runner": runner});
 
                     if (model.sourceId == "FilterableInstalledApps") {
-                        appsModel = model.model;
+                        model.model.launched.connect(recentAppsModel.addApp);
                     }
                 } else {
                     if (model.sourceId == "FavoriteApps") {
@@ -353,7 +462,6 @@ Item {
                         if (model.sourceId == "Power") {
                             powerRepeater.model = model.model;
                         } else if (model.sourceId == "RecentApps") {
-                            appsModel.launched.connect(model.model.addApp);
                             model.model.addToDesktop.connect(appletProxy.addToDesktop);
                             model.model.addToPanel.connect(appletProxy.addToPanel);
                         }
@@ -392,6 +500,8 @@ Item {
 
                 if (runner) {
                     sourcesModel.appendSource(item.display, mdl);
+                } else if (index == 0) {
+                    allAppsModel = mdl;
                 } else {
                     sourcesModel.insertSource(index, item.display, mdl);
                 }

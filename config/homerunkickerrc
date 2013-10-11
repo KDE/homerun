@@ -7,10 +7,10 @@ icon=go-home
 sources=Source0,Source1,Source2,Source3,Source4,Source5,Source6
 
 [Tab0][Source0]
-sourceId=FilterableInstalledApps
+sourceId=RecentApps
 
 [Tab0][Source1]
-sourceId=RecentApps
+sourceId=FilterableInstalledApps
 
 [Tab0][Source2]
 sourceId=RecentDocuments
