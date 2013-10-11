@@ -287,10 +287,10 @@ Item {
                     id: searchField
 
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 2
+                    anchors.bottomMargin: 3
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    width: parent.width - 2
+                    width: parent.width - 4
 
                     clearButtonShown: true
                     placeholderText: i18n("Search...")
