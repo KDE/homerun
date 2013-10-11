@@ -30,6 +30,7 @@ install(FILES data/favoriteapps.xml DESTINATION ${DATA_INSTALL_DIR}/homerun/)
 
 add_subdirectory(lib)
 add_subdirectory(components)
+add_subdirectory(fullscreen)
 add_subdirectory(fixes)
 add_subdirectory(tests)
 add_subdirectory(icons)
