@@ -1,12 +1,9 @@
 project(fixes)
 
 set(fixes_SRCS
-    appletproxy.cpp
     datamodel.cpp
     fixesplugin.cpp
     toolboxtoggle.cpp
-    sourcelistmodel.cpp
-    urlconverter.cpp
     )
 
 qt4_automoc(${fixes_SRCS})

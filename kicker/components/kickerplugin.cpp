@@ -1,6 +1,5 @@
 /*
- *   Copyright 2012 Shaun Reich <shaun.reich@blue-systems.com>
- *   Copyright 2012 by Aurélien Gâteau <agateau@kde.org>
+ *   Copyright 2013 Eike Hein <hein@kde.org>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -19,19 +18,22 @@
  */
 
 // Self
-#include <fixesplugin.h>
+#include <kickerplugin.h>
 
 // Local
-#include <datamodel.h>
-#include <toolboxtoggle.h>
+#include <appletproxy.h>
+#include <sourcelistmodel.h>
+#include <urlconverter.h>
 
 // Qt
 #include <QtDeclarative/qdeclarative.h>
 
-void FixesPlugin::registerTypes(const char *uri)
+void KickerPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
-    qmlRegisterType<ToolBoxToggle>(uri, 0, 1, "ToolBoxToggle");
+    qmlRegisterType<AppletProxy>(uri, 0, 1, "AppletProxy");
+    qmlRegisterType<SourceListModel>(uri, 0, 1, "SourceListModel");
+    qmlRegisterType<SourceListFilterModel>(uri, 0, 1, "SourceListFilterModel");
+    qmlRegisterType<UrlConverter>(uri, 0, 1, "UrlConverter");
 }
 
-#include "fixesplugin.moc"
+#include "kickerplugin.moc"

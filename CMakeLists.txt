@@ -29,13 +29,10 @@ install(FILES config/homerunkickerrc DESTINATION ${CONFIG_INSTALL_DIR})
 install(FILES data/favoriteapps.xml DESTINATION ${DATA_INSTALL_DIR}/homerun/)
 
 add_subdirectory(lib)
-add_subdirectory(applet)
-add_subdirectory(shell)
 add_subdirectory(components)
 add_subdirectory(fixes)
 add_subdirectory(tests)
 add_subdirectory(icons)
-add_subdirectory(package)
 add_subdirectory(kicker)
 add_subdirectory(plugins)
 

@@ -24,6 +24,7 @@ import org.kde.draganddrop 1.0 as DragAndDrop
 import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
+import org.kde.homerun.kicker 0.1 as HomerunKicker
 import org.kde.homerun.fixes 0.1 as HomerunFixes
 
 Item {
@@ -108,12 +109,12 @@ Item {
         size: "16x16"
     }
 
-    HomerunFixes.AppletProxy {
+    HomerunKicker.AppletProxy {
         id: appletProxy
         item: plasmoid.action("configure")
     }
 
-    HomerunFixes.UrlConverter {
+    HomerunKicker.UrlConverter {
         id: urlConverter
     }
 
@@ -304,7 +305,7 @@ Item {
         }
     }
 
-    HomerunFixes.SourceListFilterModel {
+    HomerunKicker.SourceListFilterModel {
         id: sourcesModel
     }
 
