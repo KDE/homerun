@@ -21,7 +21,6 @@
 
 #include <QDeclarativeExtensionPlugin>
 
-
 class KickerPlugin : public QDeclarativeExtensionPlugin
 {
     Q_OBJECT
