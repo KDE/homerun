@@ -395,7 +395,7 @@ Item {
                 if (runner) {
                     sourcesModel.appendSource(item.display, mdl);
                 } else if (index == 0) {
-                    allAppsModel = mdl;sourcesModel.insertSource(index, item.display, mdl);
+                    allAppsModel = mdl;
                 } else {
                     sourcesModel.insertSource(index, item.display, mdl);
                 }
