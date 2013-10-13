@@ -189,3 +189,5 @@ bool SourceListFilterModel::filterAcceptsRow(int source_row, const QModelIndex& 
 
     return (count > 0);
 }
+
+#include "sourcelistmodel.moc"

@@ -103,3 +103,5 @@ void AppletProxy::addToPanel(const QString &storageId)
         m_applet->containment()->addApplet("icon", QVariantList() << service->entryPath(), rect);
     }
 }
+
+#include "appletproxy.moc"

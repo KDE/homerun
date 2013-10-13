@@ -51,3 +51,5 @@ QPoint WindowSystem::mapToScreen(QDeclarativeItem* item, int x, int y)
 
     return view->mapToGlobal(view->mapFromScene(item->mapToScene(pos).toPoint()));
 }
+
+#include "windowsystem.moc"

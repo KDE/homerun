@@ -21,7 +21,6 @@
 
 #include <QObject>
 #include <QPoint>
-#include <QVariant>
 
 class QDeclarativeItem;
 
