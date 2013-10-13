@@ -73,8 +73,8 @@ PlasmaComponents.ListItem {
         }
 
         onPositionChanged: {
-            //FIXME: take haschildren into account, correct escape angle calc for right screen edge
-            if (justOpenedTimer.running) {
+            //FIXME: correct escape angle calc for right screen edge
+            if (justOpenedTimer.running || hasChildren) {
                 listView.currentIndex = index;
             } else {
                 mouseCol = mouse.x;
