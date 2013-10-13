@@ -5,6 +5,7 @@ set(kicker_SRCS
     kickerplugin.cpp
     sourcelistmodel.cpp
     urlconverter.cpp
+    windowsystem.cpp
     )
 
 qt4_automoc(${kicker_SRCS})

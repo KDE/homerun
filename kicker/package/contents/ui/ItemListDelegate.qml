@@ -25,11 +25,12 @@ import org.kde.plasma.components 0.1 as PlasmaComponents
 import org.kde.homerun.components 0.1 as HomerunComponents
 
 PlasmaComponents.ListItem {
-    height: Math.max(theme.defaultFont.mSize.height, theme.smallIconSize) + dummy.margins.top + dummy.margins.bottom
+    height: itemHeight
 
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
+    property bool hasChildren: (listView.model != undefined && "modelForRow" in listView.model && listView.model.modelForRow(index).count)
     property bool hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
 
     Keys.onPressed: {
@@ -40,6 +41,11 @@ PlasmaComponents.ListItem {
         if (event.key == Qt.Key_M || event.key == Qt.Key_Menu) {
             event.accepted = true;
             openActionMenu(mouseArea);
+        } else if ((event.key == Qt.Key_Enter || event.key == Qt.Key_Return) && !hasChildren) {
+            if (!hasChildren) {
+                listView.model.trigger(index, "");
+                plasmoid.hidePopup();
+            }
         }
     }
 
@@ -54,8 +60,10 @@ PlasmaComponents.ListItem {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
         onClicked: {
-            listView.model.trigger(index, "", null);
-            plasmoid.hidePopup();
+            if (!hasChildren) {
+                listView.model.trigger(index, "");
+                plasmoid.hidePopup();
+            }
         }
 
         onPressed: {
@@ -65,11 +73,12 @@ PlasmaComponents.ListItem {
         }
 
         onPositionChanged: {
-            if (!expandable || justOpenedTimer.running) {
+            //FIXME: take haschildren into account, correct escape angle calc for right screen edge
+            if (justOpenedTimer.running) {
                 listView.currentIndex = index;
             } else {
                 mouseCol = mouse.x;
-                updateCurrentItemTimer.interval = (mouse.x < itemList.eligibleWidth) ? 0 : 50;
+                updateCurrentItemTimer.interval = (mouse.x < listView.eligibleWidth) ? 0 : 50;
                 updateCurrentItemTimer.start();
             }
         }
@@ -82,7 +91,7 @@ PlasmaComponents.ListItem {
 
         function updateCurrentItem() {
             listView.currentIndex = index;
-            itemList.eligibleWidth = Math.min(width, mouseCol + 5);
+            listView.eligibleWidth = Math.min(width, mouseCol + 5);
         }
 
         Timer {
@@ -119,7 +128,7 @@ PlasmaComponents.ListItem {
         source: model.decoration
     }
 
-    PlasmaComponents.Label {
+    Text {
         anchors {
             top: parent.top
             left: icon.right
@@ -128,9 +137,24 @@ PlasmaComponents.ListItem {
             right: arrow.left
         }
 
-        clip: true
+        height: Math.max(paintedHeight, theme.defaultFont.mSize.height*1.6)
+
+        opacity: enabled? 1 : 0.6
 
         text: model.display
+
+        color: theme.textColor
+        elide: Text.ElideRight
+        verticalAlignment: lineCount > 1 ? Text.AlignTop : Text.AlignVCenter
+        font.capitalization: theme.defaultFont.capitalization
+        font.family: theme.defaultFont.family
+        font.italic: theme.defaultFont.italic
+        font.letterSpacing: theme.defaultFont.letterSpacing
+        font.pointSize: theme.defaultFont.pointSize
+        font.strikeout: theme.defaultFont.strikeout
+        font.underline: theme.defaultFont.underline
+        font.weight: theme.defaultFont.weight
+        font.wordSpacing: theme.defaultFont.wordSpacing
     }
 
     PlasmaCore.SvgItem {
@@ -142,7 +166,7 @@ PlasmaComponents.ListItem {
         width: theme.smallIconSize
         height: theme.smallIconSize
 
-        visible: (expandable && listView.currentIndex == index)
+        visible: (listView.currentIndex == index) && hasChildren
 
         svg: arrows
         elementId: "right-arrow"

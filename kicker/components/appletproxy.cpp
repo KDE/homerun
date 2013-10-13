@@ -23,7 +23,7 @@
 #include <Plasma/PopupApplet>
 
 AppletProxy::AppletProxy(QObject* parent) : QObject(parent),
-    m_item(0)
+    m_applet(0)
 {
 }
 
@@ -33,7 +33,7 @@ AppletProxy::~AppletProxy()
 
 QObject* AppletProxy::item() const
 {
-    return m_item;
+    return m_applet;
 }
 
 void AppletProxy::setItem(QObject *item)
@@ -42,13 +42,13 @@ void AppletProxy::setItem(QObject *item)
         return;
     }
 
-    m_item = static_cast<Plasma::PopupApplet *>(item->parent()->parent());
+    m_applet = static_cast<Plasma::PopupApplet *>(item->parent()->parent());
 }
 
 bool AppletProxy::desktopContainmentMutable() const
 {
-    if (m_item && m_item->containment()) {
-        Plasma::Containment *desktop = m_item->containment()->corona()->containmentForScreen(m_item->containment()->screen());
+    if (m_applet && m_applet->containment()) {
+        Plasma::Containment *desktop = m_applet->containment()->corona()->containmentForScreen(m_applet->containment()->screen());
 
         if (desktop) {
             return desktop->immutability() == Plasma::Mutable;
@@ -60,8 +60,8 @@ bool AppletProxy::desktopContainmentMutable() const
 
 bool AppletProxy::appletContainmentMutable() const
 {
-    if (m_item && m_item->containment()) {
-        return m_item->containment()->immutability() == Plasma::Mutable;
+    if (m_applet && m_applet->containment()) {
+        return m_applet->containment()->immutability() == Plasma::Mutable;
     }
 
     return false;
@@ -69,11 +69,11 @@ bool AppletProxy::appletContainmentMutable() const
 
 void AppletProxy::addToDesktop(const QString &storageId)
 {
-    if (!m_item) {
+    if (!m_applet) {
         return;
     }
 
-    Plasma::Containment *desktop = m_item->containment()->corona()->containmentForScreen(m_item->containment()->screen());
+    Plasma::Containment *desktop = m_applet->containment()->corona()->containmentForScreen(m_applet->containment()->screen());
     KService::Ptr service = KService::serviceByStorageId(storageId);
 
     if (!desktop || !service) {
@@ -90,7 +90,7 @@ void AppletProxy::addToDesktop(const QString &storageId)
 
 void AppletProxy::addToPanel(const QString &storageId)
 {
-    if (!m_item) {
+    if (!m_applet) {
         return;
     }
 
@@ -98,8 +98,8 @@ void AppletProxy::addToPanel(const QString &storageId)
 
     if (service) {
         // move it to the middle of the panel
-        QRectF rect(m_item->containment()->geometry().width() / 2, 0, 150,
-            m_item->containment()->boundingRect().height());
-        m_item->containment()->addApplet("icon", QVariantList() << service->entryPath(), rect);
+        QRectF rect(m_applet->containment()->geometry().width() / 2, 0, 150,
+            m_applet->containment()->boundingRect().height());
+        m_applet->containment()->addApplet("icon", QVariantList() << service->entryPath(), rect);
     }
 }

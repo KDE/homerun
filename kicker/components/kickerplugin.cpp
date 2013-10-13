@@ -24,6 +24,7 @@
 #include <appletproxy.h>
 #include <sourcelistmodel.h>
 #include <urlconverter.h>
+#include <windowsystem.h>
 
 // Qt
 #include <QtDeclarative/qdeclarative.h>
@@ -34,6 +35,7 @@ void KickerPlugin::registerTypes(const char *uri)
     qmlRegisterType<SourceListModel>(uri, 0, 1, "SourceListModel");
     qmlRegisterType<SourceListFilterModel>(uri, 0, 1, "SourceListFilterModel");
     qmlRegisterType<UrlConverter>(uri, 0, 1, "UrlConverter");
+    qmlRegisterType<WindowSystem>(uri, 0, 1, "WindowSystem");
 }
 
 #include "kickerplugin.moc"

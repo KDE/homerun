@@ -45,7 +45,7 @@ class AppletProxy : public QObject
         Q_INVOKABLE void addToPanel(const QString &storageId);
 
     private:
-        Plasma::PopupApplet *m_item;
+        Plasma::PopupApplet *m_applet;
 };
 
 #endif

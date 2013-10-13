@@ -16,22 +16,25 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef URLCONVERTER_H
-#define URLCONVERTER_H
+#ifndef WINDOWSYSTEM_H
+#define WINDOWSYSTEM_H
 
 #include <QObject>
+#include <QPoint>
 
-#include <KUrl>
+class QDeclarativeItem;
 
-class UrlConverter : public QObject
+class WindowSystem : public QObject
 {
     Q_OBJECT
 
     public:
-        UrlConverter(QObject *parent = 0);
-        ~UrlConverter();
+        WindowSystem(QObject *parent = 0);
+        ~WindowSystem();
 
-        Q_INVOKABLE QString convertToPath(const KUrl &url);
+        Q_INVOKABLE QVariant workArea();
+
+        Q_INVOKABLE QPoint mapToScreen(QDeclarativeItem* item, int x, int y);
 };
 
 #endif

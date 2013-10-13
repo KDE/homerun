@@ -16,22 +16,39 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef URLCONVERTER_H
-#define URLCONVERTER_H
+#include "windowsystem.h"
 
-#include <QObject>
+#include <QDeclarativeItem>
+#include <QGraphicsView>
+#include <QRect>
+#include <QVariant>
 
-#include <KUrl>
+#include <KWindowSystem>
 
-class UrlConverter : public QObject
+#include <Plasma/Plasma>
+
+WindowSystem::WindowSystem(QObject* parent) : QObject(parent)
 {
-    Q_OBJECT
+}
 
-    public:
-        UrlConverter(QObject *parent = 0);
-        ~UrlConverter();
+WindowSystem::~WindowSystem()
+{
+}
 
-        Q_INVOKABLE QString convertToPath(const KUrl &url);
-};
+QVariant WindowSystem::workArea()
+{
+    return KWindowSystem::workArea();
+}
 
-#endif
+QPoint WindowSystem::mapToScreen(QDeclarativeItem* item, int x, int y)
+{
+    QPoint pos(x, y);
+
+    if (!item) {
+        return pos;
+    }
+
+    QGraphicsView *view = Plasma::viewFor(item);
+
+    return view->mapToGlobal(view->mapFromScene(item->mapToScene(pos).toPoint()));
+}
