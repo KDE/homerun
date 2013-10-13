@@ -16,8 +16,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef SourceListModel_H
-#define SourceListModel_H
+#ifndef SOURCELISTMODEL_H
+#define SOURCELISTMODEL_H
 
 #include <QAbstractListModel>
 #include <QSortFilterProxyModel>
