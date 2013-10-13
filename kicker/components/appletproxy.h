@@ -16,8 +16,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef AppletProxy_H
-#define AppletProxy_H
+#ifndef APPLETPROXY_H
+#define APPLETPROXY_H
 
 #include <QObject>
 
