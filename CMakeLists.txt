@@ -6,7 +6,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE
 set(HOMERUN_VERSION "1.2.0 pre")
 
 # Dependencies
-find_package(KDE4 4.9.97 REQUIRED)
+find_package(KDE4 4.10.0 REQUIRED)
 include(KDE4Defaults)
 find_package(KDE4Workspace REQUIRED)
 find_package(KDeclarative REQUIRED)
