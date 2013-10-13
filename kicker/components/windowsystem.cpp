@@ -21,7 +21,6 @@
 #include <QDeclarativeItem>
 #include <QGraphicsView>
 #include <QRect>
-#include <QVariant>
 
 #include <KWindowSystem>
 
