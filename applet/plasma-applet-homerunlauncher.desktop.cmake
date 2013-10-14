@@ -15,6 +15,7 @@ Name[nl]=Programmastarter Homerun
 Name[pl]=Program uruchamiający Homerun
 Name[pt]=Lançador Homerun
 Name[pt_BR]=Lançador Homerun
+Name[ro]=Lansator Homerun
 Name[ru]=Запуск Homerun
 Name[sk]=Spúšťač Homerun
 Name[sl]=Zaganjalnik Homerun

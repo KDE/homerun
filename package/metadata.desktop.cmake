@@ -15,6 +15,7 @@ Name[nl]=Homerun
 Name[pl]=Homerun
 Name[pt]=Homerun
 Name[pt_BR]=Homerun
+Name[ro]=Homerun
 Name[ru]=Homerun
 Name[sk]=Homerun
 Name[sl]=Homerun
