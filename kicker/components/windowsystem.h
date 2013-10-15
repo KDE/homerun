@@ -24,17 +24,64 @@
 
 class QDeclarativeItem;
 
+class Margins : public QObject
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int left READ left NOTIFY leftChanged)
+    Q_PROPERTY(int top READ top NOTIFY topChanged)
+    Q_PROPERTY(int right READ right NOTIFY rightChanged)
+    Q_PROPERTY(int bottom READ bottom NOTIFY bottomChanged)
+
+    public:
+        Margins(QObject *parent);
+        ~Margins();
+
+        int left() const;
+        void setLeft(int left);
+
+        int top() const;
+        void setTop(int top);
+
+        int right() const;
+        void setRight(int right);
+
+        int bottom() const;
+        void setBottom(int bottom);
+
+    signals:
+        void leftChanged();
+        void topChanged();
+        void rightChanged();
+        void bottomChanged();
+
+    private:
+        int m_left;
+        int m_top;
+        int m_right;
+        int m_bottom;
+};
+
 class WindowSystem : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(QObject* margins READ margins CONSTANT)
 
     public:
         WindowSystem(QObject *parent = 0);
         ~WindowSystem();
 
+        QObject *margins() const;
+
+        Q_INVOKABLE void updateMargins(QDeclarativeItem *item);
+
         Q_INVOKABLE QVariant workArea();
 
-        Q_INVOKABLE QPoint mapToScreen(QDeclarativeItem* item, int x, int y);
+        Q_INVOKABLE QPoint mapToScreen(QDeclarativeItem *item, int x, int y);
+
+    private:
+        Margins *m_margins;
 };
 
 #endif

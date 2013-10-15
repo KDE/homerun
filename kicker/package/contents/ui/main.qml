@@ -31,7 +31,7 @@ Item {
     id: main
 
     property int minimumWidth: frame.width + (theme.defaultFont.mSize.width * 18) + main.spacing + mainRow.anchors.leftMargin + mainRow.anchors.rightMargin
-    property int minimumHeight: 350
+    property int minimumHeight: sourcesList.height + searchField.height + main.spacing + mainRow.anchors.topMargin + mainRow.anchors.bottomMargin
 
     property bool atTopEdge: (plasmoid.location == TopEdge)
 
@@ -53,12 +53,9 @@ Item {
         buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
     }
 
-    function updateMinimumHeight() {
-        minimumHeight = sourcesList.height + searchField.height + searchField.anchors.bottomMargin + main.spacing + mainRow.anchors.topMargin + mainRow.anchors.bottomMargin;
-    }
-
     function showPopup(shown) {
         if (shown) {
+            windowSystem.updateMargins(main);
             justOpenedTimer.start();
             searchField.focus = true;
         } else {
@@ -148,16 +145,15 @@ Item {
 
             anchors {
                 fill: parent
-                margins: 3
-                topMargin: 3
-                rightMargin: 3 //FIXME
-                bottomMargin: 3 // HACK: For whatever reason, Plasma dialogs seem to have some extra bottom margin (theme-independent).
-                leftMargin: 6 // FIXME
+                leftMargin: (windowSystem.margins.left == 0) ? 4 : 1;
+                topMargin: (windowSystem.margins.top == 0) ? 4 : 1;
+                rightMargin: (windowSystem.margins.right == 0) ? 4 : 1;
+                bottomMargin: (windowSystem.margins.bottom == 0) ? 4 : 1;
             }
 
             spacing: main.spacing
 
-            LayoutMirroring.enabled: (Qt.application.layoutDirection == Qt.RightToLeft)
+            LayoutMirroring.enabled: (plasmoid.location == RightEdge) || (Qt.application.layoutDirection == Qt.RightToLeft)
 
             PlasmaCore.FrameSvgItem {
                 id: frame
@@ -248,9 +244,9 @@ Item {
 
                     anchors {
                         top: atTopEdge ? parent.top : undefined
-                        topMargin: atTopEdge ? 8 : 0
+                        topMargin: atTopEdge ? theme.smallIconSize / 2 : 0
                         bottom: atTopEdge ? undefined : parent.bottom
-                        bottomMargin: atTopEdge ? 0: 8
+                        bottomMargin: atTopEdge ? 0 : theme.smallIconSize / 2
                         horizontalCenter: parent.horizontalCenter
                     }
 
@@ -272,7 +268,7 @@ Item {
                 ItemListView {
                     id: sourcesList
 
-                    height: model.count * itemHeight
+                    height: (model == sourcesModel) ? model.count * itemHeight : height
                     width: parent.width
 
                     anchors {
@@ -296,15 +292,13 @@ Item {
                 HomerunFixes.TextField {
                     id: searchField
 
+                    y: atTopEdge ? frame.y : (frame.y + frame.height) - height - 1
+
                     anchors {
-                        top: atTopEdge ? parent.top : undefined
-                        topMargin: atTopEdge ? 3 : 0 // FIXME
-                        bottom: atTopEdge ? undefined : parent.bottom
-                        bottomMargin: atTopEdge ? 0 : 3 // FIXME
                         horizontalCenter: parent.horizontalCenter
                     }
 
-                    width: parent.width - 4 // FIXME
+                    width: parent.width
 
                     clearButtonShown: true
                     placeholderText: i18n("Search...")
@@ -329,6 +323,11 @@ Item {
                         } else if (event.key == Qt.Key_Down) {
                             sourcesList.currentIndex = 0;
                         }
+                    }
+
+                    function appendText(newText) {
+                        focus = true;
+                        text = text + newText;
                     }
                 }
             }

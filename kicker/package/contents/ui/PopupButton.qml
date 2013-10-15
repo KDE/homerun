@@ -70,7 +70,6 @@ Item {
                     plasmoid.hidePopup();
                 } else {
                     plasmoid.showPopup();
-                    main.updateMinimumHeight();
                 }
             }
         }

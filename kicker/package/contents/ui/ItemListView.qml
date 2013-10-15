@@ -127,6 +127,8 @@ FocusScope {
                     } else if (event.key == Qt.Key_Left && dialog != null) {
                         dialog.parent.focus = true;
                         dialog.destroy();
+                    } else if (event.text != "") {
+                        searchField.appendText(event.text);
                     }
                 }
             }

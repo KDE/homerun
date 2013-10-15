@@ -26,6 +26,8 @@ PlasmaCore.Dialog {
 
     property Item listView
 
+    property bool leftOfParent: false
+
     location: Floating
     windowFlags: Qt.WindowStaysOnTopHint
 
@@ -61,6 +63,9 @@ PlasmaCore.Dialog {
 
             if (width > availableWidth) {
                 xPos = pos.x - width - margins.right;
+                leftOfParent = true;
+            } else {
+                leftOfParent = false;
             }
 
             var yPos = pos.y - margins.top;

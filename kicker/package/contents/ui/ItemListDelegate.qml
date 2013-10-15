@@ -92,10 +92,12 @@ PlasmaComponents.ListItem {
                 } else if ((index == currentIndex - 1) && mouse.y < (itemHeight - 6)
                     || (index == currentIndex + 1) && mouse.y > 5) {
 
-                    if (mouse.x < listView.eligibleWidth + 5) {
+                    if ((childDialog != null && childDialog.leftOfParent)
+                        ? mouse.x > listView.eligibleWidth - 5 : mouse.x < listView.eligibleWidth + 5) {
                         updateCurrentItem();
                     }
-                } else if (mouse.x < listView.eligibleWidth) {
+                } else if ((childDialog != null && childDialog.leftOfParent)
+                    ? mouse.x > listView.eligibleWidth : mouse.x < listView.eligibleWidth) {
                     updateCurrentItem();
                 }
 
@@ -124,76 +126,76 @@ PlasmaComponents.ListItem {
         }
     }
 
-    PlasmaCore.IconItem {
-        id: icon
+    Row {
+        anchors.fill: parent
+        anchors.leftMargin: icon.visible ? 0 : 5
+        anchors.rightMargin: 5
 
-        anchors {
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-        }
+        LayoutMirroring.enabled: (Qt.application.layoutDirection == Qt.RightToLeft)
 
-        width: 0
-        height: 0
+        spacing: 5
 
-        visible: false
+        PlasmaCore.IconItem {
+            id: icon
 
-        active: mouseArea.containsMouse
-
-        onSourceChanged: {
-            if (source && valid) {
-                visible = true;
-                width = theme.smallIconSize;
-                height = theme.smallIconSize;
+            anchors {
+                verticalCenter: parent.verticalCenter
             }
+
+            width: 0
+            height: 0
+
+            visible: false
+
+            active: mouseArea.containsMouse
+
+            onSourceChanged: {
+                if (source && valid) {
+                    visible = true;
+                    width = theme.smallIconSize;
+                    height = theme.smallIconSize;
+                }
+            }
+
+            source: model.decoration
         }
 
-        source: model.decoration
-    }
+        Text {
+            width: parent.width - icon.width - (arrow.visible ? arrow.width : 0) - (arrow.visible ? parent.spacing : 0) - (icon.visible ? parent.spacing : 0)
+            height: parent.height
 
-    Text {
-        anchors {
-            top: parent.top
-            left: icon.right
-            leftMargin: 6
-            bottom: parent.bottom
-            right: arrow.left
+            text: model.display
+
+            color: theme.textColor
+            elide: Text.ElideRight
+            verticalAlignment: lineCount > 1 ? Text.AlignTop : Text.AlignVCenter
+            horizontalAlignment: (Qt.application.layoutDirection == Qt.RightToLeft) ? Text.AlignRight : Text.AlignLeft
+            font.capitalization: theme.defaultFont.capitalization
+            font.family: theme.defaultFont.family
+            font.italic: theme.defaultFont.italic
+            font.letterSpacing: theme.defaultFont.letterSpacing
+            font.pointSize: theme.defaultFont.pointSize
+            font.strikeout: theme.defaultFont.strikeout
+            font.underline: theme.defaultFont.underline
+            font.weight: theme.defaultFont.weight
+            font.wordSpacing: theme.defaultFont.wordSpacing
         }
 
-        height: Math.max(paintedHeight, theme.defaultFont.mSize.height*1.6)
+        PlasmaCore.SvgItem {
+            id: arrow
 
-        opacity: enabled? 1 : 0.6
+            anchors {
+                verticalCenter: parent.verticalCenter
+            }
 
-        text: model.display
+            width: theme.smallIconSize
+            height: theme.smallIconSize
 
-        color: theme.textColor
-        elide: Text.ElideRight
-        verticalAlignment: lineCount > 1 ? Text.AlignTop : Text.AlignVCenter
-        font.capitalization: theme.defaultFont.capitalization
-        font.family: theme.defaultFont.family
-        font.italic: theme.defaultFont.italic
-        font.letterSpacing: theme.defaultFont.letterSpacing
-        font.pointSize: theme.defaultFont.pointSize
-        font.strikeout: theme.defaultFont.strikeout
-        font.underline: theme.defaultFont.underline
-        font.weight: theme.defaultFont.weight
-        font.wordSpacing: theme.defaultFont.wordSpacing
-    }
+            visible: (listView.currentIndex == index) && hasChildren
 
-    PlasmaCore.SvgItem {
-        id: arrow
-
-        anchors {
-            right: parent.right
-            verticalCenter: parent.verticalCenter
+            svg: arrows
+            elementId: (Qt.application.layoutDirection == Qt.RightToLeft) ? "left-arrow" : "right-arrow"
         }
-
-        width: theme.smallIconSize
-        height: theme.smallIconSize
-
-        visible: (listView.currentIndex == index) && hasChildren
-
-        svg: arrows
-        elementId: "right-arrow"
     }
 
     HomerunComponents.ActionMenu {

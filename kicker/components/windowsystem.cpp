@@ -26,7 +26,72 @@
 
 #include <Plasma/Plasma>
 
+Margins::Margins(QObject* parent) : QObject(parent)
+, m_left(0)
+, m_top(0)
+, m_right(0)
+, m_bottom(0)
+{
+}
+
+Margins::~Margins()
+{
+}
+
+int Margins::left() const
+{
+    return m_left;
+}
+
+void Margins::setLeft(int left)
+{
+    if (left != m_left) {
+        m_left = left;
+        emit leftChanged();
+    }
+}
+
+int Margins::top() const
+{
+    return m_top;
+}
+
+void Margins::setTop(int top)
+{
+    if (top != m_top) {
+        m_top = top;
+        emit topChanged();
+    }
+}
+
+int Margins::right() const
+{
+    return m_right;
+}
+
+void Margins::setRight(int right)
+{
+    if (right != m_right) {
+        m_right = right;
+        emit rightChanged();
+    }
+}
+
+int Margins::bottom() const
+{
+    return m_bottom;
+}
+
+void Margins::setBottom(int bottom)
+{
+    if (bottom != m_bottom) {
+        m_bottom = bottom;
+        emit bottomChanged();
+    }
+}
+
 WindowSystem::WindowSystem(QObject* parent) : QObject(parent)
+, m_margins(new Margins(this))
 {
 }
 
@@ -34,12 +99,35 @@ WindowSystem::~WindowSystem()
 {
 }
 
+QObject* WindowSystem::margins() const
+{
+    return m_margins;
+}
+
+void WindowSystem::updateMargins(QDeclarativeItem *item)
+{
+    QGraphicsView *view = Plasma::viewFor(item);
+
+    if (!view || !view->parentWidget()) {
+        return;
+    }
+
+    int left, top, right, bottom;
+
+    view->parentWidget()->getContentsMargins(&left, &top, &right, &bottom);
+
+    m_margins->setLeft(left);
+    m_margins->setTop(top);
+    m_margins->setRight(right);
+    m_margins->setBottom(bottom);
+}
+
 QVariant WindowSystem::workArea()
 {
     return KWindowSystem::workArea();
 }
 
-QPoint WindowSystem::mapToScreen(QDeclarativeItem* item, int x, int y)
+QPoint WindowSystem::mapToScreen(QDeclarativeItem *item, int x, int y)
 {
     QPoint pos(x, y);
 
