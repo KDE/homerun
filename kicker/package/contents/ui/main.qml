@@ -95,7 +95,7 @@ Item {
         id: justOpenedTimer
 
         repeat: false
-        interval: 400
+        interval: 600
     }
 
     HomerunComponents.TabModel {
@@ -248,13 +248,13 @@ Item {
                 ItemListView {
                     id: sourcesList
 
-                    height: sourcesModel.count * itemHeight
+                    height: model.count * itemHeight
                     width: parent.width
 
                     anchors.bottom: searchField.top
                     anchors.bottomMargin: main.spacing
 
-                    model: sourcesModel
+                    model: (searchField.text != "") ? allAppsModel : sourcesModel
 
                     Keys.onPressed: {
                         if (event.key == Qt.Key_Down && currentIndex == sourcesModel.count - 1) {
@@ -283,7 +283,7 @@ Item {
 
                     onAccepted: {
                         if (allAppsModel && allAppsModel.count) {
-                            allAppsModel.model.trigger(0, "", null);
+                            allAppsModel.trigger(0, "", null);
                         }
 
                         plasmoid.hidePopup();
