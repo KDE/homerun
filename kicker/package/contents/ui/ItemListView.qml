@@ -44,7 +44,7 @@ FocusScope {
     Timer {
         id: dialogSpawnTimer
 
-        interval: 50
+        interval: 70
         repeat: false
 
         onTriggered: {

@@ -52,9 +52,12 @@ PlasmaComponents.ListItem {
     MouseArea {
         id: mouseArea
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors {
+            left: parent.left
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+        }
+
         height: itemHeight
 
         property int mouseCol
@@ -74,8 +77,6 @@ PlasmaComponents.ListItem {
                 openActionMenu(mouseArea, mouse.x, mouse.y);
             }
         }
-
-
 
         onPositionChanged: {
             //FIXME: correct escape angle calc for right screen edge
@@ -181,8 +182,10 @@ PlasmaComponents.ListItem {
     PlasmaCore.SvgItem {
         id: arrow
 
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors {
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+        }
 
         width: theme.smallIconSize
         height: theme.smallIconSize
@@ -195,6 +198,7 @@ PlasmaComponents.ListItem {
 
     HomerunComponents.ActionMenu {
         id: actionMenu
+
         onActionClicked: {
             actionTriggered(actionId, actionArgument);
         }

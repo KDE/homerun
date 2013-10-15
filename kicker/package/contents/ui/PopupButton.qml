@@ -31,6 +31,7 @@ Item {
         anchors.fill: parent
 
         visible: !main.useCustomButtonImage
+
         source: "homerun"
         active: listener.containsMouse
 

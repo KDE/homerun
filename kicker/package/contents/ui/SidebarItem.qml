@@ -28,8 +28,8 @@ import org.kde.homerun.components 0.1 as HomerunComponents
 DragAndDrop.DragArea {
     id: sidebarItem
 
-    width: theme.mediumIconSize
-    height: theme.mediumIconSize
+    width: parent.width
+    height: width
 
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
@@ -75,6 +75,7 @@ DragAndDrop.DragArea {
 
     HomerunComponents.ActionMenu {
         id: actionMenu
+
         onActionClicked: {
             actionTriggered(actionId, actionArgument);
         }

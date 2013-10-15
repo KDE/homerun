@@ -33,6 +33,8 @@ Item {
     property int minimumWidth: frame.width + (theme.defaultFont.mSize.width * 18) + main.spacing + mainRow.anchors.leftMargin + mainRow.anchors.rightMargin
     property int minimumHeight: 350
 
+    property bool atTopEdge: (plasmoid.location == TopEdge)
+
     property int spacing: 6
 
     property string configFileName: "homerunkickerrc"
@@ -144,20 +146,24 @@ Item {
         Row {
             id: mainRow
 
-            anchors.fill: parent
-            anchors.leftMargin: 6
-            anchors.topMargin: 3
-            anchors.rightMargin: 2
-            anchors.bottomMargin: 4
+            anchors {
+                fill: parent
+                margins: 3
+                topMargin: 3
+                rightMargin: 3 //FIXME
+                bottomMargin: 3 // HACK: For whatever reason, Plasma dialogs seem to have some extra bottom margin (theme-independent).
+                leftMargin: 6 // FIXME
+            }
 
             spacing: main.spacing
 
             LayoutMirroring.enabled: (Qt.application.layoutDirection == Qt.RightToLeft)
 
             PlasmaCore.FrameSvgItem {
-                width: theme.mediumIconSize + 16
-                height: parent.height
                 id: frame
+
+                width: theme.mediumIconSize + theme.smallIconSize
+                height: parent.height
 
                 imagePath: "widgets/listitem"
                 prefix: "normal"
@@ -183,11 +189,15 @@ Item {
                 Flow {
                     id: favorites
 
-                    width: theme.mediumIconSize
+                    width: parent.width - theme.smallIconSize
 
-                    anchors.top: parent.top
-                    anchors.topMargin: 8
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors {
+                        top: atTopEdge ? undefined : parent.top
+                        topMargin: atTopEdge ? 0 : theme.smallIconSize / 2
+                        bottom: atTopEdge ? parent.bottom : undefined
+                        bottomMargin: atTopEdge ? theme.smallIconSize / 2 : 0
+                        horizontalCenter: parent.horizontalCenter
+                    }
 
                     property bool animating: false
 
@@ -213,26 +223,40 @@ Item {
                     }
                 }
 
+                PlasmaCore.SvgItem {
+                    anchors {
+                        top: atTopEdge ? power.bottom : undefined
+                        topMargin: atTopEdge ? main.spacing : 0
+                        bottom: atTopEdge ? undefined : power.top
+                        bottomMargin: atTopEdge ? 0 : 6
+                        horizontalCenter: parent.horizontalCenter
+                    }
+
+                    width: power.width
+                    height: lineSvg.elementSize("horizontal-line").height
+
+                    svg: PlasmaCore.Svg {
+                        id: lineSvg
+                        imagePath: "widgets/line"
+                    }
+
+                    elementId: "horizontal-line"
+                }
+
                 Column {
                     id: power
 
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 8
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors {
+                        top: atTopEdge ? parent.top : undefined
+                        topMargin: atTopEdge ? 8 : 0
+                        bottom: atTopEdge ? undefined : parent.bottom
+                        bottomMargin: atTopEdge ? 0: 8
+                        horizontalCenter: parent.horizontalCenter
+                    }
+
+                    width: parent.width - theme.smallIconSize
 
                     spacing: main.spacing
-
-                    PlasmaCore.SvgItem {
-                        width: parent.width
-                        height: lineSvg.elementSize("horizontal-line").height
-
-                        svg: PlasmaCore.Svg {
-                            id: lineSvg
-                            imagePath: "widgets/line"
-                        }
-
-                        elementId: "horizontal-line"
-                    }
 
                     Repeater {
                         id: powerRepeater
@@ -251,13 +275,19 @@ Item {
                     height: model.count * itemHeight
                     width: parent.width
 
-                    anchors.bottom: searchField.top
-                    anchors.bottomMargin: main.spacing
+                    anchors {
+                        top: atTopEdge ? searchField.bottom : undefined
+                        topMargin: atTopEdge ? main.spacing : 0
+                        bottom: atTopEdge ? undefined : searchField.top
+                        bottomMargin: atTopEdge ? 0 : main.spacing
+                    }
 
                     model: (searchField.text != "") ? allAppsModel : sourcesModel
 
                     Keys.onPressed: {
-                        if (event.key == Qt.Key_Down && currentIndex == sourcesModel.count - 1) {
+                        if (event.key == Qt.Key_Up && currentIndex == 0) {
+                            searchField.focus = true;
+                        } else if (event.key == Qt.Key_Down && currentIndex == sourcesModel.count - 1) {
                             searchField.focus = true;
                         }
                     }
@@ -266,9 +296,13 @@ Item {
                 HomerunFixes.TextField {
                     id: searchField
 
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 3 // FIXME
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors {
+                        top: atTopEdge ? parent.top : undefined
+                        topMargin: atTopEdge ? 3 : 0 // FIXME
+                        bottom: atTopEdge ? undefined : parent.bottom
+                        bottomMargin: atTopEdge ? 0 : 3 // FIXME
+                        horizontalCenter: parent.horizontalCenter
+                    }
 
                     width: parent.width - 4 // FIXME
 
