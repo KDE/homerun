@@ -127,9 +127,10 @@ PlasmaComponents.ListItem {
     }
 
     Row {
-        anchors.fill: parent
-        anchors.leftMargin: icon.visible ? 0 : 5
-        anchors.rightMargin: 5
+        anchors {
+            fill: parent
+            leftMargin: icon.visible ? 0 : 5
+        }
 
         LayoutMirroring.enabled: (Qt.application.layoutDirection == Qt.RightToLeft)
 
