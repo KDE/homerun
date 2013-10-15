@@ -26,4 +26,4 @@ sourceId=FavoriteApps
 
 [Tab0][Source6]
 sourceId=Runner
-whitelist=bookmarks,nepomuksearch,youtube
+whitelist=bookmarks,nepomuksearch
