@@ -130,7 +130,7 @@ Item {
     }
 
     PlasmaCore.FrameSvgItem {
-        id : dummy
+        id : listItemSvg
 
         visible: false
 

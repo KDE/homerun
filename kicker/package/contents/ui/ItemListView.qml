@@ -30,12 +30,32 @@ FocusScope {
     height: itemDialog.parent.childItemListHeight
 
     property Item dialog: null
-    property bool containsMouse: mouseEventListener.containsMouse || (listView.childItemListDialog != null && listView.childItemListDialog.mainItem.containsMouse)
+    property QtObject childDialog: null
+    property int childItemListHeight
+
+    property bool containsMouse: mouseEventListener.containsMouse || (listView.childDialog != null && listView.childDialog.mainItem.containsMouse)
 
     property alias model: listView.model
     property alias currentIndex: listView.currentIndex
+    property alias currentItem: listView.currentItem
 
-    property int itemHeight: Math.max(theme.defaultFont.mSize.height, theme.smallIconSize) + dummy.margins.top + dummy.margins.bottom
+    property int itemHeight: Math.max(theme.defaultFont.mSize.height, theme.smallIconSize) + listItemSvg.margins.top + listItemSvg.margins.bottom
+
+    Timer {
+        id: dialogSpawnTimer
+
+        interval: 50
+        repeat: false
+
+        onTriggered: {
+            if (!plasmoid.popupShowing) {
+                return;
+            }
+
+            childDialog = itemListDialogComponent.createObject(itemList);
+            childDialog.visible = true;
+        }
+    }
 
     QtExtra.MouseEventListener {
         id: mouseEventListener
@@ -55,9 +75,6 @@ FocusScope {
                 id: listView
 
                 property int eligibleWidth: width
-                property int childItemListHeight
-
-                property QtObject childItemListDialog: null
 
                 // HACK: Hack to work around bug in ScrollArea that causes the overflow
                 // deco to be visible when it shouldn't be.
@@ -84,9 +101,9 @@ FocusScope {
                             return;
                         }
 
-                        if (childItemListDialog) {
-                            childItemListDialog.visible = false;
-                            childItemListDialog.destroy();
+                        if (childDialog) {
+                            childDialog.visible = false;
+                            childDialog.delayedDestroy();
                         }
 
                         if (model != undefined && "modelForRow" in model) {
@@ -94,22 +111,21 @@ FocusScope {
                             childItemListHeight = Math.min(model.modelForRow(currentIndex).count * itemHeight, maxHeight);
                         }
 
-                        childItemListDialog = itemListDialogComponent.createObject(listView);
-                        childItemListDialog.visible = true;
-                    } else if (childItemListDialog != null) {
-                        childItemListDialog.visible = false;
-                        childItemListDialog.destroy();
-                        childItemListDialog = null;
+                        dialogSpawnTimer.restart();
+                    } else if (childDialog != null) {
+                        dialogSpawnTimer.stop();
+                        childDialog.visible = false;
+                        childDialog.delayedDestroy();
+                        childDialog = null;
                     }
                 }
 
                 Keys.onPressed: {
-                    if (event.key == Qt.Key_Right && childItemListDialog != null) {
-                        childItemListDialog.mainItem.focus = true;
-                        childItemListDialog.mainItem.currentIndex = 0;
+                    if (event.key == Qt.Key_Right && childDialog != null) {
+                        childDialog.mainItem.focus = true;
+                        childDialog.mainItem.currentIndex = 0;
                     } else if (event.key == Qt.Key_Left && dialog != null) {
-                        //FIXME HACK: Gross topology traversal hack.
-                        dialog.parent.parent.parent.parent.focus = true;
+                        dialog.parent.focus = true;
                         dialog.destroy();
                     }
                 }

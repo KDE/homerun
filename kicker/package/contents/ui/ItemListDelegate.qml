@@ -52,7 +52,10 @@ PlasmaComponents.ListItem {
     MouseArea {
         id: mouseArea
 
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        height: itemHeight
 
         property int mouseCol
 
@@ -72,13 +75,29 @@ PlasmaComponents.ListItem {
             }
         }
 
+
+
         onPositionChanged: {
             //FIXME: correct escape angle calc for right screen edge
-            if (justOpenedTimer.running || hasChildren) {
+            if (justOpenedTimer.running || !hasChildren) {
                 listView.currentIndex = index;
             } else {
                 mouseCol = mouse.x;
-                updateCurrentItemTimer.interval = (mouse.x < listView.eligibleWidth) ? 0 : 50;
+
+                var switchNow = false;
+
+                if (index == currentIndex) {
+                    updateCurrentItem();
+                } else if ((index == currentIndex - 1) && mouse.y < (itemHeight - 6)
+                    || (index == currentIndex + 1) && mouse.y > 5) {
+
+                    if (mouse.x < listView.eligibleWidth + 5) {
+                        updateCurrentItem();
+                    }
+                } else if (mouse.x < listView.eligibleWidth) {
+                    updateCurrentItem();
+                }
+
                 updateCurrentItemTimer.start();
             }
         }
@@ -91,37 +110,39 @@ PlasmaComponents.ListItem {
 
         function updateCurrentItem() {
             listView.currentIndex = index;
-            listView.eligibleWidth = Math.min(width, mouseCol + 5);
+            listView.eligibleWidth = Math.min(width, mouseCol);
         }
 
         Timer {
             id: updateCurrentItemTimer
 
+            interval: 50
             repeat: false
 
             onTriggered: parent.updateCurrentItem()
         }
     }
 
-    HomerunComponents.Image {
+    PlasmaCore.IconItem {
         id: icon
-
-        visible: false
 
         anchors {
             left: parent.left
             verticalCenter: parent.verticalCenter
         }
 
+        width: 0
+        height: 0
+
+        visible: false
+
+        active: mouseArea.containsMouse
+
         onSourceChanged: {
-            if (source) {
+            if (source && valid) {
                 visible = true;
                 width = theme.smallIconSize;
                 height = theme.smallIconSize;
-            } else {
-                visible = false;
-                width = 0;
-                height = 0;
             }
         }
 

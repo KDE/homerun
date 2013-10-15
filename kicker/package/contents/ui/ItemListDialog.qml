@@ -24,6 +24,8 @@ import org.kde.plasma.core 0.1 as PlasmaCore
 PlasmaCore.Dialog {
     id: itemDialog
 
+    property Item listView
+
     location: Floating
     windowFlags: Qt.WindowStaysOnTopHint
 
@@ -37,6 +39,12 @@ PlasmaCore.Dialog {
             itemDialog.parent.model.modelForRow(itemDialog.parent.currentIndex) : undefined
 
         onModelChanged: updatePosition()
+    }
+
+    function delayedDestroy() {
+        var timer = Qt.createQmlObject('import QtQuick 1.1; Timer { onTriggered: itemDialog.destroy() }', itemDialog);
+        timer.interval = 0;
+        timer.start();
     }
 
     function updatePosition() {
