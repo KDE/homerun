@@ -52,36 +52,9 @@ class SourceListModel : public QAbstractListModel
 
     private slots:
         void handleModelDestruction();
-        void handleCountChange();
 
     private:
         QList<QPair<QString, QObject*> > m_sourceList;
-};
-
-class SourceListFilterModel : public QSortFilterProxyModel
-{
-    Q_OBJECT
-
-    Q_PROPERTY(int count READ count NOTIFY countChanged)
-
-    public:
-        SourceListFilterModel(QObject *parent = 0);
-        ~SourceListFilterModel();
-
-        int count() const;
-
-        Q_INVOKABLE void appendSource(const QString& name, QObject* model);
-        Q_INVOKABLE void insertSource(int index, const QString& name, QObject* model);
-        Q_INVOKABLE QObject *modelForRow(int row) const;
-
-    signals:
-        void countChanged();
-
-    protected:
-        bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
-
-    private:
-        SourceListModel* m_sourceListModel;
 };
 
 #endif

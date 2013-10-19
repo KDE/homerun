@@ -43,7 +43,7 @@ PlasmaComponents.ListItem {
             openActionMenu(mouseArea);
         } else if ((event.key == Qt.Key_Enter || event.key == Qt.Key_Return) && !hasChildren) {
             if (!hasChildren) {
-                listView.model.trigger(index, "");
+                listView.model.trigger(index, "", null);
                 plasmoid.hidePopup();
             }
         }
@@ -67,7 +67,7 @@ PlasmaComponents.ListItem {
 
         onClicked: {
             if (!hasChildren) {
-                listView.model.trigger(index, "");
+                listView.model.trigger(index, "", null);
                 plasmoid.hidePopup();
             }
         }

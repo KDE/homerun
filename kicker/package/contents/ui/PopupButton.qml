@@ -20,7 +20,6 @@
 import QtQuick 1.1
 
 import org.kde.plasma.core 0.1 as PlasmaCore
-import org.kde.qtextracomponents 0.1 as QtExtra
 
 Item {
     property bool vertical: (plasmoid.formFactor == Vertical)
@@ -33,7 +32,7 @@ Item {
         visible: !(main.useCustomButtonImage && main.buttonImage)
 
         source: "homerun"
-        active: listener.containsMouse
+        active: mouseArea.containsMouse
 
         onWidthChanged: {
             if (vertical && visible) {
@@ -53,23 +52,6 @@ Item {
                     plasmoid.setMinimumSize(theme.smallIconSize.height.width, parent.width);
                 } else {
                     plasmoid.setMinimumSize(parent.height, theme.smallIconSize.height);
-                }
-            }
-        }
-
-        QtExtra.MouseEventListener
-        {
-            id: listener
-
-            anchors.fill: parent
-
-            hoverEnabled: true
-
-            onClicked: {
-                if (plasmoid.popupShowing) {
-                    plasmoid.hidePopup();
-                } else {
-                    plasmoid.showPopup();
                 }
             }
         }
@@ -107,5 +89,23 @@ Item {
         source: main.buttonImage
         fillMode: Image.PreserveAspectFit
         smooth: true
+    }
+
+    MouseArea
+    {
+        id: mouseArea
+
+        anchors.fill: parent
+
+        hoverEnabled: true
+
+        onClicked: {
+            if (plasmoid.popupShowing) {
+                plasmoid.hidePopup();
+            } else {
+                plasmoid.showPopup();
+                windowSystem.updateMargins(main);
+            }
+        }
     }
 }

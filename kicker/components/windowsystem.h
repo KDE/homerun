@@ -81,6 +81,7 @@ class WindowSystem : public QObject
         Q_INVOKABLE QPoint mapToScreen(QDeclarativeItem *item, int x, int y);
 
     private:
+
         Margins *m_margins;
 };
 

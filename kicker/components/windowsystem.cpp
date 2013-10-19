@@ -28,8 +28,8 @@
 
 Margins::Margins(QObject* parent) : QObject(parent)
 , m_left(0)
-, m_top(0)
-, m_right(0)
+, m_top(4)
+, m_right(4)
 , m_bottom(0)
 {
 }

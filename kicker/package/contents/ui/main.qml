@@ -30,8 +30,13 @@ import org.kde.homerun.fixes 0.1 as HomerunFixes
 Item {
     id: main
 
-    property int minimumWidth: frame.width + (theme.defaultFont.mSize.width * 18) + main.spacing + mainRow.anchors.leftMargin + mainRow.anchors.rightMargin
-    property int minimumHeight: sourcesList.height + searchField.height + main.spacing + mainRow.anchors.topMargin + mainRow.anchors.bottomMargin
+    signal focusChanged()
+
+    property int minimumWidth: frame.width + sourcesList.width + main.spacing + mainRow.anchors.leftMargin + mainRow.anchors.rightMargin
+    property int maximumWidth: minimumWidth
+
+    property int minimumHeight: preferredHeight
+    property int preferredHeight: (sourcesModel.count * sourcesList.itemHeight) + searchField.height + main.spacing + mainRow.anchors.topMargin + mainRow.anchors.bottomMargin
 
     property bool atTopEdge: (plasmoid.location == TopEdge)
 
@@ -40,6 +45,7 @@ Item {
     property string configFileName: "homerunkickerrc"
     property QtObject recentAppsModel
     property QtObject allAppsModel
+    property QtObject runnerModel
 
     property bool useCustomButtonImage
     property string buttonImage
@@ -55,7 +61,6 @@ Item {
 
     function showPopup(shown) {
         if (shown) {
-            windowSystem.updateMargins(main);
             justOpenedTimer.start();
             searchField.focus = true;
         } else {
@@ -108,13 +113,6 @@ Item {
         configFileName: main.configFileName
     }
 
-    PlasmaCore.Svg {
-        id: arrows
-
-        imagePath: "widgets/arrows"
-        size: "16x16"
-    }
-
     HomerunKicker.AppletProxy {
         id: appletProxy
         item: plasmoid.action("configure")
@@ -137,6 +135,21 @@ Item {
         prefix: "normal"
     }
 
+    PlasmaCore.Svg {
+        id: arrows
+
+        imagePath: "widgets/arrows"
+        size: "16x16"
+    }
+
+    PlasmaCore.Svg {
+        id: lineSvg
+        imagePath: "widgets/line"
+
+        property int horLineHeight: lineSvg.elementSize("horizontal-line").height
+        property int vertLineWidth: lineSvg.elementSize("vertical-line").width
+    }
+
     Item {
         anchors.fill: parent
 
@@ -145,10 +158,10 @@ Item {
 
             anchors {
                 fill: parent
-                leftMargin: (windowSystem.margins.left == 0) ? 4 : 1;
-                topMargin: (windowSystem.margins.top == 0) ? 4 : 1;
-                rightMargin: (windowSystem.margins.right == 0) ? 4 : 1;
-                bottomMargin: (windowSystem.margins.bottom == 0) ? 4 : 1;
+                leftMargin: (windowSystem.margins.left == 0 || plasmoid.location == LeftEdge) ? 4 : 1;
+                topMargin: (windowSystem.margins.top == 0 || plasmoid.location == TopEdge) ? 4 : 1;
+                rightMargin: (windowSystem.margins.right == 0 || plasmoid.location == RightEdge) ? 4 : 1;
+                bottomMargin: (windowSystem.margins.bottom == 0 || plasmoid.location == BottomEdge) ? 4 : 1;
             }
 
             spacing: main.spacing
@@ -229,13 +242,9 @@ Item {
                     }
 
                     width: power.width
-                    height: lineSvg.elementSize("horizontal-line").height
+                    height: lineSvg.horLineHeight
 
-                    svg: PlasmaCore.Svg {
-                        id: lineSvg
-                        imagePath: "widgets/line"
-                    }
-
+                    svg: lineSvg
                     elementId: "horizontal-line"
                 }
 
@@ -261,73 +270,205 @@ Item {
                 }
             }
 
-            Item {
+            Row {
                 height: parent.height
-                width: mainRow.width - frame.width - mainRow.spacing
 
-                ItemListView {
-                    id: sourcesList
+                Item {
+                    width: sourcesList.width
+                    height: parent.height
 
-                    height: (model == sourcesModel) ? model.count * itemHeight : height
-                    width: parent.width
+                    ItemListView {
+                        id: sourcesList
 
-                    anchors {
-                        top: atTopEdge ? searchField.bottom : undefined
-                        topMargin: atTopEdge ? main.spacing : 0
-                        bottom: atTopEdge ? undefined : searchField.top
-                        bottomMargin: atTopEdge ? 0 : main.spacing
+                        anchors {
+                            top: atTopEdge ? searchField.bottom : undefined
+                            topMargin: atTopEdge ? main.spacing : 0
+                            bottom: atTopEdge ? undefined : searchField.top
+                            bottomMargin: atTopEdge ? 0 : main.spacing
+                        }
+
+                        height: Math.min(model.count * itemHeight, parent.height - searchField.height - anchors.topMargin - anchors.bottomMargin)
+
+                        model: (searchField.text != "") ? allAppsModel : sourcesModel
+
+                        KeyNavigation.up: searchField
+                        KeyNavigation.down: searchField
+
+                        Keys.onPressed: {
+                            if (!runnerItemsColumns.count) {
+                                return;
+                            }
+
+                            var target = null;
+
+                            if (event.key == Qt.Key_Right) {
+                                target = runnerItemsColumns.itemAt(0).listView;
+                            } else if (event.key == Qt.Key_Left) {
+                                target = runnerItemsColumns.itemAt(runnerItemsColumns.count - 1).listView;
+                            }
+
+                            if (target) {
+                                currentIndex = -1;
+                                target.currentIndex = 0;
+                            }
+                        }
                     }
 
-                    model: (searchField.text != "") ? allAppsModel : sourcesModel
+                    HomerunFixes.TextField {
+                        id: searchField
 
-                    Keys.onPressed: {
-                        if (event.key == Qt.Key_Up && currentIndex == 0) {
-                            searchField.focus = true;
-                        } else if (event.key == Qt.Key_Down && currentIndex == sourcesModel.count - 1) {
-                            searchField.focus = true;
+                        y: atTopEdge ? frame.y : (frame.y + frame.height) - height - 1
+
+                        anchors {
+                            horizontalCenter: parent.horizontalCenter
+                        }
+
+                        width: parent.width
+
+                        clearButtonShown: true
+                        placeholderText: i18n("Search...")
+
+                        onFocusChanged: {
+                            if (focus) {
+                                sourcesList.currentIndex = -1;
+                            }
+                        }
+
+                        onAccepted: {
+                            if (allAppsModel && allAppsModel.count) {
+                                allAppsModel.trigger(0, "", null);
+                            }
+
+                            plasmoid.hidePopup();
+                        }
+
+                        Keys.onPressed: {
+                            if (!sourcesList.model.count) {
+                                return;
+                            }
+
+                            if (event.key == Qt.Key_Up) {
+                                sourcesList.currentIndex = Math.floor(sourcesList.height / sourcesList.itemHeight) - 1;
+                            } else if (event.key == Qt.Key_Down) {
+                                sourcesList.currentIndex = 0;
+                            }
+                        }
+
+                        function appendText(newText) {
+                            focus = true;
+                            text = text + newText;
                         }
                     }
                 }
 
-                HomerunFixes.TextField {
-                    id: searchField
+                Repeater {
+                    id: runnerItemsColumns
 
-                    y: atTopEdge ? frame.y : (frame.y + frame.height) - height - 1
+                    model: runnerModel
 
-                    anchors {
-                        horizontalCenter: parent.horizontalCenter
-                    }
+                    delegate: Item {
+                        property Item listView: itemList
 
-                    width: parent.width
+                        width: lineSvg.vertLineWidth + sourcesList.width + (main.spacing * 2)
+                        height: mainRow.height
 
-                    clearButtonShown: true
-                    placeholderText: i18n("Search...")
+                        PlasmaCore.SvgItem {
+                            id: vertLine
 
-                    onFocusChanged: {
-                        if (focus) {
-                            sourcesList.currentIndex = -1;
+                            anchors {
+                                left: parent.left
+                                leftMargin: main.spacing
+                            }
+
+                            width: lineSvg.vertLineWidth
+                            height: parent.height
+
+                            svg: lineSvg
+                            elementId: "vertical-line"
+                        }
+
+                        PlasmaCore.FrameSvgItem {
+                            id: headerLabel
+
+                            anchors {
+                                left: vertLine.right
+                                leftMargin: main.spacing
+                            }
+
+                            width: itemList.width
+                            height: searchField.height
+
+                            imagePath: "widgets/listitem"
+                            prefix: "normal"
+
+                            Text {
+                                anchors.fill: parent
+                                text: model.display
+
+                                color: theme.textColor
+                                elide: Text.ElideRight
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                font.capitalization: theme.defaultFont.capitalization
+                                font.family: theme.defaultFont.family
+                                font.italic: theme.defaultFont.italic
+                                font.letterSpacing: theme.defaultFont.letterSpacing
+                                font.pointSize: theme.defaultFont.pointSize
+                                font.strikeout: theme.defaultFont.strikeout
+                                font.underline: theme.defaultFont.underline
+                                font.weight: Font.Bold
+                                font.wordSpacing: theme.defaultFont.wordSpacing
+                            }
+                        }
+
+                        ItemListView {
+                            id: itemList
+
+                            anchors {
+                                left: vertLine.right
+                                leftMargin: main.spacing
+                                top: atTopEdge ? headerLabel.bottom : undefined
+                                topMargin: atTopEdge ? main.spacing : 0
+                                bottom: atTopEdge ? undefined : parent.bottom
+                                bottomMargin: atTopEdge ? 0 : Math.max(0, mainRow.height - sourcesList.y - sourcesList.height - itemHeight)
+                            }
+
+                            width: sourcesList.width
+                            height: model ? Math.min(model.count * itemHeight, parent.height - headerLabel.height - anchors.topMargin - anchors.bottomMargin) : 0
+
+                            model: runnerItemsColumns.model.modelForRow(index);
+
+                            Keys.onPressed: {
+                                var target = null;
+
+                                if (event.key == Qt.Key_Right) {
+                                    if (index < (runnerItemsColumns.count - 1)) {
+                                        target = runnerItemsColumns.itemAt(index + 1).listView;
+                                    } else {
+                                        target = sourcesList;
+                                    }
+                                } else if (event.key == Qt.Key_Left) {
+                                    if (index == 0) {
+                                        target = sourcesList;
+                                    } else {
+                                        target = runnerItemsColumns.itemAt(index - 1).listView;
+                                    }
+                                }
+
+                                if (target) {
+                                    currentIndex = -1;
+                                    target.currentIndex = 0;
+                                }
+                            }
                         }
                     }
 
-                    onAccepted: {
-                        if (allAppsModel && allAppsModel.count) {
-                            allAppsModel.trigger(0, "", null);
-                        }
-
-                        plasmoid.hidePopup();
+                    onItemAdded: {
+                        main.minimumWidth = main.minimumWidth + (sourcesList.width + lineSvg.vertLineWidth + (main.spacing * 2));
                     }
 
-                    Keys.onPressed: {
-                        if (event.key == Qt.Key_Up) {
-                            sourcesList.currentIndex = sourcesModel.count - 1;
-                        } else if (event.key == Qt.Key_Down) {
-                            sourcesList.currentIndex = 0;
-                        }
-                    }
-
-                    function appendText(newText) {
-                        focus = true;
-                        text = text + newText;
+                    onItemRemoved: {
+                        main.minimumWidth = main.minimumWidth - (sourcesList.width + lineSvg.vertLineWidth + (main.spacing * 2));
                     }
                 }
             }
@@ -340,7 +481,7 @@ Item {
         value: sourcesList.containsMouse
     }
 
-    HomerunKicker.SourceListFilterModel {
+    HomerunKicker.SourceListModel {
         id: sourcesModel
     }
 
@@ -364,37 +505,31 @@ Item {
             id: sourceDelegateMain
 
             Component.onCompleted: {
-                var sourceFilter = model.model;
                 var sourceName = sourceRegistry.visibleNameForSource(model.sourceId);
 
-                if ("query" in model.model) {
-                    queryBindingComponent.createObject(sourceDelegateMain, {"target": sourceFilter});
-                } else {
-                    sourceFilter = genericFilterComponent.createObject(model.model, {"sourceModel": model.model});
-                }
-
-                if ("modelForRow" in sourceFilter) {
-                    var runner = (model.sourceId == "Runner") ? true : false;
-                    multiModelExpander.createObject(sourceDelegateMain, {"display": sourceName,
-                        "model": sourceFilter, "runner": runner});
+                if ("modelForRow" in model.model) {
+                    queryBindingComponent.createObject(sourceDelegateMain, {"target":  model.model});
 
                     if (model.sourceId == "FilterableInstalledApps") {
+                        queryBindingComponent.createObject(sourceDelegateMain, {"target":  model.model});
+                        multiModelExpander.createObject(sourceDelegateMain, {"display": sourceName,
+                            "model": model.model});
                         model.model.launched.connect(recentAppsModel.addApp);
+                    } else if (model.sourceId == "Runner") {
+                        runnerModel = model.model;
                     }
+                } else if (model.sourceId == "FavoriteApps") {
+                    favoriteAppsRepeater.model = model.model;
                 } else {
-                    if (model.sourceId == "FavoriteApps") {
-                        favoriteAppsRepeater.model = model.model;
-                    } else {
-                        if (model.sourceId == "Power") {
-                            powerRepeater.model = model.model;
-                        } else if (model.sourceId == "RecentApps") {
-                            recentAppsModel = model.model;
-                            model.model.addToDesktop.connect(appletProxy.addToDesktop);
-                            model.model.addToPanel.connect(appletProxy.addToPanel);
-                        }
-
-                        sourcesModel.appendSource(sourceName, sourceFilter);
+                    if (model.sourceId == "Power") {
+                        powerRepeater.model = model.model;
+                    } else if (model.sourceId == "RecentApps") {
+                        recentAppsModel = model.model;
+                        model.model.addToDesktop.connect(appletProxy.addToDesktop);
+                        model.model.addToPanel.connect(appletProxy.addToPanel);
                     }
+
+                    sourcesModel.appendSource(sourceName, model.model);
                 }
             }
         }
@@ -417,7 +552,6 @@ Item {
 
             visible: false
 
-            property bool runner: false
             property string display
 
             delegate: Item { property string display: model.display }
@@ -425,9 +559,7 @@ Item {
             onItemAdded: {
                 var mdl = model.modelForRow(index);
 
-                if (runner) {
-                    sourcesModel.appendSource(item.display, mdl);
-                } else if (index == 0) {
+                if (index == 0) {
                     allAppsModel = mdl;
                 } else {
                     sourcesModel.insertSource(index, item.display, mdl);
@@ -435,47 +567,6 @@ Item {
 
                 mdl.addToDesktop.connect(appletProxy.addToDesktop);
                 mdl.addToPanel.connect(appletProxy.addToPanel);
-            }
-        }
-    }
-
-    Component {
-        id: genericFilterComponent
-
-        HomerunFixes.SortFilterModel {
-            filterRegExp: searchField.text
-            property string name: sourceModel.name
-            property bool canMoveRow: "canMoveRow" in sourceModel ? sourceModel.canMoveRow : false
-            property bool running: "running" in sourceModel ? sourceModel.running : false
-            property QtObject pathModel: "pathModel" in sourceModel ? sourceModel.pathModel : null
-
-            objectName: "SortFilterModel:" + (sourceModel ? sourceModel.objectName : "")
-
-            function trigger(index, actionId, actionArgument) {
-                var sourceIndex = mapRowToSource(index);
-                return sourceModel.trigger(sourceIndex, actionId, actionArgument);
-            }
-
-            function moveRow(from, to) {
-                if (!canMoveRow) {
-                    console.log("moveRow(): source model cannot move rows. This method should not be called.");
-                    return;
-                }
-                var sourceFrom = mapRowToSource(from);
-                var sourceTo = mapRowToSource(to);
-                sourceModel.moveRow(sourceFrom, sourceTo);
-            }
-
-            function setDesktopContainmentMutable(isMutable) {
-                if ("setDesktopContainmentMutable" in sourceModel) {
-                    sourceModel.setDesktopContainmentMutable(isMutable);
-                }
-            }
-
-            function setAppletContainmentMutable(isMutable) {
-                if ("setAppletContainmentMutable" in sourceModel) {
-                    sourceModel.setAppletContainmentMutable(isMutable);
-                }
             }
         }
     }

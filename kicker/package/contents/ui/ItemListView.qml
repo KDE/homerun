@@ -41,6 +41,12 @@ FocusScope {
 
     property int itemHeight: Math.max(theme.defaultFont.mSize.height, theme.smallIconSize) + listItemSvg.margins.top + listItemSvg.margins.bottom
 
+    onFocusChanged: {
+        if (focus) {
+            main.focusChanged();
+        }
+    }
+
     Timer {
         id: dialogSpawnTimer
 
@@ -84,13 +90,27 @@ FocusScope {
 
                 snapMode: ListView.SnapToItem
                 spacing: 0
+                keyNavigationWraps: (dialog != null || itemList != sourcesList)
 
                 model: itemList.model
                 delegate: ItemListDelegate {}
                 highlight: PlasmaComponents.Highlight { anchors.fill: listView.currentItem }
 
                 onModelChanged: {
-                    currentIndex = -1;
+                    if (!model && dialog) {
+                        dialog.destroy();
+                    } else {
+                        currentIndex = -1;
+                    }
+                }
+
+                onCountChanged: {
+                    // HACK: https://bugreports.qt-project.org/browse/QTBUG-20927
+                    // If you read this: This made me want to cry.
+                    for (var i = 0; i < contentItem.children.length; ++i)
+                    {
+                        contentItem.children[i].y = i * itemHeight;
+                    }
                 }
 
                 onCurrentIndexChanged: {
@@ -127,9 +147,19 @@ FocusScope {
                     } else if (event.key == Qt.Key_Left && dialog != null) {
                         dialog.parent.focus = true;
                         dialog.destroy();
-                    } else if (event.text != "") {
+                    } else if (event.key != Qt.Key_Escape && event.text != "") {
                         searchField.appendText(event.text);
                     }
+                }
+
+                function focusChanged() {
+                    if (!itemList.focus && listView.currentIndex != -1 && childDialog == null) {
+                        listView.currentIndex = -1;
+                    }
+                }
+
+                Component.onCompleted: {
+                    main.focusChanged.connect(focusChanged);
                 }
             }
         }

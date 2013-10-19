@@ -33,7 +33,6 @@ void KickerPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<AppletProxy>(uri, 0, 1, "AppletProxy");
     qmlRegisterType<SourceListModel>(uri, 0, 1, "SourceListModel");
-    qmlRegisterType<SourceListFilterModel>(uri, 0, 1, "SourceListFilterModel");
     qmlRegisterType<UrlConverter>(uri, 0, 1, "UrlConverter");
     qmlRegisterType<WindowSystem>(uri, 0, 1, "WindowSystem");
 }
