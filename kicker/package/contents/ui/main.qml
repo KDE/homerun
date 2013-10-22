@@ -47,16 +47,20 @@ Item {
     property QtObject allAppsModel
     property QtObject runnerModel
 
-    property bool useCustomButtonImage
-    property string buttonImage
+    property bool runnerSupport: true
+    property bool useCustomButtonImage: false
+    property string buttonImage: ""
+    property bool alignToBottom: true
 
     property QtObject itemListDialogComponent: Qt.createComponent("ItemListDialog.qml");
 
     property Component compactRepresentation: PopupButton { id: button }
 
     function configChanged() {
+        runnerSupport = plasmoid.readConfig("runnerSupport");
         useCustomButtonImage = plasmoid.readConfig("useCustomButtonImage");
         buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
+        alignToBottom = plasmoid.readConfig("alignToBottom");
     }
 
     function showPopup(shown) {
@@ -287,7 +291,9 @@ Item {
                             bottomMargin: atTopEdge ? 0 : main.spacing
                         }
 
-                        height: Math.min(model.count * itemHeight, parent.height - searchField.height - anchors.topMargin - anchors.bottomMargin)
+                        height: main.alignToBottom ? Math.min(model.count * itemHeight,
+                            parent.height - searchField.height - anchors.topMargin - anchors.bottomMargin)
+                            : parent.height - searchField.height - anchors.topMargin - anchors.bottomMargin
 
                         model: (searchField.text != "") ? allAppsModel : sourcesModel
 
@@ -364,7 +370,7 @@ Item {
                 Repeater {
                     id: runnerItemsColumns
 
-                    model: runnerModel
+                    model: runnerSupport ? runnerModel : null
 
                     delegate: Item {
                         property Item listView: itemList
@@ -434,7 +440,9 @@ Item {
                             }
 
                             width: sourcesList.width
-                            height: model ? Math.min(model.count * itemHeight, parent.height - headerLabel.height - anchors.topMargin - anchors.bottomMargin) : 0
+                            height: model ? (main.alignToBottom ?
+                                Math.min(model.count * itemHeight, parent.height - headerLabel.height - anchors.topMargin - anchors.bottomMargin)
+                                : parent.height - headerLabel.height - anchors.topMargin - anchors.bottomMargin) : 0
 
                             model: runnerItemsColumns.model.modelForRow(index);
 
@@ -508,14 +516,13 @@ Item {
                 var sourceName = sourceRegistry.visibleNameForSource(model.sourceId);
 
                 if ("modelForRow" in model.model) {
-                    queryBindingComponent.createObject(sourceDelegateMain, {"target":  model.model});
-
                     if (model.sourceId == "FilterableInstalledApps") {
                         queryBindingComponent.createObject(sourceDelegateMain, {"target":  model.model});
                         multiModelExpander.createObject(sourceDelegateMain, {"display": sourceName,
                             "model": model.model});
                         model.model.launched.connect(recentAppsModel.addApp);
                     } else if (model.sourceId == "Runner") {
+                        runnerQueryBindingComponent.createObject(sourceDelegateMain, {"target":  model.model});
                         runnerModel = model.model;
                     }
                 } else if (model.sourceId == "FavoriteApps") {
@@ -538,6 +545,15 @@ Item {
         Binding {
             property: "query"
             value: searchField.text
+        }
+    }
+
+    Component {
+        id: runnerQueryBindingComponent
+        Binding {
+            property: "query"
+            value: searchField.text
+            when: main.runnerSupport
         }
     }
 

@@ -149,7 +149,9 @@ QVariant RecentAppsModel::data(const QModelIndex &index, int role) const
                 if (!hasLauncher) {
                     actionList << ActionList::createActionItem(i18n("Add to Task Manager"), "addToTaskManager");
                 }
-            } else if (containment->immutability() == Plasma::Mutable) {
+            }
+
+            if (containment->immutability() == Plasma::Mutable) {
                 actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
             }
         }

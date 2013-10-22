@@ -6,12 +6,18 @@
   <kcfgfile name=""/>
 
   <group name="General">
+    <entry name="runnerSupport" type="Bool">
+      <default>true</default>
+    </entry>
     <entry name="useCustomButtonImage" type="Bool">
       <default>false</default>
     </entry>
     <entry name="buttonImage" type="Url">
       <default></default>
     </entry>
-  </group>
+    <entry name="alignToBottom" type="Bool">
+      <default>true</default>
+    </entry>
+</group>
 
 </kcfg>

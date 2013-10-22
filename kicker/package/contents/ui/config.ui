@@ -6,38 +6,61 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>283</width>
-    <height>84</height>
+    <width>318</width>
+    <height>298</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="margin">
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="kcfg_useCustomButtonImage">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Use custom button image</string>
+      <string>Behavior</string>
      </property>
      <property name="flat">
-      <bool>false</bool>
-     </property>
-     <property name="checkable">
       <bool>true</bool>
      </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-     <layout class="QFormLayout" name="formLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="buttonImageLabel">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="kcfg_runnerSupport">
+        <property name="whatsThis">
+         <string>If this option is enabled, search may display additional columns with search results powered by certain KRunner plugins, such as &quot;Bookmarks&quot; and &quot;Desktop Search&quot;.</string>
+        </property>
         <property name="text">
-         <string>Image:</string>
+         <string>Integrate search with Plasma runners</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Appearance</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="kcfg_useCustomButtonImage">
+        <property name="text">
+         <string>Custom button image:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
        <widget class="KUrlRequester" name="kcfg_buttonImage"/>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QCheckBox" name="kcfg_alignToBottom">
+        <property name="text">
+         <string>Align contents to bottom</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
