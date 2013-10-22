@@ -2,6 +2,8 @@ project(kicker)
 
 set(kicker_SRCS
     appletproxy.cpp
+    fadeouteffect.cpp
+    fadeoutitem.cpp
     kickerplugin.cpp
     sourcelistmodel.cpp
     urlconverter.cpp

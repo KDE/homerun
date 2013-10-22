@@ -20,7 +20,6 @@
 #include "powermodel.h"
 #include "sessionmodel.h"
 
-#include <KDebug>
 #include <KLocale>
 
 namespace Homerun {

@@ -1,6 +1,5 @@
 /*
  *   Copyright 2013 Eike Hein <hein@kde.org>
- *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2, or
@@ -17,26 +16,27 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-// Self
-#include <kickerplugin.h>
+#ifndef FADEOUTEFFECT_H
+#define FADEOUTEFFECT_H
 
-// Local
-#include <appletproxy.h>
-#include <fadeoutitem.h>
-#include <sourcelistmodel.h>
-#include <urlconverter.h>
-#include <windowsystem.h>
+#include <QGraphicsEffect>
 
-// Qt
-#include <QtDeclarative/qdeclarative.h>
-
-void KickerPlugin::registerTypes(const char *uri)
+class FadeOutEffect : public QGraphicsEffect
 {
-    qmlRegisterType<AppletProxy>(uri, 0, 1, "AppletProxy");
-    qmlRegisterType<FadeOutItem>(uri, 0, 1, "FadeOutItem");
-    qmlRegisterType<SourceListModel>(uri, 0, 1, "SourceListModel");
-    qmlRegisterType<UrlConverter>(uri, 0, 1, "UrlConverter");
-    qmlRegisterType<WindowSystem>(uri, 0, 1, "WindowSystem");
-}
+    Q_OBJECT
 
-#include "kickerplugin.moc"
+    public:
+        FadeOutEffect(QObject *parent = 0);
+        ~FadeOutEffect();
+
+        int covered() const;
+        void setCovered(int covered);
+
+    protected:
+        void draw(QPainter *painter);
+
+    private:
+        int m_covered;
+};
+
+#endif

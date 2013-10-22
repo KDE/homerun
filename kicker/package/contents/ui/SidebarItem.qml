@@ -24,6 +24,7 @@ import org.kde.draganddrop 1.0 as DragAndDrop
 import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
+import org.kde.homerun.kicker 0.1 as HomerunKicker
 
 DragAndDrop.DragArea {
     id: sidebarItem
@@ -33,6 +34,8 @@ DragAndDrop.DragArea {
 
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
+
+    property bool edgeItem: (y < parent.height && y + height > parent.height)
 
     property Item repeater
     property int itemIndex: model.index
@@ -64,14 +67,19 @@ DragAndDrop.DragArea {
         }
     }
 
-    PlasmaCore.IconItem {
+    HomerunKicker.FadeOutItem {
         anchors.fill: parent
 
-        active: listener.containsMouse
+        covered: edgeItem ? (sidebarItem.y + height - sidebarItem.parent.height) : 0
 
-        source: model.decoration
+        PlasmaCore.IconItem {
+            anchors.fill: parent
+
+            active: listener.containsMouse
+
+            source: model.decoration
+        }
     }
-
 
     HomerunComponents.ActionMenu {
         id: actionMenu

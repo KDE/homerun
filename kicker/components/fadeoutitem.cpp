@@ -1,6 +1,5 @@
 /*
  *   Copyright 2013 Eike Hein <hein@kde.org>
- *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2, or
@@ -17,26 +16,44 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-// Self
-#include <kickerplugin.h>
+#include "fadeoutitem.h"
+#include "fadeouteffect.h"
 
-// Local
-#include <appletproxy.h>
-#include <fadeoutitem.h>
-#include <sourcelistmodel.h>
-#include <urlconverter.h>
-#include <windowsystem.h>
+#include <QGraphicsOpacityEffect>
 
-// Qt
-#include <QtDeclarative/qdeclarative.h>
+#include <KDebug>
 
-void KickerPlugin::registerTypes(const char *uri)
+FadeOutItem::FadeOutItem(QDeclarativeItem *parent) : QDeclarativeItem(parent)
 {
-    qmlRegisterType<AppletProxy>(uri, 0, 1, "AppletProxy");
-    qmlRegisterType<FadeOutItem>(uri, 0, 1, "FadeOutItem");
-    qmlRegisterType<SourceListModel>(uri, 0, 1, "SourceListModel");
-    qmlRegisterType<UrlConverter>(uri, 0, 1, "UrlConverter");
-    qmlRegisterType<WindowSystem>(uri, 0, 1, "WindowSystem");
+    setFlag(QDeclarativeItem::ItemHasNoContents, false);
 }
 
-#include "kickerplugin.moc"
+FadeOutItem::~FadeOutItem()
+{
+}
+
+int FadeOutItem::covered() const
+{
+    if (graphicsEffect()) {
+        return static_cast<FadeOutEffect *>(graphicsEffect())->covered();
+    }
+
+    return 0;
+}
+
+void FadeOutItem::setCovered(int covered)
+{
+    if (graphicsEffect() && covered == 0) {
+        setGraphicsEffect(0);
+    }
+
+    if (covered > 0) {
+        if (!graphicsEffect()) {
+            setGraphicsEffect(new FadeOutEffect());
+        }
+
+        static_cast<FadeOutEffect *>(graphicsEffect())->setCovered(covered);
+    }
+}
+
+#include "fadeoutitem.moc"

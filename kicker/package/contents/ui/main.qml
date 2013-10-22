@@ -205,14 +205,16 @@ Item {
                     width: parent.width - theme.smallIconSize
 
                     anchors {
-                        top: atTopEdge ? undefined : parent.top
-                        topMargin: atTopEdge ? 0 : theme.smallIconSize / 2
-                        bottom: atTopEdge ? parent.bottom : undefined
-                        bottomMargin: atTopEdge ? theme.smallIconSize / 2 : 0
+                        top: atTopEdge ? sidebarSeparator.bottom : parent.top
+                        topMargin: atTopEdge ? 3 : theme.smallIconSize / 2
+                        bottom: atTopEdge ? parent.bottom : sidebarSeparator.top
+                        bottomMargin: atTopEdge ? theme.smallIconSize / 2 : 3
                         horizontalCenter: parent.horizontalCenter
                     }
 
                     property bool animating: false
+
+                    clip: true
 
                     move: Transition {
                         SequentialAnimation {
@@ -237,6 +239,8 @@ Item {
                 }
 
                 PlasmaCore.SvgItem {
+                    id: sidebarSeparator
+
                     anchors {
                         top: atTopEdge ? power.bottom : undefined
                         topMargin: atTopEdge ? main.spacing : 0
