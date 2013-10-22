@@ -593,7 +593,7 @@ Item {
         plasmoid.aspectRatioMode = IgnoreAspectRatio;
 
         updateSvgMetrics();
-        plasmoid.theme.themeChanged.connect(updateSvgMetrics);
+        theme.themeChanged.connect(updateSvgMetrics);
 
         var data = new Object;
         data["image"] = "homerun";
