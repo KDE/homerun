@@ -129,7 +129,7 @@ PlasmaComponents.ListItem {
     Row {
         anchors {
             fill: parent
-            leftMargin: icon.visible ? 0 : 5
+            leftMargin: icon.visible ? 2 : 5
         }
 
         LayoutMirroring.enabled: (Qt.application.layoutDirection == Qt.RightToLeft)
@@ -162,7 +162,7 @@ PlasmaComponents.ListItem {
         }
 
         Text {
-            width: parent.width - icon.width - (arrow.visible ? arrow.width : 0) - (arrow.visible ? parent.spacing : 0) - (icon.visible ? parent.spacing : 0)
+            width: parent.width - icon.width - icon.anchors.leftMargin - (arrow.visible ? arrow.width : 0) - (arrow.visible ? parent.spacing : 0) - (icon.visible ? parent.spacing : 0)
             height: parent.height
 
             text: model.display
