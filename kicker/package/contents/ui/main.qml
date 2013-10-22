@@ -172,7 +172,7 @@ Item {
                 fill: parent
                 leftMargin: 4;
                 topMargin: (plasmoid.location == TopEdge) ? 3 : 1;
-                rightMargin: (plasmoid.location == RightEdge) ? 3 : 0;
+                rightMargin: (plasmoid.location == RightEdge) ? 3 : 1;
                 bottomMargin: (plasmoid.location == BottomEdge) ? 3 : 1;
             }
 
