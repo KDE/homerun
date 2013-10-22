@@ -104,7 +104,6 @@ Item {
                 plasmoid.hidePopup();
             } else {
                 plasmoid.showPopup();
-                windowSystem.updateMargins(main);
             }
         }
     }

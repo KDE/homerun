@@ -34,8 +34,10 @@ Item {
 
     property int minimumWidth: frame.width + sourcesList.width + main.spacing + mainRow.anchors.leftMargin + mainRow.anchors.rightMargin
     property int maximumWidth: minimumWidth
+    property int preferredWidth: minimumWidth
 
     property int minimumHeight: preferredHeight
+    property int maximumHeight: windowSystem.workArea().height
     property int preferredHeight: (sourcesModel.count * sourcesList.itemHeight) + searchField.height + main.spacing + mainRow.anchors.topMargin + mainRow.anchors.bottomMargin
 
     property bool atTopEdge: (plasmoid.location == TopEdge)
@@ -65,6 +67,7 @@ Item {
 
     function showPopup(shown) {
         if (shown) {
+            maximumHeight = windowSystem.workArea().height;
             justOpenedTimer.start();
             searchField.focus = true;
         } else {
@@ -162,10 +165,10 @@ Item {
 
             anchors {
                 fill: parent
-                leftMargin: (windowSystem.margins.left == 0 || plasmoid.location == LeftEdge) ? 4 : 1;
-                topMargin: (windowSystem.margins.top == 0 || plasmoid.location == TopEdge) ? 4 : 1;
-                rightMargin: (windowSystem.margins.right == 0 || plasmoid.location == RightEdge) ? 4 : 1;
-                bottomMargin: (windowSystem.margins.bottom == 0 || plasmoid.location == BottomEdge) ? 4 : 1;
+                leftMargin: 4;
+                topMargin: (plasmoid.location == TopEdge) ? 3 : 1;
+                rightMargin: (plasmoid.location == RightEdge) ? 3 : 0;
+                bottomMargin: (plasmoid.location == BottomEdge) ? 3 : 1;
             }
 
             spacing: main.spacing
