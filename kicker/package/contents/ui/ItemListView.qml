@@ -58,6 +58,8 @@ FocusScope {
                 return;
             }
 
+            console.log("spawn");
+
             childDialog = itemListDialogComponent.createObject(itemList);
             childDialog.visible = true;
         }

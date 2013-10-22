@@ -32,7 +32,7 @@ Item {
 
     signal focusChanged()
 
-    property int minimumWidth: frame.width + sourcesList.width + main.spacing + mainRow.anchors.leftMargin + mainRow.anchors.rightMargin
+    property int minimumWidth: mainRow.implicitWidth + mainRow.anchors.leftMargin + mainRow.anchors.rightMargin
     property int maximumWidth: minimumWidth
     property int preferredWidth: minimumWidth
 
@@ -63,6 +63,11 @@ Item {
         useCustomButtonImage = plasmoid.readConfig("useCustomButtonImage");
         buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
         alignToBottom = plasmoid.readConfig("alignToBottom");
+    }
+
+    function updateSvgMetrics() {
+        lineSvg.horLineHeight = lineSvg.elementSize("horizontal-line").height;
+        lineSvg.vertLineWidth = lineSvg.elementSize("vertical-line").width;
     }
 
     function showPopup(shown) {
@@ -153,8 +158,8 @@ Item {
         id: lineSvg
         imagePath: "widgets/line"
 
-        property int horLineHeight: lineSvg.elementSize("horizontal-line").height
-        property int vertLineWidth: lineSvg.elementSize("vertical-line").width
+        property int horLineHeight
+        property int vertLineWidth
     }
 
     Item {
@@ -477,14 +482,6 @@ Item {
                             }
                         }
                     }
-
-                    onItemAdded: {
-                        main.minimumWidth = main.minimumWidth + (sourcesList.width + lineSvg.vertLineWidth + (main.spacing * 2));
-                    }
-
-                    onItemRemoved: {
-                        main.minimumWidth = main.minimumWidth - (sourcesList.width + lineSvg.vertLineWidth + (main.spacing * 2));
-                    }
                 }
             }
         }
@@ -594,6 +591,9 @@ Item {
         plasmoid.addEventListener ('ConfigChanged', configChanged);
         plasmoid.popupEvent.connect(showPopup);
         plasmoid.aspectRatioMode = IgnoreAspectRatio;
+
+        updateSvgMetrics();
+        plasmoid.theme.themeChanged.connect(updateSvgMetrics);
 
         var data = new Object;
         data["image"] = "homerun";
