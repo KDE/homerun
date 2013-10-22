@@ -53,7 +53,11 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="KUrlRequester" name="kcfg_buttonImage"/>
+       <widget class="KUrlRequester" name="kcfg_buttonImage">
+        <property name="filter">
+         <string>*.jpg *.png *.xpm *.gif *.webp</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0" colspan="2">
        <widget class="QCheckBox" name="kcfg_alignToBottom">
