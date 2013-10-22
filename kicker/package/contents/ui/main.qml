@@ -530,6 +530,7 @@ Item {
                 } else {
                     if (model.sourceId == "Power") {
                         powerRepeater.model = model.model;
+                        return;
                     } else if (model.sourceId == "RecentApps") {
                         recentAppsModel = model.model;
                     }

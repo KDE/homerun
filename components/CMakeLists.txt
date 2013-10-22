@@ -29,6 +29,7 @@ set(components_SRCS
     sources/installedapps/installedappsconfigurationwidget.cpp
     sources/installedapps/installedappsmodel.cpp
     sources/power/powermodel.cpp
+    sources/power/combinedsessionpowermodel.cpp
     sources/recentapps/recentappsmodel.cpp
     sources/runners/querymatchmodel.cpp
     sources/runners/singlerunnermodel.cpp

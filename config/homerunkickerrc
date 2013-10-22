@@ -16,10 +16,10 @@ sourceId=FilterableInstalledApps
 sourceId=RecentDocuments
 
 [Tab0][Source3]
-sourceId=Session
+sourceId=Power
 
 [Tab0][Source4]
-sourceId=Power
+sourceId=CombinedSessionPower
 
 [Tab0][Source5]
 sourceId=FavoriteApps

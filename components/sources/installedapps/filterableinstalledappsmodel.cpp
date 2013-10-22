@@ -48,8 +48,6 @@ InstalledAppsFilterModel::InstalledAppsFilterModel(const QString &entryPath, con
     connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SIGNAL(countChanged()));
 
     connect(m_installedAppsModel, SIGNAL(launched(QString)), this, SIGNAL(launched(QString)));
-    connect(m_installedAppsModel, SIGNAL(addToDesktop(QString)), this, SIGNAL(addToDesktop(QString)));
-    connect(m_installedAppsModel, SIGNAL(addToPanel(QString)), this, SIGNAL(addToPanel(QString)));
 }
 
 InstalledAppsFilterModel::~InstalledAppsFilterModel()
