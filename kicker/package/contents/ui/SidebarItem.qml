@@ -92,15 +92,6 @@ DragAndDrop.DragArea {
     function fillActionMenu(actionMenu) {
         // Accessing actionList can be a costly operation, so we don't
         // access it until we need the menu
-
-        if ("setDesktopContainmentMutable" in model) {
-            modelsetDesktopContainmentMutable(appletProxy.desktopContainmentMutable());
-        }
-
-        if ("setAppletContainmentMutable" in model) {
-            modelsetAppletContainmentMutable(appletProxy.appletContainmentMutable());
-        }
-
         var lst = model.hasActionList ? model.actionList : [];
         var action = createFavoriteAction();
         if (action) {

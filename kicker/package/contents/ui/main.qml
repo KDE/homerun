@@ -525,8 +525,6 @@ Item {
                         powerRepeater.model = model.model;
                     } else if (model.sourceId == "RecentApps") {
                         recentAppsModel = model.model;
-                        model.model.addToDesktop.connect(appletProxy.addToDesktop);
-                        model.model.addToPanel.connect(appletProxy.addToPanel);
                     }
 
                     sourcesModel.appendSource(sourceName, model.model);
@@ -564,9 +562,6 @@ Item {
                 } else {
                     sourcesModel.insertSource(index, item.display, mdl);
                 }
-
-                mdl.addToDesktop.connect(appletProxy.addToDesktop);
-                mdl.addToPanel.connect(appletProxy.addToPanel);
             }
         }
     }

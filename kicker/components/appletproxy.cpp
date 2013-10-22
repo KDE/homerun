@@ -45,63 +45,13 @@ void AppletProxy::setItem(QObject *item)
     m_applet = static_cast<Plasma::PopupApplet *>(item->parent()->parent());
 }
 
-bool AppletProxy::desktopContainmentMutable() const
+QObject *AppletProxy::containment() const
 {
-    if (m_applet && m_applet->containment()) {
-        Plasma::Containment *desktop = m_applet->containment()->corona()->containmentForScreen(m_applet->containment()->screen());
-
-        if (desktop) {
-            return desktop->immutability() == Plasma::Mutable;
-        }
+    if (m_applet) {
+        return m_applet->containment();
     }
 
-    return false;
-}
-
-bool AppletProxy::appletContainmentMutable() const
-{
-    if (m_applet && m_applet->containment()) {
-        return m_applet->containment()->immutability() == Plasma::Mutable;
-    }
-
-    return false;
-}
-
-void AppletProxy::addToDesktop(const QString &storageId)
-{
-    if (!m_applet) {
-        return;
-    }
-
-    Plasma::Containment *desktop = m_applet->containment()->corona()->containmentForScreen(m_applet->containment()->screen());
-    KService::Ptr service = KService::serviceByStorageId(storageId);
-
-    if (!desktop || !service) {
-        return;
-    }
-
-    if (desktop->metaObject()->indexOfSlot("addUrls(KUrl::List)") != -1) {
-        QMetaObject::invokeMethod(desktop, "addUrls",
-        Qt::DirectConnection, Q_ARG(KUrl::List, KUrl::List(service->entryPath())));
-    } else {
-        desktop->addApplet("icon", QVariantList() << service->entryPath());
-    }
-}
-
-void AppletProxy::addToPanel(const QString &storageId)
-{
-    if (!m_applet) {
-        return;
-    }
-
-    KService::Ptr service = KService::serviceByStorageId(storageId);
-
-    if (service) {
-        // move it to the middle of the panel
-        QRectF rect(m_applet->containment()->geometry().width() / 2, 0, 150,
-            m_applet->containment()->boundingRect().height());
-        m_applet->containment()->addApplet("icon", QVariantList() << service->entryPath(), rect);
-    }
+    return 0;
 }
 
 #include "appletproxy.moc"

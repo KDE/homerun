@@ -30,19 +30,16 @@ class AppletProxy : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QObject* item READ item WRITE setItem)
+    Q_PROPERTY(QObject* containment READ containment)
 
     public:
         AppletProxy(QObject *parent = 0);
         ~AppletProxy();
 
-        QObject* item() const;
+        QObject *item() const;
         void setItem(QObject* item);
 
-        Q_INVOKABLE bool desktopContainmentMutable() const;
-        Q_INVOKABLE bool appletContainmentMutable() const;
-
-        Q_INVOKABLE void addToDesktop(const QString &storageId);
-        Q_INVOKABLE void addToPanel(const QString &storageId);
+        QObject *containment() const;
 
     private:
         Plasma::PopupApplet *m_applet;

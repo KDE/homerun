@@ -161,6 +161,10 @@ FocusScope {
                 Component.onCompleted: {
                     main.focusChanged.connect(focusChanged);
                 }
+
+                Component.onDestruction: {
+                    main.focusChanged.disconnect(focusChanged);
+                }
             }
         }
     }

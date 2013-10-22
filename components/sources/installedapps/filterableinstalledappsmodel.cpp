@@ -56,6 +56,16 @@ InstalledAppsFilterModel::~InstalledAppsFilterModel()
 {
 }
 
+QObject *InstalledAppsFilterModel::containment() const
+{
+    return m_installedAppsModel->containment();
+}
+
+void InstalledAppsFilterModel::setContainment(QObject *containment)
+{
+    m_installedAppsModel->setContainment(containment);
+}
+
 QString InstalledAppsFilterModel::name() const
 {
     return m_installedAppsModel->name();
@@ -89,16 +99,6 @@ bool InstalledAppsFilterModel::trigger(int row, const QString &actionId, const Q
     const QModelIndex &idx = index(row, 0);
     const QModelIndex &sourceIndex = mapToSource(idx);
     return m_installedAppsModel->trigger(sourceIndex.row(), actionId, actionArgument);
-}
-
-void InstalledAppsFilterModel::setDesktopContainmentMutable(bool isMutable)
-{
-    m_installedAppsModel->setDesktopContainmentMutable(isMutable);
-}
-
-void InstalledAppsFilterModel::setAppletContainmentMutable(bool isMutable)
-{
-    m_installedAppsModel->setAppletContainmentMutable(isMutable);
 }
 
 SideBarModel::SideBarModel(FilterableInstalledAppsModel *parent)

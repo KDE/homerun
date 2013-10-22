@@ -219,12 +219,8 @@ PlasmaComponents.ListItem {
         // Accessing actionList can be a costly operation, so we don't
         // access it until we need the menu
 
-        if ("setDesktopContainmentMutable" in listView.model) {
-            listView.model.setDesktopContainmentMutable(appletProxy.desktopContainmentMutable());
-        }
-
-        if ("setAppletContainmentMutable" in listView.model) {
-            listView.model.setAppletContainmentMutable(appletProxy.appletContainmentMutable());
+        if ("containment" in listView.model) {
+            listView.model.containment = appletProxy.containment;
         }
 
         var lst = model.hasActionList ? model.actionList : [];

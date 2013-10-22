@@ -29,14 +29,16 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <KRun>
 #include <KService>
 
+#include <Plasma/Containment>
+#include <Plasma/Corona>
+
 namespace Homerun {
 
 //- RecentAppsModel ------------------------------------------------------------
 RecentAppsModel::RecentAppsModel(const KConfigGroup &group, QObject *parent)
 : QAbstractListModel(parent)
 , m_configGroup(group)
-, m_desktopContainmentMutable(false)
-, m_appletContainmentMutable(false)
+, m_containment(0)
 {
     QHash<int, QByteArray> roles;
     roles.insert(Qt::DisplayRole, "display");
@@ -60,6 +62,16 @@ RecentAppsModel::RecentAppsModel(const KConfigGroup &group, QObject *parent)
 
 RecentAppsModel::~RecentAppsModel()
 {
+}
+
+QObject *RecentAppsModel::containment() const
+{
+    return m_containment;
+}
+
+void RecentAppsModel::setContainment(QObject *containment)
+{
+    m_containment = containment;
 }
 
 int RecentAppsModel::count() const
@@ -112,14 +124,32 @@ QVariant RecentAppsModel::data(const QModelIndex &index, int role) const
                 && qApp->property("appletContainmentMutable").toBool()) {
                 actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
             }
-        }
+        } else if (m_containment) {
+            Plasma::Containment *containment = static_cast<Plasma::Containment *>(m_containment);
+            Plasma::Containment *desktop = containment->corona()->containmentForScreen(containment->screen());
 
-        if (qApp->applicationName().contains(QLatin1String("plasma-desktop"))) {
-            if (m_desktopContainmentMutable) {
+            if (desktop && desktop->immutability() == Plasma::Mutable) {
                 actionList << ActionList::createActionItem(i18n("Add to Desktop"), "addToDesktop");
             }
 
-            if (m_appletContainmentMutable) {
+            QObject* taskManager = 0;
+
+            foreach(QObject* applet, containment->applets()) {
+                if (applet->metaObject()->indexOfSlot("hasLauncher(QString)") != -1) {
+                    taskManager = applet;
+                }
+            }
+
+            if (taskManager) {
+                bool hasLauncher = false;
+
+                QMetaObject::invokeMethod(taskManager, "hasLauncher", Qt::DirectConnection,
+                    Q_RETURN_ARG(bool, hasLauncher), Q_ARG(QString, storageId));
+
+                if (!hasLauncher) {
+                    actionList << ActionList::createActionItem(i18n("Add to Task Manager"), "addToTaskManager");
+                }
+            } else if (containment->immutability() == Plasma::Mutable) {
                 actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
             }
         }
@@ -199,16 +229,39 @@ bool RecentAppsModel::trigger(int row, const QString &actionId, const QVariant &
                     : qApp->property("appletContainmentId").toUInt();
                 return QMetaObject::invokeMethod(adaptor.value<QObject *>(), actionId.toLocal8Bit(),
                     Qt::DirectConnection, Q_ARG(uint, containmentId), Q_ARG(QString, storageId));
-            }
+            } else if (m_containment) {
+                Plasma::Containment *containment = static_cast<Plasma::Containment *>(m_containment);
+                KService::Ptr service = KService::serviceByStorageId(storageId);
 
-            if (qApp->applicationName() == "plasma-desktop") {
-                if (actionId == "addToDesktop") {
-                    emit addToDesktop(storageId);
-                } else {
-                    emit addToPanel(storageId);
+                if (actionId == "addToDesktop" && service) {
+                    Plasma::Containment *desktop = containment->corona()->containmentForScreen(containment->screen());
+
+                    if (desktop) {
+                        if (desktop->metaObject()->indexOfSlot("addUrls(KUrl::List)") != -1) {
+                            QMetaObject::invokeMethod(desktop, "addUrls",
+                            Qt::DirectConnection, Q_ARG(KUrl::List, KUrl::List(service->entryPath())));
+                        } else {
+                            desktop->addApplet("icon", QVariantList() << service->entryPath());
+                        }
+                    }
+                } else if (actionId == "addToPanel" && service) {
+                    QRectF rect(containment->geometry().width() / 2, 0, 150,
+                        containment->boundingRect().height());
+                    containment->addApplet("icon", QVariantList() << service->entryPath(), rect);
+                } else if (actionId == "addToTaskManager") {
+                    QObject* taskManager = 0;
+
+                    foreach(QObject* applet, containment->applets()) {
+                        if (applet->metaObject()->indexOfSlot("addLauncher(QString)") != -1) {
+                            taskManager = applet;
+                        }
+                    }
+
+                    if (taskManager) {
+                        QMetaObject::invokeMethod(taskManager, "addLauncher", Qt::DirectConnection,
+                            Q_ARG(QString, storageId));
+                    }
                 }
-
-                return true;
             }
         }
     } else {
@@ -228,16 +281,6 @@ bool RecentAppsModel::trigger(int row, const QString &actionId, const QVariant &
     }
 
     return false;
-}
-
-void RecentAppsModel::setDesktopContainmentMutable(bool isMutable)
-{
-    m_desktopContainmentMutable = isMutable;
-}
-
-void RecentAppsModel::setAppletContainmentMutable(bool isMutable)
-{
-    m_appletContainmentMutable = isMutable;
 }
 
 QString RecentAppsModel::name() const

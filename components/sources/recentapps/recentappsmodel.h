@@ -36,6 +36,7 @@ class RecentAppsModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(QObject* containment READ containment WRITE setContainment)
 
     public:
         enum Roles {
@@ -56,22 +57,19 @@ class RecentAppsModel : public QAbstractListModel
 
         Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
-        Q_INVOKABLE void setDesktopContainmentMutable(bool isMutable);
-        Q_INVOKABLE void setAppletContainmentMutable(bool isMutable);
+        QObject *containment() const;
+        void setContainment(QObject *containment);
 
         QString name() const;
 
     Q_SIGNALS:
         void countChanged();
-        void addToDesktop(const QString& storageId);
-        void addToPanel(const QString& storageId);
 
     private:
         QList<QString> m_storageIdList;
         KConfigGroup m_configGroup;
 
-        bool m_desktopContainmentMutable;
-        bool m_appletContainmentMutable;
+        QObject *m_containment;
 };
 
 class RecentAppsSource : public AbstractSource

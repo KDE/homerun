@@ -89,6 +89,8 @@ public:
     bool trigger(const QString &actionId = QString(), const QVariant &actionArgument = QVariant()); // reimp;
     QString favoriteId() const; // reimp
 
+    KService::Ptr service() const;
+
 private:
     InstalledAppsModel *m_model;
     KService::Ptr m_service;
@@ -115,6 +117,7 @@ class InstalledAppsModel : public QAbstractListModel
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QObject* pathModel READ pathModel CONSTANT)
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(QObject* containment READ containment WRITE setContainment)
 
 public:
     enum Roles {
@@ -134,8 +137,8 @@ public:
 
     Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
-    Q_INVOKABLE void setDesktopContainmentMutable(bool isMutable);
-    Q_INVOKABLE void setAppletContainmentMutable(bool isMutable);
+    QObject *containment() const;
+    void setContainment(QObject *containment);
 
     QString name() const;
 
@@ -160,8 +163,7 @@ private:
     QString m_installer;
     QString m_arguments;
 
-    bool m_desktopContainmentMutable;
-    bool m_appletContainmentMutable;
+    QObject *m_containment;
 
     friend class GroupNode;
     friend class AppNode;

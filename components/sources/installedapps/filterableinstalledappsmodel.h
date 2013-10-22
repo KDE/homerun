@@ -30,6 +30,10 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 // KDE
 #include <KServiceGroup>
 
+namespace Plasma {
+    class Containment;
+}
+
 namespace Homerun {
 
 class InstalledAppsModel;
@@ -41,6 +45,7 @@ class InstalledAppsFilterModel : public QSortFilterProxyModel
     Q_PROPERTY(bool hidden READ hidden WRITE setHidden NOTIFY hiddenChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(QObject* containment READ containment WRITE setContainment)
 
 public:
     InstalledAppsFilterModel(const QString &entryPath, const QString &installer, QObject *parent = 0);
@@ -50,8 +55,8 @@ public:
 
     Q_INVOKABLE bool trigger(int row, const QString &actionId = QString(), const QVariant &actionArgument = QVariant());
 
-    Q_INVOKABLE void setDesktopContainmentMutable(bool isMutable);
-    Q_INVOKABLE void setAppletContainmentMutable(bool isMutable);
+    QObject *containment() const;
+    void setContainment(QObject *containment);
 
     QString name() const;
 
