@@ -184,7 +184,7 @@ void RecentAppsModel::addApp(const QString& storageId, bool sync)
         }
     }
 
-    if (index > 0 && sync) {
+    if (sync) {
         m_configGroup.writeEntry("RecentApps", m_storageIdList);
         m_configGroup.config()->sync();
     }
