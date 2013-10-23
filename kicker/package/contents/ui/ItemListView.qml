@@ -49,9 +49,9 @@ FocusScope {
 
     onContainsMouseChanged: {
         if (!containsMouse) {
-            dialogCloseTimer.start();
+            resetIndexTimer.start();
         } else {
-            dialogCloseTimer.stop();
+            resetIndexTimer.stop();
         }
     }
 
@@ -72,13 +72,15 @@ FocusScope {
     }
 
     Timer {
-        id: dialogCloseTimer
+        id: resetIndexTimer
 
-        interval: 150
+        interval: (dialog != null) ? 50 : 150
         repeat: false
 
         onTriggered: {
-            currentIndex = -1;
+            if (focus) {
+                currentIndex = -1;
+            }
         }
     }
 
