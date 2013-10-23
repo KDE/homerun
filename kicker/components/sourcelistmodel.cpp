@@ -87,7 +87,7 @@ void SourceListModel::insertSource(int index, const QString& name, QObject* mode
 
 QObject* SourceListModel::modelForRow(int row) const
 {
-    if (row < m_sourceList.count()) {
+    if (row >= 0 && row < m_sourceList.count()) {
         return m_sourceList.at(row).second;
     }
 

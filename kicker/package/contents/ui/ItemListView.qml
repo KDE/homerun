@@ -96,15 +96,9 @@ FocusScope {
                 delegate: ItemListDelegate {}
                 highlight: PlasmaComponents.Highlight { anchors.fill: listView.currentItem }
 
-                onModelChanged: {
-                    if (!model && dialog) {
-                        dialog.destroy();
-                    } else {
-                        currentIndex = -1;
-                    }
-                }
-
                 onCountChanged: {
+                    currentIndex = -1;
+
                     // HACK: https://bugreports.qt-project.org/browse/QTBUG-20927
                     // If you read this: This made me want to cry.
                     for (var i = 0; i < contentItem.children.length; ++i)
