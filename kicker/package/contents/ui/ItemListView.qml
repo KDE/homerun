@@ -47,6 +47,14 @@ FocusScope {
         }
     }
 
+    onContainsMouseChanged: {
+        if (!containsMouse) {
+            dialogCloseTimer.start();
+        } else {
+            dialogCloseTimer.stop();
+        }
+    }
+
     Timer {
         id: dialogSpawnTimer
 
@@ -60,6 +68,17 @@ FocusScope {
 
             childDialog = itemListDialogComponent.createObject(itemList);
             childDialog.visible = true;
+        }
+    }
+
+    Timer {
+        id: dialogCloseTimer
+
+        interval: 150
+        repeat: false
+
+        onTriggered: {
+            currentIndex = -1;
         }
     }
 
