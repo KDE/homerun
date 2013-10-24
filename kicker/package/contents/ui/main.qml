@@ -49,6 +49,7 @@ Item {
     property QtObject allAppsModel
     property QtObject runnerModel
 
+    property string icon: "homerun"
     property bool runnerSupport: true
     property bool useCustomButtonImage: false
     property string buttonImage: ""
@@ -59,6 +60,7 @@ Item {
     property Component compactRepresentation: PopupButton { id: button }
 
     function configChanged() {
+        icon = plasmoid.readConfig("icon");
         runnerSupport = plasmoid.readConfig("runnerSupport");
         useCustomButtonImage = plasmoid.readConfig("useCustomButtonImage");
         buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
@@ -588,7 +590,7 @@ Item {
     }
 
     Component.onCompleted: {
-        plasmoid.addEventListener ('ConfigChanged', configChanged);
+        plasmoid.addEventListener('ConfigChanged', configChanged);
         plasmoid.popupEvent.connect(showPopup);
         plasmoid.aspectRatioMode = IgnoreAspectRatio;
 

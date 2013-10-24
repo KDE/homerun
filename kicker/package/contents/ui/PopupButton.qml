@@ -31,7 +31,7 @@ Item {
 
         visible: !(main.useCustomButtonImage && main.buttonImage)
 
-        source: "homerun"
+        source: main.icon
         active: mouseArea.containsMouse
 
         onWidthChanged: {

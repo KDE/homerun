@@ -6,6 +6,9 @@
   <kcfgfile name=""/>
 
   <group name="General">
+    <entry name="icon" type="String">
+      <default>homerun</default>
+    </entry>
     <entry name="runnerSupport" type="Bool">
       <default>true</default>
     </entry>
