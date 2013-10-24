@@ -34,7 +34,7 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <sources/installedapps/filterableinstalledappsmodel.h>
 #include <sources/recentapps/recentappsmodel.h>
 #include <sources/power/powermodel.h>
-#include <sources/power/combinedsessionpowermodel.h>
+#include <sources/power/combinedpowersessionmodel.h>
 #include <sources/runners/singlerunnermodel.h>
 #include <sources/runners/runnermodel.h>
 #include <sources/session/openedsessionsmodel.h>
@@ -291,8 +291,8 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Opened Sessions"),
         i18n("Provide buttons to switch to opened sessions")
     );
-    d->registerSource("CombinedSessionPower", new SimpleSource<CombinedSessionPowerModel>(this),
-        i18n("Session / Power"),
+    d->registerSource("CombinedPowerSession", new SimpleSource<CombinedPowerSessionModel>(this),
+        i18n("Power / Session"),
         i18n("Provide buttons to manage your workspace session and the power state of your computer")
     );
     d->registerSource("Runner", new RunnerSource(this),

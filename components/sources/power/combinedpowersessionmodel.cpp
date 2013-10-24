@@ -16,15 +16,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "combinedsessionpowermodel.h"
-#include "powermodel.h"
+#include "combinedpowersessionmodel.h"
 #include "sessionmodel.h"
+#include "powermodel.h"
 
 #include <KLocale>
 
 namespace Homerun {
 
-CombinedSessionPowerModel::CombinedSessionPowerModel(QObject* parent) : QAbstractListModel(parent)
+CombinedPowerSessionModel::CombinedPowerSessionModel(QObject* parent) : QAbstractListModel(parent)
 , m_sessionModel(new SessionModel(this))
 , m_powerModel(new PowerModel(this))
 {
@@ -37,21 +37,21 @@ CombinedSessionPowerModel::CombinedSessionPowerModel(QObject* parent) : QAbstrac
     connect(m_powerModel, SIGNAL(modelReset()), SIGNAL(countChanged()));
 }
 
-CombinedSessionPowerModel::~CombinedSessionPowerModel()
+CombinedPowerSessionModel::~CombinedPowerSessionModel()
 {
 }
 
-int CombinedSessionPowerModel::count() const
+int CombinedPowerSessionModel::count() const
 {
     return rowCount();
 }
 
-int CombinedSessionPowerModel::rowCount(const QModelIndex& parent) const
+int CombinedPowerSessionModel::rowCount(const QModelIndex& parent) const
 {
     return parent.isValid() ? 0 : (m_powerModel->count() + m_sessionModel->count());
 }
 
-QVariant CombinedSessionPowerModel::data(const QModelIndex& index, int role) const
+QVariant CombinedPowerSessionModel::data(const QModelIndex& index, int role) const
 {
     int row = index.row();
 
@@ -62,7 +62,7 @@ QVariant CombinedSessionPowerModel::data(const QModelIndex& index, int role) con
     return m_sessionModel->data(m_sessionModel->index(index.row(), index.column()), role);
 }
 
-bool CombinedSessionPowerModel::trigger(int row, const QString&, const QVariant&)
+bool CombinedPowerSessionModel::trigger(int row, const QString&, const QVariant&)
 {
     if (row >= m_sessionModel->count()) {
         return m_powerModel->trigger(row - m_sessionModel->count(), QString(), QVariant());
@@ -71,11 +71,11 @@ bool CombinedSessionPowerModel::trigger(int row, const QString&, const QVariant&
     return m_sessionModel->trigger(row, QString(), QVariant());
 }
 
-QString CombinedSessionPowerModel::name() const
+QString CombinedPowerSessionModel::name() const
 {
-    return i18n("Session / Power");
+    return i18n("Power / Session");
 }
 
 }
 
-#include "combinedsessionpowermodel.moc"
+#include "combinedpowersessionmodel.moc"

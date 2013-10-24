@@ -16,8 +16,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef COMBINEDSESSIONPOWERMODEL_H
-#define COMBINEDSESSIONPOWERMODEL_H
+#ifndef COMBINEDPOWERSESSIONMODEL_H
+#define COMBINEDPOWERSESSIONMODEL_H
 
 #include <QAbstractListModel>
 
@@ -26,7 +26,7 @@ namespace Homerun {
 class PowerModel;
 class SessionModel;
 
-class CombinedSessionPowerModel : public QAbstractListModel
+class CombinedPowerSessionModel : public QAbstractListModel
 {
     Q_OBJECT
 
@@ -34,8 +34,8 @@ class CombinedSessionPowerModel : public QAbstractListModel
     Q_PROPERTY(QString name READ name CONSTANT)
 
     public:
-        CombinedSessionPowerModel(QObject *parent = 0);
-        ~CombinedSessionPowerModel();
+        CombinedPowerSessionModel(QObject *parent = 0);
+        ~CombinedPowerSessionModel();
 
         int count() const;
 
