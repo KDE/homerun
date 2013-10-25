@@ -192,7 +192,7 @@ bool DirModel::trigger(int row, const QString &actionId, const QVariant &actionA
         }
     }
 
-    ActionList::handleFileItemAction(item, actionId, actionArg, &close));
+    ActionList::handleFileItemAction(item, actionId, actionArg, &close);
 
     return false;
 }
