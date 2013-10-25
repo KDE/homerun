@@ -187,16 +187,13 @@ bool DirModel::trigger(int row, const QString &actionId, const QVariant &actionA
     if (actionId.isEmpty()) {
         if (item.isDir()) {
             openSourceRequested(SOURCE_ID, sourceArguments(m_rootUrl, m_rootName, item.url()));
-            return false;
         } else {
             item.run();
-            return true;
         }
     }
-    bool close = false;
-    if (ActionList::handleFileItemAction(item, actionId, actionArg, &close)) {
-        return close;
-    }
+
+    ActionList::handleFileItemAction(item, actionId, actionArg, &close));
+
     return false;
 }
 
