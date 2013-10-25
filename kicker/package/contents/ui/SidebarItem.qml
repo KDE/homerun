@@ -37,7 +37,6 @@ DragAndDrop.DragArea {
 
     property bool edgeItem: (y < parent.height && y + height > parent.height)
 
-    property Item repeater
     property int itemIndex: model.index
     property bool hasActionList: model.favoriteId || (("hasActionList" in model) && model.hasActionList)
 
@@ -142,7 +141,7 @@ DragAndDrop.DragArea {
             return;
         }
 
-        var closeRequested = model.trigger(index, actionId, actionArgument);
+        var closeRequested = repeater.model.trigger(index, actionId, actionArgument);
 
         if (closeRequested) {
             plasmoid.hidePopup();

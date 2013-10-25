@@ -19,12 +19,57 @@
 #ifndef COMBINEDPOWERSESSIONMODEL_H
 #define COMBINEDPOWERSESSIONMODEL_H
 
+#include <abstractsource.h>
+
 #include <QAbstractListModel>
+
+#include <KConfigGroup>
 
 namespace Homerun {
 
 class PowerModel;
 class SessionModel;
+class CombinedPowerSessionModel;
+
+class PowerSessionFavoritesModel : public QAbstractListModel
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(bool canMoveRow READ canMoveRow CONSTANT)
+
+    public:
+        PowerSessionFavoritesModel(const KConfigGroup &group, CombinedPowerSessionModel *parent = 0);
+        ~PowerSessionFavoritesModel();
+
+        int count() const;
+        int rowCount(const QModelIndex& parent = QModelIndex()) const;
+
+        bool canMoveRow() const;
+
+        QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+
+        Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &/*actionArgument*/);
+
+        Q_INVOKABLE void moveRow(int from, int to);
+
+        void clear();
+        void addFavorite(int row);
+        void removeFavorite(int row);
+        bool isFavorite(int row);
+
+        QString name() const;
+
+    signals:
+        void countChanged();
+
+    private:
+        KConfigGroup m_configGroup;
+
+        QList<int> m_favorites;
+        CombinedPowerSessionModel* m_combinedPowerSessionModel;
+};
 
 class CombinedPowerSessionModel : public QAbstractListModel
 {
@@ -32,18 +77,27 @@ class CombinedPowerSessionModel : public QAbstractListModel
 
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(bool showFavoritesActions READ showFavoritesActions WRITE setShowFavoritesActions)
+
+    enum Roles {
+        HasActionListRole = Qt::UserRole,
+        ActionListRole
+    };
 
     public:
-        CombinedPowerSessionModel(QObject *parent = 0);
+        CombinedPowerSessionModel(const KConfigGroup &group, QObject *parent = 0);
         ~CombinedPowerSessionModel();
 
         int count() const;
+        int rowCount(const QModelIndex& parent = QModelIndex()) const;
 
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-        int rowCount(const QModelIndex& parent = QModelIndex()) const;
+        Q_INVOKABLE bool trigger(int row, const QString &actionId, const QVariant &/*actionArgument*/);
 
-        Q_INVOKABLE bool trigger(int row, const QString &/*actionId*/, const QVariant &/*actionArgument*/);
+        bool showFavoritesActions() const;
+        void setShowFavoritesActions(bool show);
+        Q_INVOKABLE QObject *favoritesModel() const;
 
         QString name() const;
 
@@ -53,6 +107,16 @@ class CombinedPowerSessionModel : public QAbstractListModel
     private:
         SessionModel *m_sessionModel;
         PowerModel *m_powerModel;
+
+        PowerSessionFavoritesModel* m_favoritesModel;
+        bool m_showFavoritesActions;
+};
+
+class CombinedPowerSessionSource : public AbstractSource
+{
+    public:
+        CombinedPowerSessionSource(QObject *parent);
+        QAbstractItemModel *createModelFromConfigGroup(const KConfigGroup &group);
 };
 
 }

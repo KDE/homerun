@@ -20,8 +20,6 @@
 import QtQuick 1.1
 
 import org.kde.plasma.core 0.1 as PlasmaCore
-import org.kde.draganddrop 1.0 as DragAndDrop
-import org.kde.qtextracomponents 0.1 as QtExtra
 
 import org.kde.homerun.components 0.1 as HomerunComponents
 import org.kde.homerun.kicker 0.1 as HomerunKicker
@@ -49,7 +47,7 @@ Item {
     property QtObject allAppsModel
     property QtObject runnerModel
 
-    property string icon: "homerun"
+    property string icon: plasmoid.readConfig("icon")
     property bool runnerSupport: true
     property bool useCustomButtonImage: false
     property string buttonImage: ""
@@ -191,100 +189,54 @@ Item {
                 imagePath: "widgets/listitem"
                 prefix: "normal"
 
-                DragAndDrop.DropArea {
-                    id: favoritesDropArea
-
-                    anchors.fill: favorites
-
-                    onDragMove: {
-                        if (favorites.animating) {
-                            return;
-                        }
-
-                        var above = favorites.childAt(event.x, event.y);
-
-                        if (above && above != event.mimeData.source) {
-                            favoriteAppsRepeater.model.moveRow(event.mimeData.source.itemIndex, above.itemIndex);
-                        }
-                    }
-                }
-
-                Flow {
-                    id: favorites
-
-                    width: parent.width - theme.smallIconSize
+                SidebarSection {
+                    id: favoriteApps
 
                     anchors {
-                        top: atTopEdge ? sidebarSeparator.bottom : parent.top
-                        topMargin: atTopEdge ? 3 : theme.smallIconSize / 2
+                        top: atTopEdge ? undefined : parent.top
+                        topMargin: theme.smallIconSize / 2
                         bottom: atTopEdge ? parent.bottom : sidebarSeparator.top
-                        bottomMargin: atTopEdge ? theme.smallIconSize / 2 : 3
+                        bottomMargin: theme.smallIconSize / 2
                         horizontalCenter: parent.horizontalCenter
                     }
 
-                    property bool animating: false
-
-                    clip: true
-
-                    move: Transition {
-                        SequentialAnimation {
-                            PropertyAction { target: favorites; property: "animating"; value: true }
-
-                            NumberAnimation {
-                                duration: 130
-                                properties: "x, y"
-                                easing.type: Easing.OutQuad
-                            }
-
-                            PropertyAction { target: favorites; property: "animating"; value: false }
-                        }
-                    }
-
-                    spacing: main.spacing
-
-                    Repeater {
-                        id: favoriteAppsRepeater
-                        delegate: SidebarItem { repeater: favoriteAppsRepeater }
-                    }
+                    width: parent.width - theme.smallIconSize
+                    height: atTopEdge ? Math.min((model.count * width) + ((model.count - 1) * main.spacing),
+                        parent.height - sidebarSeparator.y - sidebarSeparator.height - main.spacing - anchors.bottomMargin)
+                        : undefined
                 }
 
                 PlasmaCore.SvgItem {
                     id: sidebarSeparator
 
                     anchors {
-                        top: atTopEdge ? power.bottom : undefined
-                        topMargin: atTopEdge ? main.spacing : 0
-                        bottom: atTopEdge ? undefined : power.top
-                        bottomMargin: atTopEdge ? 0 : 6
+                        top: atTopEdge ? powerSessionFavorites.bottom : undefined
+                        topMargin: main.spacing
+                        bottom: atTopEdge ? undefined : powerSessionFavorites.top
+                        bottomMargin: main.spacing
                         horizontalCenter: parent.horizontalCenter
                     }
 
-                    width: power.width
+                    width: parent.width - theme.smallIconSize
                     height: lineSvg.horLineHeight
 
                     svg: lineSvg
                     elementId: "horizontal-line"
                 }
 
-                Column {
-                    id: power
+                SidebarSection {
+                    id: powerSessionFavorites
 
                     anchors {
                         top: atTopEdge ? parent.top : undefined
-                        topMargin: atTopEdge ? theme.smallIconSize / 2 : 0
+                        topMargin: theme.smallIconSize / 2
                         bottom: atTopEdge ? undefined : parent.bottom
-                        bottomMargin: atTopEdge ? 0 : theme.smallIconSize / 2
+                        bottomMargin: theme.smallIconSize / 2
                         horizontalCenter: parent.horizontalCenter
                     }
 
                     width: parent.width - theme.smallIconSize
-
-                    spacing: main.spacing
-
-                    Repeater {
-                        id: powerRepeater
-                        delegate: SidebarItem { repeater: powerRepeater }
-                    }
+                    height: (model.count * width) + ((model.count - 1) * main.spacing)
                 }
             }
 
@@ -532,11 +484,11 @@ Item {
                         runnerModel = model.model;
                     }
                 } else if (model.sourceId == "FavoriteApps") {
-                    favoriteAppsRepeater.model = model.model;
+                    favoriteApps.model = model.model;
                 } else {
-                    if (model.sourceId == "Power") {
-                        powerRepeater.model = model.model;
-                        return;
+                    if (model.sourceId == "CombinedPowerSession") {
+                        model.model.showFavoritesActions = true;
+                        powerSessionFavorites.model = model.model.favoritesModel();
                     } else if (model.sourceId == "RecentApps") {
                         recentAppsModel = model.model;
                     }

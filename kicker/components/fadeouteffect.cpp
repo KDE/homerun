@@ -21,8 +21,6 @@
 #include <QLinearGradient>
 #include <QPainter>
 
-#include <KDebug>
-
 FadeOutEffect::FadeOutEffect(QObject *parent) : QGraphicsEffect(parent)
 , m_covered(0)
 {
@@ -40,8 +38,6 @@ int FadeOutEffect::covered() const
 void FadeOutEffect::setCovered(int covered)
 {
     m_covered = covered;
-
-    kDebug() << "covered" << covered;
 
     update();
 }

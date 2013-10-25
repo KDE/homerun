@@ -291,7 +291,7 @@ SourceRegistry::SourceRegistry(QObject *parent)
         i18n("Opened Sessions"),
         i18n("Provide buttons to switch to opened sessions")
     );
-    d->registerSource("CombinedPowerSession", new SimpleSource<CombinedPowerSessionModel>(this),
+    d->registerSource("CombinedPowerSession", new CombinedPowerSessionSource(this),
         i18n("Power / Session"),
         i18n("Provide buttons to manage your workspace session and the power state of your computer")
     );
