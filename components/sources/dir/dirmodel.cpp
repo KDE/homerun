@@ -117,6 +117,12 @@ KDirLister *DirModel::dirLister() const
 
 QVariant DirModel::data(const QModelIndex &index, int role) const
 {
+    KFileItem item = qvariant_cast<KFileItem>(QSortFilterProxyModel::data(index, KDirModel::FileItemRole));
+
+    if (role == Qt::DecorationRole && !item.isFinalIconKnown()) {
+        item.determineMimeType();
+    }
+
     if (role != FavoriteIdRole && role != HasActionListRole && role != ActionListRole) {
         return QSortFilterProxyModel::data(index, role);
     }
@@ -126,7 +132,6 @@ QVariant DirModel::data(const QModelIndex &index, int role) const
     if (role == HasActionListRole) {
         return true;
     }
-    KFileItem item = itemForIndex(index);
     if (role == FavoriteIdRole) {
         if (item.isDir()) {
             return FavoriteUtils::favoriteIdFromUrl(item.url());
