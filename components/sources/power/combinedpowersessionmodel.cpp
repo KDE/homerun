@@ -32,10 +32,6 @@ PowerSessionFavoritesModel::PowerSessionFavoritesModel(const KConfigGroup &group
 {
     setRoleNames(m_combinedPowerSessionModel->roleNames());
 
-    connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), SIGNAL(countChanged()));
-    connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), SIGNAL(countChanged()));
-    connect(this, SIGNAL(modelReset()), SIGNAL(countChanged()));
-
     m_favorites = group.readEntry("Favorites", QList<int>() << 3 << 5 << 6);
 }
 
@@ -97,6 +93,8 @@ void PowerSessionFavoritesModel::clear()
     m_favorites.clear();
 
     endResetModel();
+
+    emit countChanged();
 }
 
 void PowerSessionFavoritesModel::addFavorite(int row)
@@ -106,6 +104,8 @@ void PowerSessionFavoritesModel::addFavorite(int row)
     m_favorites.append(row);
 
     endInsertRows();
+
+    emit countChanged();
 
     m_configGroup.writeEntry("Favorites", m_favorites);
     m_configGroup.config()->sync();
@@ -121,6 +121,8 @@ void PowerSessionFavoritesModel::removeFavorite(int row)
         m_favorites.removeAt(index);
 
         endRemoveRows();
+
+        emit countChanged();
 
         m_configGroup.writeEntry("Favorites", m_favorites);
         m_configGroup.config()->sync();
