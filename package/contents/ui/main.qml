@@ -37,6 +37,7 @@ Item {
 
     property bool configureMode: false
     property bool showActionListOverlay: globalSettings.showActionListOverlay
+    property bool showDesktopToolBox: globalSettings.showDesktopToolBox
 
     // Internal
     property real outerPadding: 12
@@ -61,6 +62,7 @@ Item {
 
     HomerunFixes.ToolBoxToggle {
         id: toolBoxToggle
+        visible: showDesktopToolBox
     }
 
     // Components
@@ -313,12 +315,12 @@ Item {
                     }
                 }
                 PlasmaComponents.MenuItem {
-                    visible: ("plasmoid" in this)
+                    visible: isContainment
                     text: i18n("Show Desktop Tool Box");
                     checkable: true
-                    checked: toolBoxToggle.visible
+                    checked: showDesktopToolBox
                     onCheckedChanged: {
-                        toolBoxToggle.visible = checked;
+                        globalSettings.showDesktopToolBox = checked;
                     }
                 }
                 PlasmaComponents.MenuItem {

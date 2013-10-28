@@ -31,6 +31,7 @@ class GlobalSettings : public QObject
     Q_OBJECT
     Q_PROPERTY(QString configFileName READ configFileName WRITE setConfigFileName NOTIFY configFileNameChanged)
     Q_PROPERTY(bool showActionListOverlay READ showActionListOverlay WRITE setShowActionListOverlay NOTIFY showActionListOverlayChanged)
+    Q_PROPERTY(bool showDesktopToolBox READ showDesktopToolBox WRITE setShowDesktopToolBox NOTIFY showDesktopToolBoxChanged)
 public:
     explicit GlobalSettings(QObject *parent = 0);
     ~GlobalSettings();
@@ -41,9 +42,13 @@ public:
     bool showActionListOverlay() const;
     void setShowActionListOverlay(bool show);
 
+    bool showDesktopToolBox() const;
+    void setShowDesktopToolBox(bool show);
+
 Q_SIGNALS:
     void configFileNameChanged();
     void showActionListOverlayChanged();
+    void showDesktopToolBoxChanged();
 
 private:
     QString m_configFileName;

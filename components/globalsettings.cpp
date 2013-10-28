@@ -49,6 +49,7 @@ void GlobalSettings::setConfigFileName(const QString &name)
     m_configGroup = KSharedConfig::openConfig(m_configFileName)->group("Global");
     emit configFileNameChanged();
     emit showActionListOverlayChanged();
+    emit showDesktopToolBoxChanged();
 }
 
 bool GlobalSettings::showActionListOverlay() const
@@ -69,6 +70,27 @@ void GlobalSettings::setShowActionListOverlay(bool show)
         m_configGroup.writeEntry("ShowActionListOverlay", show);
         m_configGroup.sync();
         emit showActionListOverlayChanged();
+    }
+}
+
+bool GlobalSettings::showDesktopToolBox() const
+{
+    if (!m_configGroup.isValid()) {
+        return false;
+    }
+    return m_configGroup.readEntry<bool>("ShowDesktopToolBox", false);
+}
+
+void GlobalSettings::setShowDesktopToolBox(bool show)
+{
+    if (show == showDesktopToolBox()) {
+        return;
+    }
+
+    if (m_configGroup.isValid()) {
+        m_configGroup.writeEntry("ShowDesktopToolBox", show);
+        m_configGroup.sync();
+        emit showDesktopToolBoxChanged();
     }
 }
 
