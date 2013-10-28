@@ -59,6 +59,10 @@ Item {
         configFileName: main.configFileName
     }
 
+    HomerunFixes.ToolBoxToggle {
+        id: toolBoxToggle
+    }
+
     // Components
     Component {
         id: tabContentComponent
@@ -309,6 +313,15 @@ Item {
                     }
                 }
                 PlasmaComponents.MenuItem {
+                    visible: ("plasmoid" in this)
+                    text: i18n("Show Desktop Tool Box");
+                    checkable: true
+                    checked: toolBoxToggle.visible
+                    onCheckedChanged: {
+                        toolBoxToggle.visible = checked;
+                    }
+                }
+                PlasmaComponents.MenuItem {
                     separator: true
                 }
                 PlasmaComponents.MenuItem {
@@ -401,6 +414,8 @@ Item {
 
             plasmoid.availableScreenRegionChanged.connect(resizeToFitScreen);
             resizeToFitScreen();
+
+            toolBoxToggle.toolBox = plasmoid.toolBox;
 
             // Set config file only here so that when running homerunviewer with
             // a custom config file (with --config /path/to/customrc). Homerun

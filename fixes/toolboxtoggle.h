@@ -1,7 +1,5 @@
 /*
- *   Copyright 2012 Shaun Reich <shaun.reich@blue-systems.com>
- *   Copyright 2012 by Aurélien Gâteau <agateau@kde.org>
- *
+ *   Copyright 2013 Eike Hein <hein@kde.org>
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2, or
@@ -18,20 +16,37 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-// Self
-#include <fixesplugin.h>
+#ifndef TOOLBOXTOGGLE_H
+#define TOOLBOXTOGGLE_H
 
-// Local
-#include <datamodel.h>
-#include <toolboxtoggle.h>
+#include <QObject>
 
-// Qt
-#include <QtDeclarative/qdeclarative.h>
+class QGraphicsWidget;
 
-void FixesPlugin::registerTypes(const char *uri)
+class ToolBoxToggle : public QObject
 {
-    qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
-    qmlRegisterType<ToolBoxToggle>(uri, 0, 1, "ToolBoxToggle");
-}
+    Q_OBJECT
 
-#include "fixesplugin.moc"
+    Q_PROPERTY(QObject* toolBox READ toolBox WRITE setToolBox)
+    Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
+
+    public:
+        ToolBoxToggle(QObject *parent = 0);
+        ~ToolBoxToggle();
+
+        QObject *toolBox() const;
+        void setToolBox(QObject* toolBox);
+
+        bool visible() const;
+        void setVisible(bool visible);
+
+    Q_SIGNALS:
+        void toolBoxChanged();
+        void visibleChanged();
+
+    private:
+        QGraphicsWidget *m_toolBox;
+        bool m_visible;
+};
+
+#endif
