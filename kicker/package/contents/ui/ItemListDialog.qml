@@ -28,6 +28,8 @@ PlasmaCore.Dialog {
 
     property bool leftOfParent: false
 
+    visible: false
+
     location: Floating
     windowFlags: Qt.WindowStaysOnTopHint
 
