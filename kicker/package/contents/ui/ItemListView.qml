@@ -67,6 +67,7 @@ FocusScope {
             }
 
             childDialog = itemListDialogComponent.createObject(itemList);
+            childDialog.setAttribute(Qt.WA_X11NetWmWindowTypeMenu, true)
             childDialog.visible = true;
         }
     }

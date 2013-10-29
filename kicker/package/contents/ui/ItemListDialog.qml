@@ -83,8 +83,4 @@ PlasmaCore.Dialog {
             y = yPos;
         }
     }
-
-    Component.onCompleted: {
-        setAttribute(Qt.WA_X11NetWmWindowTypeMenu, true);
-    }
 }
