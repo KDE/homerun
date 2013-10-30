@@ -29,7 +29,7 @@ class SourceListModel : public QAbstractListModel
 
     public:
         enum Roles {
-            ModelRole = Qt::UserRole,
+            ModelRole = Qt::UserRole + 1,
             CountRole
         };
 

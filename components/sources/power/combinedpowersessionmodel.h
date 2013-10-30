@@ -54,10 +54,9 @@ class PowerSessionFavoritesModel : public QAbstractListModel
 
         Q_INVOKABLE void moveRow(int from, int to);
 
-        void clear();
-        void addFavorite(int row);
-        void removeFavorite(int row);
-        bool isFavorite(int row);
+        void addFavorite(const QModelIndex &index);
+        void removeFavorite(const QModelIndex &index);
+        bool isFavorite(const QModelIndex &index);
 
         QString name() const;
 
@@ -65,9 +64,12 @@ class PowerSessionFavoritesModel : public QAbstractListModel
         void countChanged();
 
     private:
+        void readConfig();
+        void writeConfig();
+
         KConfigGroup m_configGroup;
 
-        QList<int> m_favorites;
+        QList<QPersistentModelIndex> m_favorites;
         CombinedPowerSessionModel* m_combinedPowerSessionModel;
 };
 
@@ -79,12 +81,13 @@ class CombinedPowerSessionModel : public QAbstractListModel
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(bool showFavoritesActions READ showFavoritesActions WRITE setShowFavoritesActions)
 
-    enum Roles {
-        HasActionListRole = Qt::UserRole,
-        ActionListRole
-    };
-
     public:
+        enum Roles {
+            FavoriteIdRole = Qt::UserRole + 1,
+            HasActionListRole,
+            ActionListRole
+        };
+
         CombinedPowerSessionModel(const KConfigGroup &group, QObject *parent = 0);
         ~CombinedPowerSessionModel();
 
@@ -108,6 +111,7 @@ class CombinedPowerSessionModel : public QAbstractListModel
         SessionModel *m_sessionModel;
         PowerModel *m_powerModel;
 
+        QHash<QString, QString> m_favoriteIdMapping;
         PowerSessionFavoritesModel* m_favoritesModel;
         bool m_showFavoritesActions;
 };

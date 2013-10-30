@@ -32,11 +32,49 @@ PowerSessionFavoritesModel::PowerSessionFavoritesModel(const KConfigGroup &group
 {
     setRoleNames(m_combinedPowerSessionModel->roleNames());
 
-    m_favorites = group.readEntry("Favorites", QList<int>() << 3 << 5 << 6);
+    readConfig();
 }
 
 PowerSessionFavoritesModel::~PowerSessionFavoritesModel()
 {
+}
+
+void PowerSessionFavoritesModel::readConfig()
+{
+    beginResetModel();
+
+    m_favorites.clear();
+
+    QStringList favoriteIds = m_configGroup.readEntry("Favorites", QList<QString>() << "logout" << "restart" << "shutdown");
+
+    const QModelIndex &start = m_combinedPowerSessionModel->index(0, 0);
+
+    foreach(const QString &favoriteId, favoriteIds) {
+        QModelIndexList indices = m_combinedPowerSessionModel->match(start, CombinedPowerSessionModel::FavoriteIdRole,
+            favoriteId, 1, Qt::MatchExactly);
+
+        if (indices.count()) {
+            m_favorites.append(QPersistentModelIndex(indices.at(0)));
+        }
+    }
+
+    endResetModel();
+
+    emit countChanged();
+
+    writeConfig();
+}
+
+void PowerSessionFavoritesModel::writeConfig()
+{
+    QStringList favoriteIds;
+
+    foreach(const QPersistentModelIndex &index, m_favorites) {
+        favoriteIds << index.data(CombinedPowerSessionModel::FavoriteIdRole).toString();
+    }
+
+    m_configGroup.writeEntry("Favorites", favoriteIds);
+    m_configGroup.config()->sync();
 }
 
 int PowerSessionFavoritesModel::count() const
@@ -60,9 +98,7 @@ QVariant PowerSessionFavoritesModel::data(const QModelIndex &index, int role) co
         return QVariant();
     }
 
-    return m_combinedPowerSessionModel->data(m_combinedPowerSessionModel->index(m_favorites.at(index.row())), role);
-
-    return QVariant();
+    return m_favorites.at(index.row()).data(role);
 }
 
 bool PowerSessionFavoritesModel::trigger(int row, const QString &actionId, const QVariant &)
@@ -71,7 +107,7 @@ bool PowerSessionFavoritesModel::trigger(int row, const QString &actionId, const
         return false;
     }
 
-    return m_combinedPowerSessionModel->trigger(m_favorites.at(row), actionId, QString());
+    return m_combinedPowerSessionModel->trigger(m_favorites.at(row).row(), actionId, QString());
 }
 
 void PowerSessionFavoritesModel::moveRow(int from, int to)
@@ -82,56 +118,48 @@ void PowerSessionFavoritesModel::moveRow(int from, int to)
 
     endMoveRows();
 
-    m_configGroup.writeEntry("Favorites", m_favorites);
-    m_configGroup.config()->sync();
+    writeConfig();
 }
 
-void PowerSessionFavoritesModel::clear()
+void PowerSessionFavoritesModel::addFavorite(const QModelIndex &index)
 {
-    beginResetModel();
+    QString favoriteId = index.data(CombinedPowerSessionModel::FavoriteIdRole).toString();
 
-    m_favorites.clear();
+    if (favoriteId.isEmpty()) {
+        return;
+    }
 
-    endResetModel();
-
-    emit countChanged();
-}
-
-void PowerSessionFavoritesModel::addFavorite(int row)
-{
     beginInsertRows(QModelIndex(), m_favorites.count(), m_favorites.count());
 
-    m_favorites.append(row);
+    m_favorites.append(QPersistentModelIndex(index));
 
     endInsertRows();
 
     emit countChanged();
 
-    m_configGroup.writeEntry("Favorites", m_favorites);
-    m_configGroup.config()->sync();
+    writeConfig();
 }
 
-void PowerSessionFavoritesModel::removeFavorite(int row)
+void PowerSessionFavoritesModel::removeFavorite(const QModelIndex &index)
 {
-    int index = m_favorites.indexOf(row);
+    int row = m_favorites.indexOf(index);
 
-    if (index != -1) {
-        beginRemoveRows(QModelIndex(), index, index);
+    if (row != -1) {
+        beginRemoveRows(QModelIndex(), row, row);
 
-        m_favorites.removeAt(index);
+        m_favorites.removeAt(row);
 
         endRemoveRows();
 
         emit countChanged();
 
-        m_configGroup.writeEntry("Favorites", m_favorites);
-        m_configGroup.config()->sync();
+        writeConfig();
     }
 }
 
-bool PowerSessionFavoritesModel::isFavorite(int row)
+bool PowerSessionFavoritesModel::isFavorite(const QModelIndex &index)
 {
-    return m_favorites.contains(row);
+    return m_favorites.contains(index);
 }
 
 QString PowerSessionFavoritesModel::name() const
@@ -151,6 +179,14 @@ CombinedPowerSessionModel::CombinedPowerSessionModel(const KConfigGroup &group, 
     roles.insert(ActionListRole, "actionList");
 
     setRoleNames(roles);
+
+    m_favoriteIdMapping["system-lock-screen"] = "lock-screen";
+    m_favoriteIdMapping["system-log-out"] = "logout";
+    m_favoriteIdMapping["system-switch-user"] = "switch-user";
+    m_favoriteIdMapping["system-suspend"] = "suspend";
+    m_favoriteIdMapping["system-suspend-hibernate"] = "hibernate";
+    m_favoriteIdMapping["system-reboot"] = "restart";
+    m_favoriteIdMapping["system-shutdown"] = "shutdown";
 
     m_favoritesModel = new PowerSessionFavoritesModel(group, this);
 
@@ -179,15 +215,29 @@ int CombinedPowerSessionModel::rowCount(const QModelIndex &parent) const
 
 QVariant CombinedPowerSessionModel::data(const QModelIndex &index, int role) const
 {
-    int row = index.row();
+    if (role == FavoriteIdRole) {
+        QString iconName;
 
-    if (role == HasActionListRole) {
+        if (index.row() >= m_sessionModel->count()) {
+            iconName = m_powerModel->data(m_powerModel->index(index.row() - m_sessionModel->count(),
+                index.column()), Qt::DecorationRole).toString();
+        } else {
+            iconName = m_sessionModel->data(m_sessionModel->index(index.row(), index.column()),
+                Qt::DecorationRole).toString();
+        }
+
+        if (m_favoriteIdMapping.contains(iconName)) {
+            return m_favoriteIdMapping[iconName];
+        } else {
+            return 0;
+        }
+    } else if (role == HasActionListRole) {
         return m_showFavoritesActions;
     } else if (role == ActionListRole) {
         QVariantList actionList;
         QVariantMap action;
 
-        if (m_favoritesModel->isFavorite(row)) {
+        if (m_favoritesModel->isFavorite(index)) {
             action = ActionList::createActionItem(i18n("Remove from Sidebar"), "removeFromFavorites");
             action["icon"] = KIcon("list-remove");
             actionList << action;
@@ -200,8 +250,8 @@ QVariant CombinedPowerSessionModel::data(const QModelIndex &index, int role) con
         return actionList;
     }
 
-    if (row >= m_sessionModel->count()) {
-        return m_powerModel->data(m_powerModel->index(row - m_sessionModel->count(), index.column()), role);
+    if (index.row() >= m_sessionModel->count()) {
+        return m_powerModel->data(m_powerModel->index(index.row() - m_sessionModel->count(), index.column()), role);
     }
 
     return m_sessionModel->data(m_sessionModel->index(index.row(), index.column()), role);
@@ -210,16 +260,17 @@ QVariant CombinedPowerSessionModel::data(const QModelIndex &index, int role) con
 bool CombinedPowerSessionModel::trigger(int row, const QString &actionId, const QVariant &)
 {
     if (actionId == "addToFavorites") {
-        m_favoritesModel->addFavorite(row);
-
         QModelIndex idx = index(row);
+
+        m_favoritesModel->addFavorite(idx);
+
         emit dataChanged(idx, idx);
 
         return false;
     } else if (actionId == "removeFromFavorites") {
-        m_favoritesModel->removeFavorite(row);
-
         QModelIndex idx = index(row);
+
+        m_favoritesModel->removeFavorite(idx);
         emit dataChanged(idx, idx);
 
         return false;
