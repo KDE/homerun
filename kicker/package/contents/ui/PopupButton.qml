@@ -36,22 +36,22 @@ Item {
 
         onWidthChanged: {
             if (vertical && visible) {
-                plasmoid.setMinimumSize(theme.smallIconSize.height.width, parent.width);
+                plasmoid.setMinimumSize(theme.smallIconSize, parent.width);
             }
         }
 
         onHeightChanged: {
             if (!vertical && visible) {
-                plasmoid.setMinimumSize(parent.height, theme.smallIconSize.height);
+                plasmoid.setMinimumSize(parent.height, theme.smallIconSize);
             }
         }
 
         onVisibleChanged: {
             if (visible) {
                 if (vertical) {
-                    plasmoid.setMinimumSize(theme.smallIconSize.height.width, parent.width);
+                    plasmoid.setMinimumSize(theme.smallIconSize, parent.width);
                 } else {
-                    plasmoid.setMinimumSize(parent.height, theme.smallIconSize.height);
+                    plasmoid.setMinimumSize(parent.height, theme.smallIconSize);
                 }
             }
         }
@@ -65,22 +65,22 @@ Item {
 
         onPaintedWidthChanged: {
             if (!vertical && visible) {
-                plasmoid.setMinimumSize(paintedWidth, theme.smallIconSize.height);
+                plasmoid.setMinimumSize(paintedWidth, theme.smallIconSize);
             }
         }
 
         onPaintedHeightChanged: {
             if (vertical && visible) {
-                plasmoid.setMinimumSize(theme.smallIconSize.width, paintedHeight);
+                plasmoid.setMinimumSize(theme.smallIconSize, paintedHeight);
             }
         }
 
         onVisibleChanged: {
             if (visible) {
                 if (vertical) {
-                    plasmoid.setMinimumSize(theme.smallIconSize.width, paintedHeight);
+                    plasmoid.setMinimumSize(theme.smallIconSize, paintedHeight);
                 } else {
-                    plasmoid.setMinimumSize(paintedWidth, theme.smallIconSize.height);
+                    plasmoid.setMinimumSize(paintedWidth, theme.smallIconSize);
                 }
             }
         }
