@@ -119,7 +119,7 @@ bool AppNode::trigger(const QString &actionId, const QVariant &actionArgument)
                     }
                 }
             } else if (actionId == "addToPanel") {
-                QRectF rect(containment->geometry().width() / 2, 0, 150,
+                QRectF rect(containment->geometry().width() / 3, 0, 150,
                     containment->boundingRect().height());
                 containment->addApplet("icon", QVariantList() << m_service->entryPath(), rect);
             } else if (actionId == "addToTaskManager") {

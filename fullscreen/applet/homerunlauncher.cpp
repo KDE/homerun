@@ -174,7 +174,7 @@ void HomerunLauncher::addToPanel(uint containmentId, const QString &storageId)
 
     if (service || containment()->id() == containmentId) {
         // move it to the middle of the panel
-        QRectF rect(containment()->geometry().width() / 2, 0, 150, containment()->boundingRect().height());
+        QRectF rect(containment()->geometry().width() / 3, 0, 150, containment()->boundingRect().height());
         containment()->addApplet("icon", QVariantList() << service->entryPath(), rect);
     }
 
