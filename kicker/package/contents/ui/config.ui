@@ -26,10 +26,10 @@
       <item>
        <widget class="QCheckBox" name="kcfg_runnerSupport">
         <property name="whatsThis">
-         <string>If this option is enabled, search may display additional columns with search results powered by certain KRunner plugins, such as &quot;Bookmarks&quot; and &quot;Desktop Search&quot;.</string>
+         <string>If this option is enabled, search may display additional columns with search results powered by certain Plasma runner plugins, such as &quot;Bookmarks&quot; and &quot;Desktop Search&quot;.</string>
         </property>
         <property name="text">
-         <string>Integrate search with Plasma runners</string>
+         <string>Use Plasma runners for additional search results</string>
         </property>
        </widget>
       </item>
