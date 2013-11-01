@@ -205,6 +205,12 @@ PlasmaComponents.ListItem {
         onActionClicked: {
             actionTriggered(actionId, actionArgument);
         }
+
+        onOpenedChanged: {
+            if (!opened) {
+                windowSystem.raiseParentWindow(listView);
+            }
+        }
     }
 
     onAboutToShowActionMenu: {

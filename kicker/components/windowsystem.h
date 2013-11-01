@@ -35,6 +35,8 @@ class WindowSystem : public QObject
         Q_INVOKABLE QVariant workArea();
 
         Q_INVOKABLE QPoint mapToScreen(QDeclarativeItem *item, int x, int y);
+
+        Q_INVOKABLE void raiseParentWindow(QDeclarativeItem *item);
 };
 
 #endif

@@ -51,4 +51,16 @@ QPoint WindowSystem::mapToScreen(QDeclarativeItem *item, int x, int y)
     return view->mapToGlobal(view->mapFromScene(item->mapToScene(pos).toPoint()));
 }
 
+void WindowSystem::raiseParentWindow(QDeclarativeItem *item)
+{
+    QGraphicsView *view = Plasma::viewFor(item);
+
+    if (!view || !view->window()) {
+        return;
+    }
+
+    KWindowSystem::forceActiveWindow(Plasma::viewFor(static_cast<QDeclarativeItem *>(parent()))->window()->winId());
+    KWindowSystem::raiseWindow(view->window()->winId());
+}
+
 #include "windowsystem.moc"
