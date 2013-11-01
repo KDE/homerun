@@ -163,7 +163,6 @@ FilterableInstalledAppsModel::FilterableInstalledAppsModel(const QString &instal
 : QAbstractListModel(parent)
 , m_installer(installer)
 , m_sideBarModel(new SideBarModel(this))
-, m_firstRefresh(true)
 {
     loadRootEntries();
 }
@@ -193,11 +192,6 @@ void FilterableInstalledAppsModel::refresh(bool reload)
             model->refresh(false);
         }
 
-        return;
-    }
-
-    if (m_firstRefresh) {
-        m_firstRefresh = false;
         return;
     }
 

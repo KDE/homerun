@@ -142,7 +142,6 @@ private:
     QList<InstalledAppsFilterModel *> m_models;
     SideBarModel *m_sideBarModel;
     QString m_query;
-    bool m_firstRefresh;
 
     InstalledAppsFilterModel *createInstalledAppsFilterModel(KServiceGroup::Ptr group);
 };
