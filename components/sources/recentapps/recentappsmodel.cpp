@@ -132,6 +132,10 @@ QVariant RecentAppsModel::data(const QModelIndex &index, int role) const
                 actionList << ActionList::createActionItem(i18n("Add to Desktop"), "addToDesktop");
             }
 
+            if (containment->immutability() == Plasma::Mutable) {
+                actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
+            }
+
             QObject* taskManager = 0;
 
             foreach(QObject* applet, containment->applets()) {
@@ -147,12 +151,8 @@ QVariant RecentAppsModel::data(const QModelIndex &index, int role) const
                     Q_RETURN_ARG(bool, hasLauncher), Q_ARG(QString, storageId));
 
                 if (!hasLauncher) {
-                    actionList << ActionList::createActionItem(i18n("Add to Task Manager"), "addToTaskManager");
+                    actionList << ActionList::createActionItem(i18n("Add as Launcher"), "addLauncher");
                 }
-            }
-
-            if (containment->immutability() == Plasma::Mutable) {
-                actionList << ActionList::createActionItem(i18n("Add to Panel"), "addToPanel");
             }
         }
 
@@ -250,7 +250,7 @@ bool RecentAppsModel::trigger(int row, const QString &actionId, const QVariant &
                     QRectF rect(containment->geometry().width() / 2, 0, 150,
                         containment->boundingRect().height());
                     containment->addApplet("icon", QVariantList() << service->entryPath(), rect);
-                } else if (actionId == "addToTaskManager") {
+                } else if (actionId == "addLauncher") {
                     QObject* taskManager = 0;
 
                     foreach(QObject* applet, containment->applets()) {
