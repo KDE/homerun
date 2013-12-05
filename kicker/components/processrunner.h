@@ -25,24 +25,11 @@ class ProcessRunner : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString processName READ processName WRITE setProcessName)
-    Q_PROPERTY(QAction* triggerAction READ triggerAction WRITE setTriggerAction)
-
     public:
         ProcessRunner(QObject *parent = 0);
         ~ProcessRunner();
 
-        QString processName() const;
-        void setProcessName(const QString &name);
-
-        QAction *triggerAction() const;
-        void setTriggerAction(QAction *action);
-
-        Q_INVOKABLE void execute(const QString &name = QString());
-
-    private:
-        QString m_processName;
-        QAction *m_triggerAction;
+        Q_INVOKABLE void execute(const QString &name);
 };
 
 #endif

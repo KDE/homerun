@@ -107,6 +107,10 @@ Item {
         }
     }
 
+    function action_menuedit() {
+        processRunner.execute("kmenuedit");
+    }
+
     Timer {
         id: justOpenedTimer
 
@@ -131,8 +135,7 @@ Item {
     }
 
     HomerunKicker.ProcessRunner {
-        id: kmenuedit
-        processName: "kmenuedit"
+        id: processRunner
     }
 
     HomerunKicker.UrlConverter {
@@ -561,6 +564,5 @@ Item {
         plasmoid.popupIconToolTip = data;
 
         plasmoid.setAction("menuedit", i18n("Edit Applications..."));
-        kmenuedit.triggerAction = plasmoid.action("menuedit");
     }
 }

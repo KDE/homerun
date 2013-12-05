@@ -21,7 +21,6 @@
 #include <KProcess>
 
 ProcessRunner::ProcessRunner(QObject *parent) : QObject(parent)
-, m_triggerAction(0)
 {
 }
 
@@ -29,44 +28,9 @@ ProcessRunner::~ProcessRunner()
 {
 }
 
-QString ProcessRunner::processName() const
-{
-    return m_processName;
-}
-
-void ProcessRunner::setProcessName(const QString& name)
-{
-    if (name != m_processName) {
-        m_processName = name;
-    }
-}
-
-QAction *ProcessRunner::triggerAction() const
-{
-    return m_triggerAction;
-}
-
-void ProcessRunner::setTriggerAction(QAction *action)
-{
-    if (action != m_triggerAction)
-    {
-        if (m_triggerAction) {
-            disconnect(m_triggerAction, SIGNAL(triggered()), this, SLOT(execute()));
-        }
-
-        m_triggerAction = action;
-
-        connect(m_triggerAction, SIGNAL(triggered()), this, SLOT(execute()));
-    }
-}
-
 void ProcessRunner::execute(const QString& name)
 {
-    if (!name.isEmpty()) {
-        KProcess::execute(name);
-    } else if (!m_processName.isEmpty()) {
-        KProcess::execute(m_processName);
-    }
+    KProcess::execute(name);
 }
 
 #include "processrunner.moc"
