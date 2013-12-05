@@ -130,6 +130,11 @@ Item {
         item: plasmoid.action("configure")
     }
 
+    HomerunKicker.ProcessRunner {
+        id: kmenuedit
+        processName: "kmenuedit"
+    }
+
     HomerunKicker.UrlConverter {
         id: urlConverter
     }
@@ -554,5 +559,8 @@ Item {
         data["mainText"] = i18n("Homerun Kicker");
         data["subText"] = i18n("Launch applications and manage your desktop.");
         plasmoid.popupIconToolTip = data;
+
+        plasmoid.setAction("menuedit", i18n("Edit Applications..."));
+        kmenuedit.triggerAction = plasmoid.action("menuedit");
     }
 }

@@ -5,6 +5,7 @@ set(kicker_SRCS
     fadeouteffect.cpp
     fadeoutitem.cpp
     kickerplugin.cpp
+    processrunner.cpp
     sourcelistmodel.cpp
     urlconverter.cpp
     windowsystem.cpp
