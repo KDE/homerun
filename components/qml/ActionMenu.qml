@@ -81,23 +81,20 @@ Item {
     onActionListChanged: refreshMenu();
 
     function refreshMenu() {
-        if (!menu) {
-            menu = contextMenuComponent.createObject(main);
+        if (menu) {
+            menu.destroy();
         }
-        menu.clearMenuItems();
 
-        // Items are created with a null parent because their ownership is
-        // managed by menu itself.  If we give them a parent, then
-        // menu.clearMenuItems() crashes because it tries to delete objects
-        // owned by the QML engine.
+        menu = contextMenuComponent.createObject(main);
+
         if (!actionList || actionList.length == 0) {
-            var item = emptyMenuItemComponent.createObject(null);
+            var item = emptyMenuItemComponent.createObject(menu);
             menu.addMenuItem(item);
             return;
         }
 
         actionList.forEach(function(actionItem) {
-            var item = contextMenuItemComponent.createObject(null, {
+            var item = contextMenuItemComponent.createObject(menu, {
                 "actionItem": actionItem,
             });
             menu.addMenuItem(item);
