@@ -1,7 +1,17 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Homerun Kicker
+Name[de]=Homerun-Kicker
+Name[nl]=Programmastarter Homerun
+Name[pt]=Homerun Kicker
+Name[uk]=Меню Homerun
+Name[x-test]=xxHomerun Kickerxx
 Comment=Non-fullscreen version of Homerun
+Comment[de]=Nicht-Vollbildversion von Homerun
+Comment[nl]=Versie van Homerun zonder volledig scherm
+Comment[pt]=Versão em ecrã não-completo do Homerun
+Comment[uk]=Неповноекранна версія Homerun
+Comment[x-test]=xxNon-fullscreen version of Homerunxx
 
 Icon=homerun
 Type=Service
