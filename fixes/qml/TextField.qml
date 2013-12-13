@@ -19,6 +19,7 @@
 
 import QtQuick 1.1
 import org.kde.plasma.core 0.1 as PlasmaCore
+import org.kde.plasma.components 0.1 as PlasmaComponents
 import "private" as Private
 
 /**
@@ -27,6 +28,10 @@ import "private" as Private
 FocusScope {
     id: textField
 
+
+    property int selectStart
+    property int selectEnd
+    property int curPos
     // Common API
     /**
      * Whether the text field is highlighted or not
@@ -358,6 +363,46 @@ FocusScope {
         }
         onAccepted: textField.accepted()
         Keys.forwardTo: textField
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: {
+                // FIXME: We're having to cache these and recreating the selection because TextInput's implementation clears the selection on focus loss; this should be re-evaluated and hopefully dropped in future versions
+                selectStart = textInput.selectionStart;
+                selectEnd = textInput.selectionEnd;
+                curPos = textInput.cursorPosition;
+                contextMenu.open(mouse.x, mouse.y);
+                textInput.cursorPosition = curPos;
+                textInput.select(selectStart,selectEnd);
+            }
+        }
+    }
+
+    PlasmaComponents.ContextMenu {
+        id: contextMenu
+        visualParent: textInput
+
+        PlasmaComponents.MenuItem {
+            text: qsTr("Cut")
+            icon: QIcon("edit-cut")
+            onClicked: {
+                cut();
+            }
+        }
+        PlasmaComponents.MenuItem {
+            text: qsTr("Copy")
+            icon: QIcon("edit-copy")
+            onClicked: {
+                copy();
+            }
+        }
+        PlasmaComponents.MenuItem {
+            text: qsTr("Paste")
+            icon: QIcon("edit-paste")
+            onClicked: {
+                paste();
+            }
+        }
     }
 
     PlasmaCore.IconItem {
