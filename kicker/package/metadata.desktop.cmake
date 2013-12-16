@@ -2,16 +2,20 @@
 Encoding=UTF-8
 Name=Homerun Kicker
 Name[de]=Homerun-Kicker
+Name[el]=Homerun Kicker
 Name[nl]=Programmastarter Homerun
 Name[pt]=Homerun Kicker
 Name[pt_BR]=Homerun Kicker
+Name[sl]=Majhen zaganjalnik Homerun
 Name[uk]=Меню Homerun
 Name[x-test]=xxHomerun Kickerxx
 Comment=Non-fullscreen version of Homerun
 Comment[de]=Nicht-Vollbildversion von Homerun
+Comment[el]=Έκδοση του Homerun χωρίς πλήρη οθόνη
 Comment[nl]=Versie van Homerun zonder volledig scherm
 Comment[pt]=Versão em ecrã não-completo do Homerun
 Comment[pt_BR]=Versão do Homerun em janela
+Comment[sl]=Različica Homeruna, ki ni celozaslonska
 Comment[uk]=Неповноекранна версія Homerun
 Comment[x-test]=xxNon-fullscreen version of Homerunxx
 
