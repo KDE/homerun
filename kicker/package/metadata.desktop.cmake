@@ -7,6 +7,7 @@ Name[nl]=Programmastarter Homerun
 Name[pt]=Homerun Kicker
 Name[pt_BR]=Homerun Kicker
 Name[sl]=Majhen zaganjalnik Homerun
+Name[sv]=Homerun startprogram
 Name[uk]=Меню Homerun
 Name[x-test]=xxHomerun Kickerxx
 Comment=Non-fullscreen version of Homerun
@@ -16,6 +17,7 @@ Comment[nl]=Versie van Homerun zonder volledig scherm
 Comment[pt]=Versão em ecrã não-completo do Homerun
 Comment[pt_BR]=Versão do Homerun em janela
 Comment[sl]=Različica Homeruna, ki ni celozaslonska
+Comment[sv]=Version av Homerun utan fullskärmsläge
 Comment[uk]=Неповноекранна версія Homerun
 Comment[x-test]=xxNon-fullscreen version of Homerunxx
 
