@@ -36,3 +36,9 @@ Need to be proposed
 Applied in 4.11
 
 Files for the fixed KFilePlacesModel class are in `components/sources/favorites/`.
+
+## Dialog (kde-runtime)
+
+### Remove spurious forth-and-back-resizing in visible property setter
+
+Need to be proposed

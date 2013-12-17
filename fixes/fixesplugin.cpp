@@ -23,6 +23,7 @@
 
 // Local
 #include <datamodel.h>
+#include <dialog.h>
 #include <toolboxtoggle.h>
 
 // Qt
@@ -32,6 +33,7 @@ void FixesPlugin::registerTypes(const char *uri)
 {
     qmlRegisterType<Plasma::SortFilterModel>(uri, 0, 1, "SortFilterModel");
     qmlRegisterType<ToolBoxToggle>(uri, 0, 1, "ToolBoxToggle");
+    qmlRegisterType<DialogProxy>(uri, 0, 1, "Dialog");
 }
 
 #include "fixesplugin.moc"

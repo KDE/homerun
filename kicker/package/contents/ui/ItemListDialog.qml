@@ -19,9 +19,9 @@
 
 import QtQuick 1.1
 
-import org.kde.plasma.core 0.1 as PlasmaCore
+import org.kde.homerun.fixes 0.1 as HomerunFixes
 
-PlasmaCore.Dialog {
+HomerunFixes.Dialog {
     id: itemDialog
 
     property Item listView

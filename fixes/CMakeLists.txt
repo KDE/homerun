@@ -2,6 +2,8 @@ project(fixes)
 
 set(fixes_SRCS
     datamodel.cpp
+    declarativeitemcontainer.cpp
+    dialog.cpp
     fixesplugin.cpp
     toolboxtoggle.cpp
     )
