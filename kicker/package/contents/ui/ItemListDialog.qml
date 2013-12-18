@@ -42,7 +42,11 @@ HomerunFixes.Dialog {
             && "modelForRow" in itemDialog.parent.model) ?
             itemDialog.parent.model.modelForRow(itemDialog.parent.currentIndex) : undefined
 
-        onModelChanged: updatePosition()
+        onModelChanged: {
+            if (model != undefined) {
+                updatePosition();
+            }
+        }
     }
 
     function delayedDestroy() {
