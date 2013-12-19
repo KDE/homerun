@@ -38,7 +38,10 @@ Item {
     property int maximumHeight: windowSystem.workArea().height
     property int preferredHeight: (sourcesModel.count * sourcesList.itemHeight) + searchField.height + main.spacing + mainRow.anchors.topMargin + mainRow.anchors.bottomMargin
 
-    property bool atTopEdge: (plasmoid.location == TopEdge)
+    property variant location: plasmoid.location // HACK: plasmoid.location doesn't work as a notifyable
+                                                 // property for some reason. We attach to locationChanged
+                                                 // in Component.onCompleted.
+    property bool atTopEdge: (location == TopEdge)
 
     property int spacing: 6
 
@@ -63,6 +66,10 @@ Item {
         useCustomButtonImage = plasmoid.readConfig("useCustomButtonImage");
         buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
         alignToBottom = plasmoid.readConfig("alignToBottom");
+    }
+
+    function updateLocation() {
+        location = plasmoid.location;
     }
 
     function updateSvgMetrics() {
@@ -179,14 +186,14 @@ Item {
             anchors {
                 fill: parent
                 leftMargin: 4;
-                topMargin: (plasmoid.location == TopEdge) ? 3 : 1;
-                rightMargin: (plasmoid.location == RightEdge) ? 3 : 1;
-                bottomMargin: (plasmoid.location == BottomEdge) ? 3 : 1;
+                topMargin: (location == TopEdge) ? 3 : 1;
+                rightMargin: (location == RightEdge) ? 3 : 1;
+                bottomMargin: (location == BottomEdge) ? 3 : 1;
             }
 
             spacing: main.spacing
 
-            LayoutMirroring.enabled: (plasmoid.location == RightEdge) || (Qt.application.layoutDirection == Qt.RightToLeft)
+            LayoutMirroring.enabled: (location == RightEdge) || (Qt.application.layoutDirection == Qt.RightToLeft)
 
             PlasmaCore.FrameSvgItem {
                 id: frame
@@ -200,30 +207,20 @@ Item {
                 SidebarSection {
                     id: favoriteApps
 
-                    anchors {
-                        top: atTopEdge ? undefined : parent.top
-                        topMargin: theme.smallIconSize / 2
-                        bottom: atTopEdge ? parent.bottom : sidebarSeparator.top
-                        bottomMargin: theme.smallIconSize / 2
-                        horizontalCenter: parent.horizontalCenter
-                    }
+                    x: theme.smallIconSize / 2
+                    y: atTopEdge ? sidebarSeparator.y + sidebarSeparator.height + main.spacing : theme.smallIconSize / 2
 
                     width: parent.width - theme.smallIconSize
-                    height: atTopEdge ? Math.min((model.count * width) + ((model.count - 1) * main.spacing),
-                        parent.height - sidebarSeparator.y - sidebarSeparator.height - main.spacing - anchors.bottomMargin)
-                        : undefined
+                    height: (parent.height - sidebarSeparator.height - powerSessionFavorites.height
+                        - (2 * main.spacing) - (2 * (theme.smallIconSize / 2)))
                 }
 
                 PlasmaCore.SvgItem {
                     id: sidebarSeparator
 
-                    anchors {
-                        top: atTopEdge ? powerSessionFavorites.bottom : undefined
-                        topMargin: main.spacing
-                        bottom: atTopEdge ? undefined : powerSessionFavorites.top
-                        bottomMargin: main.spacing
-                        horizontalCenter: parent.horizontalCenter
-                    }
+                    x: theme.smallIconSize / 2
+                    y: ((atTopEdge ? powerSessionFavorites.y + powerSessionFavorites.height : favoriteApps.y
+                        + favoriteApps.height) + main.spacing)
 
                     width: parent.width - theme.smallIconSize
                     height: lineSvg.horLineHeight
@@ -235,13 +232,8 @@ Item {
                 SidebarSection {
                     id: powerSessionFavorites
 
-                    anchors {
-                        top: atTopEdge ? parent.top : undefined
-                        topMargin: theme.smallIconSize / 2
-                        bottom: atTopEdge ? undefined : parent.bottom
-                        bottomMargin: theme.smallIconSize / 2
-                        horizontalCenter: parent.horizontalCenter
-                    }
+                    x: theme.smallIconSize / 2
+                    y: atTopEdge ? theme.smallIconSize / 2 : sidebarSeparator.y + sidebarSeparator.height + main.spacing
 
                     width: parent.width - theme.smallIconSize
                     height: (model.count * width) + ((model.count - 1) * main.spacing)
@@ -553,9 +545,11 @@ Item {
         plasmoid.addEventListener('ConfigChanged', configChanged);
         plasmoid.popupEvent.connect(showPopup);
         plasmoid.aspectRatioMode = IgnoreAspectRatio;
-
         updateSvgMetrics();
         theme.themeChanged.connect(updateSvgMetrics);
+
+        // HACK: See location prop.
+        plasmoid.locationChanged.connect(updateLocation);
 
         var data = new Object;
         data["image"] = "homerun";
