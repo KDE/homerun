@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Homerun Kicker
+Name[da]=Homerun-kicker
 Name[de]=Homerun-Kicker
 Name[el]=Homerun Kicker
 Name[fi]=Homerun Kicker
@@ -13,6 +14,7 @@ Name[sv]=Homerun startprogram
 Name[uk]=Меню Homerun
 Name[x-test]=xxHomerun Kickerxx
 Comment=Non-fullscreen version of Homerun
+Comment[da]=Ikke-fuldskærm version af Homerun
 Comment[de]=Nicht-Vollbildversion von Homerun
 Comment[el]=Έκδοση του Homerun χωρίς πλήρη οθόνη
 Comment[fi]=Homerunin versio, joka ei vie koko näyttöä
