@@ -25,6 +25,7 @@
 AppletProxy::AppletProxy(QObject* parent) : QObject(parent),
     m_applet(0)
 {
+    KGlobal::locale()->insertCatalog("plasma_applet_org.kde.homerun");
 }
 
 AppletProxy::~AppletProxy()

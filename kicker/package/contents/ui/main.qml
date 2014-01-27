@@ -125,6 +125,11 @@ Item {
         interval: 600
     }
 
+    HomerunKicker.AppletProxy {
+        id: appletProxy
+        item: plasmoid.action("configure")
+    }
+
     HomerunComponents.TabModel {
         id: tabModel
         configFileName: main.configFileName
@@ -134,11 +139,6 @@ Item {
     HomerunComponents.SourceRegistry {
         id: sourceRegistry
         configFileName: main.configFileName
-    }
-
-    HomerunKicker.AppletProxy {
-        id: appletProxy
-        item: plasmoid.action("configure")
     }
 
     HomerunKicker.ProcessRunner {
