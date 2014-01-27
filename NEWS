@@ -1,3 +1,22 @@
+# 2013.01.27 - 1.2.0
+
+- Added a new "Homerun Kicker" launcher menu widget. It's design is inspired by
+  traditional launcher menus, but augmented by a favorites sidebar and search
+  support powered by the Homerun framework. Much attention was paid to hassle-
+  free mouse behavior for maximum efficiency during use. The panel button has
+  support for custom non-square images. (Eike Hein)
+- Added a new "Recent Applications" source that lists the last 15 applications
+  launched from other application sources. (Eike Hein)
+- Added a new combined "Power / Session" source. (Eike Hein)
+- Fixed a bug causing icons to launch the wrong applications while searching the
+  "All Installed Applications with Filters" source. (Eike Hein)
+- Folder views now show the correct icons for .desktop files. (Eike Hein)
+- Launching an item in a folder view no longer closes Homerun. (Eike Hein)
+- When Homerun is used as a desktop containment the Desktop Toolbox is now hidden
+  by default. It can be toggled from the Homerun menu. (Eike Hein)
+- The launcher panel widget for the fullscreen version of Homerun now sports an
+  "Edit Applications ..." action in its context menu. (Eike Hein)
+
 # 2013.07.15 - 1.1.0
 
 - Application items now have "Add to Panel" and "Add to Desktop" actions if

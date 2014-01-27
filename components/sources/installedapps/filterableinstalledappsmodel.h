@@ -66,7 +66,7 @@ public:
 Q_SIGNALS:
     void countChanged();
     void hiddenChanged();
-    void launched(const QString& storageId);
+    void applicationLaunched(const QString& storageId);
     void addToDesktop(const QString& storageId);
     void addToPanel(const QString& storageId);
 
@@ -126,7 +126,7 @@ Q_SIGNALS:
     void countChanged();
     void installerChanged(const QString &);
     void queryChanged(const QString &);
-    void launched(const QString &);
+    void applicationLaunched(const QString &);
 
 public Q_SLOTS:
     void refresh(bool reload = true);

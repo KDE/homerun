@@ -136,7 +136,9 @@ QVariant GroupedInstalledAppsModel::data(const QModelIndex &index, int role) con
 
 InstalledAppsModel *GroupedInstalledAppsModel::createInstalledAppsModel(KServiceGroup::Ptr group)
 {
-    return new InstalledAppsModel(group->entryPath(), m_installer, this);
+    InstalledAppsModel *model = new InstalledAppsModel(group->entryPath(), m_installer, this);
+    connect(model, SIGNAL(applicationLaunched(QString)), this, SIGNAL(applicationLaunched(QString)));
+    return model;
 }
 
 //- GroupedInstalledAppsSource --------------------------------------

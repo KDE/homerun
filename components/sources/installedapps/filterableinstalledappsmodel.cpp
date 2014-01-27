@@ -47,7 +47,7 @@ InstalledAppsFilterModel::InstalledAppsFilterModel(const QString &entryPath, con
     connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SIGNAL(countChanged()));
     connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SIGNAL(countChanged()));
 
-    connect(m_installedAppsModel, SIGNAL(launched(QString)), this, SIGNAL(launched(QString)));
+    connect(m_installedAppsModel, SIGNAL(applicationLaunched(QString)), this, SIGNAL(applicationLaunched(QString)));
 }
 
 InstalledAppsFilterModel::~InstalledAppsFilterModel()
@@ -294,7 +294,7 @@ InstalledAppsFilterModel *FilterableInstalledAppsModel::createInstalledAppsFilte
 {
     InstalledAppsFilterModel *model = new InstalledAppsFilterModel(group->entryPath(), m_installer, this);
     connect(this, SIGNAL(queryChanged(QString)), model, SLOT(setFilterFixedString(QString)));
-    connect(model, SIGNAL(launched(QString)), this, SIGNAL(launched(QString)));
+    connect(model, SIGNAL(applicationLaunched(QString)), this, SIGNAL(applicationLaunched(QString)));
     return model;
 }
 

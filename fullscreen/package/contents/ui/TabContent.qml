@@ -30,6 +30,7 @@ Item {
 
     //- Public ----------------------------------------------------
     // Defined by outside world
+    property Item rootItem
     property QtObject sourceRegistry
     property QtObject tabSourceModel
     property string tabIconSource
@@ -52,6 +53,7 @@ Item {
         id: pageComponent
         Page {
             anchors.fill: parent
+            rootItem: main.rootItem
             configureMode: main.configureMode
             showActionListOverlay: main.showActionListOverlay
             onCloseRequested: {

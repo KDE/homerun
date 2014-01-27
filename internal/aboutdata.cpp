@@ -41,11 +41,12 @@ KAboutData *createAboutData()
         ki18nc("Program name", "Homerun"),
         HOMERUN_VERSION);
     aboutData->setLicense(KAboutData::License_GPL);
-    aboutData->setCopyrightStatement(ki18n("(C) 2012-2013 Blue Systems"));
+    aboutData->setCopyrightStatement(ki18n("(C) 2012-2014 Blue Systems"));
     aboutData->setProgramIconName("homerun");
 
     aboutData->addAuthor(ki18n("Shaun Reich"), ki18n("Developer"), "shaun.reich@blue-systems.com");
     aboutData->addAuthor(ki18n("Aurélien Gâteau"), ki18n("Developer"), "agateau@kde.org");
+    aboutData->addAuthor(ki18n("Eike Hein"), ki18n("Developer"), "hein@kde.org");
 
     return aboutData;
 }

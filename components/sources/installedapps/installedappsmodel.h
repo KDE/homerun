@@ -145,7 +145,7 @@ public:
 Q_SIGNALS:
     void countChanged();
     void openSourceRequested(const QString &sourceId, const QVariantMap &args);
-    void launched(const QString& storageId);
+    void applicationLaunched(const QString& storageId);
 
 public Q_SLOTS:
     void refresh(bool reload = true);

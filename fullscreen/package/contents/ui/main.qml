@@ -28,6 +28,7 @@ import org.kde.homerun.fixes 0.1 as HomerunFixes
 Item {
     id: main
     signal closeRequested
+    signal applicationLaunched(string application)
     property QtObject configureAction
     property bool isContainment
 
@@ -71,6 +72,7 @@ Item {
         TabContent {
             id: tabContentMain
             property Item tabButton
+            rootItem: main
             tabIconSource: tabButton.iconSource
             tabText: tabButton.realText
             configureMode: main.configureMode

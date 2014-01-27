@@ -141,7 +141,7 @@ bool AppNode::trigger(const QString &actionId, const QVariant &actionArgument)
         bool ran = KRun::run(*m_service, KUrl::List(), 0);
 
         if (ran) {
-            emit m_model->launched(m_service->storageId());
+            emit m_model->applicationLaunched(m_service->storageId());
         }
 
         return ran;

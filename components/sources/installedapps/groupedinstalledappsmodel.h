@@ -51,6 +51,7 @@ public:
 
 Q_SIGNALS:
     void installerChanged(const QString &);
+    void applicationLaunched(const QString &);
 
 public Q_SLOTS:
     void refresh(bool reload = true);

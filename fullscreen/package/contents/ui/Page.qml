@@ -29,6 +29,7 @@ Item {
     id: main
 
     //- Defined by outside world -----------------------------------
+    property Item rootItem
     property QtObject sourceRegistry
 
     property QtObject tabSourceModel
@@ -189,6 +190,12 @@ Item {
                         ? createFilterForModel(repeater.model.modelForRow(index))
                         : repeater.model.modelForRow(index)
                     favoriteModels: multiMain.favoriteModels
+
+                    onModelChanged: {
+                        if ("applicationLaunched" in model) {
+                            model.applicationLaunched.connect(rootItem.applicationLaunched);
+                        }
+                    }
 
                     onTriggerActionRequested: {
                         handleTriggerResult(model.trigger(index, actionId, actionArgument));
@@ -621,6 +628,14 @@ Item {
 
         if ("runningChanged" in model) {
             model.runningChanged.connect(main.updateRunning);
+        }
+
+        if ("applicationLaunched" in model) {
+            model.applicationLaunched.connect(rootItem.applicationLaunched);
+        }
+
+        if ("addApp" in model) {
+            rootItem.applicationLaunched.connect(model.addApp);
         }
     }
 

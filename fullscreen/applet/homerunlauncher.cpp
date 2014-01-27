@@ -21,6 +21,7 @@
  ***************************************************************************/
 
 // Qt
+#include <QAction>
 #include <QGraphicsLinearLayout>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -28,6 +29,8 @@
 #include <QDBusServiceWatcher>
 
 // KDE
+#include <KAuthorized>
+#include <KProcess>
 #include <KRun>
 #include <KStandardDirs>
 #include <KShortcut>
@@ -53,6 +56,12 @@ HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
 
 void HomerunLauncher::init()
 {
+    if (KService::serviceByStorageId("kde4-kmenuedit.desktop") && KAuthorized::authorize("action/menuedit")) {
+        QAction* menueditor = new QAction(i18n("Edit Applications..."), this);
+        actions.append(menueditor);
+        connect(menueditor, SIGNAL(triggered(bool)), this, SLOT(startMenuEditor()));
+    }
+
     m_serviceWatcher = new QDBusServiceWatcher("org.kde.homerunViewer", QDBusConnection::sessionBus(),
         QDBusServiceWatcher::WatchForOwnerChange, this);
     connect(m_serviceWatcher, SIGNAL(serviceRegistered(QString)), this, SLOT(viewerServiceRegistered()));
@@ -74,6 +83,16 @@ void HomerunLauncher::init()
         kDebug() << "Service not registered, launching homerunviewer";
         startViewer();
     }
+}
+
+QList<QAction *> HomerunLauncher::contextualActions()
+{
+    return actions;
+}
+
+void HomerunLauncher::startMenuEditor()
+{
+    KProcess::execute("kmenuedit");
 }
 
 void HomerunLauncher::startViewer()
