@@ -478,7 +478,7 @@ Item {
                         queryBindingComponent.createObject(sourceDelegateMain, {"target":  model.model});
                         multiModelExpander.createObject(sourceDelegateMain, {"display": sourceName,
                             "model": model.model});
-                        model.model.launched.connect(recentAppsModel.addApp);
+                        model.model.applicationLaunched.connect(recentAppsModel.addApp);
                     } else if (model.sourceId == "Runner") {
                         runnerQueryBindingComponent.createObject(sourceDelegateMain, {"target":  model.model});
                         runnerModel = model.model;
