@@ -42,9 +42,12 @@ public:
 
     void createConfigurationInterface(KConfigDialog *parent); // reimp
 
+    QList<QAction *> contextualActions();
+
 private Q_SLOTS:
     void toggle();
     void readConfig();
+    void startMenuEditor();
     void viewerServiceRegistered();
     void viewerServiceUnregistered();
     void addToDesktop(uint containmentId, const QString &storageId);
@@ -55,6 +58,7 @@ private:
     QDBusServiceWatcher *m_serviceWatcher;
     bool m_serviceRegistered;
     bool m_toggleWhenRegistered;
+    QList<QAction *> actions;
 
     void startViewer();
 };
