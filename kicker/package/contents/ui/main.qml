@@ -493,6 +493,14 @@ Item {
                         recentAppsModel = model.model;
                     }
 
+                    // FIXME: KPluginInfo::name() doesn't load the translation from the .desktop
+                    // file for some reason, probably due to yet another i18n bug in KConfig (bad
+                    // memories of debugging a similar problem with dfaure once ...). Let's paper
+                    // over it for release by falling back to the gettext catalog.
+                    if (model.sourceId == "RecentDocuments") {
+                        sourceName = i18n("Recent Documents");
+                    }
+
                     sourcesModel.appendSource(sourceName, model.model);
                 }
             }
