@@ -7,6 +7,7 @@ X-KDE-StartupNotify=false
 Exec=homerunviewer
 
 Name=KDE Homerun application
+Name[bs]=KDE Homerun aplikacija
 Name[cs]=Aplikace KDE Homerun
 Name[da]=KDE Homerun-program
 Name[de]=KDE-Homerun-Anwendung
@@ -35,6 +36,7 @@ Name[x-test]=xxKDE Homerun applicationxx
 Name[zh_CN]=KDE Homerun 应用程序
 
 Comment=Displays KDE Homerun in a popup
+Comment[bs]=Prikazuje KDE Homerun u iskočnom meniju
 Comment[cs]=Zobrazuje KDE Homerun ve vyskakovacím okně
 Comment[da]=Viser KDE Homerun i en pop-op
 Comment[de]=Zeigt Homerun in einem Fenster an

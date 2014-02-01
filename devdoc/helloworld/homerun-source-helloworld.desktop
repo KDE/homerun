@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Hello World
+Name[bs]=Zdravo, svijete
 Name[cs]=Hello World
 Name[da]=Hej verden
 Name[de]=Hallo Welt
@@ -28,6 +29,7 @@ Name[uk]=Привіт, світе
 Name[x-test]=xxHello Worldxx
 Name[zh_CN]=Hello World
 Comment=An example of Homerun Source
+Comment[bs]=Primjer Homerun izvora
 Comment[da]=Et eksempel på en Homerun-kilde
 Comment[de]=Ein Beispiel einer Homerun-Quelle
 Comment[el]=Ένα παράδειγμα πηγής του Homerun

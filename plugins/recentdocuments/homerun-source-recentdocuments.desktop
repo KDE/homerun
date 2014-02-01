@@ -30,6 +30,7 @@ Name[uk]=Нещодавні документи
 Name[x-test]=xxRecent Documentsxx
 Name[zh_CN]=最近的文档
 Comment=List recently opened documents
+Comment[bs]=Lista nedavno otvaranih dokumenata
 Comment[cs]=Seznam nedávno otevřených dokumentů
 Comment[da]=Liste over nyligt åbnede dokumenter
 Comment[de]=Zeigt die zuletzt geöffneten Dokumente an
