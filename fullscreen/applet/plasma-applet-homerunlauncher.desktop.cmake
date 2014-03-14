@@ -3,6 +3,7 @@ Encoding=UTF-8
 # ctxt: "Homerun" is a product name
 Name=Homerun Launcher
 Name[bs]=Homerun pokretač
+Name[ca]=Llançador Homerun
 Name[cs]=Spouštěč Homerun
 Name[da]=Startmenuen Homerun
 Name[de]=Homerun-Starter
@@ -30,6 +31,7 @@ Name[zh_CN]=Homerun 启动器
 
 Comment=An application launcher
 Comment[bs]=Pokretač aplikacija
+Comment[ca]=Un llançador d'aplicacions
 Comment[cs]=Spouštěč aplikací
 Comment[da]=Programstarter
 Comment[de]=Ein Anwendungsstarter
