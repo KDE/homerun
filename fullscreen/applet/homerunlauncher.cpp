@@ -30,6 +30,7 @@
 
 // KDE
 #include <KAuthorized>
+#include <KConfigDialog>
 #include <KProcess>
 #include <KRun>
 #include <KStandardDirs>
@@ -41,7 +42,6 @@
 
 // Local
 #include <configkeys.h>
-#include <configmanager.h>
 #include <homerunlauncher.h>
 
 HomerunLauncher::HomerunLauncher(QObject * parent, const QVariantList & args)
@@ -76,8 +76,6 @@ void HomerunLauncher::init()
     connect(this, SIGNAL(activate()), SLOT(toggle()));
 
     layout->addItem(m_icon);
-
-    readConfig();
 
     if (!m_serviceRegistered) {
         kDebug() << "Service not registered, launching homerunviewer";
@@ -134,15 +132,29 @@ void HomerunLauncher::toggle()
         desktopContainmentId, desktopContainmentMutable);
 }
 
-void HomerunLauncher::createConfigurationInterface(KConfigDialog *dialog)
+void HomerunLauncher::createConfigurationInterface(KConfigDialog *parent)
 {
-    ConfigManager *manager = new ConfigManager(config(), dialog);
-    connect(manager, SIGNAL(configChanged()), SLOT(readConfig()));
+    QWidget *widget = new QWidget;
+    m_generalUi.setupUi(widget);
+    parent->addPage(widget, i18n("General"), "homerun");
+
+    m_generalUi.iconButton->setIcon(m_icon->icon());
+
+    connect(m_generalUi.iconButton, SIGNAL(iconChanged(QString)), parent, SLOT(settingsModified()));
 }
 
-void HomerunLauncher::readConfig()
+void HomerunLauncher::configChanged()
 {
     m_icon->setIcon(config().readEntry(CFG_LAUNCHER_ICON_KEY, CFG_LAUNCHER_ICON_DEFAULT));
+}
+
+void HomerunLauncher::configAccepted()
+{
+    KConfigGroup cg = config();
+
+    cg.writeEntry(CFG_LAUNCHER_ICON_KEY, m_generalUi.iconButton->icon());
+
+    emit configNeedsSaving();
 }
 
 void HomerunLauncher::viewerServiceRegistered()
