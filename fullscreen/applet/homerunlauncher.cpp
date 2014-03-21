@@ -77,6 +77,8 @@ void HomerunLauncher::init()
 
     layout->addItem(m_icon);
 
+    configChanged();
+
     if (!m_serviceRegistered) {
         kDebug() << "Service not registered, launching homerunviewer";
         startViewer();
