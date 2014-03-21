@@ -1,4 +1,15 @@
-# 2013.01.27 - 1.2.0
+# 2014.03.21 - 1.2.1
+
+- Fixed a bug causing duplicates to appear in the "All Applications" section
+  of the "All Installed Applications with Filters" source.
+- Fixed a bug causing the "All Applications" section to disappear from the
+  sidebar entries of "All Installed Applications with Filters" sources when
+  the system applications database changes at runtime.
+- Fixed a bug causing sections of icons to overlap on tabs.
+- Revamped config handling for the "Homerun Launcher" widget to allow vendors
+  to use Plasma Desktop Scripting for its configuration.
+
+# 2014.01.27 - 1.2.0
 
 - Added a new "Homerun Kicker" launcher menu widget. It's design is inspired by
   traditional launcher menus, but augmented by a favorites sidebar and search
