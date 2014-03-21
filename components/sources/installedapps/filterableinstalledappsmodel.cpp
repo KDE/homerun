@@ -231,7 +231,7 @@ void FilterableInstalledAppsModel::loadRootEntries()
         }
     }
     m_pendingGroupList = groupMap.values();
-    QMetaObject::invokeMethod(this, "loadNextGroup");
+    QMetaObject::invokeMethod(this, "loadNextGroup", Qt::QueuedConnection);
 }
 
 void FilterableInstalledAppsModel::loadNextGroup()
