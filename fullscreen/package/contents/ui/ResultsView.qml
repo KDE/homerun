@@ -254,7 +254,7 @@ FocusScope {
         */
 
         // Defining "height" as "contentHeight" would be simpler, but it causes "Binding loop detected" error messages
-        height: Math.ceil(count * cellWidth / width) * cellHeight
+        height: Math.ceil(count / Math.floor(width / cellWidth)) * cellHeight
 
         // Disable the GridView flickable so that it does not interfer with the global flickable
         interactive: false
