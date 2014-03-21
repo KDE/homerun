@@ -1,7 +1,6 @@
 project(homerunlauncher)
 
 set(homerunlauncher_SRCS
-    configmanager.cpp
     homerunlauncher.cpp
     )
 

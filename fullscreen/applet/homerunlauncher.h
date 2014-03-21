@@ -24,6 +24,9 @@
 // KDE
 #include <Plasma/Applet>
 
+// Local
+#include <ui_generalconfigpage.h>
+
 namespace Plasma {
     class IconWidget;
 }
@@ -44,9 +47,12 @@ public:
 
     QList<QAction *> contextualActions();
 
+    public slots:
+        void configChanged();
+
 private Q_SLOTS:
     void toggle();
-    void readConfig();
+    void configAccepted();
     void startMenuEditor();
     void viewerServiceRegistered();
     void viewerServiceUnregistered();
@@ -59,6 +65,7 @@ private:
     bool m_serviceRegistered;
     bool m_toggleWhenRegistered;
     QList<QAction *> actions;
+    Ui_GeneralConfigPage m_generalUi;
 
     void startViewer();
 };

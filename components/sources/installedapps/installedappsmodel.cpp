@@ -394,7 +394,19 @@ void InstalledAppsModel::doLoadServiceGroup(KServiceGroup::Ptr group)
                 if (genericName.isNull()) {
                     genericName = service->comment();
                 }
-                m_nodeList << new AppNode(service, this);
+
+                bool found = false;
+
+                foreach(const AbstractNode *node, m_nodeList) {
+                    if (node->type() == AbstractNode::AppNodeType
+                        && static_cast<const AppNode *>(node)->service()->storageId() == service->storageId()) {
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    m_nodeList << new AppNode(service, this);
+                }
             }
 
         } else if (p->isType(KST_KServiceGroup)) {
