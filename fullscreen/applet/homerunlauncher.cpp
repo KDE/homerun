@@ -138,6 +138,8 @@ void HomerunLauncher::createConfigurationInterface(KConfigDialog *parent)
 {
     QWidget *widget = new QWidget;
     m_generalUi.setupUi(widget);
+    connect(parent, SIGNAL(applyClicked()), this, SLOT(configAccepted()));
+    connect(parent, SIGNAL(okClicked()), this, SLOT(configAccepted()));
     parent->addPage(widget, i18n("General"), "homerun");
 
     m_generalUi.iconButton->setIcon(m_icon->icon());
