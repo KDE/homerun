@@ -2,6 +2,7 @@
 Name=Recent Documents
 Name[bs]=nedavnii dokumenti
 Name[ca]=Documents recents
+Name[ca@valencia]=Documents recents
 Name[cs]=Nedávné dokumenty
 Name[da]=Nylige dokumenter
 Name[de]=Zuletzt geöffnete Dokumente
@@ -35,6 +36,7 @@ Name[zh_CN]=最近的文档
 Comment=List recently opened documents
 Comment[bs]=Lista nedavno otvaranih dokumenata
 Comment[ca]=Llista dels documents oberts recentment
+Comment[ca@valencia]=Llista dels documents oberts recentment
 Comment[cs]=Seznam nedávno otevřených dokumentů
 Comment[da]=Liste over nyligt åbnede dokumenter
 Comment[de]=Zeigt die zuletzt geöffneten Dokumente an
