@@ -248,10 +248,11 @@ void RunnerModel::loadRunners()
 {
     Q_ASSERT(m_manager);
 
-    // FIXME: KDE 4.12 replaced Nepomuk with Baloo for desktop search. Homerun's
+    // FIXME: SC 4.13 replaced Nepomuk with Baloo for desktop search. Homerun's
     // default configs reference Nepomuk's "nepomuksearch" runner. The following
     // is a runtime approach to rewriting this to "baloosearch" when found. This
-    // keeps things working on <4.13 while enabling 4.13+ compatibility.
+    // keeps things working on <4.13 while enabling 4.13+ compatibility. It can
+    // be dropped once we depend on a SC version guaranteed to have Baloo around.
     KPluginInfo::List runners = m_manager->listRunnerInfo();
 
     foreach(const KPluginInfo &runner, runners) {

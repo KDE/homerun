@@ -1,3 +1,12 @@
+# 2014.04.09 - 1.2.3
+
+- This release enables compatibility with the revamped desktop search stack
+  in KDE SC 4.13. It is required for desktop search to work when Homerun is
+  used in KDE SC 4.13, both in the fullscreen version of Homerun (where
+  desktop search is exposed via the "KRunner" and "Runner: Desktop Search"
+  sources) and in Homerun Kicker. Existing user configurations continue to
+  work seamlessly, and versions older than 4.13 remain supported as well.
+
 # 2014.03.22 - 1.2.2
 
 - Fixed a bug causing icon setting changes from the configuration dialog of
