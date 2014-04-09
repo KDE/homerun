@@ -247,6 +247,37 @@ void RunnerModel::clear()
 void RunnerModel::loadRunners()
 {
     Q_ASSERT(m_manager);
+
+    // FIXME: KDE 4.12 replaced Nepomuk with Baloo for desktop search. Homerun's
+    // default configs reference Nepomuk's "nepomuksearch" runner. The following
+    // is a runtime approach to rewriting this to "baloosearch" when found. This
+    // keeps things working on <4.13 while enabling 4.13+ compatibility.
+    KPluginInfo::List runners = m_manager->listRunnerInfo();
+
+    foreach(const KPluginInfo &runner, runners) {
+        if (runner.pluginName() == "baloosearch") {
+            m_pendingRunnersList.replaceInStrings("nepomuksearch", "baloosearch");
+            m_pendingRunnersList.removeDuplicates();
+
+            // Update config.
+            QStringList whiteList = m_configGroup.readEntry("whitelist", QStringList());
+
+            if (!whiteList.isEmpty()) {
+                whiteList.replaceInStrings("nepomuksearch", "baloosearch");
+                whiteList.removeDuplicates();
+
+                m_configGroup.writeEntry("whitelist", whiteList);
+
+                if (m_configGroup.config()) {
+                    m_configGroup.config()->sync();
+                }
+            }
+
+            break;
+        }
+    }
+    // FIXME: </Baloo hack>
+
     if (m_pendingRunnersList.count() > 0) {
         KPluginInfo::List list = Plasma::RunnerManager::listRunnerInfo();
         Q_FOREACH(const KPluginInfo &info, list) {
