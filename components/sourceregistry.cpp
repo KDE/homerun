@@ -228,14 +228,33 @@ struct SourceRegistryPrivate
     void registerSingleRunnerSources()
     {
         KPluginInfo::List list = Plasma::PluginLoader::pluginLoader()->listRunnerInfo();
+
+        // FIXME: SC 4.13 replaced Nepomuk with Baloo for desktop search. Modifications
+        // to this logic skip registering the "nepomuksearch" runner when "baloosearch"
+        // is found and alias the latter to the former in the source registry to keep
+        // existing config files working. This can be dropped again once we depend on a
+        // SC version guaranteed to have Baloo around.
+        bool gotBaloo = false;
+
         Q_FOREACH(const KPluginInfo &info, list) {
-            if (!info.property("X-Plasma-AdvertiseSingleRunnerQueryMode").toBool()) {
+            if (info.pluginName() == "baloosearch") {
+                gotBaloo = true;
+            }
+        }
+
+        Q_FOREACH(const KPluginInfo &info, list) {
+            if (!info.property("X-Plasma-AdvertiseSingleRunnerQueryMode").toBool()
+                || (gotBaloo && info.pluginName() == "nepomuksearch")) {
                 continue;
             }
             QString runnerId = info.pluginName();
             SingleRunnerSource *source = new SingleRunnerSource(runnerId, q);
             QString name = i18n("Runner: %1", info.name());
             registerSource("SingleRunner/" + runnerId, source, name, info.comment());
+
+            if (runnerId == "baloosearch") {
+                registerSource("SingleRunner/nepomuksearch", source, name, info.comment());
+            }
         }
     }
 };
