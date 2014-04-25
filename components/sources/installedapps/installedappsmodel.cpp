@@ -88,6 +88,7 @@ AppNode::AppNode(KService::Ptr service, InstalledAppsModel *model)
 {
     m_icon = service->icon();
     m_name = service->name();
+    m_genericName = service->genericName();
     m_service = service;
     m_sortKey = m_name.toLower();
 }
@@ -199,6 +200,7 @@ InstalledAppsModel::InstalledAppsModel(const QString &entryPath, const QString &
     roles.insert(FavoriteIdRole, "favoriteId");
     roles.insert(HasActionListRole, "hasActionList");
     roles.insert(ActionListRole, "actionList");
+    roles.insert(GenericNameRole, "genericName");
 
     setRoleNames(roles);
 
@@ -294,6 +296,8 @@ QVariant InstalledAppsModel::data(const QModelIndex &index, int role) const
         }
 
         return actionList;
+    } else if (role == GenericNameRole && node->type() == AbstractNode::AppNodeType) {
+        return static_cast<AppNode *>(node)->genericName();
     }
 
     return QVariant();

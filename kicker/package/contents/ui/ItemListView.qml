@@ -26,14 +26,14 @@ import org.kde.qtextracomponents 0.1 as QtExtra
 FocusScope {
     id: itemList
 
-    width: theme.defaultFont.mSize.width * 18
+    width: theme.defaultFont.mSize.width * ((nameFormat > 1) ? 20 : 18)
     height: itemDialog.parent.childItemListHeight
 
     property Item dialog: null
     property QtObject childDialog: null
     property int childItemListHeight
 
-    property bool containsMouse: mouseEventListener.containsMouse || (childDialog != null && childDialog.mainItem.containsMouse)
+    property bool containsMouse: mouseEventListener.containsMouse || (childDialog != null && childDialog.mainItem.containsMouse) || (dialog != null && childDialog == null)
 
     property alias model: listView.model
     property alias currentIndex: listView.currentIndex
