@@ -21,6 +21,9 @@
     <entry name="alignToBottom" type="Bool">
       <default>true</default>
     </entry>
+    <entry name="nameFormat" type="Int">
+      <default>0</default>
+    </entry>
 </group>
 
 </kcfg>

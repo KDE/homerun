@@ -55,6 +55,7 @@ Item {
     property bool useCustomButtonImage: false
     property string buttonImage: ""
     property bool alignToBottom: true
+    property int nameFormat: 0
 
     property QtObject itemListDialogComponent: Qt.createComponent("ItemListDialog.qml");
 
@@ -66,6 +67,7 @@ Item {
         useCustomButtonImage = plasmoid.readConfig("useCustomButtonImage");
         buttonImage = urlConverter.convertToPath(plasmoid.readConfig("buttonImage"));
         alignToBottom = plasmoid.readConfig("alignToBottom");
+        nameFormat = plasmoid.readConfig("nameFormat");
     }
 
     function updateLocation() {
@@ -257,6 +259,7 @@ Item {
                             bottomMargin: atTopEdge ? 0 : main.spacing
                         }
 
+                        width: theme.defaultFont.mSize.width * 18
                         height: main.alignToBottom ? Math.min(model.count * itemHeight,
                             parent.height - searchField.height - anchors.topMargin - anchors.bottomMargin)
                             : parent.height - searchField.height - anchors.topMargin - anchors.bottomMargin

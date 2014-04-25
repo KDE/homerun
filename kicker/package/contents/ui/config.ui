@@ -6,70 +6,161 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
-    <height>298</height>
+    <width>301</width>
+    <height>162</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QGridLayout" name="gridLayout">
    <property name="margin">
     <number>0</number>
    </property>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
       <string>Behavior</string>
      </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="kcfg_runnerSupport">
-        <property name="whatsThis">
-         <string>If this option is enabled, search may display additional columns with search results powered by certain Plasma runner plugins, such as &quot;Bookmarks&quot; and &quot;Desktop Search&quot;.</string>
-        </property>
-        <property name="text">
-         <string>Use Plasma runners for additional search results</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Search bookmarks and files:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="buddy">
+      <cstring>kcfg_runnerSupport</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="2">
+    <widget class="QCheckBox" name="kcfg_runnerSupport">
+     <property name="whatsThis">
+      <string>If this option is enabled, search may display additional columns with search results powered by certain Plasma runner plugins, such as &quot;Bookmarks&quot; and &quot;Desktop Search&quot;.</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
       <string>Appearance</string>
      </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="kcfg_useCustomButtonImage">
-        <property name="text">
-         <string>Custom button image:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="KUrlRequester" name="kcfg_buttonImage">
-        <property name="filter">
-         <string>*.jpg *.png *.xpm *.gif *.webp</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QCheckBox" name="kcfg_alignToBottom">
-        <property name="text">
-         <string>Align contents to bottom</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
-   <item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Custom button image:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="buddy">
+      <cstring>kcfg_useCustomButtonImage</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="kcfg_useCustomButtonImage">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KUrlRequester" name="kcfg_buttonImage">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="filter">
+        <string>*.jpg *.png *.xpm *.gif *.webp</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Align contents to bottom:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="buddy">
+      <cstring>kcfg_alignToBottom</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QCheckBox" name="kcfg_alignToBottom">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Show applications as:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="buddy">
+      <cstring>kcfg_nameFormat</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" colspan="2">
+    <widget class="QComboBox" name="kcfg_nameFormat">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <item>
+      <property name="text">
+       <string>Name only</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Description only</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Name (Description)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Description (Name)</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="6" column="2">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -92,5 +183,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>kcfg_useCustomButtonImage</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>kcfg_buttonImage</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>111</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>111</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

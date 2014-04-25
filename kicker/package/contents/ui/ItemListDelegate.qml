@@ -165,7 +165,7 @@ PlasmaComponents.ListItem {
             width: parent.width - icon.width - icon.anchors.leftMargin - (arrow.visible ? arrow.width : 0) - (arrow.visible ? parent.spacing : 0) - (icon.visible ? parent.spacing : 0)
             height: parent.height
 
-            text: model.display
+            text: generateText()
 
             color: theme.textColor
             elide: Text.ElideRight
@@ -180,6 +180,22 @@ PlasmaComponents.ListItem {
             font.underline: theme.defaultFont.underline
             font.weight: theme.defaultFont.weight
             font.wordSpacing: theme.defaultFont.wordSpacing
+
+            function generateText() {
+                if (nameFormat == 0) {
+                    return model.display;
+                } else if ("genericName" in model && model.genericName != "" && model.genericName != model.display) {
+                    if (nameFormat == 1) {
+                        return model.genericName;
+                    } else if (nameFormat == 2) {
+                        return i18nc("App name (Generic name)", "%1 (%2)", model.display, model.genericName);
+                    } else {
+                        return i18nc("Generic Name (App name)", "%1 (%2)", model.genericName, model.display);
+                    }
+                }
+
+                return model.display;
+            }
         }
 
         PlasmaCore.SvgItem {

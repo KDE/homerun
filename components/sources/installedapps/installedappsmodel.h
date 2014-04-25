@@ -56,6 +56,7 @@ public:
 
     QString icon() const { return m_icon; }
     QString name() const { return m_name; }
+    QString genericName() const { return m_genericName; }
 
     static bool lessThan(AbstractNode *n1, AbstractNode *n2);
 
@@ -63,6 +64,7 @@ protected:
     QString m_sortKey;
     QString m_icon;
     QString m_name;
+    QString m_genericName;
 };
 
 class GroupNode : public AbstractNode
@@ -123,7 +125,8 @@ public:
     enum Roles {
         FavoriteIdRole = Qt::UserRole + 1,
         HasActionListRole,
-        ActionListRole
+        ActionListRole,
+        GenericNameRole
     };
 
     InstalledAppsModel(const QString &entryPath, const QString &installer, QObject *parent = 0);
