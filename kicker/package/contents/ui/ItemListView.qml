@@ -33,7 +33,7 @@ FocusScope {
     property QtObject childDialog: null
     property int childItemListHeight
 
-    property bool containsMouse: mouseEventListener.containsMouse || (childDialog != null && childDialog.mainItem.containsMouse) || (dialog != null && childDialog == null)
+    property bool containsMouse: mouseEventListener.containsMouse || (childDialog != null && childDialog.mainItem.containsMouse)
 
     property alias model: listView.model
     property alias currentIndex: listView.currentIndex
