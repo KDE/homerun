@@ -1,3 +1,10 @@
+# 2014.05.02 - 1.2.4
+
+- Added a configuration option for Homerun Kicker's application name display
+  format.
+- Revamped the layout of Homerun Kicker's configuration dialog to follow KDE
+  form layout guidelines.
+
 # 2014.04.09 - 1.2.3
 
 - This release enables compatibility with the revamped desktop search stack
