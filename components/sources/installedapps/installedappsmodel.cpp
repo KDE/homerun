@@ -298,6 +298,9 @@ QVariant InstalledAppsModel::data(const QModelIndex &index, int role) const
         return actionList;
     } else if (role == GenericNameRole && node->type() == AbstractNode::AppNodeType) {
         return static_cast<AppNode *>(node)->genericName();
+    } else if (role == GenericNameRole && node->type() == AbstractNode::AppNodeType) {
+        AppNode *appNode = static_cast<AppNode *>(node);
+        return QString(appNode->name() + ' ' + appNode->genericName());
     }
 
     return QVariant();
