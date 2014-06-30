@@ -126,7 +126,8 @@ public:
         FavoriteIdRole = Qt::UserRole + 1,
         HasActionListRole,
         ActionListRole,
-        GenericNameRole
+        GenericNameRole,
+        CombinedNameRole
     };
 
     InstalledAppsModel(const QString &entryPath, const QString &installer, QObject *parent = 0);

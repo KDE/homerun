@@ -41,6 +41,7 @@ InstalledAppsFilterModel::InstalledAppsFilterModel(const QString &entryPath, con
 {
     setSourceModel(m_installedAppsModel);
     setDynamicSortFilter(true);
+    setFilterRole(InstalledAppsModel::CombinedNameRole);
     setFilterCaseSensitivity(Qt::CaseInsensitive);
 
     connect(this, SIGNAL(modelReset()), this, SIGNAL(countChanged()));
