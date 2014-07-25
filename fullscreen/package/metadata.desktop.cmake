@@ -38,6 +38,7 @@ Comment[da]=Programstarter
 Comment[de]=Ein Anwendungsstarter
 Comment[el]=Ένας εκτελεστής εφαρμογών
 Comment[es]=Un lanzador de aplicaciones
+Comment[et]=Rakenduste käivitaja
 Comment[fi]=Sovelluskäynnistin
 Comment[fr]=Un lanceur d'applications
 Comment[gl]=Un lanzador de programas.
