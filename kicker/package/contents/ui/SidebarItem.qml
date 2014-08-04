@@ -35,6 +35,8 @@ DragAndDrop.DragArea {
     signal actionTriggered(string actionId, variant actionArgument)
     signal aboutToShowActionMenu(variant actionMenu)
 
+    property QtObject sourceModel: repeater.model
+
     property bool edgeItem: (y < parent.height && y + height > parent.height)
 
     property int itemIndex: model.index
