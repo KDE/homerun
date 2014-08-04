@@ -27,6 +27,10 @@ DragAndDrop.DropArea {
     property alias model: repeater.model
 
     onDragMove: {
+        if (event.mimeData.source.sourceModel != model) {
+            return;
+        }
+
         if (flow.animating) {
             return;
         }
