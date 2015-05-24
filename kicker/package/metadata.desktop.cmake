@@ -10,6 +10,7 @@ Name[el]=Homerun Kicker
 Name[es]=Homerun Kicker
 Name[fi]=Homerun Kicker
 Name[fr]=Lanceur de Homerun
+Name[gl]=Lanzador de Homerun
 Name[hu]=Homerun kirúgó
 Name[id]=Homerun Kicker
 Name[it]=Kicker di Homerun
