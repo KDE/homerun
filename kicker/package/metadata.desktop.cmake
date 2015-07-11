@@ -35,6 +35,7 @@ Comment[el]=Έκδοση του Homerun χωρίς πλήρη οθόνη
 Comment[es]=Versión no a pantalla completa de Homerun
 Comment[fi]=Homerunin versio, joka ei vie koko näyttöä
 Comment[fr]=Version de Homerun non plein-écran
+Comment[gl]=Versión reducida de Homerun.
 Comment[hu]=A Homerun nem teljes képernyős verziója
 Comment[id]=Versi Homerun bukan layar penuh
 Comment[it]=Versione di Homerun a schermo ridotto
