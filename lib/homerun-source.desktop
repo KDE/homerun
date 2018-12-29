@@ -2,37 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=Homerun/Source
 Comment=Homerun source plugin
-Comment[bs]=Homerun izvorišni priključak
-Comment[ca]=Connector de fonts per a Homerun
-Comment[ca@valencia]=Connector de fonts per a Homerun
-Comment[da]=Kildeplugin til Homerun
-Comment[de]=Quellmodul für Homerun
-Comment[el]=Πρόσθετη πηγή Homerun
-Comment[es]=Complemento de origen para Homerun
-Comment[et]=Homeruni allikaplugin
-Comment[fi]=Homerunin lähdeliitännäinen
-Comment[fr]=Module externe Homerun
-Comment[gl]=Complemento de fontes de Homerun
-Comment[hu]=Homerun forrás bővítmény
-Comment[id]=Plugin sumber Homerun
-Comment[it]=Estensione delle fonti di Homerun
-Comment[ko]=Homerun 원본 코드 플러그인
-Comment[lt]=Homerun šaltinio priedas
-Comment[mr]=होमरन स्रोत प्लगइन
-Comment[nl]=Plug-in voor Homerun-bron
-Comment[pa]=ਹੋਮਰਨ ਸਰੋਤ ਪਲੱਗਇਨ
-Comment[pl]=Wtyczka źródła Homerun
-Comment[pt]='Plugin' de código do Homerun
-Comment[pt_BR]=Plugin de código do Homerun
-Comment[ro]=Extensie de sursă Homerun
-Comment[ru]=Модуль источника Homerun
-Comment[sk]=Plugin zdroja Homerun
-Comment[sl]=Vstavek za izvorno kodo za Homerun
-Comment[sv]=Homerun-källinsticksprogram
-Comment[tr]=Homerun kaynak eklentisi
-Comment[uk]=Додаток джерела до Homerun
-Comment[x-test]=xxHomerun source pluginxx
-Comment[zh_CN]=Homerun 源插件
 
 [PropertyDef::X-KDE-Homerun-APIVersion]
 Type=int
