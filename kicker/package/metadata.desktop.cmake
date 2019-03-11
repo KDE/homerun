@@ -19,6 +19,7 @@ Name[nl]=Programmastarter Homerun
 Name[pl]=Program uruchamiający Homerun
 Name[pt]=Homerun Kicker
 Name[pt_BR]=Homerun Kicker
+Name[ru]=Меню Homerun
 Name[sk]=Spúšťač Homerun
 Name[sl]=Majhen zaganjalnik Homerun
 Name[sv]=Homerun startprogram
